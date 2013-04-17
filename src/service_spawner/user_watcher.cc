@@ -31,7 +31,7 @@ SvdUserHookIndicatorFiles::~SvdUserHookIndicatorFiles() {
 
 
 void SvdUserWatcher::init(uid_t uid) {
-    logDebug() << "Starting SvdUserWatcher for user:" << QString::number(uid);
+    logDebug() << "Starting SvdUserWatcher for user:" << getenv("USER");
 
     this->uid = uid;
     this->homeDir = getHomeDir(uid);
@@ -109,7 +109,7 @@ void SvdUserWatcher::shutdownSlot() {
         }
         shutdownDefaultVPNNetwork();
     }
-    QString lockName = getHomeDir() + "/." + QString::number(uid) + ".pid";
+    QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
     logDebug() << "Removing lock file:" << lockName;
     QFile::remove(lockName);
     logInfo() << "Shutdown completed.";
@@ -121,7 +121,7 @@ void SvdUserWatcher::checkUserControlTriggers() {
         logInfo() << "Invoked shutdown trigger. Sending SS down.";
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
-        QFile::remove(homeDir + "/." + QString::number(uid) + ".pid");
+        QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
         raise(SIGINT);
     }
 }

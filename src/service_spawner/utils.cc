@@ -248,14 +248,14 @@ const QString getHomeDir(uid_t uid) {
     if (uid == 0)
         return QString(SYSTEM_USERS_DIR);
     else
-        return QString(USERS_HOME_DIR) + "/" + QString::number(uid);
+        return QString(USERS_HOME_DIR) + "/" + getenv("USER");
 }
 
 
 const QString getSoftwareDataDir(uid_t uid) {
     QString dataDir = getHomeDir(uid) + QString(SOFTWARE_DATA_DIR);
     if (!QFile::exists(dataDir)) {
-        logTrace() << "Software data dir:" << dataDir << ", doesn't exists. Creating it.";
+        logTrace() << "Software data dir:" << dataDir << "doesn't exists. Creating it.";
         QDir().mkpath(dataDir);
     }
     return dataDir;

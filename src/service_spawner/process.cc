@@ -55,7 +55,7 @@ void SvdProcess::spawnProcess(const QString& command) {
 
 void SvdProcess::setupChildProcess() {
     const QString home = getHomeDir(uid);
-    const QString user = QString::number(uid).toUtf8();
+    const QString user = getenv("USER");
     logDebug() << "Setup process environment with home:" << home << "and user:" << user;
 
     #ifdef __FreeBSD__

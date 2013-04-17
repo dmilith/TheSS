@@ -180,7 +180,7 @@ SvdServiceConfig::~SvdServiceConfig() {
 
 
 const QString SvdServiceConfig::userServiceRoot() {
-    return QString(USERS_HOME_DIR) + "/" + QString::number(uid) + QString(DEFAULT_USER_APPS_DIR) + "/" + softwareName;
+    return QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(DEFAULT_USER_APPS_DIR) + "/" + softwareName;
 }
 
 
@@ -201,7 +201,7 @@ const QString SvdServiceConfig::prefixDir() {
     if (uid == 0) {
         return getOrCreateDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + name);
     } else {
-        return getOrCreateDir(QString(USERS_HOME_DIR) + "/" + QString::number(uid) + QString(SOFTWARE_DATA_DIR) + "/" + name);
+        return getOrCreateDir(QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(SOFTWARE_DATA_DIR) + "/" + name);
     }
 }
 
@@ -217,7 +217,7 @@ const QString SvdServiceConfig::rootIgniter() {
 
 
 const QString SvdServiceConfig::userIgniter() {
-    return QString(USERS_HOME_DIR) + "/" + QString::number(uid) + QString(DEFAULTUSERIGNITERSDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(DEFAULTUSERIGNITERSDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
 }
 
 

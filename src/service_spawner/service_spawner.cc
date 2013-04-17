@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* file lock setup */
-    QString lockName = getHomeDir() + "/." + QString::number(uid) + ".pid";
+    QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
     if (QFile::exists(lockName)) {
         bool ok;
         QString aPid = QString(readFileContents(lockName).c_str()).trimmed();
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 
     } else {
         logInfo("Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
-        logDebug() << "Spawning for uid:" << uid;
+        logDebug() << "Spawning for user:" << getenv("USER");
 
         logDebug() << "Checking user directory priviledges";
         setUserDirPriviledges(getHomeDir());
