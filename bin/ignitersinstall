@@ -1,0 +1,29 @@
+#!/bin/sh
+
+default_root_igniters_dir="/SystemUsers/Igniters/Services"
+default_igniters_dir="/Users/Common/Igniters/Services"
+test_igniters_dir="/Users/Common/Igniters/TestServices"
+
+if [ ! -d "${default_root_igniters_dir}" ]; then
+    mkdir -p "${default_root_igniters_dir}"
+else
+    printf "Root Igniters directory exists."
+fi
+
+if [ ! -d "${default_igniters_dir}" ]; then
+    mkdir -p "${default_igniters_dir}"
+else
+    printf "Igniters directory exists."
+fi
+
+echo "Installing Service Igniters to ${default_igniters_dir}"
+cp -vr $(pwd)/basesystem/universal/Default* ${default_igniters_dir}/../
+cp -vr $(pwd)/basesystem/universal/Services/* ${default_igniters_dir}/
+
+echo "Installing Root Service Igniters to ${default_root_igniters_dir}"
+cp -vr $(pwd)/basesystem/universal/RootServices/* ${default_root_igniters_dir}/
+
+echo "Installing Root Test Service Igniters to ${default_igniters_dir}"
+cp -vr $(pwd)/basesystem/universal/TestServices/* ${default_igniters_dir}/
+
+echo "Done."

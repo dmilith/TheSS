@@ -1,0 +1,12 @@
+{
+    "softwareName": "Mosh",
+    "watchPort": false,
+    "alwaysOn": false,
+    "install": {
+        "commands": "sofin get mosh",
+        "expectOutput": "All done"
+    },
+    "start": {
+        "commands": "SERVICE_ROOT/exports/mosh-server new -- svdshell"
+    }
+}

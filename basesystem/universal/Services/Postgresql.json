@@ -1,0 +1,50 @@
+{
+    "softwareName": "Postgresql",
+    "schedulerActions": [
+        {
+            "cronEntry": "0 0/3 * * * ?",
+            "shellCommands": "echo 'Postgres myk myk'"
+        }
+    ],
+    "install": {
+        "commands": "sofin get postgresql",
+        "expectOutput": "All done"
+    },
+    "configure": {
+        "commands": "
+test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf"
+    },
+    "start": {
+        "commands": "
+test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf
+test ! -f SERVICE_PREFIX/database/pg_hba.conf && printf '
+# Default Postgresql service configuration
+local all all trust
+host all all 127.0.0.1/32 password
+# host all all 0.0.0.0/0 ident
+host all all 0.0.0.0/0 password
+' > SERVICE_PREFIX/database/pg_hba.conf
+
+test ! -f SERVICE_PREFIX/database/postgresql.conf && printf '
+port = SERVICE_PORT
+max_connections = 200
+checkpoint_segments = 24
+password_encryption = on
+shared_buffers = 128MB
+temp_buffers = 32MB
+work_mem = 16MB
+max_stack_depth = 16MB
+
+logging_collector = true
+' > SERVICE_PREFIX/database/postgresql.conf && echo listen_addresses=\\'SERVICE_DOMAIN\\' >> SERVICE_PREFIX/database/postgresql.conf
+SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_PREFIX/service.log -o \"-k SERVICE_PREFIX\" start"
+    },
+    "stop": {
+        "commands": "SERVICE_ROOT/exports/pg_ctl --timeout=60 -w -D SERVICE_PREFIX/database stop"
+    },
+    "babySitter": {
+        "commands": "SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database status",
+        "expectOutput": "server is running",
+        "expectOutputTimeout": 60
+    }
+}

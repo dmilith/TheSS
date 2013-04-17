@@ -1,0 +1,18 @@
+{
+    "softwareName": "Elasticsearch",
+
+    "install": {
+        "commands": "sofin get elasticsearch",
+        "expectOutput": "All done"
+    },
+    "start": {
+        "commands": "SERVICE_ROOT/exports/elasticsearch -p SERVICE_PREFIX/service.pid -f -Xmx1g -Des.network.host=SERVICE_ADDRESS -Des.http.port=SERVICE_PORT -Des.index.storage.type=niofs -Des.max-open-files=true -Des.bootstrap.mlockall=true -Des.path.home=SERVICE_PREFIX > SERVICE_PREFIX/service.log 2>&1 &"
+    },
+    "validate": {
+        "commands": "test ! -d SERVICE_PREFIX/config && cp -r SERVICE_ROOT/config SERVICE_PREFIX
+test ! -d SERVICE_PREFIX/data && mkdir -p SERVICE_PREFIX/data
+test ! -d SERVICE_PREFIX/work && mkdir -p SERVICE_PREFIX/work
+test ! -d SERVICE_PREFIX/logs && mkdir -p SERVICE_PREFIX/logs
+"
+    }
+}
