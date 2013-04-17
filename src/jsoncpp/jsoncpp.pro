@@ -7,7 +7,7 @@ TARGET = ../jsoncpp
 TEMPLATE = lib
 CONFIG += staticlib
 
-# QMAKE_CXXFLAGS += -w
+QMAKE_CXXFLAGS += -w
 
 SOURCES += *.cpp
 

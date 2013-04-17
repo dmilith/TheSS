@@ -9,16 +9,15 @@
     /* default BSD case: */
     #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh" // "/bin/svdshell" //
     #define DEFAULT_SS_COMMAND "/bin/svdss"
-    #define DEFAULT_JAVA_PATH "/Software/Openjdk7/openjdk7/"
 
     #ifdef __FreeBSD__
+        #define DEFAULT_JAVA_PATH "/Software/Openjdk7/openjdk7/"
         #define DEFAULT_JAVA_BIN (DEFAULT_JAVA_PATH "bin/java")
     #endif
 
     // Darwin case:
     #ifdef __APPLE__
         #define CLOCK_REALTIME REALTIME_CLOCK
-        // NOTE: Darwin uses same zsh path as BSD
         #define DEFAULT_JAVA_BIN "/usr/bin/java"
     #endif
 
@@ -26,6 +25,7 @@
     #ifdef __linux__
         #undef DEFAULT_SHELL_COMMAND
         #define DEFAULT_SHELL_COMMAND "/bin/zsh"
+        #define DEFAULT_JAVA_PATH "/Software/Jdk7/" /* defined for Oracle implementation, used as default for Linux */
         #define DEFAULT_JAVA_BIN (DEFAULT_JAVA_PATH "bin/java")
         #define USERS_HOME_DIR "/home"
     #endif

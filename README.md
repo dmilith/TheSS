@@ -12,7 +12,7 @@
 
 
 ## Features
-* Integrates with [Sofin](http://verknowsys.github.io/sofin)
+* Integrates with [Sofin](http://verknowsys.github.io/sofin). (Currently it supports only software built using Sofin).
 * Support software igniters written in JSON (+comments support) to generate predefined (user or system wide) software configurations on the fly.
 * Support for software hooks. (More in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)). Hook example:
 

@@ -4,5 +4,7 @@
 #   Daniel (dmilith) Dettlaff
 #
 
+include(src/Common.pro)
+
 TEMPLATE           = subdirs
 SUBDIRS            = src/cutelogger src/jsoncpp src/service_spawner
