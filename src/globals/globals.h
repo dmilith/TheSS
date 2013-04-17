@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.20.6"
+    #define APP_VERSION "0.20.7"
     #define COPYRIGHT "Copyright © 2oo9-2o13 VerKnowSys.com - All Rights Reserved."
     #define MOTD_FILE "/etc/motd"
 
@@ -27,11 +27,15 @@
         #undef DEFAULT_SHELL_COMMAND
         #define DEFAULT_SHELL_COMMAND "/bin/zsh"
         #define DEFAULT_JAVA_BIN (DEFAULT_JAVA_PATH "bin/java")
+        #define USERS_HOME_DIR "/home"
     #endif
 
 
     #define SYSTEMUSERS_HOME_DIR "/SystemUsers"
-    #define USERS_HOME_DIR "/Users"
+    #ifndef __linux__
+        #define USERS_HOME_DIR "/Users"
+    #endif
+
     #define LIBRARIES_DIR "/lib"
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
     #define DEFAULT_BEHAVIORS_RAW "/output_raw_processes.raw.input"
