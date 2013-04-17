@@ -55,6 +55,12 @@ SERVICE_PORT # by default: random port, stored in ~/SoftwareData/AppName/.ports
 * Tested in production environments.
 
 
+## Igniter examples:
+* [Redis](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Redis.json)
+* [Mysql](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Mysql.json)
+* [Nginx](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/RootServices/Coreginx.json)
+
+
 ## WTF? How to run it?
 
 ```sh
