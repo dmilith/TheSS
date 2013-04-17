@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ "$(uname)" = "Darwin" ]; then
+    qmake -spec darwin-g++ TheSS.pro
+    printf "Installing igniters\n"
+    sudo bin/ignitersinstall
+else
+    qmake TheSS.pro
+    printf "Please run as root: bin/ignitersinstall to install default igniters to /Users/Common/Igniters\n"
+    printf "Hit enter to continue\n"
+    read
+fi
+make && printf "Success\n"
