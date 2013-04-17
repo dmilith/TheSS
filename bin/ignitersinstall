@@ -1,8 +1,13 @@
 #!/bin/sh
 
+export HOME_DIR="/Users"
+if [ "$(uname)" = "Linux" ]; then
+    export HOME_DIR="/home"
+fi
+
 default_root_igniters_dir="/SystemUsers/Igniters/Services"
-default_igniters_dir="/Users/Common/Igniters/Services"
-test_igniters_dir="/Users/Common/Igniters/TestServices"
+default_igniters_dir="${HOME_DIR}/Common/Igniters/Services"
+test_igniters_dir="${HOME_DIR}/Common/Igniters/TestServices"
 
 if [ ! -d "${default_root_igniters_dir}" ]; then
     mkdir -p "${default_root_igniters_dir}"
