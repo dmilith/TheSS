@@ -40,6 +40,7 @@
 * Supports unified process configuration model. By default ~/SoftwareData/MyApp/service.pid and ~/SoftwareData/MyApp/service.log are created for each software.
 * Supports dynamic, live log level change invoked by touch ~/.log-level, where "log-level" is one of: error, info, debug, trace. By default log level is info.
 * Supports auto igniter reload support on hook level. You don't need to update, sync or reload igniters. After change, next hook invoke will use latest version of software igniter by default.
+* Supports multiple directory sources for igniters. Default order of checking igniters existance for regular user is: ~/Igniters/Services, then /Users/Common/Igniters/Services. For root it's: /Users/Common/Igniters/Services, then /SystemUsers/Igniters.
 * Supports igniter constants, auto filled before invoke of each hook. Currently there are:
 
 ```sh
