@@ -38,19 +38,32 @@
 * Should be system agnostic. I didn't try windows, but it should work after few minor changes.
 * Supports state files. For example if process is running the lock file is created: ~/SoftwareData/MyApp/.running
 * Supports unified process configuration model. By default ~/SoftwareData/MyApp/service.pid and ~/SoftwareData/MyApp/service.log are created for each software.
+* Supports dynamic, live log level change invoked by touch ~/.log-level, where "log-level" is one of: error, info, debug, trace. By default log level is info.
 * Tested in production environments.
 
 
 ## WTF? How to run it?
 
 ```sh
-bin/build # to build svdss
+# to build svdss:
+bin/build
+# On Darwin it may ask for sudo password to invoke bin/ignitersinstall
+# which installs required igniters to /Users/Common (/home/Common on Linux)
 
-bin/ignitersinstall # as root, on linux only - required to install common software igniters to /Users/Common (/home/Common on Linux)
+# on Linux, run as root:
+bin/ignitersinstall
 
-./svdss # to just run user daemon
-# do: mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
-# wait a while, software install process should work in background (requires Sofin to be already installed!). This process has own log file here: ~/SoftwareData/Redis/.output. Software should pick random port, generate configuration for Redis service and just start it.
+# and now just:
+./svdss
+# (it supports -d param for explicit debug output and -t for trace level output)
+
+# on second terminal, do:
+mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
+# wait a while, software install process should work in background
+# (requires Sofin to be already installed!). This process has
+# own log file here: ~/SoftwareData/Redis/.output. Software should
+# pick random port, generate configuration for Redis service and
+# just start it.
 ```
 
 
