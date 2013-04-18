@@ -200,11 +200,16 @@ void TestLibrary::testMemoryAllocations() {
 void TestLibrary::testUtils() {
     uid_t uid = getuid();
     QString homeDir, softwareDataDir, serviceDataDir, name = "Redis";
+    #ifdef __linux__
+        #define HOME_DIR "/home/"
+    #else
+        #define HOME_DIR "/Users/"
+    #endif
 
     if (uid == 0)
         homeDir = "/SystemUsers";
     else
-        homeDir = QString("/Users/") + getenv("USER");
+        homeDir = QString(HOME_DIR) + getenv("USER");
 
     softwareDataDir = homeDir + "/SoftwareData";
     serviceDataDir = softwareDataDir + "/" + name;
@@ -231,7 +236,9 @@ void TestLibrary::testSanityValueCheck() {
     auto *config = new SvdServiceConfig("Redis");
 
     QVERIFY(config->userServiceRoot().contains(getenv("USER")));
-    QVERIFY(config->userServiceRoot().contains("Users"));
+    #ifndef __linux__
+        QVERIFY(config->userServiceRoot().contains("Users"));
+    #endif
     QVERIFY(config->userServiceRoot().contains(QString(DEFAULT_USER_APPS_DIR)));
     QVERIFY(config->userServiceRoot().contains(config->softwareName));
 
@@ -281,8 +288,6 @@ void TestLibrary::testStartingRedis() {
     QVERIFY(port != portOfRunningRedis);
     // removeDir(config->prefixDir());
 
-    service->terminate();
-
     delete service;
     delete config;
 }
@@ -301,8 +306,6 @@ void TestLibrary::testInstallingWrongRedis() {
     QVERIFY(QFile::exists(outputFile));
     QVERIFY(QFile::exists(errorsFile));
     // removeDir(config->prefixDir());
-
-    service->terminate();
 
     delete service;
     delete config;
