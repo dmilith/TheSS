@@ -60,7 +60,7 @@ void rotateFile(const QString& fileName) {
         const QString fileStandaloneName = splt.value(splt.length() - 1);
         const QString parentCwdFolderName = splt.value(splt.length() - 2);
         const QString destLogsDir = getHomeDir() + LOGS_DIR + "/" + parentCwdFolderName;
-        const QString destinationFile = destLogsDir + "/" + fileStandaloneName + "." + now.toString(".yyyy-MM-dd--hh_mm_ss");
+        const QString destinationFile = destLogsDir + "/" + fileStandaloneName + "." + now.toString("yyyy-MM-dd--hh_mm_ss");
 
         logTrace() << "Log folder name appendix:" << parentCwdFolderName;
         logDebug() << "Rotate file:" << fileName << ", Logs dir:" << destLogsDir;
