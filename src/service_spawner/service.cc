@@ -226,6 +226,9 @@ void SvdService::startSlot() {
         touch(indicator);
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
 
+        if (not babySitter->isActive())
+            babySitter->start();
+
         proc->waitForFinished(-1);
         proc->kill();
         if (not expect(readFileContents(proc->outputFile).c_str(), config->start->expectOutput)) {
