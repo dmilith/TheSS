@@ -23,8 +23,6 @@
 
     // Linux case:
     #ifdef __linux__
-        #undef DEFAULT_SHELL_COMMAND
-        #define DEFAULT_SHELL_COMMAND "/bin/zsh"
         #define DEFAULT_JAVA_PATH "/Software/Jdk7/" /* defined for Oracle implementation, used as default for Linux */
         #define DEFAULT_JAVA_BIN (DEFAULT_JAVA_PATH "bin/java")
         #define USERS_HOME_DIR "/home"
