@@ -1,3 +1,14 @@
 #!/bin/sh
 
-make distclean
+
+if [ "$(uname)" = "Darwin" ]; then
+    qmake -spec darwin-g++ TheSS.pro
+    make distclean
+    qmake -spec darwin-g++ TestSS.pro
+    make distclean
+else
+    qmake TheSS.pro
+    make distclean
+    qmake TestSS.pro
+    make distclean
+fi
