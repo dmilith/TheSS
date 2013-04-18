@@ -113,7 +113,7 @@ void SvdService::babySitterSlot() {
                             emit restartSlot();
                         }
                     } else {
-                        logError() << "Babysitter hasn't found port file for service" << name;
+                        logFatal() << "Babysitter hasn't found port file for service" << name;
                     }
                 }
             }
@@ -194,7 +194,7 @@ void SvdService::configureSlot() {
         auto proc = new SvdProcess(name);
         proc->spawnProcess(config->configure->commands);
         proc->waitForFinished(-1);
-        proc->kill();
+        proc->kill(); // TODO: FIXME: proc->kill() should be replaced with our deathWatch(proc->pid());
         if (not expect(readFileContents(proc->outputFile).c_str(), config->configure->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of configure slot:" << config->configure->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + proc->outputFile +  " - No match for: '" + config->configure->expectOutput + "'");
