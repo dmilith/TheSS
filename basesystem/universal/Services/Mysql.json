@@ -1,5 +1,6 @@
 {
     "softwareName": "Mysql",
+    "watchPort": false,
     "schedulerActions": [
         {
             "cronEntry": "0 0/3 * * * ?",
