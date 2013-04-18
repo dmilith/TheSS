@@ -3,3 +3,4 @@ Makefile
 *.a
 svdss
 moc_*.cpp
+/test
