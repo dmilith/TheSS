@@ -18,6 +18,7 @@ SvdService::SvdService(const QString& name) {
 
 /* thread */
 void SvdService::run() {
+    /* first init of uptime timer */
     this->uptime = new QElapsedTimer();
     logTrace() << "Creating SvdService with name" << this->name;
 
@@ -210,6 +211,7 @@ void SvdService::configureSlot() {
 
 void SvdService::startSlot() {
     logDebug() << "Invoked start slot for service:" << name;
+    this->uptime = new QElapsedTimer();
     uptime->start();
 
     logTrace() << "Loading service igniter" << name;
