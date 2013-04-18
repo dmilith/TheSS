@@ -129,6 +129,7 @@ void SvdService::babySitterSlot() {
             if (not expect(readFileContents(babySit->outputFile).c_str(), config->babySitter->expectOutput)) {
                 logError() << "Failed expectations of service:" << name << "with expected output of babySitter slot:" << config->babySitter->expectOutput;
                 writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "BabySitter expectations failed in:" + babySit->outputFile +  " - No match for: '" + config->babySitter->expectOutput + "'");
+                emit restartSlot();
             } else {
                 logDebug() << "Babysitter expectations passed for service:" << name;
             }
