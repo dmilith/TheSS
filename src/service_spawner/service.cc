@@ -13,6 +13,11 @@
 SvdService::SvdService(const QString& name) {
     /* setup service */
     this->name = name;
+}
+
+
+/* thread */
+void SvdService::run() {
     this->uptime = new QElapsedTimer();
     logTrace() << "Creating SvdService with name" << this->name;
 
@@ -20,6 +25,8 @@ SvdService::SvdService(const QString& name) {
     babySitter = new QTimer(this);
     connect(babySitter, SIGNAL(timeout()), this, SLOT(babySitterSlot()));
     babySitter->start(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
+
+    exec();
 }
 
 
@@ -48,7 +55,7 @@ void SvdService::babySitterSlot() {
     } else
         logDebug() << "Babysitter invoked for:" << name;
     QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
-    validateSlot();
+    emit validateSlot();
 
     if (config->alwaysOn) {
 
@@ -67,7 +74,7 @@ void SvdService::babySitterSlot() {
                         logDebug() << "Service:" << name << "seems to be alive and kicking.";
                     } else {
                         logError() << "Service:" << name << "seems to be down. Performing restart.";
-                        restartSlot();
+                        emit restartSlot();
                     }
                 } else {
                     logWarn() << "Pid file is damaged or doesn't contains valid pid. File will be removed:" << servicePidFile;
@@ -76,7 +83,7 @@ void SvdService::babySitterSlot() {
 
             } else {
                 logDebug() << "No service pid file found for service:" << name << "Ignoring this problem (might be auto pid managment defined in software)";
-                // restartSlot();
+                emit restartSlot();
             }
 
             /* perform additional port check if watchPort property is set to true */
@@ -89,7 +96,7 @@ void SvdService::babySitterSlot() {
                     if (port == config->staticPort) {
                         /* if port is equal then it implies that nothing is listening on that port */
                         logError() << "Babysitter has found unoccupied static port:" << config->staticPort << "registered for service" << name;
-                        restartSlot();
+                        emit restartSlot();
                     }
 
                 /* check dynamic port for service */
@@ -102,7 +109,7 @@ void SvdService::babySitterSlot() {
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
                             logError() << "Babysitter has found unoccupied dynamic port:" << currentPort << "registered for service" << name;
-                            restartSlot();
+                            emit restartSlot();
                         }
                     } else {
                         logError() << "Babysitter hasn't found port file for service" << name;
@@ -211,12 +218,12 @@ void SvdService::startSlot() {
     } else {
         if (!config->serviceInstalled()) {
             logInfo() << "Service" << name << "isn't yet installed. Proceeding with installation.";
-            installSlot();
+            emit installSlot();
             logInfo() << "Service" << name << "isn't yet configured. Proceeding with configuration.";
-            configureSlot();
+            emit configureSlot();
         }
         logInfo() << "Validating service" << name;
-        validateSlot(); // invoke validation before each startSlot
+        emit validateSlot(); // invoke validation before each startSlot
 
         logInfo() << "Launching service" << name;
         logTrace() << "Launching commands:" << config->start->commands;
@@ -353,9 +360,9 @@ void SvdService::restartSlot() {
     logDebug() << "Invoked restart slot for service:" << name;
     usleep(DEFAULT_SERVICE_PAUSE_INTERVAL);
     logWarn() << "Restarting service:" << name;
-    validateSlot();
-    stopSlot();
-    startSlot();
+    emit validateSlot();
+    emit stopSlot();
+    emit startSlot();
     logWarn() << "Service restarted:" << name;
 }
 

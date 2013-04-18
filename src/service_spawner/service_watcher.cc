@@ -89,6 +89,8 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
 
+    service->start(); /* start thread right after initialization */
+
     /* manage service autostart */
     if (indicatorFiles->autostart->exists()) {
         logInfo() << "Performing autostart of service:" << name;

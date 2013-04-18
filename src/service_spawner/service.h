@@ -17,13 +17,14 @@
 #include <QElapsedTimer>
 
 
-class SvdService: public QObject {
+class SvdService: public QThread {
     Q_OBJECT
 
     public:
         SvdService(const QString& name);
         ~SvdService();
         qint64 getUptime();
+        void run();
 
 
     private:
