@@ -18,6 +18,7 @@ mac {
 
 } else {
 
+  QMAKE_CXXFLAGS  += -w
   CONFIG += link_pkgconfig
   PKGCONFIG = QtCore
 
