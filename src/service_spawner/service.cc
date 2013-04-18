@@ -79,6 +79,7 @@ void SvdService::babySitterSlot() {
                 } else {
                     logWarn() << "Pid file is damaged or doesn't contains valid pid. File will be removed:" << servicePidFile;
                     QFile::remove(servicePidFile);
+                    emit restartSlot();
                 }
 
             } else {
