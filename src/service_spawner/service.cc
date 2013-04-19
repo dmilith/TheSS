@@ -61,17 +61,84 @@ bool SvdService::checkProcessStatus(pid_t pid) {
             perror("sysctl");
             ok = false;
         } else if (len > 0) {
+            char state;
             #ifdef __FreeBSD__
-                logDebug() << "Process internal STATUS:" << QString::number(kp.ki_stat);
+                state = kp.ki_stat;
+                logDebug() << "Process internal STATUS:" << state;
             #elif defined(__APPLE__)
-                logDebug() << "Process internal STATUS:" << QString::number(kp.kp_proc.p_stat);
+                state = kp.kp_proc.p_stat;
+                logDebug() << "Process internal STATUS:" << state;
             #else
-                logDebug() << "Unsupported system found?";
+                logDebug() << "Unsupported system found? Skipping";
+                return ok;
             #endif
+
+            switch (state) {
+                case SRUN:
+                    logDebug() << "Running state found for process with name:" << name << "and pid:" << pid;
+                    break; /* running */
+                case SIDL:
+                    logDebug() << "Sleeping state found for process with name:" << name << "and pid:" << pid;
+                    break; /* sleeping */
+                case SSLEEP:
+                    logDebug() << "Disk IO state found for process with name:" << name << "and pid:" << pid;
+                    break; /* IO/disk sleep */
+                case SSTOP:
+                    logDebug() << "Stopped state found for process with name:" << name << "and pid:" << pid;
+                    break; /* traced or stopped (by signal) */
+                case SZOMB:
+                    logFatal() << "Zombie state found for process with name:" << name << "and pid:" << pid;
+                    ok = false;
+                    break; /* zombie */
+                default:
+                    logError() << "Ambigous process state for process with name:" << name << "and pid:" << pid;
+                    // TODO: consider setting ok = false here, cause it shouldn't happen
+                    break;
+            }
         }
 
     #else // linux:
-        logDebug() << "Linux process status unsupported yet!";
+        FILE *pFileHandle = NULL;
+
+        typedef long long int num;
+        num x;
+
+        char name[PATH_MAX];
+        char tcomm[PATH_MAX];
+        char state;
+
+        char procpath[255];
+        sprintf(procpath, "/proc/%d/stat", pid);
+        pFileHandle = fopen(procpath, "r");
+
+        fscanf(pFileHandle, "%lld", &x); /* pid is first */
+        fscanf(pFileHandle, "%s ", &name); /* then string with name */
+        fscanf(pFileHandle, "%c ", &state); /* and finally what's interesting - the state */
+
+        logDebug() << "Process internal STATUS:" << state;
+        switch (state) {
+            case 'R':
+                logDebug() << "Running state found for process with name:" << name << "and pid:" << pid;
+                break; /* running */
+            case 'S':
+                logDebug() << "Sleeping state found for process with name:" << name << "and pid:" << pid;
+                break; /* sleeping */
+            case 'D':
+                logDebug() << "Disk IO state found for process with name:" << name << "and pid:" << pid;
+                break; /* IO/disk sleep */
+            case 'T':
+                logDebug() << "Stopped state found for process with name:" << name << "and pid:" << pid;
+                break; /* traced or stopped (by signal) */
+            case 'Z':
+                logFatal() << "Zombie state found for process with name:" << name << "and pid:" << pid;
+                ok = false;
+                break; /* zombie */
+            default:
+                logError() << "Ambigous process state for process with name:" << name << "and pid:" << pid;
+                // TODO: consider setting ok = false here, cause it shouldn't happen
+                break;
+        }
+        fclose(pFileHandle);
     #endif
 
     return ok;
@@ -104,13 +171,15 @@ void SvdService::babySitterSlot() {
                 logDebug() << "Babysitter has found service pid for" << name;
                 QString aPid = QString(readFileContents(servicePidFile).c_str()).trimmed();
                 pid_t pid = aPid.toInt(&ok, 10);
-                if (not checkProcessStatus(pid)) {
-                    logFatal() << "Something is wrong with system status of service:" << name;
-                }
 
                 if (ok) {
                     if (pidIsAlive(pid)) {
-                        logDebug() << "Service:" << name << "seems to be alive and kicking.";
+                        if (checkProcessStatus(pid)) {
+                            logDebug() << "Service:" << name << "seems to be alive and kicking.";
+                        } else {
+                            logFatal() << "Something is wrong with system status of service:" << name << "It will be restarted";
+                            emit restartSlot();
+                        }
                     } else {
                         logError() << "Service:" << name << "seems to be down. Performing restart.";
                         emit restartSlot();

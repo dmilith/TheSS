@@ -29,6 +29,12 @@
     #include <libutil.h>
 #endif
 
+#ifdef __linux__
+    #include <sys/time.h>
+    #include <sys/procfs.h>
+    #include <sys/fcntl.h>
+#endif
+
 #include "../globals/globals.h"
 #include "service_config.h"
 #include "utils.h"
