@@ -7,7 +7,5 @@ if [ "$(uname)" = "Darwin" ]; then
 else
     qmake TheSS.pro
     printf "Please run as root: bin/ignitersinstall to install default igniters to /Users/Common/Igniters\n"
-    printf "Hit enter to continue\n"
-    read
 fi
 make && printf "Success\n"
