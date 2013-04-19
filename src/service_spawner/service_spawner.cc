@@ -25,8 +25,8 @@ void spawnSSForEachUser() {
         QString lockName = QString(USERS_HOME_DIR) + "/" + QString::number(userUid) + "/." + QString::number(userUid) + ".pid";
         writeToFile(lockName, QString::number(0), false); /* NOTE: if pid == 0 it means that SS is runned from SS maintainer */
 
-        auto proc = new SvdProcess("SS", userUid, false); // don't redirect output
-        proc->spawnProcess(DEFAULT_SS_COMMAND);
+        auto process = new SvdProcess("SS", userUid, false); // don't redirect output
+        process->spawnProcess(DEFAULT_SS_COMMAND);
     }
 }
 

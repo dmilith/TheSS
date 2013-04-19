@@ -8,6 +8,27 @@
 #ifndef __SERVICE_H__
 #define __SERVICE_H__
 
+
+#include <sys/stat.h>
+#include <sys/user.h>
+#include <sys/sysctl.h>
+
+#ifdef __APPLE__
+    #include <sys/time.h>
+    #include <mach/clock.h>
+    #include <mach/clock_priv.h>
+    #include <mach/clock_types.h>
+    #include <sys/proc.h>
+    #include <util.h>
+    #include <sys/ioctl.h>
+#endif
+
+#ifdef __FreeBSD__
+    #include <kvm.h>
+    #include <sys/capability.h>
+    #include <libutil.h>
+#endif
+
 #include "../globals/globals.h"
 #include "service_config.h"
 #include "utils.h"
@@ -25,6 +46,7 @@ class SvdService: public QThread {
         ~SvdService();
         qint64 getUptime();
         void run();
+        bool checkProcessStatus(pid_t pid);
 
 
     private:
