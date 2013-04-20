@@ -91,6 +91,7 @@ int main(int argc, char *argv[]) {
     writeToFile(lockName, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
 
     signal(SIGINT, unixSignalHandler);
+    signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
     if (uid == 0) {
         logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
