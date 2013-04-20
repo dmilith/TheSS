@@ -1,0 +1,34 @@
+{
+    "softwareName": "Redis",
+    "watchPort": false,
+    "install": {
+        "commands": "sofin get redis",
+        "expectOutput": "All done"
+    },
+    "configure": {
+        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database"
+    },
+    "start": {
+        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
+SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
+    },
+    "validate": {
+        "commands": "test ! -f SERVICE_PREFIX/service.conf && printf '
+# Default Redis service configuration
+unixsocket SERVICE_PREFIX/data-collector.sock
+unixsocketperm 700
+pidfile SERVICE_PREFIX/service.pid
+dir SERVICE_PREFIX/database
+dbfilename database.rdf
+daemonize yes
+rdbcompression yes
+save 900 1
+save 300 10
+save 60 10000
+appendonly no
+appendfsync everysec
+activerehashing yes
+loglevel notice
+logfile SERVICE_PREFIX/service.log' > SERVICE_PREFIX/service.conf"
+    }
+}
