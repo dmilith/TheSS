@@ -27,28 +27,41 @@ SvdDataCollector::SvdDataCollector() {
 
 
 void SvdDataCollector::connectToDataStore() {
-    logInfo() << "Connecting to data collector @:" << socketFile;
-    context = redisConnectUnix(socketFile.toUtf8());
-    if (context == NULL || context->err) {
-        if (context) {
-            logFatal() << "Connection error:" << context->errstr;
-            redisFree(context);
-        } else {
-            logFatal() << "Connection error: can't allocate redis context";
-        }
-        connected = false;
-        return;
-    }
 
-    connected = true;
-    logDebug() << "Connected to stats collector";
+    if (not QFile::exists(socketFile)) {
+        logInfo() << "Detected issue with non existant socket file…";
+
+        /* restart collector service cause something went wrong */
+        auto config = new SvdServiceConfig(name);
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+        touch(config->prefixDir() + "/.restart");
+        delete config;
+
+    } else {
+
+        logInfo() << "Connecting to data collector @:" << socketFile;
+        context = redisConnectUnix(socketFile.toUtf8());
+        if (context == NULL || context->err) {
+            if (context) {
+                logFatal() << "Connection error:" << context->errstr;
+                redisFree(context);
+            } else {
+                logFatal() << "Connection error: can't allocate redis context";
+            }
+            connected = false;
+            return;
+        }
+
+        connected = true;
+        logDebug() << "Connected to stats collector";
+    }
 }
 
 
 void SvdDataCollector::collectorGatherSlot() {
     if (QFile::exists(triggerFile)) {
         if (not connected) {
-            logDebug() << "Not connected. Reconnecting.";
+            logInfo() << "Data storage not connected. Reconnecting.";
             connectToDataStore();
         }
 
