@@ -87,6 +87,7 @@ mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
 
 
 ## Used 3rd party software and licenses info:
-* JSON CPP implementation with JSON comments support by Baptiste Lepilleur (MIT licensed)
 * CuteLogger MT logger implementation by Boris Moiseev (LGPL licensed)
+* Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
+* JSON CPP implementation with JSON comments support by Baptiste Lepilleur (MIT licensed)
 * QT4 4.8.x implementation (LGPL licensed)

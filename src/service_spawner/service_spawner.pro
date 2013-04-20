@@ -9,6 +9,7 @@ include(../Common.pro)
 QT += network
 HEADERS   += service.h \
              process.h \
+             data_collector.h \
              service_config.h \
              utils.h \
              service_watcher.h \
@@ -23,6 +24,7 @@ HEADERS   += service.h \
              webapp_watcher.h \
              logger.h
 SOURCES   += service.cc \
+             data_collector.cc \
              process.cc \
              service_config.cc \
              utils.cc \
@@ -34,5 +36,5 @@ SOURCES   += service.cc \
              webapp_watcher.cc \
              service_spawner.cc \
              logger.cc
-LIBS      += ../libjsoncpp.a ../liblogger.a
+LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a
 TARGET    = ../../svdss
