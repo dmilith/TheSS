@@ -240,10 +240,10 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
 
         /* Replace SERVICE_ROOT */
         if (uid != 0) {
-            logDebug() << "Service root for uid:" << uid << "should be located in:" << userServiceRoot();
+            logTrace() << "Service root for uid:" << uid << "should be located in:" << userServiceRoot();
             ccont = ccont.replace("SERVICE_ROOT", userServiceRoot());
         } else {
-            logDebug() << "Service root for uid:" << uid << "should be located in:" << serviceRoot();
+            logTrace() << "Service root for uid:" << uid << "should be located in:" << serviceRoot();
             ccont = ccont.replace("SERVICE_ROOT", serviceRoot());
         }
 
