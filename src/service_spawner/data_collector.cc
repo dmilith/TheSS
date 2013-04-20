@@ -15,6 +15,7 @@ SvdDataCollector::SvdDataCollector() {
 
     /* setup connection to service */
     socketFile = config->prefixDir() + DATA_COLLECTOR_SOCKET_FILE;
+    triggerFile = getHomeDir() + DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE;
 
     collector = new QTimer(this);
     connect(collector, SIGNAL(timeout()), this, SLOT(collectorGatherSlot()));
@@ -45,13 +46,18 @@ void SvdDataCollector::connectToDataStore() {
 
 
 void SvdDataCollector::collectorGatherSlot() {
-    if (not connected) {
-        logDebug() << "Not connected. Reconnecting.";
-        connectToDataStore();
-    }
+    if (QFile::exists(triggerFile)) {
+        if (not connected) {
+            logDebug() << "Not connected. Reconnecting.";
+            connectToDataStore();
+        }
 
-    /* perform data storage query: */
-    redisReply *reply = (redisReply*)redisCommand(context, "HMSET stat rss 456 cpu 123");
-    logTrace() << "HMSET REPLY:" << reply->str;
-    freeReplyObject(reply);
+        /* initialize random seed */
+        srand(time(NULL));
+
+        /* perform data storage query: */
+        redisReply *reply = (redisReply*)redisCommand(context, "HMSET procname-%d:%d:%d cpu 20 rss 55 ioin 12 iout 35", rand() % 24, rand() % 60, rand() % 60); // XXX: hardcoded PoC
+        logTrace() << "HMSET REPLY:" << reply->str;
+        freeReplyObject(reply);
+    }
 }

@@ -38,6 +38,7 @@ class SvdDataCollector: public QObject {
         bool connected = false;
         const QString name = "ProcessDataCollector";
         QString socketFile = "";
+        QString triggerFile = "";
 
 };
 
