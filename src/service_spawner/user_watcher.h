@@ -13,6 +13,7 @@
 #include "service_watcher.h"
 #include "webapp_watcher.h"
 #include "service.h"
+#include "data_collector.h"
 
 #include <QObject>
 #include <QFile>
@@ -36,7 +37,7 @@ class SvdUserHookIndicatorFiles {
         SvdUserHookIndicatorFiles(const QString& path);
         ~SvdUserHookIndicatorFiles();
 
-        SvdHookIndicatorFile *autostart;
+        SvdHookIndicatorFile *autostart = NULL;
 
 };
 
@@ -56,9 +57,10 @@ class SvdUserWatcher: public QObject {
     protected:
 
     private:
-        SvdFileEventsManager *fileEvents;
-        SvdUserHookTriggerFiles *triggerFiles;
-        SvdUserHookIndicatorFiles *indicatorFiles;
+        SvdDataCollector *dataCollector = NULL;
+        SvdFileEventsManager *fileEvents = NULL;
+        SvdUserHookTriggerFiles *triggerFiles = NULL;
+        SvdUserHookIndicatorFiles *indicatorFiles = NULL;
         QString homeDir;
         QString softwareDataDir;
         uid_t uid;
