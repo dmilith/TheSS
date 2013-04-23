@@ -15,6 +15,7 @@ SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
     "validate": {
         "commands": "test ! -f SERVICE_PREFIX/service.conf && printf '
 # Default Redis service configuration
+port 0
 unixsocket SERVICE_PREFIX/data-collector.sock
 unixsocketperm 700
 pidfile SERVICE_PREFIX/service.pid
