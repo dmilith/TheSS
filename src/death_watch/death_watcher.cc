@@ -38,8 +38,9 @@ int main(int argc, char *argv[]) {
     if (ok) {
         logInfo() << "Death watch is in harvest mode for pid:" << QString::number(pid);
         deathWatch(pid);
-        return 0;
+    } else {
+        logError() << "Bad pid number given:" << args.at(1) << " Aborting.";
+        return 1;
     }
-
-    // return app.exec();
+    return 0;
 }
