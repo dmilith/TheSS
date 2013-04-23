@@ -10,8 +10,13 @@
 
 
 void deathWatch(pid_t aPid, uint signal) {
+    if (aPid == 0) {
+        logDebug() << "Given pid 0, it usually means that no process to kill, cause it's already dead.";
+        return;
+    }
+
     if (aPid == 1) {
-        logFatal() << "You can't put a death watch on pid 1.";
+        logError() << "You can't put a death watch on pid 1.";
         return;
     }
 
@@ -65,7 +70,7 @@ void deathWatch(pid_t aPid, uint signal) {
         } break;
 
         case SIGKILL: {
-            logFatal() << "Process is ignoring KILL signal! Something is crashed badly! Still trying for pid:" << aPid;
+            logError() << "Process is ignoring KILL signal! Something is crashed badly! Still trying for pid:" << aPid;
             deathWatch(aPid, SIGKILL);
         } break;
 
