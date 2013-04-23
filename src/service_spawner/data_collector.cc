@@ -48,7 +48,7 @@ void SvdDataCollector::connectToDataStore() {
                 redisFree(context);
                 logDebug() << "Cleaning up socket file:" << socketFile;
                 QFile::remove(socketFile);
-                connectToDataStore();
+                return connectToDataStore();
             } else {
                 logError() << "Connection error: can't allocate redis context";
             }
@@ -67,14 +67,19 @@ void SvdDataCollector::collectorGatherSlot() {
         if (not connected) {
             logInfo() << "Data storage not connected. Reconnecting.";
             connectToDataStore();
+            return collectorGatherSlot();
+        } else {
+            /* initialize random seed */
+            srand(time(NULL));
+
+            /* perform data storage query: */
+            auto currTime = QDateTime::currentDateTime().toTime_t();
+            logTrace() << "CurrTime:" << currTime;
+
+            redisReply *reply = (redisReply*)redisCommand(context, "HMSET procname-%d:%d:%d cpu %d rss %d ioin %d iout %d", rand() % 24, rand() % 60, rand() % 60, rand() % 100, rand() % 100, rand() % 100, rand() % 100); // XXX: hardcoded PoC
+
+            logTrace() << "HMSET REPLY:" << reply->str;
+            freeReplyObject(reply);
         }
-
-        /* initialize random seed */
-        srand(time(NULL));
-
-        /* perform data storage query: */
-        redisReply *reply = (redisReply*)redisCommand(context, "HMSET procname-%d:%d:%d cpu 20 rss 55 ioin 12 iout 35", rand() % 24, rand() % 60, rand() % 60); // XXX: hardcoded PoC
-        logTrace() << "HMSET REPLY:" << reply->str;
-        freeReplyObject(reply);
     }
 }
