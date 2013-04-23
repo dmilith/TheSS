@@ -67,7 +67,6 @@ void SvdDataCollector::collectorGatherSlot() {
         if (not connected) {
             logInfo() << "Data storage not connected. Reconnecting.";
             connectToDataStore();
-            return collectorGatherSlot();
         } else {
             /* initialize random seed */
             srand(time(NULL));
