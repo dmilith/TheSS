@@ -69,6 +69,7 @@
     #define DEFAULT_SERVICE_CONFIGURING_FILE "/.configuring"
     #define DEFAULT_SERVICE_RELOADING_FILE "/.reloading"
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
+    #define DEFAULT_SERVICE_LOG_FILE "/service.log"
     #define DEFAULT_SS_SHUTDOWN_HOOK_FILE "/.shutdown"
     #define DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE "/.data-collector"
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"

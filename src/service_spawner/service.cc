@@ -335,6 +335,12 @@ void SvdService::startSlot() {
         logInfo() << "Validating service" << name;
         emit validateSlot(); // invoke validation before each startSlot
 
+        auto defaultLogFile = config->prefixDir() + DEFAULT_SERVICE_LOG_FILE;
+        if (QFile::exists(defaultLogFile)) {
+            logDebug() << "Rotating last log";
+            rotateFile(defaultLogFile);
+        }
+
         logInfo() << "Launching service" << name;
         logTrace() << "Launching commands:" << config->start->commands;
         auto process = new SvdProcess(name);
