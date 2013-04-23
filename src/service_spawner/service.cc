@@ -232,7 +232,7 @@ void SvdService::babySitterSlot() {
             auto babySit = new SvdProcess(name);
             babySit->spawnProcess(config->babySitter->commands);
             babySit->waitForFinished(-1); // TODO: implement support for config->babySitter->expectOutputTimeout
-            babySit->kill();
+            deathWatch(babySit->pid());
             logDebug() << "Checking contents of file:" << babySit->outputFile;
             if (not expect(readFileContents(babySit->outputFile).c_str(), config->babySitter->expectOutput)) {
                 logError() << "Failed expectations of service:" << name << "with expected output of babySitter slot:" << config->babySitter->expectOutput;
@@ -267,7 +267,7 @@ void SvdService::installSlot() {
         touch(indicator);
         process->spawnProcess(config->install->commands);
         process->waitForFinished(-1); // no timeout
-        process->kill();
+        deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile).c_str(), config->install->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of install slot:" << config->install->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->install->expectOutput + "'");
@@ -301,7 +301,7 @@ void SvdService::configureSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->configure->commands);
         process->waitForFinished(-1);
-        process->kill(); // TODO: FIXME: process->kill() should be replaced with our deathWatch(process->pid());
+        deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile).c_str(), config->configure->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of configure slot:" << config->configure->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->configure->expectOutput + "'");
@@ -347,7 +347,7 @@ void SvdService::startSlot() {
             babySitter->start();
 
         process->waitForFinished(-1);
-        process->kill();
+        deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile).c_str(), config->start->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of start slot:" << config->start->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
@@ -373,7 +373,7 @@ void SvdService::afterStartSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->afterStart->commands);
         process->waitForFinished(-1);
-        process->kill();
+        deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile).c_str(), config->afterStart->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of afterStart slot:" << config->afterStart->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->afterStart->expectOutput + "'");
@@ -406,12 +406,13 @@ void SvdService::stopSlot() {
         if (QFile::exists(servicePidFile)) {
             uint pid = QString(readFileContents(servicePidFile).c_str()).toUInt();
             logDebug() << "Service pid found:" << QString::number(pid) << "in file:" << servicePidFile;
+            deathWatch(process->pid());
             kill(pid, SIGTERM);
             QFile::remove(servicePidFile);
             logDebug() << "Service terminated.";
         }
         process->waitForFinished(-1);
-        process->kill();
+        deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile).c_str(), config->stop->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of stop slot:" << config->stop->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->stop->expectOutput + "'");
@@ -452,7 +453,7 @@ void SvdService::afterStopSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->afterStop->commands);
         process->waitForFinished(-1);
-        process->kill();
+        deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile).c_str(), config->afterStop->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of afterStop slot:" << config->afterStop->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->afterStop->expectOutput + "'");
@@ -490,7 +491,7 @@ void SvdService::reloadSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->reload->commands);
         process->waitForFinished(-1);
-        process->kill();
+        deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile).c_str(), config->reload->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of reload slot:" << config->reload->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->reload->expectOutput + "'");
@@ -520,7 +521,7 @@ void SvdService::validateSlot() {
             auto process = new SvdProcess(name);
             process->spawnProcess(config->validate->commands);
             process->waitForFinished(-1);
-            process->kill();
+            deathWatch(process->pid());
             if (not expect(readFileContents(process->outputFile).c_str(), config->validate->expectOutput)) {
                 logError() << "Failed expectations of service:" << name << "with expected output of validate slot:" << config->validate->expectOutput;
                 writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->validate->expectOutput + "'");
