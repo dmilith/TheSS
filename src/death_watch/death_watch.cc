@@ -23,7 +23,7 @@ void deathWatch(pid_t aPid, uint signal) {
     if (kill(aPid, 0) == 0) {
         logDebug() << "Process with pid:" << aPid << "still exists in process list.";
     } else {
-        logDebug() << "Process with pid:" << aPid << "was interruped.";
+        logInfo() << "Process with pid:" << aPid << "was interruped.";
         return;
     }
 
@@ -45,11 +45,11 @@ void deathWatch(pid_t aPid, uint signal) {
             level = "KILL";
             break;
     }
-    logTrace() << "Death watch for pid:" << aPid << "Signal level:" << level;
+    logDebug() << "Death watch for pid:" << aPid << "Signal level:" << level;
 
     if (kill(aPid, signal) == 0) {
         if (kill(aPid, 0) != 0) {
-            logDebug() << "Process with pid:" << aPid << "was interruped.";
+            logInfo() << "Process with pid:" << aPid << "was interruped.";
             return;
         }
     }
