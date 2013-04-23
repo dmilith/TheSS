@@ -67,7 +67,10 @@ void rotateFile(const QString& fileName) {
         getOrCreateDir(destLogsDir);
 
         logTrace() << "Destination file:" << destinationFile;
-        QFile::copy(fileName, destinationFile);
+        if (QFile::copy(fileName, destinationFile)) {
+            logTrace() << "File copy complete:" << fileName << "to" << destinationFile << "Removing:" << fileName;
+            QFile::remove(fileName);
+        }
         performCleanupOfOldLogs();
 
     } else {
