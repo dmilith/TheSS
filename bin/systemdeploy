@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ "$(id -u)" != "0" ]; then
+    printf "This script must be run as root!\n"
+    exit 1
+fi
+
+if [ ! -x "$(pwd)/svdss" ]; then
+    printf "You need to build TheSS first. Use bin/build, then retry deployment.\n"
+    exit 1
+fi
+
+if [ ! -x "$(pwd)/svddw" ]; then
+    printf "You need to build TheSS first. Use bin/build, then retry deployment.\n"
+    exit 1
+fi
+
+bin/ignitersinstall
+cp ./svdss /bin/svdss
+cp ./svddw /bin/svddw
+printf "Success\n"
