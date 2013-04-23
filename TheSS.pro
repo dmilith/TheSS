@@ -7,4 +7,4 @@
 include(src/Common.pro)
 
 TEMPLATE           = subdirs
-SUBDIRS            = src/cutelogger src/hiredis src/jsoncpp src/service_spawner
+SUBDIRS            = src/cutelogger src/hiredis src/jsoncpp src/service_spawner src/death_watch

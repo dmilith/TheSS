@@ -8,6 +8,7 @@ include(../Common.pro)
 
 QT += network
 HEADERS   += service.h \
+             ../death_watch/death_watch.h \
              process.h \
              data_collector.h \
              service_config.h \
@@ -34,6 +35,7 @@ SOURCES   += service.cc \
              webapp_deployer.cc \
              webapp_types.cc \
              webapp_watcher.cc \
+             ../death_watch/death_watch.cc \
              service_spawner.cc \
              logger.cc
 LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a
