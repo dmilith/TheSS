@@ -43,10 +43,14 @@ void SvdDataCollector::connectToDataStore() {
         context = redisConnectUnix(socketFile.toUtf8());
         if (context == NULL || context->err) {
             if (context) {
-                logFatal() << "Connection error:" << context->errstr;
+                logError() << "Connection error:" << context->errstr;
+                // if (context != NULL)
                 redisFree(context);
+                logDebug() << "Cleaning up socket file:" << socketFile;
+                QFile::remove(socketFile);
+                connectToDataStore();
             } else {
-                logFatal() << "Connection error: can't allocate redis context";
+                logError() << "Connection error: can't allocate redis context";
             }
             connected = false;
             return;
