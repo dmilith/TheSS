@@ -45,7 +45,7 @@ qint64 SvdService::getUptime() {
 
 bool SvdService::checkProcessStatus(pid_t pid) {
     logDebug() << "Checking status of pid:" << QString::number(pid);
-    logInfo() << "Performing additional process internal OS status check:";
+    logTrace() << "Performing additional process internal OS status check:";
 
     bool ok = true;
 
@@ -87,7 +87,7 @@ bool SvdService::checkProcessStatus(pid_t pid) {
                     logDebug() << "Stopped state found for process with name:" << name << "and pid:" << pid;
                     break; /* traced or stopped (by signal) */
                 case SZOMB:
-                    logFatal() << "Zombie state found for process with name:" << name << "and pid:" << pid;
+                    logError() << "Zombie state found for process with name:" << name << "and pid:" << pid;
                     ok = false;
                     break; /* zombie */
                 default:
@@ -130,7 +130,7 @@ bool SvdService::checkProcessStatus(pid_t pid) {
                 logDebug() << "Stopped state found for process with name:" << name << "and pid:" << pid;
                 break; /* traced or stopped (by signal) */
             case 'Z':
-                logFatal() << "Zombie state found for process with name:" << name << "and pid:" << pid;
+                logError() << "Zombie state found for process with name:" << name << "and pid:" << pid;
                 ok = false;
                 break; /* zombie */
             default:
@@ -177,7 +177,7 @@ void SvdService::babySitterSlot() {
                         if (checkProcessStatus(pid)) {
                             logDebug() << "Service:" << name << "seems to be alive and kicking.";
                         } else {
-                            logFatal() << "Something is wrong with system status of service:" << name << "It will be restarted";
+                            logError() << "Something is wrong with system status of service:" << name << "It will be restarted";
                             emit restartSlot();
                         }
                     } else {
@@ -220,7 +220,7 @@ void SvdService::babySitterSlot() {
                             emit restartSlot();
                         }
                     } else {
-                        logFatal() << "Babysitter hasn't found port file for service" << name;
+                        logError() << "Babysitter hasn't found port file for service" << name;
                     }
                 }
             }
