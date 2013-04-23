@@ -53,7 +53,9 @@ void deathWatch(pid_t aPid, uint signal) {
             return;
         }
     }
-    usleep(DEFAULT_DEATH_WATCHER_PAUSE);
+
+    if (signal != SIGCONT)
+        usleep(DEFAULT_DEATH_WATCHER_PAUSE);
 
     switch (signal) {
 
