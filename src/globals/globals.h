@@ -23,17 +23,10 @@
         #define USERS_HOME_DIR "/Users"
     #endif
 
-    #define LIBRARIES_DIR "/lib"
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
     #define DEFAULT_BEHAVIORS_RAW "/output_raw_processes.raw.input"
 
-    #define CORE_SVD_ID "boot"
-    #define SOCK_FILE "svd.sock"
-    #define LOCK_FILE "svd-core.lock"
     #define SOCKET_LOCK_FILE "svd-ss.lock"
-    #define INTERNAL_LOG_FILE "svd-diagnostics.log"
-    #define ROOT_JAR_FILE "/sbin/root.core"
-    #define USER_JAR_FILE "/bin/user.core"
 
     #define DEFAULT_STRING_CODEC "utf8"
     #define LOCALE "en_GB.UTF-8"
