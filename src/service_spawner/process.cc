@@ -13,10 +13,10 @@ void SvdProcess::init(const QString& name, uid_t uid) {
     outputFile = getSoftwareDataDir(uid) + "/" + name + DEFAULT_SERVICE_OUTPUT_FILE;
     setProcessChannelMode(MergedChannels);
 
-    if (QFile::exists(outputFile)) {
-        logTrace() << "Rotating log file" << outputFile;
-        rotateFile(outputFile);
-    }
+    // if (QFile::exists(outputFile)) {
+    //     logTrace() << "Rotating log file" << outputFile;
+    //     rotateFile(outputFile);
+    // }
     if (this->redirectOutput)
         setStandardOutputFile(outputFile, QIODevice::Truncate);
 }
