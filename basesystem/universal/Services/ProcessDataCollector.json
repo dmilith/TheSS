@@ -31,5 +31,8 @@ appendfsync everysec
 activerehashing yes
 loglevel notice
 logfile SERVICE_PREFIX/service.log' > SERVICE_PREFIX/service.conf"
+    },
+    "afterStop": {
+        "commands": "rm -f SERVICE_PREFIX/data-collector.sock"
     }
 }

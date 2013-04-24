@@ -363,6 +363,9 @@ void SvdService::startSlot() {
         delete process;
     }
     delete config;
+
+    /* invoke after start slot */
+    emit afterStartSlot();
 }
 
 
@@ -443,6 +446,9 @@ void SvdService::stopSlot() {
         babySitter->stop();
     // delete babySitter;
     delete config;
+
+    /* invoke after stop slot */
+    emit afterStopSlot();
 }
 
 
