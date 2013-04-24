@@ -70,19 +70,24 @@ void rotateFile(const QString& fileName) {
 
         QFile input(fileName);
         input.open(QIODevice::ReadOnly);
-        QByteArray uncompressedData = input.readAll();
+        if (input.size() == 0) {
+            logDebug() << "Skipping rotate of empty file:" << fileName;
+        } else {
+            QByteArray uncompressedData = input.readAll();
 
-        auto zipfile = new QuaZip(destinationFile);
-        zipfile->open(QuaZip::mdCreate);
-        QuaZipFile file(zipfile);
-        file.open(QIODevice::WriteOnly, QuaZipNewInfo(fileName));
-        file.write(uncompressedData);
+            auto zipfile = new QuaZip(destinationFile);
+            zipfile->open(QuaZip::mdCreate);
+            QuaZipFile file(zipfile);
+            file.open(QIODevice::WriteOnly, QuaZipNewInfo(fileName));
+            file.write(uncompressedData);
 
-        file.close();
-        zipfile->close();
-        delete zipfile;
+            file.close();
+            zipfile->close();
+            delete zipfile;
 
-        QFile::remove(fileName);
+            QFile::remove(fileName);
+        }
+        input.close();
         performCleanupOfOldLogs();
 
     } else {
