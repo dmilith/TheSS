@@ -346,8 +346,10 @@ void SvdService::startSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->start->commands);
 
+        if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE)) {
+            rotateFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
+        }
         touch(indicator);
-        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
 
         if (not babySitter->isActive())
             babySitter->start();
