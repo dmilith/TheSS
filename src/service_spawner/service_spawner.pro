@@ -38,5 +38,5 @@ SOURCES   += service.cc \
              ../death_watch/death_watch.cc \
              service_spawner.cc \
              logger.cc
-LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a
+LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../svdss
