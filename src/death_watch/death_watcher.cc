@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
         logError() << "You need to specify pid to put a death watch on.";
         return 1;
     }
+    logInfo() << "DeathWatch version" << APP_VERSION << ". " << COPYRIGHT;
     bool ok = false;
     pid_t pid = args.at(1).toInt(&ok, 10);
     if (ok) {
