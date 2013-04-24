@@ -1,9 +1,7 @@
 
 TEMPLATE = lib
-CONFIG += qt warn_on staticlib
+CONFIG += qt warn_off staticlib
 QT -= gui
-DEPENDPATH += .
-INCLUDEPATH += .
 
 DEFINES += QUAZIP_BUILD
 CONFIG(staticlib): DEFINES += QUAZIP_STATIC
