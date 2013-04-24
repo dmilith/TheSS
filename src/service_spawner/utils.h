@@ -14,6 +14,8 @@
 #include "../cutelogger/ConsoleAppender.h"
 #include "../cutelogger/FileAppender.h"
 #include "../service_spawner/process.h"
+#include "../quazip/quazip.h"
+#include "../quazip/quazipfile.h"
 
 #define logTrace LOG_TRACE
 #define logDebug LOG_DEBUG
@@ -32,7 +34,6 @@
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QNetworkInterface>
-
 
 using namespace std;
 

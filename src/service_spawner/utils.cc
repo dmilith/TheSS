@@ -60,17 +60,29 @@ void rotateFile(const QString& fileName) {
         const QString fileStandaloneName = splt.value(splt.length() - 1);
         const QString parentCwdFolderName = splt.value(splt.length() - 2);
         const QString destLogsDir = getHomeDir() + LOGS_DIR + "/" + parentCwdFolderName;
-        const QString destinationFile = destLogsDir + "/" + fileStandaloneName + "." + now.toString("yyyy-MM-dd--hh_mm_ss");
+        const QString destinationFile = destLogsDir + "/" + fileStandaloneName + "." + now.toString("yyyy-MM-dd--hh_mm_ss") + ".gz";
 
         logTrace() << "Log folder name appendix:" << parentCwdFolderName;
         logDebug() << "Rotate file:" << fileName << ", Logs dir:" << destLogsDir;
         getOrCreateDir(destLogsDir);
 
         logTrace() << "Destination file:" << destinationFile;
-        if (QFile::copy(fileName, destinationFile)) {
-            logTrace() << "File copy complete:" << fileName << "to" << destinationFile << "Removing:" << fileName;
-            QFile::remove(fileName);
-        }
+
+        QFile input(fileName);
+        input.open(QIODevice::ReadOnly);
+        QByteArray uncompressedData = input.readAll();
+
+        auto zipfile = new QuaZip(destinationFile);
+        zipfile->open(QuaZip::mdCreate);
+        QuaZipFile file(zipfile);
+        file.open(QIODevice::WriteOnly, QuaZipNewInfo(fileName));
+        file.write(uncompressedData);
+
+        file.close();
+        zipfile->close();
+        delete zipfile;
+
+        QFile::remove(fileName);
         performCleanupOfOldLogs();
 
     } else {
