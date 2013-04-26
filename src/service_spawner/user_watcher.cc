@@ -139,7 +139,7 @@ void SvdUserWatcher::checkUserControlTriggers() {
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
-        raise(SIGINT);
+        raise(SIGTERM);
     }
 }
 
