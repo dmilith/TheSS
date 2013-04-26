@@ -2,8 +2,16 @@
 /* This is default definition used as base for all igniters */
 
 {
+    "formatVersion": "0.11.0",
+
+/* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
+
+/* defines name of software available in Sofin definitions */
     "softwareName": "No-Name",
+
+/* reqad only access to git repository for web applications */
+    "repository": "",
 
 /* by default assign dynamic port for service   */
     "staticPort": -1,
@@ -21,8 +29,8 @@
     "reportAllInfos": false,
     "reportAllDebugs": false,
 
-/* should match version of ServeD               */
-    "version": "0.10.2",
+/* a list of igniters required to launch this software */
+    "dependencies": [],
 
 /* default schedulerActions format:             */
 /*   "schedulerActions": [                      */

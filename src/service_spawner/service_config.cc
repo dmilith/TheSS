@@ -28,6 +28,17 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         watchPort = (*defaults)["watchPort"].asBool();
         alwaysOn = (*defaults)["alwaysOn"].asBool();
         staticPort = (*defaults)["staticPort"].asInt();
+        repository = (*defaults)["repository"].asCString();
+
+        /* load default service dependencies */
+        for (uint index = 0; index < (*defaults)["dependencies"].size(); ++index ) {
+            try {
+                dependencies.push_back((*defaults)["dependencies"][index].asCString());
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing default dependencies of" << name;
+            }
+        }
+        logDebug() << "Defined dependencies:" << name << "list:" << dependencies;
 
         /* laod service hooks */
         install = new SvdShellOperations(
@@ -94,6 +105,17 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
+        repository = root->get("repository", (*defaults)["repository"]).asCString();
+
+        /* load service scheduler data */
+        for (uint index = 0; index < (*root)["dependencies"].size(); ++index ) {
+            try {
+                dependencies.push_back((*root)["dependencies"][index].asCString());
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing dependencies of" << name;
+            }
+        }
+        logTrace() << "Defined dependencies for igniter of:" << name << "list:" << dependencies;
 
         /* load service scheduler data */
         for (uint index = 0; index < (*root)["schedulerActions"].size(); ++index ) {
@@ -247,6 +269,10 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             ccont = ccont.replace("SERVICE_ROOT", serviceRoot());
         }
 
+        /* set service repository */
+        if (not repository.isEmpty())
+            ccont = ccont.replace("SERVICE_REPOSITORY", repository);
+
         /* Replace SERVICE_PREFIX */
         ccont = ccont.replace("SERVICE_PREFIX", prefixDir());
 
@@ -273,7 +299,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 // logDebug() << "Resolved address of domain " << userDomain << " is " << userAddress;
                 ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
             } else {
-                logDebug() << "Empty domain resolve of: " << userDomain;
+                logWarn() << "Empty domain resolve of: " << userDomain;
                 ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
             }
         } else {
