@@ -129,6 +129,7 @@ void SvdUserWatcher::shutdownSlot() {
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
     logDebug() << "Removing lock file:" << lockName;
     QFile::remove(lockName);
+    QFile::remove(getHomeDir() + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
     logInfo() << "Shutdown completed.";
 }
 
