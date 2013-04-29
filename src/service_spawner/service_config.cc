@@ -29,6 +29,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         alwaysOn = (*defaults)["alwaysOn"].asBool();
         staticPort = (*defaults)["staticPort"].asInt();
         repository = (*defaults)["repository"].asCString();
+        dependencyOf = (*defaults)["dependencyOf"].asCString();
 
         /* load default service dependencies */
         for (uint index = 0; index < (*defaults)["dependencies"].size(); ++index ) {
@@ -106,8 +107,9 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
         repository = root->get("repository", (*defaults)["repository"]).asCString();
+        dependencyOf = root->get("dependencyOf", (*defaults)["dependencyOf"]).asCString();
 
-        /* load service scheduler data */
+        /* load service dependencies data */
         for (uint index = 0; index < (*root)["dependencies"].size(); ++index ) {
             try {
                 dependencies.push_back((*root)["dependencies"][index].asCString());
@@ -272,6 +274,20 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* set service repository */
         if (not repository.isEmpty())
             ccont = ccont.replace("SERVICE_REPOSITORY", repository);
+
+        /* Replace SERVICE_DEPENDENCY_PREFIX */
+        QString depsFull;
+        if (uid != 0)
+            depsFull = getOrCreateDir(QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
+        else
+            depsFull = getOrCreateDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
+
+        if (dependencyOf.isEmpty()) {
+            logDebug() << "No dependencies for:" << name;
+            ccont = ccont.replace("SERVICE_DEPENDENCY_PREFIX", prefixDir()); /* fallback to original prefix dir */
+        } else {
+            ccont = ccont.replace("SERVICE_DEPENDENCY_PREFIX", depsFull);
+        }
 
         /* Replace SERVICE_PREFIX */
         ccont = ccont.replace("SERVICE_PREFIX", prefixDir());
