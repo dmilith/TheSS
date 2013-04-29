@@ -149,6 +149,11 @@ bool SvdService::checkProcessStatus(pid_t pid) {
 void SvdService::babySitterSlot() {
     auto config = new SvdServiceConfig(name);
 
+    if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
+        logWarn() << "Skipping babysitter spawn for not yet spawned service:" << name;
+        delete config;
+        return;
+    }
     /* look for three required files as indicators of already running services software */
     bool filesExistance = QFile::exists(config->prefixDir() + "/.domain") && QFile::exists(config->prefixDir() + "/.ports") && QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
     if (not filesExistance) {
@@ -260,8 +265,7 @@ void SvdService::installSlot() {
     if (config->serviceInstalled()) {
         logInfo() << "No need to install service" << name << "because it's already installed.";
     } else {
-        logDebug() << "Loading service igniter" << name;
-
+        logDebug() << "Loaded service igniter" << name;
         logTrace() << "Launching commands:" << config->install->commands;
         auto process = new SvdProcess(name);
         touch(indicator);
