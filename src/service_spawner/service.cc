@@ -512,7 +512,9 @@ void SvdService::restartSlot() {
         logWarn() << "Restarting service:" << name;
         emit validateSlot();
         emit stopSlot();
+        emit afterStopSlot();
         emit startSlot();
+        emit afterStartSlot();
         logWarn() << "Service restarted:" << name;
     }
 }
