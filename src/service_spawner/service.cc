@@ -451,15 +451,15 @@ void SvdService::stopSlot() {
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->stop->expectOutput + "'");
         }
 
-        /* remove any other states on stop in case of any kinds of failure /killed ss */
-        QFile::remove(indicator);
+        // /* remove any other states on stop in case of any kinds of failure /killed ss */
+        // // QFile::remove(indicator);
 
-        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE);
-        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE);
-        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE);
-        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE);
-        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE);
-        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE);
+        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE);
+        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE);
+        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE);
+        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE);
+        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE);
+        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE);
 
         logTrace() << "After process stop execution:" << name;
         delete process;
