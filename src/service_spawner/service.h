@@ -52,14 +52,16 @@ class SvdService: public QThread {
         SvdService(const QString& name);
         ~SvdService();
         qint64 getUptime();
-        void run();
         bool checkProcessStatus(pid_t pid);
 
+    protected:
+        void run();
 
     private:
         QString name;
         QElapsedTimer *uptime;
         QTimer *babySitter;
+        SvdProcess *serverProcess;
 
 
     public slots:
