@@ -2,7 +2,7 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.11.0",
+    "formatVersion": "0.12.0",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
@@ -60,7 +60,8 @@
         "expectOutputTimeout": 60
     },
     "afterStart":  {
-        "commands": "",
+        "commands": "
+touch SERVICE_PREFIX/.running",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
@@ -70,7 +71,9 @@
         "expectOutputTimeout": 60
     },
     "afterStop":  {
-        "commands": "test -f SERVICE_PREFIX/service.pid && svddw $(cat SERVICE_PREFIX/service.pid) && rm SERVICE_PREFIX/service.pid",
+        "commands": "
+test -f SERVICE_PREFIX/service.pid && svddw $(cat SERVICE_PREFIX/service.pid) && rm SERVICE_PREFIX/service.pid
+test -f SERVICE_PREFIX/.running && rm SERVICE_PREFIX/.running",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
