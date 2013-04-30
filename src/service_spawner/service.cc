@@ -347,22 +347,19 @@ void SvdService::startSlot() {
 
         /* after successful installation of core app, we may proceed with installing additional dependencies */
         if (not config->dependencies.isEmpty()) {
+            QFile::remove(indicator);
             logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
 
             Q_FOREACH(auto dependency, config->dependencies) {
                 logTrace() << "Proceeding with dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
 
-                /* install dependencies if not installed and start service dependency */
-                if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    touch(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
-                    auto depService = new SvdProcess(dependency);
-                    depService->spawnProcess(depConf->start->commands);
-                    depService->waitForFinished(-1);
-                    deathWatch(depService->pid());
-                    logInfo() << "Launched dependency:" << dependency;
-                    delete depService;
-                }
+                auto depService = new SvdService(dependency);
+                depService->start();
+                depService->installSlot();
+                depService->validateSlot();
+                depService->startSlot();
+                depService->afterStartSlot();
 
                 delete depConf;
             }
