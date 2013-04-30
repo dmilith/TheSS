@@ -70,7 +70,7 @@
         "expectOutputTimeout": 60
     },
     "afterStop":  {
-        "commands": "",
+        "commands": "test -f SERVICE_PREFIX/service.pid && svddw $(cat SERVICE_PREFIX/service.pid) && rm SERVICE_PREFIX/service.pid",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
