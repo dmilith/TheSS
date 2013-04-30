@@ -45,6 +45,7 @@
 
 ```sh
 SERVICE_PREFIX # by default: ~/SoftwareData/AppName
+SERVICE_DEPENDENCY_PREFIX # defines prefix of service dependency
 SERVICE_DOMAIN # default host domain name. It's stored in ~/SoftwareData/AppName/.domain file by default.
 SERVICE_ADDRESS # by default it's default host IP address
 SERVICE_ROOT # by default: ~/Apps/AppName
