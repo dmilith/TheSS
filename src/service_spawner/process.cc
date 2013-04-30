@@ -17,6 +17,11 @@ void SvdProcess::init(const QString& name, uid_t uid) {
     //     logTrace() << "Rotating log file" << outputFile;
     //     rotateFile(outputFile);
     // }
+    // QFile file(outputFile);
+    // if (file.size() > 200) {
+    //     rotateFile(outputFile);
+    // }
+    // file.close();
     if (this->redirectOutput)
         setStandardOutputFile(outputFile, QIODevice::Truncate);
 }
@@ -39,7 +44,7 @@ SvdProcess::SvdProcess(const QString& name) {
 
 
 void SvdProcess::spawnDefaultShell() {
-    logDebug() << "Spawning default shell.";
+    logTrace() << "Spawning default shell.";
     start(QString(DEFAULT_SHELL_COMMAND), QStringList("-s"));
 }
 
@@ -56,7 +61,7 @@ void SvdProcess::spawnProcess(const QString& command) {
 void SvdProcess::setupChildProcess() {
     const QString home = getHomeDir(uid);
     const QString user = getenv("USER");
-    logDebug() << "Setup process environment with home:" << home << "and user:" << user;
+    // logDebug() << "Setup process environment with home:" << home << "and user:" << user;
 
     #ifdef __FreeBSD__
         setgroups(0, 0);
