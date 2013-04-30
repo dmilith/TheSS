@@ -368,7 +368,7 @@ void SvdService::startSlot() {
 
         logInfo() << "Launching service" << name;
         logTrace() << "Launching commands:" << config->start->commands;
-        touch(indicator);
+        // touch(indicator);
         serverProcess = new SvdProcess(name);
         serverProcess->spawnProcess(config->start->commands);
         serverProcess->waitForFinished(-1);
