@@ -185,6 +185,11 @@ bool setUserDirPriviledges(const QString& path) {
 
 
 bool expect(const QString& inputFileContent, const QString& expectedString) {
+    logTrace() << "EXPECT INPUT:\n" << inputFileContent;
+    if (expectedString.isEmpty()) {
+        logTrace() << "Passed empty expectation";
+        return true; /* return pass of expectation for empty string */
+    }
     return inputFileContent.trimmed().contains(expectedString.trimmed());
 }
 
