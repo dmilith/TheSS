@@ -8,7 +8,8 @@
 QT -= gui
 
 QMAKE_CXX = clang++
-QMAKE_CC = clang
+QMAKE_CC = ccache clang
+QMAKE_CPP = ccache clang++ -E
 
 QMAKE_CXXFLAGS += -fcolor-diagnostics -Qunused-arguments -Wself-assign -fPIC -fPIE -Os -wunused-variable
 

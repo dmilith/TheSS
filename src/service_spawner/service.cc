@@ -35,6 +35,7 @@ SvdService::~SvdService() {
     logInfo() << "Service had uptime:" << toHMS(getUptime());
     delete uptime;
     delete babySitter;
+    delete serverProcess;
 }
 
 
@@ -149,6 +150,11 @@ bool SvdService::checkProcessStatus(pid_t pid) {
 void SvdService::babySitterSlot() {
     auto config = new SvdServiceConfig(name);
 
+    if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
+        logWarn() << "Skipping babysitter spawn for not yet spawned service:" << name;
+        delete config;
+        return;
+    }
     /* look for three required files as indicators of already running services software */
     bool filesExistance = QFile::exists(config->prefixDir() + "/.domain") && QFile::exists(config->prefixDir() + "/.ports") && QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
     if (not filesExistance) {
@@ -260,14 +266,14 @@ void SvdService::installSlot() {
     if (config->serviceInstalled()) {
         logInfo() << "No need to install service" << name << "because it's already installed.";
     } else {
-        logDebug() << "Loading service igniter" << name;
-
+        logDebug() << "Loaded service igniter" << name;
         logTrace() << "Launching commands:" << config->install->commands;
         auto process = new SvdProcess(name);
         touch(indicator);
         process->spawnProcess(config->install->commands);
         process->waitForFinished(-1); // no timeout
         deathWatch(process->pid());
+        QFile::remove(indicator); // this indicates finish of installing process
         if (not expect(readFileContents(process->outputFile).c_str(), config->install->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of install slot:" << config->install->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->install->expectOutput + "'");
@@ -279,7 +285,6 @@ void SvdService::installSlot() {
         } else { /* software wasn't installed, generate error */
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Installation failed for service:" + config->name);
         }
-        QFile::remove(indicator); // this indicates finish of installing process
 
         logTrace() << "After proc install execution:" << name;
         delete process;
@@ -302,12 +307,12 @@ void SvdService::configureSlot() {
         process->spawnProcess(config->configure->commands);
         process->waitForFinished(-1);
         deathWatch(process->pid());
+        QFile::remove(indicator);
         if (not expect(readFileContents(process->outputFile).c_str(), config->configure->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of configure slot:" << config->configure->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->configure->expectOutput + "'");
         }
 
-        QFile::remove(indicator);
         logTrace() << "After process configure execution:" << name;
         delete process;
     }
@@ -322,6 +327,11 @@ void SvdService::startSlot() {
 
     logTrace() << "Loading service igniter" << name;
     auto config = new SvdServiceConfig(name);
+    auto defaultLogFile = config->prefixDir() + DEFAULT_SERVICE_LOG_FILE;
+    if (QFile::exists(defaultLogFile)) {
+        logDebug() << "Rotating last log";
+        rotateFile(defaultLogFile);
+    }
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to run service" << name << "because it's already running.";
@@ -335,38 +345,51 @@ void SvdService::startSlot() {
         logInfo() << "Validating service" << name;
         emit validateSlot(); // invoke validation before each startSlot
 
-        auto defaultLogFile = config->prefixDir() + DEFAULT_SERVICE_LOG_FILE;
-        if (QFile::exists(defaultLogFile)) {
-            logDebug() << "Rotating last log";
-            rotateFile(defaultLogFile);
-        }
+        /* after successful installation of core app, we may proceed with installing additional dependencies */
+        if (not config->dependencies.isEmpty()) {
+            logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
+
+            Q_FOREACH(auto dependency, config->dependencies) {
+                logTrace() << "Proceeding with dependency:" << dependency;
+                auto depConf = new SvdServiceConfig(dependency);
+
+                /* install dependencies if not installed and start service dependency */
+                if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
+                    touch(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+                    auto depService = new SvdProcess(dependency);
+                    depService->spawnProcess(depConf->start->commands);
+                    depService->waitForFinished(-1);
+                    deathWatch(depService->pid());
+                    logInfo() << "Launched dependency:" << dependency;
+                    delete depService;
+                }
+
+                delete depConf;
+            }
+        } else
+            logDebug() << "Empty dependency list for service:" << name;
 
         logInfo() << "Launching service" << name;
         logTrace() << "Launching commands:" << config->start->commands;
-        auto process = new SvdProcess(name);
-        process->spawnProcess(config->start->commands);
-
-        if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE)) {
-            rotateFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
-        }
         touch(indicator);
+        serverProcess = new SvdProcess(name);
+        serverProcess->spawnProcess(config->start->commands);
+        serverProcess->waitForFinished(-1);
 
         if (not babySitter->isActive())
             babySitter->start();
 
-        process->waitForFinished(-1);
-        deathWatch(process->pid());
-        if (not expect(readFileContents(process->outputFile).c_str(), config->start->expectOutput)) {
+        if (not expect(serverProcess->outputFile, config->start->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of start slot:" << config->start->expectOutput;
-            writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
-        }
+            writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + serverProcess->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
+        } else
+            rotateFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
 
-        logTrace() << "After process start execution:" << name;
-        delete process;
     }
     delete config;
 
     /* invoke after start slot */
+    logTrace() << "After process start execution:" << name;
     emit afterStartSlot();
 }
 
@@ -418,7 +441,6 @@ void SvdService::stopSlot() {
             uint pid = QString(readFileContents(servicePidFile).c_str()).toUInt();
             logDebug() << "Service pid found:" << QString::number(pid) << "in file:" << servicePidFile;
             deathWatch(pid);
-            // kill(pid, SIGTERM);
             QFile::remove(servicePidFile);
             logDebug() << "Service terminated.";
         }
@@ -429,9 +451,9 @@ void SvdService::stopSlot() {
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->stop->expectOutput + "'");
         }
 
+        /* remove any other states on stop in case of any kinds of failure /killed ss */
         QFile::remove(indicator);
 
-        /* remove any other states on stop in case of any kinds of failure /killed ss */
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE);
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE);
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE);
@@ -468,12 +490,12 @@ void SvdService::afterStopSlot() {
         process->spawnProcess(config->afterStop->commands);
         process->waitForFinished(-1);
         deathWatch(process->pid());
+        QFile::remove(indicator);
         if (not expect(readFileContents(process->outputFile).c_str(), config->afterStop->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of afterStop slot:" << config->afterStop->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->afterStop->expectOutput + "'");
         }
 
-        QFile::remove(indicator);
         logTrace() << "After process afterStop execution:" << name;
         delete process;
     }
