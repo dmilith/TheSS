@@ -376,16 +376,16 @@ void SvdService::startSlot() {
         touch(indicator);
         serverProcess = new SvdProcess(name);
         serverProcess->spawnProcess(config->start->commands);
-        serverProcess->waitForStarted(-1);
+        serverProcess->waitForFinished(-1);
 
         if (not babySitter->isActive())
             babySitter->start();
 
-        // if (not expect(serverProcess->outputFile, config->start->expectOutput)) {
-        //     logError() << "Failed expectations of service:" << name << "with expected output of start slot:" << config->start->expectOutput;
-        //     writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + serverProcess->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
-        // } else
-        //     rotateFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
+        if (not expect(serverProcess->outputFile, config->start->expectOutput)) {
+            logError() << "Failed expectations of service:" << name << "with expected output of start slot:" << config->start->expectOutput;
+            writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + serverProcess->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
+        } else
+            rotateFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
 
     }
     delete config;
