@@ -12,7 +12,7 @@
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_PREFIX/service.conf --skip-grant-tables -C utf8 &"
+        "commands": "SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_PREFIX/service.conf --skip-grant-tables -C utf8 > SERVICE_PREFIX/service.log 2>&1 &"
     },
     "validate": {
         "commands": "
