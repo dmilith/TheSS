@@ -354,11 +354,9 @@ void SvdService::startSlot() {
                 auto depConf = new SvdServiceConfig(dependency);
 
                 /* install dependencies if not installed and start service dependency */
-                // touch(depConf->prefixDir() + "/.autostart");
                 if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    //     touch(depConf->prefixDir() + "/.start");
+                    touch(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
                     auto depService = new SvdProcess(dependency);
-                    depService->spawnProcess(depConf->stop->commands);
                     depService->spawnProcess(depConf->start->commands);
                     depService->waitForFinished(-1);
                     deathWatch(depService->pid());
