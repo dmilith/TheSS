@@ -62,6 +62,7 @@ class SvdService: public QThread {
         QElapsedTimer *uptime = NULL;
         QTimer *babySitter = NULL;
         SvdProcess *serverProcess = NULL;
+        QList<SvdService*> dependencyServices;
 
 
     public slots:

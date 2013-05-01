@@ -13,6 +13,7 @@
 SvdService::SvdService(const QString& name) {
     /* setup service */
     this->name = name;
+    this->dependencyServices = QList<SvdService*>();
 }
 
 
@@ -34,7 +35,6 @@ void SvdService::run() {
 
 
 SvdService::~SvdService() {
-    logInfo() << "Service had uptime:" << toHMS(getUptime());
     delete uptime;
     delete babySitter;
     delete serverProcess;
@@ -365,6 +365,7 @@ void SvdService::startSlot() {
                 depService->validateSlot();
                 depService->startSlot();
                 depService->afterStartSlot();
+                dependencyServices << depService;
 
                 delete depConf;
             }
@@ -433,6 +434,15 @@ void SvdService::stopSlot() {
         auto process = new SvdProcess(name);
         logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "seconds of uptime.";
         uptime->invalidate();
+
+        /* stop dependency services */
+        Q_FOREACH(SvdService *depService, this->dependencyServices) {
+            logDebug() << "Invoking dependency stop slot and destroying service:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
+            depService->stopSlot();
+            depService->afterStopSlot();
+            depService->quit();
+            depService->deleteLater();
+        }
 
         logTrace() << "Loading service igniter" << name;
         process->spawnProcess(config->stop->commands); // invoke igniter stop, and then try to look for service.pid in prefix directory:
