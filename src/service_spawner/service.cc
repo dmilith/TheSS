@@ -549,7 +549,7 @@ void SvdService::reloadSlot() {
 
 
 void SvdService::validateSlot() {
-    logDebug() << "Invoked validate slot for service:" << name;
+    logDebug() << "Invoked validate slot for service:" << name << "with uptime:" << toHMS(getUptime());
     logTrace() << "Loading service igniter" << name;
     auto config = new SvdServiceConfig(name);
 
