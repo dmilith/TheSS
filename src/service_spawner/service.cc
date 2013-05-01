@@ -19,8 +19,10 @@ SvdService::SvdService(const QString& name) {
 /* thread */
 void SvdService::run() {
     /* first init of uptime timer */
-    this->uptime = new QElapsedTimer();
     logTrace() << "Creating SvdService with name" << this->name;
+
+    this->uptime = new QElapsedTimer();
+    this->uptime->invalidate();
 
     /* setup baby sitter */
     babySitter = new QTimer(this);
@@ -40,7 +42,10 @@ SvdService::~SvdService() {
 
 
 qint64 SvdService::getUptime() {
-    return uptime->elapsed() / 1000; // seconds
+    int value = 0;
+    if (uptime->isValid())
+        value = uptime->elapsed() / 1000; /* seconds */
+    return value;
 }
 
 
@@ -427,8 +432,7 @@ void SvdService::stopSlot() {
     } else {
         auto process = new SvdProcess(name);
         logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "seconds of uptime.";
-        delete uptime;
-        uptime = new QElapsedTimer(); // reset uptime count
+        uptime->invalidate();
 
         logTrace() << "Loading service igniter" << name;
         process->spawnProcess(config->stop->commands); // invoke igniter stop, and then try to look for service.pid in prefix directory:
