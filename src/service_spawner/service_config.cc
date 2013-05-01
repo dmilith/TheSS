@@ -283,7 +283,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             depsFull = getOrCreateDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
 
         if (dependencyOf.isEmpty()) {
-            logDebug() << "No dependencies for:" << name;
+            logTrace() << "No dependencies for:" << name;
             ccont = ccont.replace("SERVICE_DEPENDENCY_PREFIX", prefixDir()); /* fallback to original prefix dir */
         } else {
             ccont = ccont.replace("SERVICE_DEPENDENCY_PREFIX", depsFull);
