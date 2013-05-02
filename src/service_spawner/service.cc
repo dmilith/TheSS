@@ -521,7 +521,7 @@ void SvdService::restartSlot() {
         logDebug() << "Invoked restart slot for service:" << name;
         usleep(DEFAULT_SERVICE_PAUSE_INTERVAL);
         logWarn() << "Restarting service:" << name;
-        emit validateSlot();
+        // emit validateSlot();
         emit stopSlot();
         emit afterStopSlot();
         emit startSlot();
