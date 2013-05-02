@@ -155,8 +155,19 @@ bool SvdService::checkProcessStatus(pid_t pid) {
 void SvdService::babySitterSlot() {
     auto config = new SvdServiceConfig(name);
 
+    if ( /* check all state files */
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE) or
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE) or
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE) or
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) or
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE)
+    ) {
+        logWarn() << "Skipping babysitter, service is busy:" << name;
+        delete config;
+        return;
+    }
     if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
-        logWarn() << "Skipping babysitter spawn for not yet spawned service:" << name;
+        logWarn() << "Skipping babysitter, service is not running:" << name;
         delete config;
         return;
     }
@@ -359,13 +370,16 @@ void SvdService::startSlot() {
                 logTrace() << "Proceeding with dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
 
-                auto depService = new SvdService(dependency);
-                depService->start();
-                depService->installSlot();
-                depService->validateSlot();
-                depService->startSlot();
-                depService->afterStartSlot();
-                dependencyServices << depService;
+                /* if dependency is already running - skip it */
+                if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {// XXX: not reliable
+                    auto depService = new SvdService(dependency);
+                    depService->start();
+                    depService->installSlot();
+                    depService->validateSlot();
+                    depService->startSlot();
+                    depService->afterStartSlot();
+                    dependencyServices << depService;
+                }
 
                 delete depConf;
             }
@@ -470,7 +484,7 @@ void SvdService::stopSlot() {
         // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE);
         // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE);
         // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE);
-        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE);
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE);
 
         logTrace() << "After process stop execution:" << name;
         delete process;
