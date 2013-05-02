@@ -95,6 +95,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     if (indicatorFiles->autostart->exists()) {
         logInfo() << "Performing autostart of service:" << name;
         emit startService();
+        emit afterStartService();
     }
 }
 
@@ -103,6 +104,7 @@ void SvdServiceWatcher::shutdownSlot() {
     qDebug() << "Invoked shutdown slot.";
     qDebug() << "Emitting stopService signal.";
     emit stopService();
+    emit afterStopService();
 }
 
 
