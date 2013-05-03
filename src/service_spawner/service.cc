@@ -14,6 +14,11 @@ SvdService::SvdService(const QString& name) {
     /* setup service */
     this->name = name;
     this->dependencyServices = QList<SvdService*>();
+
+    this->uptime = new QElapsedTimer();
+    this->uptime->invalidate();
+
+    babySitter = new QTimer(this);
 }
 
 
@@ -22,11 +27,7 @@ void SvdService::run() {
     /* first init of uptime timer */
     logTrace() << "Creating SvdService with name" << this->name;
 
-    this->uptime = new QElapsedTimer();
-    this->uptime->invalidate();
-
     /* setup baby sitter */
-    babySitter = new QTimer(this);
     connect(babySitter, SIGNAL(timeout()), this, SLOT(babySitterSlot()));
     babySitter->start(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
 
