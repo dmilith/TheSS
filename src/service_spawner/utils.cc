@@ -322,7 +322,7 @@ uint registerFreeTcpPort(uint specificPort) {
     logTrace() << "Trying port: " << port << ". Randseed: " << rand;
     auto inter = new QNetworkInterface();
     auto list = inter->allAddresses(); /* all addresses on all interfaces */
-    logDebug() << "Addresses amount: " << list.size();
+    logTrace() << "Addresses amount: " << list.size();
     for (int j = 0; j < list.size(); j++) {
         QHostInfo info = QHostInfo::fromName(list.at(j).toString());
         if (!info.addresses().isEmpty()) {

@@ -49,7 +49,7 @@ void deathWatch(pid_t aPid, uint signal) {
 
     if (kill(aPid, signal) == 0) {
         if (kill(aPid, 0) != 0) {
-            logInfo() << "Process with pid:" << aPid << "was interruped.";
+            logDebug() << "Process with pid:" << aPid << "was interruped.";
             return;
         }
     }
@@ -72,7 +72,7 @@ void deathWatch(pid_t aPid, uint signal) {
         } break;
 
         case SIGKILL: {
-            logError() << "Process is ignoring KILL signal! Something is crashed badly! Still trying for pid:" << aPid;
+            logWarn() << "Process is ignoring KILL signal! Hanged process found? Still trying to kill pid:" << aPid;
             deathWatch(aPid, SIGKILL);
         } break;
 
