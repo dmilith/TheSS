@@ -23,7 +23,7 @@ void deathWatch(pid_t aPid, uint signal) {
     if (kill(aPid, 0) == 0) {
         logDebug() << "Process with pid:" << aPid << "still exists in process list.";
     } else {
-        logInfo() << "Process with pid:" << aPid << "was interruped.";
+        logDebug() << "Process with pid:" << aPid << "was interruped.";
         return;
     }
 

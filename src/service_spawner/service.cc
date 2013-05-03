@@ -380,6 +380,7 @@ void SvdService::startSlot() {
                     depService->startSlot();
                     depService->afterStartSlot();
                     dependencyServices << depService;
+                    logInfo() << "Launched dependency:" << dependency;
                 }
 
                 delete depConf;
@@ -457,7 +458,7 @@ void SvdService::stopSlot() {
             depService->stopSlot();
             depService->afterStopSlot();
             depService->quit();
-            // depService->deleteLater();
+            depService->deleteLater();
         }
 
         logTrace() << "Loading service igniter" << name;
@@ -542,7 +543,7 @@ void SvdService::restartSlot() {
         emit afterStopSlot();
         emit startSlot();
         emit afterStartSlot();
-        logWarn() << "Service restarted:" << name;
+        logInfo() << "Service restarted:" << name;
     }
 }
 
