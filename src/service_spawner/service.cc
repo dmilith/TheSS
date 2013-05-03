@@ -446,8 +446,9 @@ void SvdService::stopSlot() {
         logInfo() << "No need to stop service" << name << "because it's already stopped.";
     } else {
         auto process = new SvdProcess(name);
-        logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "seconds of uptime.";
-        uptime->invalidate();
+        logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "of uptime.";
+        if (uptime)
+            uptime->invalidate();
 
         /* stop dependency services */
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
