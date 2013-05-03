@@ -15,10 +15,11 @@ SvdService::SvdService(const QString& name) {
     this->name = name;
     this->dependencyServices = QList<SvdService*>();
 
-    this->uptime = new QElapsedTimer();
-    this->uptime->invalidate();
+    this->uptime.invalidate();
 
-    babySitter = new QTimer(this);
+    /* setup baby sitter */
+    connect(&babySitter, SIGNAL(timeout()), this, SLOT(babySitterSlot()));
+    babySitter.start(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
 }
 
 
@@ -26,26 +27,21 @@ SvdService::SvdService(const QString& name) {
 void SvdService::run() {
     /* first init of uptime timer */
     logTrace() << "Creating SvdService with name" << this->name;
-
-    /* setup baby sitter */
-    connect(babySitter, SIGNAL(timeout()), this, SLOT(babySitterSlot()));
-    babySitter->start(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
-
     exec();
 }
 
 
 SvdService::~SvdService() {
-    delete uptime;
-    delete babySitter;
+    // delete uptime;
+    // delete babySitter;
     delete serverProcess;
 }
 
 
 qint64 SvdService::getUptime() {
     int value = 0;
-    if (uptime->isValid())
-        value = uptime->elapsed() / 1000; /* seconds */
+    if (uptime.isValid())
+        value = uptime.elapsed() / 1000; /* seconds */
     return value;
 }
 
@@ -339,8 +335,7 @@ void SvdService::configureSlot() {
 
 void SvdService::startSlot() {
     logDebug() << "Invoked start slot for service:" << name;
-    this->uptime = new QElapsedTimer();
-    uptime->start();
+    uptime.start();
 
     logTrace() << "Loading service igniter" << name;
     auto config = new SvdServiceConfig(name);
@@ -395,8 +390,8 @@ void SvdService::startSlot() {
         serverProcess->spawnProcess(config->start->commands);
         serverProcess->waitForFinished(-1);
 
-        if (not babySitter->isActive())
-            babySitter->start();
+        if (not babySitter.isActive())
+            babySitter.start();
 
         if (not expect(serverProcess->outputFile, config->start->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of start slot:" << config->start->expectOutput;
@@ -449,8 +444,7 @@ void SvdService::stopSlot() {
     } else {
         auto process = new SvdProcess(name);
         logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "of uptime.";
-        if (uptime)
-            uptime->invalidate();
+        uptime.invalidate();
 
         /* stop dependency services */
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
@@ -494,8 +488,8 @@ void SvdService::stopSlot() {
     }
 
     logDebug() << "Stopping internal baby sitter timer for process:" << name;
-    if (babySitter->isActive())
-        babySitter->stop();
+    if (babySitter.isActive())
+        babySitter.stop();
     // delete babySitter;
     delete config;
 

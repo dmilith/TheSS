@@ -59,8 +59,8 @@ class SvdService: public QThread {
 
     private:
         QString name;
-        QElapsedTimer *uptime = NULL;
-        QTimer *babySitter = NULL;
+        QElapsedTimer uptime;
+        QTimer babySitter;
         SvdProcess *serverProcess = NULL;
         QList<SvdService*> dependencyServices;
 
