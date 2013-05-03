@@ -99,10 +99,10 @@ void SvdUserWatcher::collectServices() {
 
     Q_FOREACH(QString name, services) {
         if (not oldServices.contains(name)) {
-            if (QFile::exists(softwareDataDir + "/" + name + DEFAULT_SERVICE_AUTOSTART_FILE)) {
-                logInfo() << "Invoking autostart Service Watcher for:" << name;
+            // if (QFile::exists(softwareDataDir + "/" + name + DEFAULT_SERVICE_AUTOSTART_FILE)) {
+                logInfo() << "Invoking Service Watcher for service:" << name;
                 this->serviceWatchers << new SvdServiceWatcher(name);
-            }
+            // }
         }
     }
 }
