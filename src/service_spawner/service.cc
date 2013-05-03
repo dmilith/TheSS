@@ -376,6 +376,8 @@ void SvdService::startSlot() {
                     depService->afterStartSlot();
                     dependencyServices << depService;
                     logInfo() << "Launched dependency:" << dependency;
+                } else {
+                    logInfo() << "Already running dependency:" << dependency;
                 }
 
                 delete depConf;
