@@ -1,4 +1,6 @@
 
+include(../Common.pro)
+
 TEMPLATE = lib
 CONFIG += qt warn_off staticlib
 QT -= gui
