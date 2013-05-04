@@ -453,7 +453,7 @@ void SvdService::stopSlot() {
             depService->stopSlot();
             depService->afterStopSlot();
             depService->quit();
-            depService->deleteLater();
+            // depService->deleteLater();
         }
 
         logTrace() << "Loading service igniter" << name;
