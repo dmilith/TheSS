@@ -32,9 +32,6 @@ void SvdService::run() {
 
 
 SvdService::~SvdService() {
-    // delete uptime;
-    // delete babySitter;
-    delete serverProcess;
 }
 
 
@@ -388,19 +385,21 @@ void SvdService::startSlot() {
         logInfo() << "Launching service" << name;
         logTrace() << "Launching commands:" << config->start->commands;
         // touch(indicator);
-        serverProcess = new SvdProcess(name);
-        serverProcess->spawnProcess(config->start->commands);
-        serverProcess->waitForFinished(-1);
+        auto process = new SvdProcess(name);
+        process->spawnProcess(config->start->commands);
+        process->waitForFinished(-1);
+        deathWatch(process->pid());
 
         if (not babySitter.isActive())
             babySitter.start();
 
-        if (not expect(serverProcess->outputFile, config->start->expectOutput)) {
+        if (not expect(process->outputFile, config->start->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of start slot:" << config->start->expectOutput;
-            writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + serverProcess->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
+            writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
         } else
             rotateFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE);
 
+        delete process;
     }
     delete config;
 

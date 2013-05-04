@@ -61,7 +61,6 @@ class SvdService: public QThread {
         QString name;
         QElapsedTimer uptime;
         QTimer babySitter;
-        SvdProcess *serverProcess = NULL;
         QList<SvdService*> dependencyServices;
 
 
