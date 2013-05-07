@@ -273,8 +273,13 @@ const QString getWebAppsDir() {
 const QString getHomeDir(uid_t uid) {
     if (uid == 0)
         return QString(SYSTEM_USERS_DIR);
-    else
+    else {
+        if (not QDir().exists(USERS_HOME_DIR)) {
+            #undef USERS_HOME_DIR
+            #define USERS_HOME_DIR POSIX_HOME_DIR /* fallback to POSIX /home Default is /Users */
+        }
         return QString(USERS_HOME_DIR) + "/" + getenv("USER");
+    }
 }
 
 

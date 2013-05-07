@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.23.5"
+    #define APP_VERSION "0.23.6"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -13,15 +13,9 @@
         #define CLOCK_REALTIME REALTIME_CLOCK
     #endif
 
-    #ifdef __linux__
-        #define USERS_HOME_DIR "/home"
-    #endif
-
-
+    #define POSIX_HOME_DIR "/home"
+    #define USERS_HOME_DIR "/Users"
     #define SYSTEMUSERS_HOME_DIR "/SystemUsers"
-    #ifndef __linux__
-        #define USERS_HOME_DIR "/Users"
-    #endif
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
     #define DEFAULT_BEHAVIORS_RAW "/output_raw_processes.raw.input"
