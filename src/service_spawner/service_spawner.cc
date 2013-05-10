@@ -16,19 +16,19 @@
 #include <QtCore>
 
 
-void spawnSSForEachUser() {
-    /* spawn ss for each of uids in /Users */
-    Q_FOREACH(int userUid, gatherUserUids()) {
-        logDebug() << "Spawning user SS for:" << QString::number(userUid);
+// void spawnSSForEachUser() {
+//     /* spawn ss for each of uids in /Users */
+//     Q_FOREACH(int userUid, gatherUserUids()) {
+//         logDebug() << "Spawning user SS for:" << QString::number(userUid);
 
-        /* creating lock file for given user */
-        QString lockName = QString(USERS_HOME_DIR) + "/" + QString::number(userUid) + "/." + QString::number(userUid) + ".pid";
-        writeToFile(lockName, QString::number(0), false); /* NOTE: if pid == 0 it means that SS is runned from SS maintainer */
+//         /* creating lock file for given user */
+//         QString lockName = QString(USERS_HOME_DIR) + "/" + QString::number(userUid) + "/." + QString::number(userUid) + ".pid";
+//         writeToFile(lockName, QString::number(0), false); /* NOTE: if pid == 0 it means that SS is runned from SS maintainer */
 
-        auto process = new SvdProcess("SS", userUid, false); // don't redirect output
-        process->spawnProcess(DEFAULT_SS_COMMAND);
-    }
-}
+//         auto process = new SvdProcess("SS", userUid, false); // don't redirect output
+//         process->spawnProcess(DEFAULT_SS_COMMAND);
+//     }
+// }
 
 
 int main(int argc, char *argv[]) {
