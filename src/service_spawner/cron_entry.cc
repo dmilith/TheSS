@@ -109,10 +109,7 @@ bool SvdCrontab::cronMatch() {
                         } else
                             return false;
                     } else {
-                        if (this->minute == 0) {
-                            logTrace() << "Matched (wildcard) cron minute:" << this->minute;
-                        } else
-                            return false;
+                        logTrace() << "Matched (wildcard) cron minute:" << this->minute;
                     }
                 } else { // cron format: */ABC, where ABC is fraction value
                     if (this->minute / fractionCronData.at(indx) == cronData.at(indx)) {
@@ -124,14 +121,18 @@ bool SvdCrontab::cronMatch() {
 
             /* hour */
             case 1:
-                if (not wildcard) {
-                    if (this->hour == cronData.at(indx)) {
-                        logTrace() << "Matched cron hour:" << this->hour;
-                    } else
-                        return false;
-                } else {
-                    if (this->hour == 0) {
+                if (hourFraction == -1) {
+                    if (not wildcard) {
+                        if (this->hour == cronData.at(indx)) {
+                            logTrace() << "Matched cron hour:" << this->hour;
+                        } else
+                            return false;
+                    } else {
                         logTrace() << "Matched (wildcard) cron hour:" << this->hour;
+                    }
+                } else { // cron format: */ABC, where ABC is fraction value
+                    if (this->hour / fractionCronData.at(indx) == cronData.at(indx)) {
+                        logDebug() << "Matched fraction time:" << this->hour / fractionCronData.at(indx) << "vs" << cronData.at(indx);
                     } else
                         return false;
                 }
@@ -139,14 +140,18 @@ bool SvdCrontab::cronMatch() {
 
             /* dayOfMonth */
             case 2:
-                if (not wildcard) {
-                    if (this->dayOfMonth == cronData.at(indx)) {
-                        logTrace() << "Matched cron dayOfMonth:" << this->dayOfMonth;
-                    } else
-                        return false;
-                } else {
-                    if (this->dayOfMonth == 0) {
+                if (dayOfMonthFraction == -1) {
+                    if (not wildcard) {
+                        if (this->dayOfMonth == cronData.at(indx)) {
+                            logTrace() << "Matched cron dayOfMonth:" << this->dayOfMonth;
+                        } else
+                            return false;
+                    } else {
                         logTrace() << "Matched (wildcard) cron dayOfMonth:" << this->dayOfMonth;
+                    }
+                } else { // cron format: */ABC, where ABC is fraction value
+                    if (this->dayOfMonth / fractionCronData.at(indx) == cronData.at(indx)) {
+                        logDebug() << "Matched fraction time:" << this->dayOfMonth / fractionCronData.at(indx) << "vs" << cronData.at(indx);
                     } else
                         return false;
                 }
@@ -154,14 +159,18 @@ bool SvdCrontab::cronMatch() {
 
             /* month */
             case 3:
-                if (not wildcard) {
-                    if (this->month == cronData.at(indx)) {
-                        logTrace() << "Matched cron month:" << this->month;
-                    } else
-                        return false;
-                } else {
-                    if (this->month == 0) {
+                if (monthFraction == -1) {
+                    if (not wildcard) {
+                        if (this->month == cronData.at(indx)) {
+                            logTrace() << "Matched cron month:" << this->month;
+                        } else
+                            return false;
+                    } else {
                         logTrace() << "Matched (wildcard) cron month:" << this->month;
+                    }
+                } else { // cron format: */ABC, where ABC is fraction value
+                    if (this->month / fractionCronData.at(indx) == cronData.at(indx)) {
+                        logDebug() << "Matched fraction time:" << this->month / fractionCronData.at(indx) << "vs" << cronData.at(indx);
                     } else
                         return false;
                 }
@@ -169,14 +178,18 @@ bool SvdCrontab::cronMatch() {
 
             /* dayOfWeek */
             case 4:
-                if (not wildcard) {
-                    if (this->dayOfWeek == cronData.at(indx)) {
-                        logTrace() << "Matched cron dayOfWeek:" << this->dayOfWeek;
-                    } else
-                        return false;
-                } else {
-                    if (this->dayOfWeek == 0) {
+                if (dayOfWeekFraction == -1) {
+                    if (not wildcard) {
+                        if (this->dayOfWeek == cronData.at(indx)) {
+                            logTrace() << "Matched cron dayOfWeek:" << this->dayOfWeek;
+                        } else
+                            return false;
+                    } else {
                         logTrace() << "Matched (wildcard) cron dayOfWeek:" << this->dayOfWeek;
+                    }
+                } else { // cron format: */ABC, where ABC is fraction value
+                    if (this->dayOfWeek / fractionCronData.at(indx) == cronData.at(indx)) {
+                        logDebug() << "Matched fraction time:" << this->dayOfWeek / fractionCronData.at(indx) << "vs" << cronData.at(indx);
                     } else
                         return false;
                 }
