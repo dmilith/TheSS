@@ -3,7 +3,7 @@
     "watchPort": false,
     "schedulerActions": [
         {
-            "cronEntry": "0 0/3 * * * ?",
+            "cronEntry": "0 */3 * * * ?",
             "commands": "echo 'Mysql what? Misa nie rozumić mysql crap.'"
         }
     ],
