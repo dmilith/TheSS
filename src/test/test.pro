@@ -22,7 +22,8 @@ HEADERS += TestLibrary.h \
            ../service_spawner/process.h \
            ../service_spawner/webapp_deployer.h \
            ../death_watch/death_watch.h \
-           ../service_spawner/webapp_types.h
+           ../service_spawner/webapp_types.h \
+           ../service_spawner/cron_entry.h
 SOURCES += ../service_spawner/service_config.cc \
            ../service_spawner/utils.cc \
            ../jsoncpp/json_reader.cpp \
@@ -33,6 +34,7 @@ SOURCES += ../service_spawner/service_config.cc \
            ../service_spawner/webapp_types.cc \
            ../service_spawner/webapp_deployer.cc \
            ../death_watch/death_watch.cc \
+           ../service_spawner/cron_entry.cc \
            TestLibrary.cc
 
 LIBS += ../libjsoncpp.a ../liblogger.a ../libquazip.a -lz

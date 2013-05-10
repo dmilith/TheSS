@@ -44,9 +44,9 @@ void TestLibrary::testParseJSONRedis() {
 
     QCOMPARE(config->uid, getuid());
 
-    QVERIFY(config->schedulerActions->first()->cronEntry.contains("*"));
-    logDebug() << config->schedulerActions->first()->cronEntry;
-    logDebug() << config->schedulerActions->first()->commands;
+    QVERIFY(config->schedulerActions.first()->cronEntry.contains("*"));
+    logDebug() << config->schedulerActions.first()->cronEntry;
+    logDebug() << config->schedulerActions.first()->commands;
 
     /* verify replaceAllIn result, should not contain SERVICE_PORT, SERVICE_DOMAIN, SERVICE_ROOT, SERVICE_ADDRESS */
     QVERIFY(!config->install->commands.contains("SERVICE_PORT"));
@@ -76,7 +76,7 @@ void TestLibrary::testParseJSONRedis() {
 void TestLibrary::testParseDefault() {
     auto *config = new SvdServiceConfig(); /* Load default values */
     QCOMPARE(config->staticPort, -1);
-    QVERIFY(config->schedulerActions->length() == 0);
+    QVERIFY(config->schedulerActions.length() == 0);
     delete config;
 }
 
@@ -85,7 +85,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     auto *config = new SvdServiceConfig(); /* Load default values */
     QVERIFY(config->name == "Default");
     QVERIFY(config->install->commands.length() == 0);
-    QVERIFY(config->schedulerActions->length() == 0);
+    QVERIFY(config->schedulerActions.length() == 0);
     QVERIFY(config->watchPort == true);
     QVERIFY(config->alwaysOn == true);
     delete config;
@@ -249,7 +249,7 @@ void TestLibrary::testSanityValueCheck() {
         QVERIFY(config->prefixDir().contains(QString(SYSTEM_USERS_DIR)));
         QVERIFY(!config->prefixDir().contains(QString::number(config->uid))); // root service prefix dir doens't contains uid in path!
     } else {
-        QVERIFY(config->prefixDir().contains(QString(USERS_HOME_DIR)));
+        // QVERIFY(config->prefixDir().contains(QString(USERS_HOME_DIR)));
         QVERIFY(config->prefixDir().contains(getenv("USER")));
     }
     QVERIFY(config->prefixDir().contains(QString(QString(SOFTWARE_DATA_DIR))));
@@ -367,5 +367,53 @@ void TestLibrary::testWebAppDeployer() {
     QVERIFY(deployer->getTypeName() == "Static");
     delete deployer;
 
+}
+
+
+void TestLibrary::testCrontabEntry() {
+    auto cron = new SvdCrontab("* * * * * ?", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->minute == -1);
+    QVERIFY(cron->minuteFraction == -1);
+    QVERIFY(cron->hour == -1);
+    QVERIFY(cron->hourFraction == -1);
+    QVERIFY(cron->dayOfMonth == -1);
+    QVERIFY(cron->dayOfMonthFraction == -1);
+    QVERIFY(cron->month == -1);
+    QVERIFY(cron->monthFraction == -1);
+    QVERIFY(cron->dayOfWeek == -1);
+    QVERIFY(cron->dayOfWeekFraction == -1);
+    QVERIFY(cron->cronMatch() == true);
+    delete cron;
+
+    cron = new SvdCrontab("*/10 */20 32 * 3 ?", "true");
+    QVERIFY(cron->dayOfMonth == 32);
+    QVERIFY(cron->cronMatch() == false); /* it must be false when asking for match for month with 32 days */
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->minute == 0);
+    QVERIFY(cron->minuteFraction == 10);
+    QVERIFY(cron->hour == 0);
+    QVERIFY(cron->hourFraction == 20);
+    QVERIFY(cron->dayOfMonthFraction == -1);
+    QVERIFY(cron->month == -1);
+    QVERIFY(cron->monthFraction == -1);
+    QVERIFY(cron->dayOfWeek == 3);
+    QVERIFY(cron->dayOfWeekFraction == -1);
+    delete cron;
+
+    cron = new SvdCrontab("*/1 * * * * ?", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->minute == 0);
+    QVERIFY(cron->minuteFraction == 1);
+    QVERIFY(cron->hour == -1);
+    QVERIFY(cron->hourFraction == -1);
+    QVERIFY(cron->dayOfMonth == -1);
+    QVERIFY(cron->dayOfMonthFraction == -1);
+    QVERIFY(cron->month == -1);
+    QVERIFY(cron->monthFraction == -1);
+    QVERIFY(cron->dayOfWeek == -1);
+    QVERIFY(cron->dayOfWeekFraction == -1);
+    QVERIFY(cron->cronMatch() == true);
+    delete cron;
 }
 

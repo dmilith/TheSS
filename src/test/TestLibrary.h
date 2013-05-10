@@ -38,6 +38,7 @@ class TestLibrary: public QObject {
             void testInstallingWrongRedis();
             void testWebAppDetection();
             void testWebAppDeployer();
+            void testCrontabEntry();
 
 };
 
