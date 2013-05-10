@@ -60,6 +60,7 @@
     #define DEFAULT_SS_SHUTDOWN_HOOK_FILE "/.shutdown"
     #define DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE "/.data-collector"
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"
+    #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
     #define DEFAULT_SERVICE_PAUSE_INTERVAL 5000000 // 5 seconds

@@ -60,11 +60,11 @@ class SvdService: public QThread {
     private:
         QString name;
         QElapsedTimer uptime;
-        QTimer babySitter;
+        QTimer babySitter, cronSitter;
         QList<SvdService*> dependencyServices;
 
-
     public slots:
+        void cronSitterSlot();
         void babySitterSlot();
         void installSlot();
         void configureSlot();

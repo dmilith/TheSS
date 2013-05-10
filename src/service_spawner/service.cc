@@ -20,6 +20,10 @@ SvdService::SvdService(const QString& name) {
     /* setup baby sitter */
     connect(&babySitter, SIGNAL(timeout()), this, SLOT(babySitterSlot()));
     babySitter.start(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
+
+    /* setup cron sitter */
+    this->cronSitter.setInterval(ONE_SECOND_OF_DELAY / 1000);
+    connect(&cronSitter, SIGNAL(timeout()), this, SLOT(cronSitterSlot()));
 }
 
 
@@ -393,6 +397,15 @@ void SvdService::startSlot() {
         if (not babySitter.isActive())
             babySitter.start();
 
+        if (config->schedulerActions.size() > 0) {
+            logDebug() << "Initializing cronSitter for" << config->schedulerActions.size() << "scheduler tasks.";
+
+            if (not cronSitter.isActive()) {
+                logDebug() << "Bounding cron to service:" << name;
+                cronSitter.start();
+            }
+        }
+
         if (not expect(process->outputFile, config->start->expectOutput)) {
             logError() << "Failed expectations of service:" << name << "with expected output of start slot:" << config->start->expectOutput;
             writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->start->expectOutput + "'");
@@ -406,6 +419,51 @@ void SvdService::startSlot() {
     /* invoke after start slot */
     logTrace() << "After process start execution:" << name;
     emit afterStartSlot();
+}
+
+
+void SvdService::cronSitterSlot() {
+    logDebug() << "Cron sitter slot invoked by:" << name;
+    auto config = new SvdServiceConfig(name);
+    if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
+        if (cronSitter.isActive())
+            cronSitter.stop();
+        logDebug() << "Skipping cronSitter, service is not running:" << name;
+        delete config;
+        return;
+    }
+    QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE;
+    if (QFile::exists(indicator)) {
+        logInfo() << "No need to cronSitting service" << name << "because it's already cronSitting.";
+    } else {
+        touch(indicator);
+
+        Q_FOREACH(auto entry, config->schedulerActions) {
+            auto crontabEntry = new SvdCrontab(entry->cronEntry, entry->commands);
+            logDebug() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "-=>" << crontabEntry->pp();
+
+            /* If current time matches cron entry.. */
+            if (crontabEntry->cronMatch()) {
+                auto process = new SvdProcess(name);
+                process->spawnProcess(entry->commands);
+                process->waitForFinished(-1);
+                deathWatch(process->pid());
+                delete process;
+            }
+
+            // if (not expect(readFileContents(process->outputFile).c_str(), config->afterStart->expectOutput)) {
+            //     logError() << "Failed expectations of service:" << name << "with expected output of afterStart slot:" << config->afterStart->expectOutput;
+            //     writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->afterStart->expectOutput + "'");
+            // }
+
+            // QFile::remove(indicator);
+            // logTrace() << "After process afterStart execution:" << name;
+            delete crontabEntry;
+        }
+        QFile::remove(indicator);
+    }
+
+    delete config;
 }
 
 
@@ -446,6 +504,10 @@ void SvdService::stopSlot() {
         auto process = new SvdProcess(name);
         logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "of uptime.";
         uptime.invalidate();
+
+        /* stop crontab sitter */
+        if (cronSitter.isActive())
+            cronSitter.stop();
 
         /* stop dependency services */
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
