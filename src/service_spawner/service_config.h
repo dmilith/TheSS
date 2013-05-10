@@ -27,7 +27,7 @@ class SvdSchedulerAction {
 
     public:
         SvdSchedulerAction(const QString& initialCronEntry, const QString& initialCommands);
-        QString cronEntry, commands;
+        QString cronEntry, commands, sha;
 
 };
 
