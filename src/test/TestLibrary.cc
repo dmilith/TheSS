@@ -26,7 +26,7 @@ TestLibrary::TestLibrary() {
     Logger::registerAppender(consoleAppender);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
 
-    if (not QDir().exists(DEFAULTSOFTWARETEMPLATESDIR)) {
+    if (not QDir().exists(getenv("HOME") + QString("/..") + DEFAULTSOFTWARETEMPLATESDIR)) {
         cout << "Install igniters first before launching test!" << endl;
         exit(1);
     }
