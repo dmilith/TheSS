@@ -432,36 +432,40 @@ void SvdService::cronSitterSlot() {
         delete config;
         return;
     }
-    QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE;
-    if (QFile::exists(indicator)) {
-        logDebug() << "No need to cronSitting service" << name << "because it's already cronSitting.";
-    } else {
-        touch(indicator);
 
-        Q_FOREACH(auto entry, config->schedulerActions) {
-            auto crontabEntry = new SvdCrontab(entry->cronEntry, entry->commands);
-            logTrace() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "-=>" << crontabEntry->pp();
+    Q_FOREACH(auto entry, config->schedulerActions) {
 
-            /* If current time matches cron entry.. */
-            if (crontabEntry->cronMatch()) {
-                logDebug() << "Crontab match! Spawning" << entry->commands;
-                auto process = new SvdProcess(name);
-                process->spawnProcess(entry->commands);
-                process->waitForFinished(-1);
-                deathWatch(process->pid());
-                delete process;
+        QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
+
+        auto crontabEntry = new SvdCrontab(entry->cronEntry, entry->commands);
+        logDebug() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "  -=>" << crontabEntry->pp();
+
+        /* If current time matches cron entry.. */
+        if (crontabEntry->cronMatch()) {
+            if (QFile::exists(indicator)) {
+                logDebug() << "No need to launching cron service of:" << name << "because it's already been invoked once.";
+                delete crontabEntry;
+                delete config;
+                return;
             }
+            logDebug() << "Crontab match! Spawning" << entry->commands;
+            auto process = new SvdProcess(name);
+            process->spawnProcess(entry->commands);
+            process->waitForFinished(-1);
+            deathWatch(process->pid());
+            delete process;
 
-            // if (not expect(readFileContents(process->outputFile).c_str(), config->afterStart->expectOutput)) {
-            //     logError() << "Failed expectations of service:" << name << "with expected output of afterStart slot:" << config->afterStart->expectOutput;
-            //     writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->afterStart->expectOutput + "'");
-            // }
-
-            // QFile::remove(indicator);
-            // logTrace() << "After process afterStart execution:" << name;
-            delete crontabEntry;
+            touch(indicator); /* in this case it's indicator that it's been invoked once already */
+        } else {
+            QFile::remove(indicator);
         }
-        QFile::remove(indicator);
+
+        // if (not expect(readFileContents(process->outputFile).c_str(), config->afterStart->expectOutput)) {
+        //     logError() << "Failed expectations of service:" << name << "with expected output of afterStart slot:" << config->afterStart->expectOutput;
+        //     writeToFile(config->prefixDir() + DEFAULT_SERVICE_ERRORS_FILE, "Expectations Failed in:" + process->outputFile +  " - No match for: '" + config->afterStart->expectOutput + "'");
+        // }
+
+        delete crontabEntry;
     }
 
     delete config;
