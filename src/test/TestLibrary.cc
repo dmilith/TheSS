@@ -371,6 +371,7 @@ void TestLibrary::testWebAppDeployer() {
 
 
 void TestLibrary::testCrontabEntry() {
+    QVERIFY(QString("bug").toInt() == 0);
     auto cron = new SvdCrontab("* * * * * ?", "true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->minute == -1);
@@ -414,6 +415,36 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->dayOfWeek == -1);
     QVERIFY(cron->dayOfWeekFraction == -1);
     QVERIFY(cron->cronMatch() == true);
+    delete cron;
+
+    cron = new SvdCrontab("stefan mariola * * 0 ?", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->cronMatch() == false);
+    QVERIFY(cron->minute == 0);
+    QVERIFY(cron->minuteFraction == -1);
+    QVERIFY(cron->hour == 0);
+    QVERIFY(cron->hourFraction == -1);
+    QVERIFY(cron->dayOfMonth == -1);
+    QVERIFY(cron->dayOfMonthFraction == -1);
+    QVERIFY(cron->month == -1);
+    QVERIFY(cron->monthFraction == -1);
+    QVERIFY(cron->dayOfWeek == 0);
+    QVERIFY(cron->dayOfWeekFraction == -1);
+    delete cron;
+
+    cron = new SvdCrontab("stefan mariola a b 0/2 * ?", "true");
+    QVERIFY(cron->commands == "");
+    QVERIFY(cron->cronMatch() == false);
+    QVERIFY(cron->minute == 0);
+    QVERIFY(cron->minuteFraction == -1);
+    QVERIFY(cron->hour == 0);
+    QVERIFY(cron->hourFraction == -1);
+    QVERIFY(cron->dayOfMonth == 0);
+    QVERIFY(cron->dayOfMonthFraction == -1);
+    QVERIFY(cron->month == 0);
+    QVERIFY(cron->monthFraction == -1);
+    QVERIFY(cron->dayOfWeek == 0);
+    QVERIFY(cron->dayOfWeekFraction == 2);
     delete cron;
 }
 
