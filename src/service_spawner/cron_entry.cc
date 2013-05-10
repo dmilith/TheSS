@@ -197,6 +197,7 @@ bool SvdCrontab::cronMatch(const QDateTime& now) {
             /* something's wrong with entry? */
             default:
                 logError() << "Bad cron entry matcher!";
+                return false;
                 break;
 
         }
