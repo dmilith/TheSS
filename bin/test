@@ -10,4 +10,5 @@ else
     printf "Hit enter to continue\n"
     read
 fi
-make && ./test -nocrashhandler
+make
+# && ./test -nocrashhandler
