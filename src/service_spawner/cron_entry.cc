@@ -24,16 +24,9 @@ SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
             logTrace() << "Wildcard for index:" << indx;
             wildcard = true;
         }
-        auto tmp = value.split("*/");
-        if (value.contains("*/")) {
-            logDebug() << "Periodic cron value:" << value;
-            logTrace() << "INTERESTING VALUE:" << tmp.at(0) << "SECOND:" << tmp.at(1);
-            periodic = true;
-        }
+        auto tmp = value.split("/");
         if (value.contains("/")) {
-            tmp = value.split("/");
-            logDebug() << "Periodic cron value:" << value;
-            logTrace() << "INTERESTING VALUE:" << tmp.at(0) << "SECOND:" << tmp.at(1);
+            logTrace() << "Periodic cron value:" << value << "Split on:" << tmp.at(0) << "and:" << tmp.at(1);
             periodic = true;
         }
 
@@ -203,7 +196,7 @@ bool SvdCrontab::cronMatch(const QDateTime& now) {
         }
     }
 
-    logDebug() << "Cron entry datetime match:" <<
+    logDebug() << "Cron matches:" <<
         now.time().minute() << "vs" << this->minute <<
         now.time().hour() << "vs" << this->hour <<
         now.date().day() << "vs" << this->dayOfMonth <<
