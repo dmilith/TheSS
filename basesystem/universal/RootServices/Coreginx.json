@@ -4,7 +4,7 @@
     "schedulerActions": [
         {
             "cronEntry": "0 0/30 * * * ?",
-            "shellCommands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload"
+            "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload"
 
         }
     ],

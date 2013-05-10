@@ -6,6 +6,7 @@
  */
 
 #include "service_config.h"
+#include "cron_entry.h"
 
 
 SvdSchedulerAction::SvdSchedulerAction(const QString& initialCronEntry, const QString& initialCommands) {
@@ -17,7 +18,6 @@ SvdSchedulerAction::SvdSchedulerAction(const QString& initialCronEntry, const QS
 SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     name = "Default"; // must be declared first
     uid = getuid();
-    schedulerActions = new QList<SvdSchedulerAction*>();
     try {
         auto defaults = loadDefaultIgniter();
         softwareName = (*defaults)["softwareName"].asCString();
@@ -93,7 +93,6 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
 SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     name = serviceName; // this must be declared first!
     uid = getuid();
-    schedulerActions = new QList<SvdSchedulerAction*>();
     try {
         auto defaults = loadDefaultIgniter();
         auto root = loadIgniter(); // NOTE: the question is.. how will this behave ;]
@@ -122,13 +121,13 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         /* load service scheduler data */
         for (uint index = 0; index < (*root)["schedulerActions"].size(); ++index ) {
             try {
-                schedulerActions->push_back(
+                schedulerActions.push_back(
                     new SvdSchedulerAction(
                         (*root)["schedulerActions"][index].get("cronEntry", "0 0/10 * * * ?").asCString(),
-                        (*root)["schedulerActions"][index].get("shellCommands", "true").asCString()
+                        (*root)["schedulerActions"][index].get("commands", "true").asCString()
                     ));
             } catch (std::exception &e) {
-                logDebug() << "Exception while parsing scheduler actions of" << name;
+                logError() << "Exception while parsing scheduler actions of service:" << name << "-" << e.what();
             }
             logDebug() << "Defined scheduler action";
         }
@@ -196,9 +195,8 @@ SvdServiceConfig::~SvdServiceConfig() {
     delete reload;
     delete validate;
     delete babySitter;
-    for (int i = 0; i < schedulerActions->length(); i++)
-        delete schedulerActions->at(i);
-    delete schedulerActions;
+    for (int i = 0; i < schedulerActions.length(); i++)
+        delete schedulerActions.at(i);
 
 }
 

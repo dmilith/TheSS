@@ -4,7 +4,7 @@
     "schedulerActions": [
         {
             "cronEntry": "0 0/3 * * * ?",
-            "shellCommands": "echo 'Mysql what? Misa nie rozumić mysql crap.'"
+            "commands": "echo 'Mysql what? Misa nie rozumić mysql crap.'"
         }
     ],
     "install": {

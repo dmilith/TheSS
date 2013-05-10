@@ -7,7 +7,7 @@
     "schedulerActions": [
         {
             "cronEntry": "0 0/1 * * * ?",
-            "shellCommands": "echo 'Mongo pom pom'"
+            "commands": "echo 'Mongo pom pom'"
         }
     ],
     "start": {

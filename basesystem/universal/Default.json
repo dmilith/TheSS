@@ -2,7 +2,7 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.12.0",
+    "formatVersion": "0.12.1",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
@@ -38,7 +38,7 @@
 /*   "schedulerActions": [                      */
 /*     {                                        */
 /*         "cronEntry": "0 0/10 * * * ?",       */
-/*         "shellCommands": "my shell commands" */
+/*         "commands": "my shell commands" */
 /*     },                                       */
 /*     …                                        */
 /* ],                                           */

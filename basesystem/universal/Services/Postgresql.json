@@ -3,7 +3,7 @@
     "schedulerActions": [
         {
             "cronEntry": "0 0/3 * * * ?",
-            "shellCommands": "echo 'Postgres myk myk'"
+            "commands": "echo 'Postgres myk myk'"
         }
     ],
     "install": {

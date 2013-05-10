@@ -12,6 +12,7 @@
 #include "../globals/globals.h"
 #include "../jsoncpp/json/json.h"
 #include "utils.h"
+#include "cron_entry.h"
 
 #include <QObject>
 #include <QTextStream>
@@ -70,7 +71,7 @@ class SvdServiceConfig : QObject {
         bool autoStart, reportAllErrors, reportAllInfos, reportAllDebugs, watchPort, alwaysOn;
         int staticPort;
         QStringList dependencies;
-        QList<SvdSchedulerAction*> *schedulerActions;
+        QList<SvdSchedulerAction*> schedulerActions;
         SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;
 
 };
