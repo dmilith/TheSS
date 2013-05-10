@@ -2,7 +2,7 @@
     "softwareName": "Redis",
     "schedulerActions": [
         {
-            "cronEntry": "0 0/10 * * * ?",
+            "cronEntry": "*/25 * * * * ?",
             "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
         }
     ],
