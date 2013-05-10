@@ -29,7 +29,7 @@
         QString commands;
 
         SvdCrontab(const QString& cronEntry, const QString& commands);
-        bool cronMatch();
+        bool cronMatch(const QDateTime& now = QDateTime::currentDateTime());
         QString pp();
 
 };
