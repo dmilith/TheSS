@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.24.2"
+    #define APP_VERSION "0.24.3"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -13,8 +13,6 @@
         #define CLOCK_REALTIME REALTIME_CLOCK
     #endif
 
-    // #define POSIX_HOME_DIR "/home"
-    // #define USERS_HOME_DIR "/Users"
     #define SYSTEMUSERS_HOME_DIR "/SystemUsers"
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"

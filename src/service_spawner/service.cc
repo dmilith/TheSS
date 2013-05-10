@@ -450,11 +450,13 @@ void SvdService::cronSitterSlot() {
             }
             logDebug() << "Crontab match! Spawning" << entry->commands;
             touch(indicator); /* in this case it's indicator that it's been invoked once already */
+
             auto process = new SvdProcess(name);
             process->spawnProcess(entry->commands);
-            process->waitForFinished(-1);
-            deathWatch(process->pid());
-            delete process;
+            process->waitForStarted(-1);
+
+            /* asynchronous handling of cron jobs: */
+            connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), process, SLOT(deleteLater(void)));
 
         } else {
             QFile::remove(indicator);
