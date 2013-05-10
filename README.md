@@ -54,6 +54,32 @@ SERVICE_PORT # by default: random port, stored in ~/SoftwareData/AppName/.ports
 ```
 
 * Tested in production environments.
+* Supports cron-like scheduler built in (since v0.24.x). Commands defined in schedulers have full support for igniter constants (listed above) and each command is zsh compliant script language.
+Scheduler example based on Redis igniter:
+
+```json
+"schedulerActions": [
+    {
+        "cronEntry": "*/25 * * * * ?",
+        "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
+    },
+    {
+        "cronEntry": "*/10 * * * * ?",
+        "commands": "for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"
+    }
+]
+```
+
+```sh
+# Standard formatting for "cronEntry":
+"*/10 * * * * ?"  # invoke each 10 minutes, The "?" sign is just a required symbolic placeholder.
+
+# Currently supported cron formats:
+*   # passes on each value
+*/X # passes when modulo of X and current value is 0 (X is a positive number)
+X   # passes when X has exact value as current value (X is a positive number)
+
+```
 
 
 ## Igniter examples:
