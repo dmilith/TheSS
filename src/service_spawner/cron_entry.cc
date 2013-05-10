@@ -12,7 +12,7 @@
 
 SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
     auto cronList = cronEntry.split(' ', QString::SkipEmptyParts);
-    logDebug() << "Parsing cron entry:" << cronEntry << "->" << cronList;
+    logTrace() << "Parsing cron entry:" << cronEntry << "->" << cronList;
     for (int indx = 0; indx < cronList.length(); indx++) {
         auto value = cronList.at(indx);
         logTrace() << "Crontab element:" << value;

@@ -22,7 +22,7 @@ SvdService::SvdService(const QString& name) {
     babySitter.start(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
 
     /* setup cron sitter */
-    this->cronSitter.setInterval(ONE_SECOND_OF_DELAY / 1000);
+    this->cronSitter.setInterval(DEFAULT_CRON_CHECK_DELAY / 1000);
     connect(&cronSitter, SIGNAL(timeout()), this, SLOT(cronSitterSlot()));
 }
 
@@ -423,7 +423,7 @@ void SvdService::startSlot() {
 
 
 void SvdService::cronSitterSlot() {
-    logDebug() << "Cron sitter slot invoked by:" << name;
+    logTrace() << "Cron sitter slot invoked by:" << name;
     auto config = new SvdServiceConfig(name);
     if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
         if (cronSitter.isActive())
@@ -434,13 +434,13 @@ void SvdService::cronSitterSlot() {
     }
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE;
     if (QFile::exists(indicator)) {
-        logInfo() << "No need to cronSitting service" << name << "because it's already cronSitting.";
+        logDebug() << "No need to cronSitting service" << name << "because it's already cronSitting.";
     } else {
         touch(indicator);
 
         Q_FOREACH(auto entry, config->schedulerActions) {
             auto crontabEntry = new SvdCrontab(entry->cronEntry, entry->commands);
-            logDebug() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "-=>" << crontabEntry->pp();
+            logTrace() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "-=>" << crontabEntry->pp();
 
             /* If current time matches cron entry.. */
             if (crontabEntry->cronMatch()) {

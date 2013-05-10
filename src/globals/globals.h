@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.24.0"
+    #define APP_VERSION "0.24.1"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -63,6 +63,7 @@
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
+    #define DEFAULT_CRON_CHECK_DELAY 10000000 // 10s
     #define DEFAULT_SERVICE_PAUSE_INTERVAL 5000000 // 5 seconds
     #define BABYSITTER_TIMEOUT_INTERVAL 30000000 // 30 seconds
     #define COLLECTOR_TIMEOUT_INTERVAL 1000000 // 1 second

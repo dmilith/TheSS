@@ -129,7 +129,6 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
             } catch (std::exception &e) {
                 logError() << "Exception while parsing scheduler actions of service:" << name << "-" << e.what();
             }
-            logDebug() << "Defined scheduler action";
         }
 
         /* laod service hooks */
@@ -351,7 +350,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
 Json::Value* SvdServiceConfig::loadDefaultIgniter() {
     QFile defaultIgniter(defaultTemplateFile()); /* try loading root igniter as second */
     if(!defaultIgniter.open(QIODevice::ReadOnly)) { /* check file access */
-        logDebug() << "No file: " << defaultTemplateFile();
+        logTrace() << "No file: " << defaultTemplateFile();
     } else {
         return parseJSON(defaultTemplateFile());
     }
@@ -370,7 +369,7 @@ Json::Value* SvdServiceConfig::loadIgniter() {
     QFile fileRoot(rootIgniter()); /* try loading root igniter as third */
 
     if(!fileUser.open(QIODevice::ReadOnly)) { /* check file access */
-        logDebug() << "No file: " << userIgniter();
+        logTrace() << "No file: " << userIgniter();
     } else {
         fileUser.close();
         return parseJSON(userIgniter());
@@ -379,7 +378,7 @@ Json::Value* SvdServiceConfig::loadIgniter() {
 
     /* also check standard location for igniters */
     if(!fileStandardUser.open(QIODevice::ReadOnly)) { /* check file access */
-        logDebug() << "No file: " << standardUserIgniter();
+        logTrace() << "No file: " << standardUserIgniter();
     } else {
         fileStandardUser.close();
         return parseJSON(standardUserIgniter());
@@ -387,7 +386,7 @@ Json::Value* SvdServiceConfig::loadIgniter() {
     fileStandardUser.close();
 
     if(!fileRoot.open(QIODevice::ReadOnly)) {
-        logDebug() << "No file: " << rootIgniter();
+        logTrace() << "No file: " << rootIgniter();
         fileRoot.close();
         return new Json::Value();
     }
