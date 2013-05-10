@@ -35,7 +35,7 @@ void shutdownDefaultVPNNetwork() {
 
 
 QList<int> gatherUserUids() {
-    auto userDirs = QDir(USERS_HOME_DIR).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+    auto userDirs = QDir(getenv("HOME") + QString("/..")).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
     QList<int> dirs;
 
     /* filter through invalid directories */
@@ -274,11 +274,7 @@ const QString getHomeDir(uid_t uid) {
     if (uid == 0)
         return QString(SYSTEM_USERS_DIR);
     else {
-        if (not QDir().exists(USERS_HOME_DIR)) {
-            #undef USERS_HOME_DIR
-            #define USERS_HOME_DIR POSIX_HOME_DIR /* fallback to POSIX /home Default is /Users */
-        }
-        return QString(USERS_HOME_DIR) + "/" + getenv("USER");
+        return QString(getenv("HOME"));
     }
 }
 

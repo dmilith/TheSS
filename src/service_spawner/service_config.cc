@@ -204,7 +204,7 @@ SvdServiceConfig::~SvdServiceConfig() {
 
 
 const QString SvdServiceConfig::userServiceRoot() {
-    return QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(DEFAULT_USER_APPS_DIR) + "/" + softwareName;
+    return getenv("HOME") + QString(DEFAULT_USER_APPS_DIR) + "/" + softwareName;
 }
 
 
@@ -225,13 +225,13 @@ const QString SvdServiceConfig::prefixDir() {
     if (uid == 0) {
         return getOrCreateDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + name);
     } else {
-        return getOrCreateDir(QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(SOFTWARE_DATA_DIR) + "/" + name);
+        return getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + name);
     }
 }
 
 
 const QString SvdServiceConfig::defaultTemplateFile() {
-    return QString(DEFAULTSOFTWARETEMPLATE) + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return QString(getenv("HOME") + QString("/..") + DEFAULTSOFTWARETEMPLATE) + QString(DEFAULTSOFTWARETEMPLATEEXT);
 }
 
 
@@ -241,12 +241,12 @@ const QString SvdServiceConfig::rootIgniter() {
 
 
 const QString SvdServiceConfig::userIgniter() {
-    return QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(DEFAULTUSERIGNITERSDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return getenv("HOME") + QString(DEFAULTUSERIGNITERSDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
 }
 
 
 const QString SvdServiceConfig::standardUserIgniter() {
-    return QString(DEFAULTSOFTWARETEMPLATESDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return QString(getenv("HOME") + QString("/..") + DEFAULTSOFTWARETEMPLATESDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
 }
 
 
@@ -278,7 +278,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* Replace SERVICE_DEPENDENCY_PREFIX */
         QString depsFull;
         if (uid != 0)
-            depsFull = getOrCreateDir(QString(USERS_HOME_DIR) + "/" + getenv("USER") + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
+            depsFull = getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
         else
             depsFull = getOrCreateDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
 

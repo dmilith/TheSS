@@ -13,8 +13,8 @@
         #define CLOCK_REALTIME REALTIME_CLOCK
     #endif
 
-    #define POSIX_HOME_DIR "/home"
-    #define USERS_HOME_DIR "/Users"
+    // #define POSIX_HOME_DIR "/home"
+    // #define USERS_HOME_DIR "/Users"
     #define SYSTEMUSERS_HOME_DIR "/SystemUsers"
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
@@ -39,8 +39,8 @@
     #define SOFTWARE_DATA_DIR "/SoftwareData"
     #define SYSTEM_USERS_DIR "/SystemUsers"
     #define DEFAULTSOFTWARETEMPLATEEXT ".json"
-    #define DEFAULTSOFTWARETEMPLATE (USERS_HOME_DIR "/Common/Igniters/Default")
-    #define DEFAULTSOFTWARETEMPLATESDIR (USERS_HOME_DIR "/Common/Igniters/Services")
+    #define DEFAULTSOFTWARETEMPLATE "/Common/Igniters/Default"
+    #define DEFAULTSOFTWARETEMPLATESDIR "/Common/Igniters/Services"
     #define DEFAULTUSERIGNITERSDIR "/Igniters/Services"
     #define DEFAULT_SYSTEM_ADDRESS "127.0.0.1"
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
