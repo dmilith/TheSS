@@ -449,13 +449,13 @@ void SvdService::cronSitterSlot() {
                 return;
             }
             logDebug() << "Crontab match! Spawning" << entry->commands;
+            touch(indicator); /* in this case it's indicator that it's been invoked once already */
             auto process = new SvdProcess(name);
             process->spawnProcess(entry->commands);
             process->waitForFinished(-1);
             deathWatch(process->pid());
             delete process;
 
-            touch(indicator); /* in this case it's indicator that it's been invoked once already */
         } else {
             QFile::remove(indicator);
         }
