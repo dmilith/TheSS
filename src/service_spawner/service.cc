@@ -444,6 +444,7 @@ void SvdService::cronSitterSlot() {
 
             /* If current time matches cron entry.. */
             if (crontabEntry->cronMatch()) {
+                logDebug() << "Crontab match! Spawning" << entry->commands;
                 auto process = new SvdProcess(name);
                 process->spawnProcess(entry->commands);
                 process->waitForFinished(-1);
