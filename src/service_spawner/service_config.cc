@@ -129,7 +129,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
                 schedulerActions.push_back(
                     new SvdSchedulerAction(
                         (*root)["schedulerActions"][index].get("cronEntry", "0 0/10 * * * ?").asCString(),
-                        (*root)["schedulerActions"][index].get("commands", "true").asCString()
+                        replaceAllSpecialsIn((*root)["schedulerActions"][index].get("commands", "true").asCString())
                     ));
             } catch (std::exception &e) {
                 logError() << "Exception while parsing scheduler actions of service:" << name << "-" << e.what();
