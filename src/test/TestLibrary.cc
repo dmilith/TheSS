@@ -22,7 +22,7 @@ TestLibrary::TestLibrary() {
     /* Logger setup */
     consoleAppender = new ConsoleAppender();
     consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c> %m\n");
-    consoleAppender->setDetailsLevel(Logger::Debug); /* we don't need logger in test suite by default */
+    consoleAppender->setDetailsLevel(Logger::Fatal); /* we don't need logger in test suite by default */
     Logger::registerAppender(consoleAppender);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
 
@@ -378,9 +378,12 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->cronMatch() == true);
     delete cron;
 
-    cron = new SvdCrontab("*/10 10-15 32 * 3,4,5 ?", "true");
+    cron = new SvdCrontab("*/10 10-15 32 * 3,4,5,15 ?", "true");
     QVERIFY(cron->modes.at(0) == PERIODIC);
-    QVERIFY(cron->entries.at(0).split("/").at(1) == "10");
+    QVERIFY(cron->check(10, 0));
+    QVERIFY(cron->check(40, 0));
+    QVERIFY(cron->check(0, 0));
+    QVERIFY(not cron->check(11, 0));
 
     QVERIFY(cron->modes.at(1) == RANGE);
     QVERIFY(cron->check(13, 1)); // 13 is in range of 10-15
@@ -395,6 +398,7 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->check(3, 4));
     QVERIFY(cron->check(4, 4));
     QVERIFY(cron->check(5, 4));
+    QVERIFY(cron->check(15, 4));
     QVERIFY(not cron->check(2, 4));
     QVERIFY(not cron->check(6, 4));
     QVERIFY(not cron->check(666, 4));
