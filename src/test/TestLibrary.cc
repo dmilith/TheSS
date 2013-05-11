@@ -22,11 +22,11 @@ TestLibrary::TestLibrary() {
     /* Logger setup */
     consoleAppender = new ConsoleAppender();
     consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c> %m\n");
-    consoleAppender->setDetailsLevel(Logger::Debug);
+    consoleAppender->setDetailsLevel(Logger::Fatal); /* we don't need logger in test suite by default */
     Logger::registerAppender(consoleAppender);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
 
-    if (not QDir().exists(getenv("HOME") + QString("/..") + DEFAULTSOFTWARETEMPLATESDIR)) {
+    if (not QDir().exists(DEFAULTSOFTWARETEMPLATESDIR)) {
         cout << "Install igniters first before launching test!" << endl;
         exit(1);
     }
