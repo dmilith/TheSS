@@ -60,7 +60,7 @@ Scheduler example based on Redis igniter:
 ```json
 "schedulerActions": [
     {
-        "cronEntry": "*/25 * * * * ?",
+        "cronEntry": "*/25 10-15 1,3,5,7 * * ?",
         "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
     },
     {
@@ -72,12 +72,14 @@ Scheduler example based on Redis igniter:
 
 ```sh
 # Standard formatting for "cronEntry":
-"*/10 * * * * ?"  # invoke each 10 minutes, The "?" sign is just a required symbolic placeholder.
+"*/10 10,11,12 1-15 * * ?"  # invoke each 10 minutes, exactly at 10am, 11am, and 12am, only in first 15 days of month. The "?" sign is just a required symbolic placeholder.
 
 # Currently supported cron formats:
-*   # passes on each value
-*/X # passes when modulo of X and current value is 0 (X is a positive number)
-X   # passes when X has exact value as current value (X is a positive number)
+X       # NORMAL: passes when X has exact value as current value (X is a positive number)
+*       # WILDCARD: passes on each value
+*/X     # PERIODIC: passes when modulo of X and current value is 0 (X is a positive number)
+X-Y     # RANGE: passes when value is in between X and Y (X, Y are positive numbers)
+X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are positive numbers)
 
 ```
 
