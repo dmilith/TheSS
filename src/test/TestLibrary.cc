@@ -200,16 +200,11 @@ void TestLibrary::testMemoryAllocations() {
 void TestLibrary::testUtils() {
     uid_t uid = getuid();
     QString homeDir, softwareDataDir, serviceDataDir, name = "Redis";
-    #ifdef __linux__
-        #define HOME_DIR "/home/"
-    #else
-        #define HOME_DIR "/Users/"
-    #endif
 
     if (uid == 0)
         homeDir = "/SystemUsers";
     else
-        homeDir = QString(HOME_DIR) + getenv("USER");
+        homeDir = getenv("HOME");
 
     softwareDataDir = homeDir + "/SoftwareData";
     serviceDataDir = softwareDataDir + "/" + name;
