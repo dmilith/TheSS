@@ -22,7 +22,7 @@ TestLibrary::TestLibrary() {
     /* Logger setup */
     consoleAppender = new ConsoleAppender();
     consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c> %m\n");
-    consoleAppender->setDetailsLevel(Logger::Fatal); /* we don't need logger in test suite by default */
+    consoleAppender->setDetailsLevel(Logger::Trace); /* we don't need logger in test suite by default */
     Logger::registerAppender(consoleAppender);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
 
@@ -376,6 +376,35 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->modes.at(0) == WILDCARD);
     QVERIFY(cron->cronMatch() == true);
+    delete cron;
+
+    cron = new SvdCrontab("1 2 3 4 5 ?", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->modes.at(0) == NORMAL);
+    QVERIFY(cron->check(1, 0));
+    QVERIFY(cron->modes.at(1) == NORMAL);
+    QVERIFY(cron->check(2, 1));
+    QVERIFY(cron->modes.at(2) == NORMAL);
+    QVERIFY(cron->check(3, 2));
+    QVERIFY(cron->modes.at(3) == NORMAL);
+    QVERIFY(cron->check(4, 3));
+    QVERIFY(cron->modes.at(4) == NORMAL);
+    QVERIFY(cron->check(5, 4));
+    delete cron;
+
+    cron = new SvdCrontab("1,, 2,2,2 ,3 , ,5,5 ?", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->cronMatch() == false);
+    delete cron;
+
+    cron = new SvdCrontab("1// 2/2/2 /3 / /5/5 ?", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->cronMatch() == false);
+    delete cron;
+
+    cron = new SvdCrontab("1-- 2-2-2 -3 - -5-5 ?", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->cronMatch() == false);
     delete cron;
 
     cron = new SvdCrontab("*/10 10-15 32 * 3,4,5,15 ?", "true");

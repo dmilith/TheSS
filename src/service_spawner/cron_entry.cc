@@ -65,7 +65,12 @@ bool SvdCrontab::check(int currentTimeValue, int indx) {
 
         case PERIODIC: {
                 auto value = entries.at(indx).split("/");
-                if (currentTimeValue % value.at(1).toInt() == 0) {
+                int first = value.at(1).toInt();
+                if (first == 0) {
+                    logError() << "Wrong periodic value:" << entries.at(indx) << " Modulo by 0 is an invalid operation!";
+                    return false;
+                }
+                if (currentTimeValue % first == 0) {
                     logDebug() << "Matched cron periodic minute:" << currentTimeValue;
                 } else
                     return false;
@@ -85,9 +90,16 @@ bool SvdCrontab::check(int currentTimeValue, int indx) {
         case RANGE: {
                 auto value = entries.at(indx).split("-");
                 bool pass = false;
-                for (int i = value.at(0).toInt(); i <= value.at(1).toInt(); i++) {
-                    if (currentTimeValue == i)
-                        pass = true;
+                int first = value.at(0).toInt();
+                int second = value.at(1).toInt();
+                if (second > first)
+                    for (int i = first; i <= second; i++) {
+                        if (currentTimeValue == i)
+                            pass = true;
+                    }
+                else {
+                    logError() << "Wrong range value in crontab:" << entries.at(indx);
+                    return false;
                 }
                 if (not pass)
                     return false;
