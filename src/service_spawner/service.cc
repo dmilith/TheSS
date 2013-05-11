@@ -438,7 +438,8 @@ void SvdService::cronSitterSlot() {
         QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
 
         auto crontabEntry = new SvdCrontab(entry->cronEntry, entry->commands);
-        logDebug() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "  -=>" << crontabEntry->pp();
+        logDebug() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "  -=>";
+        crontabEntry->pp();
 
         /* If current time matches cron entry.. */
         if (crontabEntry->cronMatch()) {

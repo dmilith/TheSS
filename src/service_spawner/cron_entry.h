@@ -14,23 +14,31 @@
 #include "../globals/globals.h"
 
 
- class SvdCrontab {
+enum SvdCronType {
+    NORMAL,     // X
+    SEQUENCE,   // X,Y,Z
+    RANGE,      // X-Z
+    WILDCARD,   // *
+    PERIODIC    // X/Y
+};
+
+
+class SvdCrontab {
 
     public:
         /*
         possible values:
             -1 => wildcard value
          */
-        int minute = -1, minuteFraction = -1,
-            hour = -1, hourFraction = -1,
-            dayOfMonth = -1, dayOfMonthFraction = -1,
-            month = -1, monthFraction = -1,
-            dayOfWeek = -1, dayOfWeekFraction = -1;
+        QStringList entries;
+        QList<SvdCronType> modes;
         QString commands;
 
         SvdCrontab(const QString& cronEntry, const QString& commands);
+        bool check(int currentTimeValue, int indx);
         bool cronMatch(const QDateTime& now = QDateTime::currentDateTime());
-        QString pp();
+        SvdCronType workMode(int indx);
+        void pp();
 
 };
 
