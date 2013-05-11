@@ -230,7 +230,7 @@ void TestLibrary::testSomeRealCraziness() {
 void TestLibrary::testSanityValueCheck() {
     auto *config = new SvdServiceConfig("Redis");
 
-    QVERIFY(config->userServiceRoot().contains(getenv("USER")));
+    QVERIFY(config->userServiceRoot().contains(getenv("HOME")));
     #ifndef __linux__
         QVERIFY(config->userServiceRoot().contains("Users"));
     #endif
@@ -244,8 +244,7 @@ void TestLibrary::testSanityValueCheck() {
         QVERIFY(config->prefixDir().contains(QString(SYSTEM_USERS_DIR)));
         QVERIFY(!config->prefixDir().contains(QString::number(config->uid))); // root service prefix dir doens't contains uid in path!
     } else {
-        // QVERIFY(config->prefixDir().contains(QString(USERS_HOME_DIR)));
-        QVERIFY(config->prefixDir().contains(getenv("USER")));
+        QVERIFY(config->prefixDir().contains(getenv("HOME")));
     }
     QVERIFY(config->prefixDir().contains(QString(QString(SOFTWARE_DATA_DIR))));
     delete config;
