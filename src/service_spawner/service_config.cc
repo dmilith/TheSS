@@ -233,7 +233,7 @@ const QString SvdServiceConfig::prefixDir() {
 
 
 const QString SvdServiceConfig::defaultTemplateFile() {
-    return QString(getenv("HOME") + QString("/..") + DEFAULTSOFTWARETEMPLATE) + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return QString(DEFAULTSOFTWARETEMPLATE) + QString(DEFAULTSOFTWARETEMPLATEEXT);
 }
 
 
@@ -248,7 +248,7 @@ const QString SvdServiceConfig::userIgniter() {
 
 
 const QString SvdServiceConfig::standardUserIgniter() {
-    return QString(getenv("HOME") + QString("/..") + DEFAULTSOFTWARETEMPLATESDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return QString(DEFAULTSOFTWARETEMPLATESDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
 }
 
 
