@@ -26,6 +26,39 @@
 }
 ```
 
+* Service hooks have predefined execution order and some will call others. This is built in behavior and it's constant.
+
+```sh
+
+startHook # will execute:
+# ifNotInstalled(installHook -> configureHook) -> validateHook -> startHook -> afterStartHook
+
+afterStartHook # will execute:
+# afterStartHook
+
+stopHook # will execute:
+# stopHook -> afterStopHook
+
+afterStopHook # will execute:
+# afterStopHook
+
+restartHook # will execute:
+# stopHook -> afterStopHook -> validateHook -> startHook -> afterStartHook
+
+validateHook # will execute:
+# validateHook
+
+reloadHook # will execute:
+# reloadHook
+
+installHook # will execute:
+# installHook
+
+configureHook # will execute:
+# configureHook
+
+```
+
 * Using kernel file watchers (kqueue on OSX & BSD, epoll on Linux) to watch software config/ data dirs.
 * Supports "touch .hookname" method of manual launching of hooks. (for example: touch ~/SoftwareData/MyApp/.install will invoke install hook of MyApp igniter definition.)
 * Supports basic hook dependency model. (for example: touch ~/SoftwareData/MyApp/.start will invoke: install hook, configure hook, validate hook and start hook of MyApp igniter definition)
