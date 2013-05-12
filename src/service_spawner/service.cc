@@ -178,7 +178,7 @@ void SvdService::babySitterSlot() {
     } else
         logDebug() << "Babysitter invoked for:" << name;
     QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
-    emit validateSlot();
+    // emit validateSlot();
 
     if (config->alwaysOn) {
 
@@ -371,7 +371,10 @@ void SvdService::startSlot() {
                 if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {// XXX: not reliable
                     auto depService = new SvdService(dependency);
                     depService->start();
-                    depService->installSlot();
+                    if (not depConf->serviceInstalled()) {
+                        depService->installSlot();
+                        depService->configureSlot();
+                    }
                     depService->validateSlot();
                     depService->startSlot();
                     depService->afterStartSlot();
@@ -547,11 +550,12 @@ void SvdService::stopSlot() {
         // /* remove any other states on stop in case of any kinds of failure /killed ss */
         // // QFile::remove(indicator);
 
-        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE);
-        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE);
-        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE);
-        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE);
-        // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE);
+        logDebug() << "Performing after stop indicators cleanup.";
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE);
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE);
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE);
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE);
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE);
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE);
 
         logTrace() << "After process stop execution:" << name;
@@ -606,6 +610,7 @@ void SvdService::restartSlot() {
         // emit validateSlot();
         emit stopSlot();
         emit afterStopSlot();
+        emit validateSlot();
         emit startSlot();
         emit afterStartSlot();
         logInfo() << "Service restarted:" << name;
