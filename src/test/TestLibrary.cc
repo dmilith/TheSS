@@ -366,7 +366,15 @@ void TestLibrary::testWebAppDeployer() {
 
 void TestLibrary::testCrontabEntry() {
     QVERIFY(QString("bug").toInt() == 0);
-    auto cron = new SvdCrontab("* * * * * ?", "true");
+
+    /* this is empty case, which is an equivalent of giving entry: "* * * * * ?" */
+    auto cron = new SvdCrontab("", "true");
+    QVERIFY(cron->commands == "true");
+    QVERIFY(cron->modes.at(0) == WILDCARD);
+    QVERIFY(cron->cronMatch() == true);
+    delete cron;
+
+    cron = new SvdCrontab("                     ", "true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->modes.at(0) == WILDCARD);
     QVERIFY(cron->cronMatch() == true);
@@ -416,6 +424,8 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(not cron->check(16, 1));
 
     QVERIFY(cron->entries.at(2) == "32");
+    QVERIFY(cron->modes.at(2) == NORMAL);
+
     QVERIFY(cron->modes.at(3) == WILDCARD);
 
     QVERIFY(cron->check(3, 4));
