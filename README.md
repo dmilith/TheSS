@@ -8,11 +8,12 @@
 
 
 ## Dependencies:
+* [Sofin](http://verknowsys.github.io/sofin). (all igniters by default will try to use Sofin to install software)
 * [Qt4 4.8.x](http://qt-project.org/downloads) (only QtCore part)
 
 
 ## Features
-* Integrates with [Sofin](http://verknowsys.github.io/sofin). (Currently it supports only software built using Sofin).
+* Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).
 * Support software igniters written in JSON (+comments support) to generate predefined (user or system wide) software configurations on the fly.
 * Support for software hooks. (More in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)). Hook example:
 
@@ -26,6 +27,7 @@
 }
 ```
 
+* Ordered, synchronous execution of service hooks (exception: scheduler commmands are executed asynchronously)
 * Service hooks have predefined execution order and some will call others. This is built in behavior and it's constant.
 
 ```sh
@@ -88,7 +90,6 @@ SERVICE_VERSION # by default taken from Sofin's: ~/Apps/AppName/appname.version
 SERVICE_PORT # by default: random port, stored in ~/SoftwareData/AppName/.ports
 ```
 
-* Tested in production environments.
 * Supports cron-compliant scheduler built in (since v0.24.x). Commands defined in schedulers have full support for igniter constants (listed above) and each command is in Zsh-compatible script format.
 Scheduler example based on Redis igniter:
 
@@ -109,7 +110,9 @@ Scheduler example based on Redis igniter:
 
 ```sh
 # Standard formatting for "cronEntry":
-"*/10 10,11,12 1-15 * * ?"  # invoke each 10 minutes, exactly at 10am or 11am or 12am, only in first 15 days of month. The "?" sign is just a required symbolic placeholder which must be last character of each cron entry.
+"*/10 10,11,12 1-15 * * ?"  # invoke each 10 minutes, exactly at 10am or 11am or 12am,
+# only in first 15 days of month.
+# The "?" sign is just a required symbolic placeholder which must be last character of each cron entry.
 
 # Currently supported cron formats:
 *       # WILDCARD: passes on each value
@@ -119,6 +122,9 @@ X-Y     # RANGE: passes when value is in between X and Y (X, Y are positive numb
 X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are positive numbers)
 
 ```
+
+* Support for live updates. Do `touch ~/.shutdown` and all your software services will stay in background while maintainder will go down. Then just do an upgrade, rebuild, install and run again. It will just resume watch on live services.
+* Support maintained, synchronous startup and shutdown of services. SIGINT (Ctrl - c in terminal) will shutdown TheSS gracefully including all running services. SIGTERM will just tell TheSS to shutdown leaving all services spawned in background (equivalent of `touch ~/.shutdown`).
 
 
 ## Igniter examples:
@@ -140,7 +146,8 @@ bin/ignitersinstall
 
 # and now just:
 ./svdss
-# (it supports -d param for explicit debug output and -t for trace level output)
+# (it supports -d param for explicit debug output and -t for trace level output
+#  which may be later changed using "log level change" feature)
 
 # on second terminal, do:
 mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
