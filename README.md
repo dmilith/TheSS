@@ -136,26 +136,33 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 ## WTF? How to run it?
 
 ```sh
-# to build svdss:
-bin/build
-# On Darwin it may ask for sudo password to invoke bin/ignitersinstall
-# which installs required igniters to /Common
+# to install run as root:
+bin/systemdeploy
 
-# on Linux, run as root:
-bin/ignitersinstall
+# if you don't want to install it, but just try it,
+# run as root:
+bin/ignitersinstall # which installs default igniters to /Common
+
+# to build and run tests:
+bin/test && ./test
+
+# to only build TheSS executables:
+bin/build
+
+# to install, run as root:
+bin/systemdeploy
 
 # and now just:
-./svdss
+./svdss # or svdss if used install process
 # (it supports -d param for explicit debug output and -t for trace level output
 #  which may be later changed using "log level change" feature)
 
 # on second terminal, do:
 mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
-# wait a while, software install process should work in background
-# (requires Sofin to be already installed!). This process has
-# own log file here: ~/SoftwareData/Redis/.output. Software should
-# pick random port, generate configuration for Redis service and
-# just start it.
+# wait a while, software install process should work in background.
+# This process has own log file here: ~/SoftwareData/Redis/.output.
+# Software should pick random port, generate configuration for Redis
+# service and just start it.
 ```
 
 
