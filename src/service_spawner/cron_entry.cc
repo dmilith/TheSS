@@ -11,7 +11,10 @@
 
 
 SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
-    auto cronList = cronEntry.split(' ', QString::SkipEmptyParts);
+    QString entry = cronEntry;
+    if (cronEntry.trimmed().isEmpty())
+        entry = "* * * * * ?";
+    auto cronList = entry.split(' ', QString::SkipEmptyParts);
     Q_FOREACH(auto elem, cronList)
         modes << NORMAL; /* normal mode is default for each element by default */
 
@@ -116,6 +119,12 @@ bool SvdCrontab::check(int currentTimeValue, int indx) {
 
 
 bool SvdCrontab::cronMatch(const QDateTime& now) {
+
+    /* check for empty input data */
+    if (entries.length() == 0 or modes.length() == 0) {
+        logDebug() << "Empty entries? Return true - it's wildcard case equivalent of entry '* * * * * ?' (run command each minute).";
+        return true;
+    }
 
     for (int indx = 0; indx < entries.length(); indx++) {
 
