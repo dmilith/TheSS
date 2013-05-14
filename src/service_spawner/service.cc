@@ -377,7 +377,6 @@ void SvdService::startSlot() {
                     }
                     depService->validateSlot();
                     depService->startSlot();
-                    depService->afterStartSlot();
                     dependencyServices << depService;
                     logInfo() << "Launched dependency:" << dependency;
                 } else {
@@ -524,9 +523,7 @@ void SvdService::stopSlot() {
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
             logDebug() << "Invoking dependency stop slot and destroying service:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
             depService->stopSlot();
-            depService->afterStopSlot();
             depService->quit();
-            // depService->deleteLater();
         }
 
         logTrace() << "Loading service igniter" << name;
@@ -609,10 +606,8 @@ void SvdService::restartSlot() {
         logWarn() << "Restarting service:" << name;
         // emit validateSlot();
         emit stopSlot();
-        emit afterStopSlot();
         emit validateSlot();
         emit startSlot();
-        emit afterStartSlot();
         logInfo() << "Service restarted:" << name;
     }
 }
