@@ -182,6 +182,6 @@ bool SvdCrontab::cronMatch(const QDateTime& now) {
 
 void SvdCrontab::pp() {
     for (int i = 0; i < entries.length(); i++) {
-        logDebug() << "Crontab entry mode:" << modes.at(i) << "Crontab entry contents:" << entries.at(i);
+        logTrace() << "Crontab entry mode:" << modes.at(i) << "Crontab entry contents:" << entries.at(i);
     }
 }
