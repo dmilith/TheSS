@@ -21,6 +21,18 @@
 // #include <form.h>
 
 
+int kbhit() {
+    struct timeval tv;
+    fd_set fds;
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds); //STDIN_FILENO is 0
+    select(STDIN_FILENO+1, &fds, NULL, NULL, &tv);
+    return FD_ISSET(STDIN_FILENO, &fds);
+}
+
+
 int main(int argc, char *argv[]) {
 
     QCoreApplication app(argc, argv);
@@ -49,7 +61,6 @@ int main(int argc, char *argv[]) {
     keypad(stdscr, TRUE);
     noecho();
     refresh();
-    QList<WINDOW*> windows;
 
     int ch = 'p';
     int current_window_index = 0;
@@ -58,18 +69,17 @@ int main(int argc, char *argv[]) {
     QFileInfoList apps = home.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoDot);
     int APPS_NUMBER = apps.length();
 
-    for (int i = 0; i < APPS_NUMBER; i++) {
-        windows << newwin(6, col / APPS_NUMBER * 4, 6 * i + 1, 1);
-    }
-
     /* selected color */
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(3, COLOR_YELLOW, COLOR_BLACK);
     init_pair(4, COLOR_RED, COLOR_BLACK);
 
-    while (ch != 'q') {
+    attron(COLOR_PAIR(1));
+    mvprintw(1, 1, "| name       | softwareName | pid  | port  | domain     | r?  | v?  | s?  | t?  | c?  | i? |");
+    attroff(COLOR_PAIR(1));
 
+    while (ch != 'q') {
         switch (ch) {
             case KEY_UP:
                 if (current_window_index > 0)
@@ -86,31 +96,30 @@ int main(int argc, char *argv[]) {
                 break;
         }
 
-        for (int i = 0; i < APPS_NUMBER; i++) {
-            box(windows.at(i), 0 , 0);
-            if (current_window_index == i) {
-                wattron(windows.at(i), COLOR_PAIR(3));
-            } else {
-                wattron(windows.at(i), COLOR_PAIR(2));
+        while (!kbhit()) {
+            for (int i = 0; i < APPS_NUMBER; i++) {
+                QFileInfo baseDir = apps.at(i);
+                QString basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
+
+                if (current_window_index == i) {
+                    attron(COLOR_PAIR(3));
+                } else {
+                    attron(COLOR_PAIR(2));
+                }
+
+                mvprintw(i + 2, 1, baseDir.baseName().toUtf8());
+                mvprintw(i + 2, 20, QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed().toUtf8());
+                mvprintw(i + 2, 35, QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed().toUtf8());
+                if (QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE))
+                    mvprintw(i + 2, 50, "Running    ");
+                else
+                    mvprintw(i + 2, 50, "Not running");
+
             }
-            mvwprintw(windows.at(i), 1, 1, "Service name:");
-            mvwprintw(windows.at(i), 2, 1, "Service port:");
-            mvwprintw(windows.at(i), 3, 1, "Service domain:");
-            mvwprintw(windows.at(i), 4, 1, "Service status:");
 
-            wattron(windows.at(i), COLOR_PAIR(1));
-            QFileInfo baseDir = apps.at(i);
-            QString basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
-            mvwprintw(windows.at(i), 1, 20, baseDir.baseName().toUtf8());
-            mvwprintw(windows.at(i), 2, 20, QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed().toUtf8());
-            mvwprintw(windows.at(i), 3, 20, QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed().toUtf8());
-            if (QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE))
-                mvwprintw(windows.at(i), 4, 20, "Running    ");
-            else
-                mvwprintw(windows.at(i), 4, 20, "Not running");
-
-            // mvprintw(1, 1, QString::number(APPS_NUMBER).toUtf8());
-            wrefresh(windows.at(i));
+            mvprintw(1, 70, QString::number(APPS_NUMBER).toUtf8());
+            refresh();
+            usleep(500000);
         }
 
         ch = getch();
