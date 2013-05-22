@@ -83,7 +83,6 @@ int main(int argc, char *argv[]) {
   "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?");
 // moja-dowolna-apka-X1234   12345  lokalnydziad.dev:23456 YES       NO           NO                NO
     attroff(COLOR_PAIR(1));
-    attroff(COLOR_PAIR(1));
 
     while (ch != 'q') {
         switch (ch) {
