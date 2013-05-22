@@ -70,6 +70,11 @@ int main(int argc, char *argv[]) {
     QFileInfoList apps = home.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoDot);
     int APPS_NUMBER = apps.length();
 
+    if (APPS_NUMBER == 0) {
+        endwin();
+        logError() << "No services to watch!";
+    }
+
     /* selected color */
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
