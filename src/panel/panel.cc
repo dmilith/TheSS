@@ -76,7 +76,9 @@ int main(int argc, char *argv[]) {
     init_pair(4, COLOR_RED, COLOR_BLACK);
 
     attron(COLOR_PAIR(1));
-    mvprintw(1, 1, "| name       | softwareName | pid  | port  | domain     | r?  | v?  | s?  | t?  | c?  | i? |");
+    mvprintw(2, 1,
+  "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?");
+// moja-dowolna-apka-X1234   12345  lokalnydziad.dev:23456 YES       NO           NO                NO
     attroff(COLOR_PAIR(1));
 
     while (ch != 'q') {
@@ -107,17 +109,50 @@ int main(int argc, char *argv[]) {
                     attron(COLOR_PAIR(2));
                 }
 
-                mvprintw(i + 2, 1, baseDir.baseName().toUtf8());
-                mvprintw(i + 2, 30, QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed().toUtf8());
-                mvprintw(i + 2, 45, QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed().toUtf8());
-                if (QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE))
-                    mvprintw(i + 2, 60, "Running    ");
+                /* name */
+                mvprintw(i + 3, 1, baseDir.baseName().toUtf8());
+
+                /* pid */
+                QString pid = QString(readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).c_str()).trimmed();
+                if (pid.isEmpty())
+                    mvprintw(i + 3, 27, "NoPID");
                 else
-                    mvprintw(i + 2, 60, "Not running");
+                    mvprintw(i + 3, 27, pid.toUtf8());
+
+                /* domain:port */
+                QString domain = QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
+                QString port = QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed();
+                mvprintw(i + 3, 34, (domain + ":" + port).toUtf8());
+
+                /* running? */
+                if (QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE))
+                    mvprintw(i + 3, 57, "YES");
+                else
+                    mvprintw(i + 3, 57, "NO ");
+
+                /* validating? */
+                if (QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE))
+                    mvprintw(i + 3, 67, "YES");
+                else
+                    mvprintw(i + 3, 67, "NO ");
+
+                /* configuring? */
+                if (QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE))
+                    mvprintw(i + 3, 80, "YES");
+                else
+                    mvprintw(i + 3, 80, "NO ");
+
+                /* installing? */
+                if (QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE))
+                    mvprintw(i + 3, 94, "YES");
+                else
+                    mvprintw(i + 3, 94, "NO ");
 
             }
 
-            mvprintw(1, 70, QString::number(APPS_NUMBER).toUtf8());
+            QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
+            mvprintw(0, 1, info.toUtf8());
+            mvprintw(0, 100, "Services: " + QString::number(APPS_NUMBER).toUtf8());
             refresh();
             usleep(100000);
         }
