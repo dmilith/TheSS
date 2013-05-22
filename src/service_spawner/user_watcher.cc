@@ -36,15 +36,15 @@ void SvdUserWatcher::init(uid_t uid) {
     this->uid = uid;
     this->homeDir = getHomeDir(uid);
     this->softwareDataDir = getSoftwareDataDir(uid);
-    this->dataCollector = new SvdDataCollector();
+    // this->dataCollector = new SvdDataCollector();
 
     collectServices();
-    collectWebApplications();
+    // collectWebApplications();
 
     fileEvents = new SvdFileEventsManager();
     fileEvents->registerFile(homeDir);
     fileEvents->registerFile(softwareDataDir);
-    fileEvents->registerFile(homeDir + DEFAULT_WEBAPPS_DIR);
+    // fileEvents->registerFile(homeDir + DEFAULT_WEBAPPS_DIR);
 
     triggerFiles = new SvdUserHookTriggerFiles(homeDir);
     indicatorFiles = new SvdUserHookIndicatorFiles(homeDir);
@@ -53,21 +53,21 @@ void SvdUserWatcher::init(uid_t uid) {
     connect(fileEvents, SIGNAL(directoryChanged(QString)), this, SLOT(dirChangedSlot(QString)));
     connect(fileEvents, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedSlot(QString)));
 
-    if (QFile::exists(homeDir + DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE)) {
-        logInfo() << "Found data collector trigger file. Launching data collector for all user processes";
+    // if (QFile::exists(homeDir + DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE)) {
+    //     logInfo() << "Found data collector trigger file. Launching data collector for all user processes";
 
-        /* launch new collector service */
-        QString name = "ProcessDataCollector";
-        auto config = new SvdServiceConfig(name);
+    //     /* launch new collector service */
+    //     QString name = "ProcessDataCollector";
+    //     auto config = new SvdServiceConfig(name);
 
-        QDir().mkdir(config->prefixDir());
-        if (not QFile::exists(config->prefixDir() + "/.autostart")) {
-            touch(config->prefixDir() + "/.autostart");
-            touch(config->prefixDir() + "/.start");
-        }
+    //     QDir().mkdir(config->prefixDir());
+    //     if (not QFile::exists(config->prefixDir() + "/.autostart")) {
+    //         touch(config->prefixDir() + "/.autostart");
+    //         touch(config->prefixDir() + "/.start");
+    //     }
 
-        delete config;
-    }
+    //     delete config;
+    // }
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
 }
