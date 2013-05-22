@@ -108,18 +108,18 @@ int main(int argc, char *argv[]) {
                 }
 
                 mvprintw(i + 2, 1, baseDir.baseName().toUtf8());
-                mvprintw(i + 2, 20, QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed().toUtf8());
-                mvprintw(i + 2, 35, QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed().toUtf8());
+                mvprintw(i + 2, 30, QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed().toUtf8());
+                mvprintw(i + 2, 45, QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed().toUtf8());
                 if (QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE))
-                    mvprintw(i + 2, 50, "Running    ");
+                    mvprintw(i + 2, 60, "Running    ");
                 else
-                    mvprintw(i + 2, 50, "Not running");
+                    mvprintw(i + 2, 60, "Not running");
 
             }
 
             mvprintw(1, 70, QString::number(APPS_NUMBER).toUtf8());
             refresh();
-            usleep(500000);
+            usleep(100000);
         }
 
         ch = getch();
