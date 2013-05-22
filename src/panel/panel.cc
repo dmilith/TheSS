@@ -73,6 +73,7 @@ int main(int argc, char *argv[]) {
     if (APPS_NUMBER == 0) {
         endwin();
         logError() << "No services to watch!";
+        exit(1);
     }
 
     /* selected color */
