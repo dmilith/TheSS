@@ -77,17 +77,20 @@ int main(int argc, char *argv[]) {
     }
 
     /* selected color */
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(4, COLOR_RED, COLOR_BLACK);
-    init_pair(5, COLOR_CYAN, COLOR_BLACK);
+    init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
+    init_pair(2, COLOR_GREEN, COLOR_BLACK); // running service
+    init_pair(3, COLOR_BLACK, COLOR_BLACK); // stopped service
+    init_pair(4, COLOR_BLACK, COLOR_CYAN); // selected service
+    init_pair(5, COLOR_CYAN, COLOR_BLACK); // status
+    init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(8, COLOR_RED, COLOR_BLACK);
 
     attron(COLOR_PAIR(1));
     QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
     mvprintw(0, 1, info.toUtf8());
     mvprintw(0, 90, "Services: " + QString::number(APPS_NUMBER).toUtf8());
-    mvprintw(3, 1, "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?  Errors?  Autostart?");
+    mvprintw(3, 0, " Name                        PID Address                Status        Flags    Autostart?");
     attroff(COLOR_PAIR(1));
 
     while (ch != 'q') {
@@ -196,68 +199,104 @@ int main(int argc, char *argv[]) {
         }
 
         while (!kbhit()) {
+            // erase();
+            char flags[6];
+            flags[5] = '\0';
+
             for (int i = 0; i < APPS_NUMBER; i++) {
                 QFileInfo baseDir = apps.at(i);
                 QString basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
+                bool sr = QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE);
+                bool sv = QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE);
+                bool sc = QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE);
+                bool si = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE);
+                bool se = QFile::exists(basePath + DEFAULT_SERVICE_ERRORS_FILE);
+                bool ss = QFile::exists(basePath + "/.stop");
+                bool sa = QFile::exists(basePath + DEFAULT_SERVICE_AUTOSTART_FILE);
+                int x = 0, y = i + 4;
 
-                if (current_window_index == i) {
-                    attron(COLOR_PAIR(3));
+                QString pid = QString(readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).c_str()).trimmed();
+                QString domain = QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
+                QString port = QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed();
+
+
+                QString status;
+                int color;
+
+                if(si){
+                    status = "Installing...";
+                    color = COLOR_PAIR(6);
+                } else if(sv){
+                    status = "Validating...";
+                    color = COLOR_PAIR(6);
+                } else if(sc){
+                    status = "Configuring...";
+                    color = COLOR_PAIR(6);
+                } else if(ss){
+                    status = "Stopping...";
+                    color = COLOR_PAIR(7);
+                } else if(sr) {
+                    if(pid.isEmpty()){
+                        status = "Starting...";
+                        color = COLOR_PAIR(6);
+                        pid = "    -";
+                    } else {
+                        status = "Running";
+                        color = COLOR_PAIR(2);
+                    }
+                } else if(se){
+                    status = "Errors";
+                    color = COLOR_PAIR(8);
                 } else {
-                    attron(COLOR_PAIR(2));
+                    status = "Stopped";
+                    color = COLOR_PAIR(3) | A_BOLD;
+                    pid = "    -";
+                }
+
+                standend();
+
+                if(current_window_index == i){
+                    attron(COLOR_PAIR(4));
+                } else {
+                    attron(color);
                 }
 
                 /* name */
-                mvprintw(i + 4, 1, baseDir.baseName().toUtf8());
+                mvprintw(y, x, " %-26s", baseDir.baseName().toUtf8().data());
+                x += 27;
 
                 /* pid */
-                QString pid = QString(readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).c_str()).trimmed();
-                if (pid.isEmpty())
-                    mvprintw(i + 4, 27, "-     ");
-                else
-                    mvprintw(i + 4, 27, pid.toUtf8());
+                mvprintw(y, x, "%5s", pid.toUtf8().data());
+                x += 5;
 
                 /* domain:port */
-                QString domain = QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
-                QString port = QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed();
-                mvprintw(i + 4, 34, (domain + ":" + port).toUtf8());
+                mvprintw(y, x, " %-22s", (domain + ":" + port).toUtf8().data());
+                x += 23;
 
-                /* running? */
-                if (QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE))
-                    mvprintw(i + 4, 57, "YES");
-                else
-                    mvprintw(i + 4, 57, "NO ");
 
-                /* validating? */
-                if (QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE))
-                    mvprintw(i + 4, 67, "YES");
-                else
-                    mvprintw(i + 4, 67, "NO ");
+                /* flags & status */
+                mvprintw(y, x, " %-14s", status.toUtf8().data());
+                x += 14;
 
-                /* configuring? */
-                if (QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE))
-                    mvprintw(i + 4, 80, "YES");
-                else
-                    mvprintw(i + 4, 80, "NO ");
+                flags[0] = sr ? 'R' : '-';
+                flags[1] = sv ? 'V' : '-';
+                flags[2] = sc ? 'C' : '-';
+                flags[3] = si ? 'I' : '-';
+                flags[4] = se ? 'E' : '-';
+                flags[5] = ss ? 'S' : '-';
 
-                /* installing? */
-                if (QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE))
-                    mvprintw(i + 4, 94, "YES");
-                else
-                    mvprintw(i + 4, 94, "NO ");
 
-                /* errors? */
-                if (QFile::exists(basePath + DEFAULT_SERVICE_ERRORS_FILE))
-                    mvprintw(i + 4, 107, "YES");
-                else
-                    mvprintw(i + 4, 107, "NO ");
+                mvprintw(y, x, " %s", flags);
+                x += 7;
 
-                /* autostart? */
-                if (QFile::exists(basePath + DEFAULT_SERVICE_AUTOSTART_FILE))
-                    mvprintw(i + 4, 116, "YES");
-                else
-                    mvprintw(i + 4, 116, "NO ");
+
+                if(sa)  mvprintw(y, x, "   YES");
+                else    mvprintw(y, x, "      ");
+
+                // clrtoeol();
             }
 
+            standend();
             /* print status - usually last command invoked */
             attron(COLOR_PAIR(5));
             QString statusContent = "Status: " + status;
@@ -271,6 +310,7 @@ int main(int argc, char *argv[]) {
 
             refresh();
             usleep(100000);
+            standend();
         }
 
         ch = getch();
