@@ -9,6 +9,24 @@
 #include "utils.h"
 
 
+QString tail(const QString& absoluteFileName, int lines) {
+    QFile file(absoluteFileName);
+    if (not file.exists())
+        return "File empty!";
+    file.open(QIODevice::ReadOnly);
+    file.seek(file.size() - 1);
+    int count = 0;
+    while ( (count <= lines) && (file.pos() > 0) ) {
+        auto cha = file.read(1);
+        file.seek(file.pos() - 2);
+        if (cha == "\n")
+            count++;
+    }
+    QString r = file.readAll();
+    file.close();
+    return r;
+}
+
 
 void setupDefaultVPNNetwork() {
     #ifdef __FreeBSD__

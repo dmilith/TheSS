@@ -39,6 +39,7 @@ class TestLibrary: public QObject {
             void testWebAppDetection();
             void testWebAppDeployer();
             void testCrontabEntry();
+            void testTail();
 
 };
 

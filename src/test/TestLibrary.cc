@@ -364,6 +364,14 @@ void TestLibrary::testWebAppDeployer() {
 }
 
 
+void TestLibrary::testTail() {
+    QString a = tail("/usr/include/string.h", 3);
+    cout << a.toStdString();
+    fflush(stdout);
+    QVERIFY(a.contains("_STRING_H_"));
+}
+
+
 void TestLibrary::testCrontabEntry() {
     QVERIFY(QString("bug").toInt() == 0);
 
