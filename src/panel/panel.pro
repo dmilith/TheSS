@@ -29,5 +29,9 @@ SOURCES   += ../service_spawner/service.cc \
              ../service_spawner/logger.cc \
              panel.cc
 
-LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz -lncurses
+mac {
+      LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz -lncurses
+} else {
+      LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz -lncursesw
+}
 TARGET    = ../../svdpanel
