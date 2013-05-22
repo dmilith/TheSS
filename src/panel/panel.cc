@@ -76,9 +76,13 @@ int main(int argc, char *argv[]) {
     init_pair(4, COLOR_RED, COLOR_BLACK);
 
     attron(COLOR_PAIR(1));
+    QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
+    mvprintw(0, 1, info.toUtf8());
+    mvprintw(0, 100, "Services: " + QString::number(APPS_NUMBER).toUtf8());
     mvprintw(2, 1,
   "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?");
 // moja-dowolna-apka-X1234   12345  lokalnydziad.dev:23456 YES       NO           NO                NO
+    attroff(COLOR_PAIR(1));
     attroff(COLOR_PAIR(1));
 
     while (ch != 'q') {
@@ -150,9 +154,6 @@ int main(int argc, char *argv[]) {
 
             }
 
-            QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
-            mvprintw(0, 1, info.toUtf8());
-            mvprintw(0, 100, "Services: " + QString::number(APPS_NUMBER).toUtf8());
             refresh();
             usleep(100000);
         }
