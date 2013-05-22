@@ -10,6 +10,13 @@
 
 void LoggerTimer::invokeTrigger() {
     QString dir = getHomeDir();
+    if (QFile::exists(dir + "/.warn")) {
+        logInfo() << "Invoked logger level change to level 'warning'.";
+        QFile::remove(dir + "/.warn");
+        logger->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+        logger->setDetailsLevel(Logger::Warning);
+    }
+
     if (QFile::exists(dir + "/.info")) {
         logInfo() << "Invoked logger level change to level 'info'.";
         QFile::remove(dir + "/.info");
