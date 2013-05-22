@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
     mvprintw(0, 1, info.toUtf8());
     mvprintw(0, 100, "Services: " + QString::number(APPS_NUMBER).toUtf8());
     mvprintw(2, 1,
-  "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?  Errors?");
+  "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?  Errors?  Autostart?");
 // moja-dowolna-apka-X1234   12345  lokalnydziad.dev:23456 YES       NO           NO            NO           NO
     attroff(COLOR_PAIR(1));
 
@@ -157,6 +157,11 @@ int main(int argc, char *argv[]) {
                 else
                     mvprintw(i + 3, 107, "NO ");
 
+                /* autostart? */
+                if (QFile::exists(basePath + DEFAULT_SERVICE_AUTOSTART_FILE))
+                    mvprintw(i + 3, 116, "YES");
+                else
+                    mvprintw(i + 3, 116, "NO ");
             }
 
             refresh();
