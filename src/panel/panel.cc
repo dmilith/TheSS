@@ -80,8 +80,8 @@ int main(int argc, char *argv[]) {
     mvprintw(0, 1, info.toUtf8());
     mvprintw(0, 100, "Services: " + QString::number(APPS_NUMBER).toUtf8());
     mvprintw(2, 1,
-  "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?");
-// moja-dowolna-apka-X1234   12345  lokalnydziad.dev:23456 YES       NO           NO                NO
+  "Name                      PID    Address                Running?  Validating?  Configuring?  Installing?  Errors?");
+// moja-dowolna-apka-X1234   12345  lokalnydziad.dev:23456 YES       NO           NO            NO           NO
     attroff(COLOR_PAIR(1));
 
     while (ch != 'q') {
@@ -150,6 +150,12 @@ int main(int argc, char *argv[]) {
                     mvprintw(i + 3, 94, "YES");
                 else
                     mvprintw(i + 3, 94, "NO ");
+
+                /* errors? */
+                if (QFile::exists(basePath + DEFAULT_SERVICE_ERRORS_FILE))
+                    mvprintw(i + 3, 107, "YES");
+                else
+                    mvprintw(i + 3, 107, "NO ");
 
             }
 
