@@ -86,13 +86,6 @@ int main(int argc, char *argv[]) {
     init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(8, COLOR_RED, COLOR_BLACK);
 
-    attron(COLOR_PAIR(1));
-    QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
-    mvprintw(0, 1, info.toUtf8());
-    mvprintw(0, 90, "Services: " + QString::number(APPS_NUMBER).toUtf8());
-    mvprintw(3, 0, " Name                        PID Address                Status        Flags    Autostart?");
-    attroff(COLOR_PAIR(1));
-
     while (ch != 'q') {
         QFileInfo cursorBaseDir = apps.at(current_window_index);
         QString cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
@@ -199,7 +192,14 @@ int main(int argc, char *argv[]) {
         }
 
         while (!kbhit()) {
-            // erase();
+            /* write app header */
+            attron(COLOR_PAIR(1));
+            QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
+            mvprintw(0, 1, info.toUtf8());
+            mvprintw(0, 90, "Services: " + QString::number(APPS_NUMBER).toUtf8());
+            mvprintw(3, 0, " Name                        PID Address                Status        Flags    Autostart?");
+            attroff(COLOR_PAIR(1));
+
             char flags[6];
             flags[5] = '\0';
 
@@ -290,8 +290,8 @@ int main(int argc, char *argv[]) {
                 x += 7;
 
 
-                if(sa)  mvprintw(y, x, "   YES");
-                else    mvprintw(y, x, "      ");
+                if(sa)  mvprintw(y, x, "   YES       ");
+                else    mvprintw(y, x, "             ");
 
                 // clrtoeol();
             }
@@ -300,11 +300,6 @@ int main(int argc, char *argv[]) {
             /* print status - usually last command invoked */
             attron(COLOR_PAIR(5));
             QString statusContent = "Status: " + status;
-
-            /* a trick or hack, to clean screen after longer status messages in previous status content */
-            for (int ind = 1; ind < col; ind++) /* col is number of columns available on terminal */
-                statusContent += ' ';
-
             mvprintw(1, 1, statusContent.toUtf8());
             attroff(COLOR_PAIR(5));
 
