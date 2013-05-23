@@ -3,11 +3,9 @@
 if [ "$(uname)" = "Darwin" ]; then
     qmake -spec darwin-g++ TheSS.pro
     qmake -spec darwin-g++ Panel.pro
-    printf "Installing igniters\n"
-    sudo bin/ignitersinstall
 else
     qmake TheSS.pro
     qmake Panel.pro
-    printf "Please run as root: bin/ignitersinstall to install default igniters to /Common/Igniters\n"
 fi
+printf "NOTE: Please run as root: bin/ignitersinstall to install default igniters to /Common/Igniters\n"
 make && printf "Success\n"
