@@ -209,7 +209,6 @@ int main(int argc, char *argv[]) {
                 bool sc = QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE);
                 bool si = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE);
                 bool se = QFile::exists(basePath + DEFAULT_SERVICE_ERRORS_FILE);
-                bool ss = QFile::exists(basePath + "/.stop");
                 bool sa = QFile::exists(basePath + DEFAULT_SERVICE_AUTOSTART_FILE);
                 int x = 0, y = i + 4;
 
@@ -230,13 +229,16 @@ int main(int argc, char *argv[]) {
                 } else if(sc){
                     status = "Configuring...";
                     color = COLOR_PAIR(6);
-                } else if(ss){
-                    status = "Stopping...";
-                    color = COLOR_PAIR(7);
                 } else if(sr) {
-                    if(pid.isEmpty()){
-                        status = "Starting...";
-                        color = COLOR_PAIR(6);
+                    if(pid.isEmpty()) {
+                        uint __port = registerFreeTcpPort(port.toUInt());
+                        if (port.toUInt() == __port) {
+                            status = "Working...";
+                            color = COLOR_PAIR(6);
+                        } else {
+                            status = "Running";
+                            color = COLOR_PAIR(2);
+                        }
                         pid = "    -";
                     } else {
                         status = "Running";
@@ -281,11 +283,11 @@ int main(int argc, char *argv[]) {
                 flags[2] = sc ? 'C' : '-';
                 flags[3] = si ? 'I' : '-';
                 flags[4] = se ? 'E' : '-';
-                flags[5] = ss ? 'S' : '-';
+                //flags[5] = ss ? 'S' : '-';
 
 
                 mvprintw(y, x, " %s", flags);
-                x += 7;
+                x += 6;
 
 
                 if(sa)  mvprintw(y, x, "   YES       ");
