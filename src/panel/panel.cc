@@ -128,25 +128,23 @@ int main(int argc, char *argv[]) {
             case 10: /* Show details */ {
                     QString outputFile = cursorAppDataDir + "/service.log";
                     QString outputFile2 = cursorAppDataDir + "/.output.log";
-                    QString contents = tail(outputFile, row/2 - 3);
-                    QString contents2 = tail(outputFile2, row/2 - 3);
-                    WINDOW *win = newwin(row - row/2 - 1, col - 10, 1, 5);
-                    WINDOW *win2 = newwin(row - row/2 - 1, col - 10, 18, 5);
-                    wattron(win, COLOR_PAIR(3));
-                    wattron(win2, COLOR_PAIR(3));
-                    box(win, 1, 1);
-                    box(win2, 1, 1);
-                    mvwprintw(win, 0, 2, (cursorBaseDir.baseName() + " -> service.log").toUtf8());
-                    mvwprintw(win2, 0, 2, (cursorBaseDir.baseName() + " -> .output.log").toUtf8());
-                    wattroff(win, COLOR_PAIR(3));
-                    wattroff(win2, COLOR_PAIR(3));
-                    mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
-                    mvwprintw(win2, 1, 1, contents2.trimmed().toUtf8());
-                    wrefresh(win);
-                    wrefresh(win2);
+                    WINDOW *win = newwin(row - row/2 + 10, col - 10, 2, 5);
+
+                    while (!kbhit()) {
+                        QString contents = tail(outputFile, row/2 + 8);
+                        wattron(win, COLOR_PAIR(6));
+                        box(win, 1, 1);
+                        mvwprintw(win, 0, 2, (cursorBaseDir.baseName() + " -> service.log").toUtf8());
+                        wattroff(win, COLOR_PAIR(6));
+                        if (not contents.trimmed().isEmpty())
+                            mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
+                        wrefresh(win);
+
+                        usleep(300000);
+                    }
                     getch();
                     delwin(win);
-                    delwin(win2);
+                    clear();
                 } break;
 
             case 'A': /* Autotart */ {
