@@ -368,7 +368,7 @@ void TestLibrary::testTail() {
     QString a = tail("/usr/include/string.h", 3);
     cout << a.toStdString();
     fflush(stdout);
-    QVERIFY(a.contains("_STRING_H_"));
+    QVERIFY(a.contains("STRING_H"));
 }
 
 
