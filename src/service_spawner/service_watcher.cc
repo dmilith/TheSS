@@ -194,8 +194,7 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
 
     /* Check if directory wasn't removed */
     if (not QFile::exists(dir)) {
-        logWarn() << "Service data directory was removed. Shutting down service watcher.";
-        emit shutdownSlot();
+        logWarn() << "File lock on service data directory was removed: " + dir;
     }
 
 }
