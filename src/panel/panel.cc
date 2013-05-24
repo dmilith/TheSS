@@ -217,7 +217,7 @@ int main(int argc, char *argv[]) {
                 } break;
 
             case 'A': /* Autotart */ {
-                    QString autostartFile = cursorAppDataDir + "/.autostart";
+                    QString autostartFile = cursorAppDataDir + DEFAULT_SERVICE_AUTOSTART_FILE;
                     if (not QFile::exists(autostartFile))
                         touch(autostartFile);
                     else
