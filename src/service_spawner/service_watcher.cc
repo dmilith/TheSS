@@ -86,6 +86,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     connect(this, SIGNAL(afterStopService()), service, SLOT(afterStopSlot()));
     connect(this, SIGNAL(restartService()), service, SLOT(restartSlot()));
     connect(this, SIGNAL(reloadService()), service, SLOT(reloadSlot()));
+    connect(this, SIGNAL(destroyService()), service, SLOT(destroySlot()));
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
 
@@ -195,6 +196,7 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
     /* Check if directory wasn't removed */
     if (not QFile::exists(dir)) {
         logWarn() << "File lock on service data directory was removed: " + dir;
+        emit destroyService();
     }
 
 }

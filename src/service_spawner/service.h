@@ -75,6 +75,7 @@ class SvdService: public QThread {
         void restartSlot();
         void reloadSlot();
         void validateSlot();
+        void destroySlot();
 };
 
 

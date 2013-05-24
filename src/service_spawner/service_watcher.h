@@ -82,6 +82,7 @@ class SvdServiceWatcher: public QObject {
         void afterStopService();
         void restartService();
         void reloadService();
+        void destroyService();
 
     public slots:
         void shutdownSlot();

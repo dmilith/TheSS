@@ -671,3 +671,14 @@ void SvdService::validateSlot() {
     }
     delete config;
 }
+
+
+void SvdService::destroySlot() {
+    logDebug() << "Destroying service:" << name;
+    babySitter.stop();
+    cronSitter.stop();
+    this->exit();
+    this->deleteLater();
+}
+
+
