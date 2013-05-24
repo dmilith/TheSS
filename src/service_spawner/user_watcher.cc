@@ -73,21 +73,21 @@ void SvdUserWatcher::init(uid_t uid) {
 }
 
 
-void SvdUserWatcher::collectWebApplications() {
+// void SvdUserWatcher::collectWebApplications() {
 
-    logDebug() << "Looking for WebApps inside" << homeDir + DEFAULT_WEBAPPS_DIR;
-    QStringList oldWebApps = webApps;
-    logDebug() << "Previous list of WebApps:" << oldWebApps;
-    webApps = QDir(homeDir + DEFAULT_WEBAPPS_DIR).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
-    logDebug() << "Current list of WebApps:" << webApps;
+//     logDebug() << "Looking for WebApps inside" << homeDir + DEFAULT_WEBAPPS_DIR;
+//     QStringList oldWebApps = webApps;
+//     logDebug() << "Previous list of WebApps:" << oldWebApps;
+//     webApps = QDir(homeDir + DEFAULT_WEBAPPS_DIR).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+//     logDebug() << "Current list of WebApps:" << webApps;
 
-    Q_FOREACH(QString domain, webApps) {
-        if (not oldWebApps.contains(domain)) {
-            qDebug() << "Found WebApp:" << domain;
-            this->webAppWatchers << new SvdWebAppWatcher(domain);
-        }
-    }
-}
+//     Q_FOREACH(QString domain, webApps) {
+//         if (not oldWebApps.contains(domain)) {
+//             qDebug() << "Found WebApp:" << domain;
+//             this->webAppWatchers << new SvdWebAppWatcher(domain);
+//         }
+//     }
+// }
 
 
 void SvdUserWatcher::collectServices() {
