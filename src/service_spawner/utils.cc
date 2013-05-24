@@ -9,12 +9,19 @@
 #include "utils.h"
 
 
-QString tail(const QString& absoluteFileName, int lines) {
+QString tail(const QString& absoluteFileName, int lines, int positionModifier) {
     QFile file(absoluteFileName);
     if (not file.exists())
         return "File empty!";
+
     file.open(QIODevice::ReadOnly);
-    file.seek(file.size() - 1);
+    auto mod = 0;
+    if (positionModifier == 0) /* if positionModifier not given, then just seek end of a file - standard case */
+        mod = file.size() - 1;
+    else
+        mod = file.size() - 1 - positionModifier;
+
+    file.seek(mod);
     int count = 0;
     while ( (count <= lines) && (file.pos() > 0) ) {
         auto cha = file.read(1);

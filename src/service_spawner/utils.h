@@ -61,7 +61,7 @@ void unixSignalHandler(int sigNum);
 uint registerFreeTcpPort(uint specificPort = 0);
 Json::Value* parseJSON(const QString& filename);
 
-QString tail(const QString& pathToFile, int lines);
+QString tail(const QString& pathToFile, int lines, int positionModifier = 0);
 const QString toHMS(uint duration);
 const QString getOrCreateDir(const QString& path);
 const QString getWebAppsDir();
