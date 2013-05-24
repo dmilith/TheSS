@@ -38,8 +38,9 @@ int main(int argc, char *argv[]) {
     QString status = "Watching";
     int current_window_index = 0;
 
+    /* load services list */
     QDir home(userHomeDir + SOFTWARE_DATA_DIR);
-    QFileInfoList apps = home.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoDot);
+    QFileInfoList apps = getApps(home);
     int APPS_NUMBER = apps.length();
 
     if (APPS_NUMBER == 0) {
@@ -95,6 +96,51 @@ int main(int argc, char *argv[]) {
             case KEY_F(4): /* Warn */
                 touch(QString(getenv("HOME")) + "/.warn");
                 status = "Triggered log level change to: Warning";
+                break;
+
+            case KEY_F(8): /* Remove current service */ {
+                    if (QFile::exists(cursorAppDataDir + DEFAULT_SERVICE_RUNNING_FILE)) {
+                        status = "You can't remove running service: " + cursorBaseDir.baseName();
+                    } else {
+                        status = "Are you sure you want to destroy data and configuration of service: " + cursorBaseDir.baseName() + "? (Y/y/↵ to confirm)";
+                        printStatus(status);
+
+                        auto key = getch();
+                        switch (key) {
+                            case 10:
+                            case 'Y':
+                            case 'y': {
+                                    QFileInfo serviceDataDir(cursorAppDataDir);
+                                    while (serviceDataDir.exists()) { // XXX: blocking and locking in case of "bad folder owner permissions".
+                                        if (serviceDataDir.isDir() and
+                                            serviceDataDir.isWritable() and
+                                            serviceDataDir.isReadable() and
+                                            serviceDataDir.isExecutable()) {
+
+                                                // removeDir(cursorAppDataDir);
+                                                removeDir(cursorAppDataDir);
+                                                status = "Data dir removed: " + cursorAppDataDir;
+                                                apps = getApps(home);
+                                                APPS_NUMBER = apps.length();
+                                                current_window_index -= 1;
+                                                clear();
+                                                break;
+
+                                        } else {
+                                            status = "Permissions failure. Check your user priviledges on your software data dir";
+                                            break;
+                                        }
+                                        usleep(100000);
+                                    }
+                                }
+                                break;
+
+                            default:
+                                status = "Cancelled removing data dir: " + cursorAppDataDir;
+                                break;
+                        }
+                    }
+                }
                 break;
 
             case 10: /* Show details */ {
