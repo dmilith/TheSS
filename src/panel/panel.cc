@@ -98,12 +98,57 @@ int main(int argc, char *argv[]) {
                 status = "Triggered log level change to: Warning";
                 break;
 
+            case KEY_F(7): /* Launch new service */ {
+                    WINDOW *win = newwin(row/2, col/2, 5, 5);
+                    wattron(win, COLOR_PAIR(6));
+                    box(win, 1, 1);
+                    wattroff(win, COLOR_PAIR(6));
+
+                    QString newServiceName = "";
+                    int ch = 0;
+                    curs_set(1); /* cursor visible */
+
+                    wattron(win, COLOR_PAIR(2));
+
+                    auto services = availableServices(home);
+                    mvwprintw(win, 1, 1, "Available service igniters: " + services.join(", ").toUtf8());
+                    wattroff(win, COLOR_PAIR(2));
+
+                    mvwprintw(win, 6, 1, "Enter service name to init: ");
+                    while (ch != '\n' and ch != '\r') {
+                        ch = wgetch(win);
+                        newServiceName += ch;
+                        mvwprintw(win, 6, 29, newServiceName.toUtf8());
+                    }
+                    mvwprintw(win, 6, 29, newServiceName.toUtf8());
+
+                    if (services.contains(newServiceName.trimmed())) {
+                        QDir home(userHomeDir + SOFTWARE_DATA_DIR);
+                        getOrCreateDir(home.absolutePath() + "/" + newServiceName.trimmed()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/newServiceName */
+                        status = "Initialized service: " + newServiceName.trimmed();
+
+                        /* reload services list */
+                        apps = getApps(home);
+                        APPS_NUMBER = apps.length();
+                        current_window_index += 1;
+
+                    } else {
+                        status = "Not found service igniter called: " + newServiceName;
+                    }
+
+                    delwin(win);
+                    curs_set(0); /* cursor invisible */
+                    clear();
+                    refresh();
+                }
+                break;
+
             case KEY_F(5): /* refresh */ {
                     apps = getApps(home);
                     APPS_NUMBER = apps.length();
                     clear();
                     refresh();
-                    status = "Reloaded status.";
+                    status = "Reloaded services list.";
                 }
                 break;
 
