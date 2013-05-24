@@ -43,12 +43,6 @@ int main(int argc, char *argv[]) {
     QFileInfoList apps = getApps(home);
     int APPS_NUMBER = apps.length();
 
-    if (APPS_NUMBER == 0) {
-        endwin();
-        logError() << "No services to watch!";
-        exit(1);
-    }
-
     /* selected color */
     init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
     init_pair(2, COLOR_GREEN, COLOR_BLACK); // running service
@@ -65,17 +59,21 @@ int main(int argc, char *argv[]) {
 
         switch (ch) {
             case KEY_UP:
-                if (current_window_index > 0)
-                    current_window_index -= 1;
-                else
-                    current_window_index = 0;
+                if (APPS_NUMBER > 0) {
+                    if (current_window_index > 0)
+                        current_window_index -= 1;
+                    else
+                        current_window_index = 0;
+                }
                 break;
 
             case KEY_DOWN:
-                if (current_window_index < APPS_NUMBER - 1)
-                    current_window_index += 1;
-                else
-                    current_window_index = APPS_NUMBER - 1;
+                if (APPS_NUMBER > 0) {
+                    if (current_window_index < APPS_NUMBER - 1)
+                        current_window_index += 1;
+                    else
+                        current_window_index = APPS_NUMBER - 1;
+                }
                 break;
 
             case KEY_F(1): /* Trace */
