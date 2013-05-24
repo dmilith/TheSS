@@ -99,10 +99,8 @@ void SvdUserWatcher::collectServices() {
 
     Q_FOREACH(QString name, services) {
         if (not oldServices.contains(name)) {
-            // if (QFile::exists(softwareDataDir + "/" + name + DEFAULT_SERVICE_AUTOSTART_FILE)) {
-                logInfo() << "Invoking Service Watcher for service:" << name;
-                this->serviceWatchers << new SvdServiceWatcher(name);
-            // }
+            logInfo() << "Initializing watchers for data dir of service:" << name;
+            this->serviceWatchers << new SvdServiceWatcher(name);
         }
     }
 }
@@ -156,11 +154,11 @@ void SvdUserWatcher::dirChangedSlot(const QString& dir) {
         return;
     }
 
-    if (dir.contains(DEFAULT_WEBAPPS_DIR)) {
-        logInfo() << "Deployer has been triggered with new web application";
-        collectWebApplications();
-        return;
-    }
+    // if (dir.contains(DEFAULT_WEBAPPS_DIR)) {
+    //     logInfo() << "Deployer has been triggered with new web application";
+    //     collectWebApplications();
+    //     return;
+    // }
 
     if (dir == softwareDataDir) {
         collectServices();
