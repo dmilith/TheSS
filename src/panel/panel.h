@@ -19,9 +19,21 @@
 #include <QtCore>
 
 #include <curses.h>
-// #include <panel.h>
-// #include <menu.h>
-// #include <form.h>
+
+
+QStringList availableServices(QDir home) {
+    auto userEntries = QDir(getenv("HOME") + QString(DEFAULTUSERIGNITERSDIR)).entryList(QDir::Files);
+    auto standardEntries = QDir(QString(DEFAULTSOFTWARETEMPLATESDIR)).entryList(QDir::Files);
+    auto rootEntries = QStringList();
+    if (getuid() == 0) {
+        rootEntries << QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULTUSERIGNITERSDIR)).entryList(QDir::Files);
+    }
+    auto allEntries = userEntries + standardEntries + rootEntries;
+    allEntries.removeDuplicates();
+    allEntries.sort();
+    allEntries.replaceInStrings(QRegExp("\\.json"), "");
+    return allEntries;
+}
 
 
 void printStatus(QString status) {
