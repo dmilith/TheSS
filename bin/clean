@@ -16,3 +16,5 @@ else
     qmake Panel.pro
     make distclean
 fi
+
+rm -fv src/*.a
