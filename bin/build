@@ -1,16 +1,35 @@
 #!/bin/sh
 
-if [ "$(uname)" = "Darwin" ]; then
-    qmake -spec darwin-g++ Panel.pro
-    make && printf "Successfully built panel\n"
 
-    qmake -spec darwin-g++ TheSS.pro
-    make && printf "Successfully built ss\n"
-else
-    qmake TheSS.pro
-    make && printf "Successfully built panel\n"
+build () {
+    SYSTEM_NAME="$(uname)"
+    OPTS=""
+    case "${SYSTEM_NAME}" in
+        Darwin)
+            OPTS="-spec darwin-g++"
+            ;;
+    esac
 
-    qmake Panel.pro
-    make && printf "Successfully built ss\n"
-fi
-printf "NOTE: Please run as root: bin/ignitersinstall to install default igniters to /Common/Igniters\n"
+    case "$1" in
+        panel)
+            qmake ${OPTS} Panel.pro
+            make && printf "Successfully built svdpanel\n"
+            ;;
+
+        ss)
+            qmake ${OPTS} TheSS.pro
+            make && printf "Successfully built ss\n"
+            ;;
+
+        *)
+            qmake ${OPTS} TheSS.pro
+            make && printf "Successfully built ss\n"
+            qmake ${OPTS} Panel.pro
+            make && printf "Successfully built svdpanel\n"
+            ;;
+    esac
+}
+
+build "$1"
+
+printf "NOTE: Please run as root: bin/ignitersinstall to install default igniters to /Common/Igniters. They're required for ss to run properly!\n"
