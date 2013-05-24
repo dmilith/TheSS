@@ -451,8 +451,6 @@ void TestLibrary::testCrontabEntry() {
 void TestLibrary::testTail() {
     QString a = tail("/usr/include/string.h", 3);
     QVERIFY(a.contains("STRING_H"));
-    a = tail("/usr/include/string.h", 3, 256); /* 256 bytes from end of file */
-    QVERIFY(not a.contains("STRING_H")); /* which is at the end of file */
 }
 
 
