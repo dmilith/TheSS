@@ -37,14 +37,10 @@ int main(int argc, char *argv[]) {
     int ch = 'p';
     QString status = "Watching";
     int current_window_index = 0;
+    QDir home(userHomeDir + SOFTWARE_DATA_DIR);
 
     /* sanity check */
     getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR));
-
-    /* load services list */
-    QDir home(userHomeDir + SOFTWARE_DATA_DIR);
-    QFileInfoList apps = getApps(home);
-    int APPS_NUMBER = apps.length();
 
     /* selected color */
     init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
@@ -55,6 +51,10 @@ int main(int argc, char *argv[]) {
     init_pair(6, COLOR_YELLOW, COLOR_BLACK);
     init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(8, COLOR_RED, COLOR_BLACK);
+
+    /* reload services list */
+    QFileInfoList apps = getApps(home);
+    int APPS_NUMBER = apps.length();
 
     while (ch != 'q') {
         QFileInfo cursorBaseDir;
@@ -326,6 +326,10 @@ int main(int argc, char *argv[]) {
         }
 
         while (!kbhit()) {
+            /* reload services list */
+            apps = getApps(home);
+            APPS_NUMBER = apps.length();
+
             /* write app header */
             attron(COLOR_PAIR(1));
             QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
@@ -357,7 +361,8 @@ int main(int argc, char *argv[]) {
                 QString pid = QString(readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).c_str()).trimmed();
                 QString domain = QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
                 QString port = QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed();
-
+                if (domain.isEmpty()) domain = "-";
+                if (port.isEmpty()) port = "-";
 
                 QString status;
                 int color;
