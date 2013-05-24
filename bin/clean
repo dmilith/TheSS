@@ -2,18 +2,18 @@
 
 
 if [ "$(uname)" = "Darwin" ]; then
-    qmake -spec darwin-g++ TheSS.pro
-    make distclean
     qmake -spec darwin-g++ TestSS.pro
     make distclean
     qmake -spec darwin-g++ Panel.pro
     make distclean
-else
-    qmake TheSS.pro
+    qmake -spec darwin-g++ TheSS.pro
     make distclean
+else
     qmake TestSS.pro
     make distclean
     qmake Panel.pro
+    make distclean
+    qmake TheSS.pro
     make distclean
 fi
 
