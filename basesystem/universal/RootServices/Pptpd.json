@@ -5,8 +5,9 @@
         "commands": "sofin get pptpd",
         "expectOutput": "All done"
     },
-    "start": {
-        "commands": "test ! -L /etc/ppp/ppp.secret && rm -f /etc/ppp/ppp.secret && printf '
+    "validate": {
+        "commands": "
+test ! -L /etc/ppp/ppp.secret && rm -f /etc/ppp/ppp.secret && printf '
 guest   somepass    10.10.0.51
 ' > SERVICE_PREFIX/ppp.secret && ln -s SERVICE_PREFIX/ppp.secret /etc/ppp/ppp.secret
 
@@ -34,7 +35,12 @@ test ! -e SERVICE_PREFIX/service.conf && printf '
 localip 10.10.0.1
 remoteip 10.10.0.50-250
 ' > SERVICE_PREFIX/service.conf
-
-SERVICE_ROOT/exports/pptpd --conf SERVICE_PREFIX/service.conf --pidfile SERVICE_PREFIX/service.pid"
+"
+    },
+    "start": {
+        "commands": "
+printf 'Launching Pptpd\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/pptpd --conf SERVICE_PREFIX/service.conf --pidfile SERVICE_PREFIX/service.pid >> SERVICE_PREFIX/service.log 2>&1
+"
     }
 }

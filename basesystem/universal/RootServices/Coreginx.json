@@ -13,13 +13,19 @@
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf"
+        "commands": "
+printf 'Launching Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf >> SERVICE_PREFIX/service.log 2>&1
+"
     },
     "stop": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop"
+        "commands": "
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PREFIX/service.log 2>&1
+"
     },
     "validate": {
-        "commands": "test ! -d SERVICE_PREFIX/html && mkdir -p SERVICE_PREFIX/html && echo '<html>Hello I am Nginx and I am not configured yet!</html>' > SERVICE_PREFIX/html/index.html
+        "commands": "
+test ! -d SERVICE_PREFIX/html && mkdir -p SERVICE_PREFIX/html && echo '<html>Hello I am Nginx and I am not configured yet!</html>' > SERVICE_PREFIX/html/index.html
 test ! -f SERVICE_PREFIX/service.conf && printf '
 worker_processes 2;
 events {
@@ -43,16 +49,21 @@ http {
 }
 ' > SERVICE_PREFIX/service.conf
 
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t",
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t
+",
         "expectOutput": "test is successful"
     },
     "reload": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload"
+        "commands": "
+printf 'Reloading Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1
+"
     },
     "babySitter": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t",
+        "commands": "
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t
+",
         "expectOutput": "test is successful",
         "expectOutputTimeout": 20
     }
-
 }

@@ -6,8 +6,9 @@
         "commands": "sofin get openvpn",
         "expectOutput": "All done"
     },
-    "start": {
-        "commands": "test ! -e SERVICE_PREFIX/ipp.txt && printf '
+    "validate": {
+        "commands": "
+test ! -e SERVICE_PREFIX/ipp.txt && printf '
 tallica,10.10.0.2
 dmilith,10.10.0.3
 wick3d,10.10.0.4
@@ -42,7 +43,12 @@ push \"no-reply\"
 
 ifconfig-pool-persist SERVICE_PREFIX/ipp.txt 0
 ' > SERVICE_PREFIX/service.conf
-
-SERVICE_ROOT/exports/openvpn --config SERVICE_PREFIX/service.conf --writepid SERVICE_PREFIX/service.pid --nice -3"
+"
+    },
+    "start": {
+        "commands": "
+printf 'Launching Openvpn\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/openvpn --config SERVICE_PREFIX/service.conf --writepid SERVICE_PREFIX/service.pid --nice -3 >> SERVICE_PREFIX/service.log 2>&1
+"
     }
 }
