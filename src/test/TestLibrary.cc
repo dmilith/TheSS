@@ -364,14 +364,6 @@ void TestLibrary::testWebAppDeployer() {
 }
 
 
-void TestLibrary::testTail() {
-    QString a = tail("/usr/include/string.h", 3);
-    cout << a.toStdString();
-    fflush(stdout);
-    QVERIFY(a.contains("STRING_H"));
-}
-
-
 void TestLibrary::testCrontabEntry() {
     QVERIFY(QString("bug").toInt() == 0);
 
@@ -455,3 +447,22 @@ void TestLibrary::testCrontabEntry() {
     delete cron;
 }
 
+
+void TestLibrary::testTail() {
+    QString a = tail("/usr/include/string.h", 3);
+    QVERIFY(a.contains("STRING_H"));
+    a = tail("/usr/include/string.h", 3, 256); /* 256 bytes from end of file */
+    QVERIFY(not a.contains("STRING_H")); /* which is at the end of file */
+}
+
+
+void TestLibrary::testMkdir() {
+    QVERIFY(QDir(getOrCreateDir("/tmp/abc123")).exists());
+    QVERIFY(QDir(getOrCreateDir("/tmp/abc123/4/5/6/7/8/9/zażółcam-gęślą")).exists());
+    removeDir("/tmp/abc123/A");
+    removeDir("/tmp/abc123/4/5/6/7/8/9/zażółcam-gęślą");
+    removeDir("/tmp/abc123");
+    QVERIFY(not QDir("/tmp/abc123/A").exists());
+    QVERIFY(not QDir("/tmp/abc123/4/5/6/7/8/9/zażółcam-gęślą").exists());
+    QVERIFY(not QDir("/tmp/abc123").exists());
+}
