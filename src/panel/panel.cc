@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
     QString userHomeDir = getenv("HOME");
     signal(SIGINT, unixSignalHandler);
-    signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
+    // signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
     int row, col; /* rows and cols of terminal */
 
