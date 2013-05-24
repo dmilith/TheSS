@@ -60,7 +60,7 @@
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
 
-    #define DEFAULT_PANEL_SCROLL_SIZE 512 /* panel log viewer scroll value in bytes */
+    #define DEFAULT_PANEL_SCROLL_SIZE 256 /* panel log viewer scroll value in bytes */
     #define DEFAULT_PANEL_REFRESH_INTERVAL 300000
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
