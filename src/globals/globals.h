@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.27.5"
+    #define APP_VERSION "0.27.6"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -59,6 +59,9 @@
     #define DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE "/.data-collector"
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
+
+    #define DEFAULT_PANEL_SCROLL_SIZE 512 /* panel log viewer scroll value in bytes */
+    #define DEFAULT_PANEL_REFRESH_INTERVAL 300000
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
     #define DEFAULT_CRON_CHECK_DELAY 10000000 // 10s

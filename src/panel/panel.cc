@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
                                             status = "Permissions failure. Check your user priviledges on your software data dir";
                                             break;
                                         }
-                                        usleep(100000);
+                                        usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
                                     }
                                 }
                                 break;
@@ -370,7 +370,7 @@ int main(int argc, char *argv[]) {
             printStatus(status); /* print status - usually last command invoked */
 
             refresh();
-            usleep(100000);
+            usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
             standend();
         }
 
