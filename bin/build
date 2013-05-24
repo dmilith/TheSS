@@ -11,14 +11,19 @@ build () {
     esac
 
     case "$1" in
-        panel)
+        panel|svdpanel)
             qmake ${OPTS} Panel.pro
             make && printf "Successfully built svdpanel\n"
             ;;
 
-        ss)
+        ss|svdss)
             qmake ${OPTS} TheSS.pro
             make && printf "Successfully built ss\n"
+            ;;
+
+        tests|test)
+            qmake ${OPTS} TestSS.pro
+            make && printf "Successfully built tests\n"
             ;;
 
         *)
@@ -26,6 +31,8 @@ build () {
             make && printf "Successfully built ss\n"
             qmake ${OPTS} Panel.pro
             make && printf "Successfully built svdpanel\n"
+            qmake ${OPTS} TestSS.pro
+            make && printf "Successfully built tests\n"
             ;;
     esac
 }
