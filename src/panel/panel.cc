@@ -57,9 +57,15 @@ int main(int argc, char *argv[]) {
     init_pair(8, COLOR_RED, COLOR_BLACK);
 
     while (ch != 'q') {
-        QFileInfo cursorBaseDir = apps.at(current_window_index);
-        QString cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
-        updateSSStatus(); /* will show status of service spawner */
+        QFileInfo cursorBaseDir;
+        QString cursorAppDataDir;
+
+        if (APPS_NUMBER == 0) {
+            status = "No initialized services found in data directory. Hit F7 to add new.";
+        } else {
+            cursorBaseDir = apps.at(current_window_index);
+            cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
+        }
 
         switch (ch) {
             case KEY_UP:
@@ -132,7 +138,10 @@ int main(int argc, char *argv[]) {
                         /* reload services list */
                         apps = getApps(home);
                         APPS_NUMBER = apps.length();
-                        current_window_index += 1;
+                        if (APPS_NUMBER == 1) /* NOTE: when adding first app, index remains the same => 0 */
+                            current_window_index = 0;
+                        else
+                            current_window_index += 1;
 
                     } else {
                         status = "Not found service igniter called: " + newServiceName;
@@ -155,6 +164,10 @@ int main(int argc, char *argv[]) {
                 break;
 
             case KEY_F(8): /* Remove current service */ {
+                    if (APPS_NUMBER == 0) {
+                        status = "You can't remove non existant service.";
+                        break;
+                    }
                     if (QFile::exists(cursorAppDataDir + DEFAULT_SERVICE_RUNNING_FILE)) {
                         status = "You can't remove running service: " + cursorBaseDir.baseName();
                     } else {
@@ -178,7 +191,8 @@ int main(int argc, char *argv[]) {
                                                 status = "Data dir removed: " + cursorAppDataDir;
                                                 apps = getApps(home);
                                                 APPS_NUMBER = apps.length();
-                                                current_window_index -= 1;
+                                                if (current_window_index > 0)
+                                                    current_window_index -= 1;
                                                 clear();
                                                 break;
 
@@ -200,6 +214,10 @@ int main(int argc, char *argv[]) {
                 break;
 
             case 10: /* Show details */ {
+                    if (APPS_NUMBER == 0) {
+                        status = "No details available for non existant service.";
+                        break;
+                    }
                     QString outputFile = cursorAppDataDir + DEFAULT_SERVICE_LOG_FILE;
                     WINDOW *win = newwin(row - row/2 + 10, col - 10, 2, 5);
                     int modifier = 0; /* used to position log - scroll-like implementation */
@@ -238,6 +256,10 @@ int main(int argc, char *argv[]) {
                 } break;
 
             case 'A': /* Autotart */ {
+                    if (APPS_NUMBER == 0) {
+                        status = "Can't set autostart for non existant service";
+                        break;
+                    }
                     QString autostartFile = cursorAppDataDir + DEFAULT_SERVICE_AUTOSTART_FILE;
                     if (not QFile::exists(autostartFile))
                         touch(autostartFile);
@@ -248,31 +270,55 @@ int main(int argc, char *argv[]) {
                 break;
 
             case 'S': /* Start */
+                if (APPS_NUMBER == 0) {
+                    status = "Can't start non existant service";
+                    break;
+                }
                 touch(cursorAppDataDir + "/.start");
                 status = "Triggered start of application: " + cursorBaseDir.baseName();
                 break;
 
             case 'T': /* sTop */
+                if (APPS_NUMBER == 0) {
+                    status = "Can't stop non existant service";
+                    break;
+                }
                 touch(cursorAppDataDir + "/.stop");
                 status = "Triggered stop of application: " + cursorBaseDir.baseName();
                 break;
 
             case 'V': /* Validate */
+                if (APPS_NUMBER == 0) {
+                    status = "Can't validate non existant service";
+                    break;
+                }
                 touch(cursorAppDataDir + "/.validate");
                 status = "Triggered validation of application: " + cursorBaseDir.baseName();
                 break;
 
             case 'I': /* Install */
+                if (APPS_NUMBER == 0) {
+                    status = "Can't install non existant service";
+                    break;
+                }
                 touch(cursorAppDataDir + "/.install");
                 status = "Triggered installation of application: " + cursorBaseDir.baseName();
                 break;
 
             case 'C': /* Configure */
+                if (APPS_NUMBER == 0) {
+                    status = "Can't configure non existant service";
+                    break;
+                }
                 touch(cursorAppDataDir + "/.configure");
                 status = "Triggered configuration of application: " + cursorBaseDir.baseName();
                 break;
 
             case 'R': /* Restart */
+                if (APPS_NUMBER == 0) {
+                    status = "Can't restart non existant service";
+                    break;
+                }
                 touch(cursorAppDataDir + "/.restart");
                 status = "Triggered restart of application: " + cursorBaseDir.baseName();
                 break;
@@ -284,7 +330,13 @@ int main(int argc, char *argv[]) {
             attron(COLOR_PAIR(1));
             QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
             mvprintw(0, 1, info.toUtf8());
-            mvprintw(0, 90, "Services: " + QString::number(APPS_NUMBER).toUtf8());
+
+            /* services count info */
+            mvprintw(0, 87, "Services: " + QString::number(APPS_NUMBER).toUtf8());
+
+            /* SS status info */
+            updateSSStatus(); /* will show status of service spawner */
+
             mvprintw(3, 0, " Name                        PID Address                Status        Flags    Autostart?");
             attroff(COLOR_PAIR(1));
 
