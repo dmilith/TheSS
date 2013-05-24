@@ -2,23 +2,28 @@
     "softwareName": "Redis",
     "schedulerActions": [
         {
-            "cronEntry": "*/25 * * * * ?",
+            "cronEntry": "*/5 * * * * ?",
             "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
+        },
+        {
+            "cronEntry": "*/2 * * * * ?",
+            "commands": "touch SERVICE_PREFIX/database/database.test"
         }
     ],
     "install": {
         "commands": "sofin get redis",
         "expectOutput": "All done"
     },
-    "configure": {
-        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database"
-    },
     "start": {
-        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
-SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
+        "commands": "
+printf 'Launching Redis\n' >> SERVICE_PREFIX/service.log 2>&1
+test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
+SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf
+"
     },
     "validate": {
-        "commands": "test ! -f SERVICE_PREFIX/service.conf && printf '
+        "commands": "
+test ! -f SERVICE_PREFIX/service.conf && printf '
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
@@ -35,6 +40,7 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log' > SERVICE_PREFIX/service.conf"
+logfile SERVICE_PREFIX/service.log' > SERVICE_PREFIX/service.conf
+"
     }
 }

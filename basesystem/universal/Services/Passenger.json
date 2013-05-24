@@ -5,10 +5,15 @@
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf"
+        "commands": "
+printf 'Launching Passenger\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf
+"
     },
     "stop": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop"
+        "commands": "
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop
+"
     },
     "validate": {
         "commands": "
@@ -42,6 +47,9 @@ SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf",
         "expectOutput": "test is successful"
     },
     "reload": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload"
+        "commands": "
+printf 'Reloading Passenger\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload
+"
     }
 }

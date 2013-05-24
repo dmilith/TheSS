@@ -5,7 +5,10 @@
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D"
+        "commands": "
+printf 'Launching Php\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D
+"
     },
     "validate": {
         "commands": "
@@ -198,6 +201,7 @@ test ! -f SERVICE_PREFIX/service.ini && printf '
 [dba]
     apc.include_once_override = Off
     apc.canonicalize = On
-' > SERVICE_PREFIX/service.ini"
+' > SERVICE_PREFIX/service.ini
+"
     }
 }

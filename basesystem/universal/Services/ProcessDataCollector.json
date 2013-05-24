@@ -9,11 +9,15 @@
         "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database"
     },
     "start": {
-        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
-SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
+        "commands": "
+printf 'Launching ProcessDataCollector(Redis)\n' >> SERVICE_PREFIX/service.log 2>&1
+test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
+SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf
+"
     },
     "validate": {
-        "commands": "test ! -f SERVICE_PREFIX/service.conf && printf '
+        "commands": "
+test ! -f SERVICE_PREFIX/service.conf && printf '
 # Default Redis service configuration
 port 0
 unixsocket SERVICE_PREFIX/data-collector.sock
@@ -30,9 +34,12 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log' > SERVICE_PREFIX/service.conf"
+logfile SERVICE_PREFIX/service.log' > SERVICE_PREFIX/service.conf
+"
     },
     "afterStop": {
-        "commands": "rm -f SERVICE_PREFIX/data-collector.sock"
+        "commands": "
+rm -f SERVICE_PREFIX/data-collector.sock
+"
     }
 }

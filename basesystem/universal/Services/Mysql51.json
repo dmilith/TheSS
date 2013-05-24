@@ -12,7 +12,10 @@
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_PREFIX/service.conf --skip-grant-tables -C utf8 > SERVICE_PREFIX/service.log 2>&1 &"
+        "commands": "
+printf 'Launching Mysql51\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_PREFIX/service.conf --skip-grant-tables -C utf8 > SERVICE_PREFIX/service.log 2>&1 &
+"
     },
     "validate": {
         "commands": "
@@ -59,6 +62,7 @@ max_allowed_packet = 16M
 
 [isamchk]
 key_buffer = 16M
-' > SERVICE_PREFIX/service.conf"
+' > SERVICE_PREFIX/service.conf
+"
     }
 }

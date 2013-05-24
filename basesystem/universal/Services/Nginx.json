@@ -12,6 +12,7 @@
     },
     "start": {
         "commands": "
+printf 'Launching Nginx\n' >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf && printf 'Nginx started\n' >> SERVICE_PREFIX/service.log 2>&1
 "
     },
@@ -51,6 +52,7 @@ SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf && printf 'Ngins st
     "reload": {
         "
 commands": "
+printf 'Reloading Nginx\n' >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_PREFIX/service.log 2>&1
 "
     },
@@ -59,5 +61,4 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload && printf 'N
         "expectOutput": "test is successful",
         "expectOutputTimeout": 60
     }
-
 }

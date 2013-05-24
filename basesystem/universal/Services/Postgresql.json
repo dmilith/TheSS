@@ -10,11 +10,7 @@
         "commands": "sofin get postgresql",
         "expectOutput": "All done"
     },
-    "configure": {
-        "commands": "
-test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf"
-    },
-    "start": {
+    "validate": {
         "commands": "
 test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf
 test ! -f SERVICE_PREFIX/database/pg_hba.conf && printf '
@@ -37,13 +33,23 @@ max_stack_depth = 7MB
 
 logging_collector = true
 ' > SERVICE_PREFIX/database/postgresql.conf && echo listen_addresses=\\'SERVICE_DOMAIN\\' >> SERVICE_PREFIX/database/postgresql.conf
-SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_PREFIX/service.log -o \"-k SERVICE_PREFIX\" start"
+"
+    },
+    "start": {
+        "commands": "
+printf 'Launching Postgresql\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_PREFIX/service.log -o \"-k SERVICE_PREFIX\" start >> SERVICE_PREFIX/service.log 2>&1
+"
     },
     "stop": {
-        "commands": "SERVICE_ROOT/exports/pg_ctl --timeout=60 -w -D SERVICE_PREFIX/database stop"
+        "commands": "
+SERVICE_ROOT/exports/pg_ctl --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_PREFIX/service.log 2>&1
+"
     },
     "babySitter": {
-        "commands": "SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database status",
+        "commands": "
+SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database status
+",
         "expectOutput": "server is running",
         "expectOutputTimeout": 60
     }
