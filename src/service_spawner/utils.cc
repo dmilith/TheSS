@@ -222,7 +222,7 @@ bool expect(const QString& inputFileContent, const QString& expectedString) {
 const QString getOrCreateDir(const QString& path) {
     if (not QFile::exists(path)) {
         logTrace() << "Creating non existant dir:" << path ;
-        QDir().mkdir(path);
+        QDir().mkpath(path);
     }
     return path;
 }
