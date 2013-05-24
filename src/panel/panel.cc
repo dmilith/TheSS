@@ -98,6 +98,15 @@ int main(int argc, char *argv[]) {
                 status = "Triggered log level change to: Warning";
                 break;
 
+            case KEY_F(5): /* refresh */ {
+                    apps = getApps(home);
+                    APPS_NUMBER = apps.length();
+                    clear();
+                    refresh();
+                    status = "Reloaded status.";
+                }
+                break;
+
             case KEY_F(8): /* Remove current service */ {
                     if (QFile::exists(cursorAppDataDir + DEFAULT_SERVICE_RUNNING_FILE)) {
                         status = "You can't remove running service: " + cursorBaseDir.baseName();
@@ -315,11 +324,8 @@ int main(int argc, char *argv[]) {
             }
 
             standend();
-            /* print status - usually last command invoked */
-            attron(COLOR_PAIR(5));
-            QString statusContent = "Status: " + status;
-            mvprintw(1, 1, statusContent.toUtf8());
-            attroff(COLOR_PAIR(5));
+
+            printStatus(status); /* print status - usually last command invoked */
 
             refresh();
             usleep(100000);
