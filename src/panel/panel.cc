@@ -198,20 +198,37 @@ int main(int argc, char *argv[]) {
             case 10: /* Show details */ {
                     QString outputFile = cursorAppDataDir + DEFAULT_SERVICE_LOG_FILE;
                     WINDOW *win = newwin(row - row/2 + 10, col - 10, 2, 5);
+                    int modifier = 0; /* used to position log - scroll-like implementation */
+                    bool loop = true;
 
-                    while (!kbhit()) {
-                        QString contents = tail(outputFile, row/2 + 8);
-                        wattron(win, COLOR_PAIR(6));
-                        box(win, 1, 1);
-                        mvwprintw(win, 0, 2, (cursorBaseDir.baseName() + " -> " + DEFAULT_SERVICE_LOG_FILE).toUtf8());
-                        wattroff(win, COLOR_PAIR(6));
-                        if (not contents.trimmed().isEmpty())
-                            mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
-                        wrefresh(win);
+                    while (loop) {
+                        while (!kbhit()) {
+                            QString contents = tail(outputFile, row/2 + 8, modifier);
+                            wattron(win, COLOR_PAIR(6));
+                            box(win, 1, 1);
+                            mvwprintw(win, 0, 2, (cursorBaseDir.baseName() + " -> " + DEFAULT_SERVICE_LOG_FILE).toUtf8());
+                            wattroff(win, COLOR_PAIR(6));
+                            if (not contents.trimmed().isEmpty())
+                                mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
+                            wrefresh(win);
 
-                        usleep(300000);
+                            usleep(DEFAULT_PANEL_REFRESH_INTERVAL);
+                        }
+                        int input = getch();
+                        switch (input) {
+                            case KEY_UP: {
+                                modifier += DEFAULT_PANEL_SCROLL_SIZE;
+                                }; break;
+
+                            case KEY_DOWN: {
+                                modifier -= DEFAULT_PANEL_SCROLL_SIZE;
+                                }; break;
+
+                            default:
+                                loop = false;
+                        }
                     }
-                    getch();
+
                     delwin(win);
                     clear();
                 } break;
