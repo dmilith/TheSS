@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
     while (ch != 'q') {
         QFileInfo cursorBaseDir = apps.at(current_window_index);
         QString cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
+        updateSSStatus(); /* will show status of service spawner */
 
         switch (ch) {
             case KEY_UP:

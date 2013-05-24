@@ -17,6 +17,28 @@
 #include <curses.h>
 
 
+void updateSSStatus() {
+    /* ss status info */
+    QString ssPidFile = QString(getenv("HOME")) + "/." + getenv("USER") + ".pid";
+    QString aPid = QString(readFileContents(ssPidFile).c_str()).trimmed();
+    bool ok = false;
+    uint pid = aPid.toInt(&ok, 10);
+    attron(COLOR_PAIR(8));
+    if (ok) {
+        if (pidIsAlive(pid)) {
+            attron(COLOR_PAIR(2));
+            mvprintw(0, 101, "SS: ONLINE ");
+            attroff(COLOR_PAIR(2));
+        } else {
+            mvprintw(0, 101, "SS: OFFLINE");
+        }
+    } else {
+        mvprintw(0, 101, "SS: OFFLINE");
+    }
+    attroff(COLOR_PAIR(8));
+}
+
+
 QStringList availableServices() {
     auto userEntries = QDir(getenv("HOME") + QString(DEFAULTUSERIGNITERSDIR)).entryList(QDir::Files);
     auto standardEntries = QDir(QString(DEFAULTSOFTWARETEMPLATESDIR)).entryList(QDir::Files);
