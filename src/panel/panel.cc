@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
 
     /* sanity check */
     getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR));
+    getOrCreateDir(QString(getenv("HOME")) + "/Igniters/Services");
 
     /* selected color */
     init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
