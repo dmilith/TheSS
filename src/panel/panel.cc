@@ -38,6 +38,9 @@ int main(int argc, char *argv[]) {
     QString status = "Watching";
     int current_window_index = 0;
 
+    /* sanity check */
+    getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR));
+
     /* load services list */
     QDir home(userHomeDir + SOFTWARE_DATA_DIR);
     QFileInfoList apps = getApps(home);
