@@ -11,13 +11,9 @@
 
 #include "../globals/globals.h"
 #include "../service_spawner/logger.h"
-#include "../service_spawner/service_config.h"
-#include "../service_spawner/service_watcher.h"
-#include "../service_spawner/user_watcher.h"
 #include "../service_spawner/utils.h"
 
 #include <QtCore>
-
 #include <curses.h>
 
 

@@ -1,11 +1,16 @@
 #!/bin/sh
 
 if [ "$(uname)" = "Darwin" ]; then
-    qmake -spec darwin-g++ TheSS.pro
     qmake -spec darwin-g++ Panel.pro
+    make && printf "Successfully built panel\n"
+
+    qmake -spec darwin-g++ TheSS.pro
+    make && printf "Successfully built ss\n"
 else
     qmake TheSS.pro
+    make && printf "Successfully built panel\n"
+
     qmake Panel.pro
+    make && printf "Successfully built ss\n"
 fi
 printf "NOTE: Please run as root: bin/ignitersinstall to install default igniters to /Common/Igniters\n"
-make && printf "Success\n"
