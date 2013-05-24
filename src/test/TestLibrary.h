@@ -40,6 +40,7 @@ class TestLibrary: public QObject {
             void testWebAppDeployer();
             void testCrontabEntry();
             void testTail();
+            void testMkdir();
 
 };
 
