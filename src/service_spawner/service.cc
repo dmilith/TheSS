@@ -691,7 +691,6 @@ void SvdService::destroySlot() {
     babySitter.stop();
     cronSitter.stop();
     this->exit();
-    this->deleteLater();
 }
 
 
