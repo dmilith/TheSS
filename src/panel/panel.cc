@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
 
                     wattron(win, COLOR_PAIR(2));
 
-                    auto services = availableServices(home);
+                    auto services = availableServices();
                     mvwprintw(win, 1, 1, "Available service igniters: " + services.join(", ").toUtf8());
                     wattroff(win, COLOR_PAIR(2));
 

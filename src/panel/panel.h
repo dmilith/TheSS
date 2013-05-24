@@ -21,7 +21,7 @@
 #include <curses.h>
 
 
-QStringList availableServices(QDir home) {
+QStringList availableServices() {
     auto userEntries = QDir(getenv("HOME") + QString(DEFAULTUSERIGNITERSDIR)).entryList(QDir::Files);
     auto standardEntries = QDir(QString(DEFAULTSOFTWARETEMPLATESDIR)).entryList(QDir::Files);
     auto rootEntries = QStringList();
