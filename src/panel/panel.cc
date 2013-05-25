@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
     int ch = 'p';
     QString status = "Watching";
     int current_window_index = 0;
+    int app_index_first = 0;
     QDir home(userHomeDir + SOFTWARE_DATA_DIR);
 
     /* sanity check */
@@ -56,6 +57,7 @@ int main(int argc, char *argv[]) {
     /* reload services list */
     QFileInfoList apps = getApps(home);
     int APPS_NUMBER = apps.length();
+    int max_rows = min(APPS_NUMBER, row-4);
 
     while (ch != 'q') {
         QFileInfo cursorBaseDir;
@@ -75,6 +77,9 @@ int main(int argc, char *argv[]) {
                         current_window_index -= 1;
                     else
                         current_window_index = 0;
+
+                    if(current_window_index < app_index_first)
+                        app_index_first = current_window_index;
                 }
                 break;
 
@@ -84,6 +89,10 @@ int main(int argc, char *argv[]) {
                         current_window_index += 1;
                     else
                         current_window_index = APPS_NUMBER - 1;
+
+                    if(current_window_index >= app_index_first + max_rows)
+                        app_index_first++;
+
                 }
                 break;
 
@@ -342,14 +351,17 @@ int main(int argc, char *argv[]) {
             /* SS status info */
             updateSSStatus(); /* will show status of service spawner */
 
-            mvprintw(3, 0, " Name                        PID Address                Status        Flags    Autostart?");
+            mvprintw(3, 0, " # Name                        PID Address                Status        Flags    Autostart");
             attroff(COLOR_PAIR(1));
 
             char flags[6];
             flags[5] = '\0';
 
-            for (int i = 0; i < APPS_NUMBER; i++) {
-                QFileInfo baseDir = apps.at(i);
+
+            for (int i = 0; i < max_rows; i++) {
+                int app_i = app_index_first + i;
+
+                QFileInfo baseDir = apps.at(app_i);
                 QString basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
                 bool sr = QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE);
                 bool sv = QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE);
@@ -403,11 +415,15 @@ int main(int argc, char *argv[]) {
 
                 standend();
 
-                if(current_window_index == i){
+                if(current_window_index == app_i){
                     attron(COLOR_PAIR(4));
                 } else {
                     attron(color);
                 }
+
+                /* # */
+                mvprintw(y, x, "%2d", app_i+1);
+                x += 2;
 
                 /* name */
                 mvprintw(y, x, " %-26s", baseDir.baseName().toUtf8().data());
