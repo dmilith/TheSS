@@ -6,3 +6,4 @@ moc_*.cpp
 /test
 /svddw
 /svdpanel
+.DS_Store
