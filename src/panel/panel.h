@@ -27,13 +27,13 @@ void updateSSStatus() {
     if (ok) {
         if (pidIsAlive(pid)) {
             attron(COLOR_PAIR(2));
-            mvprintw(0, 101, "SS: ONLINE ");
+            mvprintw(0, 116, "ServiceSpawner: ONLINE ");
             attroff(COLOR_PAIR(2));
         } else {
-            mvprintw(0, 101, "SS: OFFLINE");
+            mvprintw(0, 116, "ServiceSpawner: OFFLINE");
         }
     } else {
-        mvprintw(0, 101, "SS: OFFLINE");
+        mvprintw(0, 116, "ServiceSpawner: OFFLINE");
     }
     attroff(COLOR_PAIR(8));
 }

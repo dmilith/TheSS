@@ -325,7 +325,7 @@ int main(int argc, char *argv[]) {
             QString contents = tail(outputFile, row/2 + 8, modifier);
             wattron(win, COLOR_PAIR(6));
             box(win, 1, 1);
-            mvwprintw(win, 0, 2, (cursorBaseDir.baseName() + " -> " + DEFAULT_SERVICE_LOG_FILE).toUtf8());
+            mvwprintw(win, 0, 2, ("Log source: " + cursorBaseDir.path() + "/" + cursorBaseDir.baseName() + DEFAULT_SERVICE_LOG_FILE).toUtf8());
             wattroff(win, COLOR_PAIR(6));
             if (not contents.trimmed().isEmpty())
                 mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
@@ -337,7 +337,9 @@ int main(int argc, char *argv[]) {
             mvprintw(0, 1, info.toUtf8());
 
             /* services count info */
-            mvprintw(0, 87, "Services: " + QString::number(APPS_NUMBER).toUtf8());
+            attron(COLOR_PAIR(5));
+            mvprintw(0, 88, "Defined services count: " + QString::number(APPS_NUMBER).toUtf8());
+            attroff(COLOR_PAIR(5));
 
             /* SS status info */
             updateSSStatus(); /* will show status of service spawner */
