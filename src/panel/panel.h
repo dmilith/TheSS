@@ -27,13 +27,13 @@ void updateSSStatus() {
     if (ok) {
         if (pidIsAlive(pid)) {
             attron(COLOR_PAIR(2));
-            mvprintw(0, 116, "ServiceSpawner: ONLINE ");
+            mvprintw(0, 116, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
             attroff(COLOR_PAIR(2));
         } else {
-            mvprintw(0, 116, "ServiceSpawner: OFFLINE");
+            mvprintw(0, 116, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
         }
     } else {
-        mvprintw(0, 116, "ServiceSpawner: OFFLINE");
+        mvprintw(0, 116, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
     }
     attroff(COLOR_PAIR(8));
 }
