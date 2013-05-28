@@ -456,7 +456,7 @@ int main(int argc, char *argv[]) {
             standend();
 
             printStatus(status); /* print status - usually last command invoked */
-
+            delwin(win);
             refresh();
             usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
             standend();
