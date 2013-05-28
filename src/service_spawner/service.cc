@@ -264,6 +264,21 @@ void SvdService::babySitterSlot() {
             delete babySit;
 
         }
+
+        /* look for orphaned dependency services */
+        Q_FOREACH(auto dependency, config->dependencies) {
+            bool add = true;
+            Q_FOREACH(SvdService *orphan, this->dependencyServices) {
+                if (orphan->name == dependency) {
+                    add = false;
+                }
+            }
+            if (add) {
+                logDebug() << "Orphaned service found:" << dependency;
+                dependencyServices << new SvdService(dependency);
+            }
+        }
+
     } else {
         logTrace() << "alwaysOn option disabled for service:" << name;
     }
