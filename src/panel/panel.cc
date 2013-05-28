@@ -235,6 +235,11 @@ int main(int argc, char *argv[]) {
                 }
                 break;
 
+            case KEY_F(9): {
+                touch(QString(getenv("HOME")) + "/.shutdown");
+                status = "Terminating ServiceSpawner (services remain in background)";
+                } break;
+
             case 10: /* TODO: implement details view */ {
                 status = "Not implemented";
                 } break;
