@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
     QFileInfoList apps = getApps(home);
     int APPS_NUMBER = apps.length();
     int max_rows = min(APPS_NUMBER, row-4);
+    int modifier = 0; /* log viewer position modifier */
 
     while (ch != 'q') {
         QFileInfo cursorBaseDir;
@@ -81,6 +82,7 @@ int main(int argc, char *argv[]) {
                     if(current_window_index < app_index_first)
                         app_index_first = current_window_index;
                 }
+                modifier = 0; /* reset modifier after changed log source */
                 break;
 
             case KEY_DOWN:
@@ -94,7 +96,17 @@ int main(int argc, char *argv[]) {
                         app_index_first++;
 
                 }
+                modifier = 0; /* reset modifier after changed log source */
                 break;
+
+            case KEY_PPAGE: { /* page up */
+                modifier += DEFAULT_PANEL_SCROLL_SIZE;
+                }; break;
+
+            case KEY_NPAGE: { /* page down */
+                modifier -= DEFAULT_PANEL_SCROLL_SIZE;
+                }; break;
+
 
             case KEY_F(1): /* Trace */
                 touch(QString(getenv("HOME")) + "/.trace");
@@ -223,46 +235,8 @@ int main(int argc, char *argv[]) {
                 }
                 break;
 
-            case 10: /* Show details */ {
-                    if (APPS_NUMBER == 0) {
-                        status = "No details available for non existant service.";
-                        break;
-                    }
-                    QString outputFile = cursorAppDataDir + DEFAULT_SERVICE_LOG_FILE;
-                    WINDOW *win = newwin(row - row/2 + 10, col - 10, 2, 5);
-                    int modifier = 0; /* used to position log - scroll-like implementation */
-                    bool loop = true;
-
-                    while (loop) {
-                        while (!kbhit()) {
-                            QString contents = tail(outputFile, row/2 + 8, modifier);
-                            wattron(win, COLOR_PAIR(6));
-                            box(win, 1, 1);
-                            mvwprintw(win, 0, 2, (cursorBaseDir.baseName() + " -> " + DEFAULT_SERVICE_LOG_FILE).toUtf8());
-                            wattroff(win, COLOR_PAIR(6));
-                            if (not contents.trimmed().isEmpty())
-                                mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
-                            wrefresh(win);
-
-                            usleep(DEFAULT_PANEL_REFRESH_INTERVAL);
-                        }
-                        int input = getch();
-                        switch (input) {
-                            case KEY_UP: {
-                                modifier += DEFAULT_PANEL_SCROLL_SIZE;
-                                }; break;
-
-                            case KEY_DOWN: {
-                                modifier -= DEFAULT_PANEL_SCROLL_SIZE;
-                                }; break;
-
-                            default:
-                                loop = false;
-                        }
-                    }
-
-                    delwin(win);
-                    clear();
+            case 10: /* TODO: implement details view */ {
+                status = "Not implemented";
                 } break;
 
             case 'A': /* Autotart */ {
@@ -339,6 +313,23 @@ int main(int argc, char *argv[]) {
             /* reload services list */
             apps = getApps(home);
             APPS_NUMBER = apps.length();
+
+            cursorBaseDir = apps.at(current_window_index);
+            cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
+
+            /* create log window, and show it on right side */
+            QString outputFile = cursorAppDataDir + DEFAULT_SERVICE_LOG_FILE;
+            WINDOW *win = newwin(row - row/2 + 10, col - 20 - 90, 2, 95);
+
+            /* render log window */
+            QString contents = tail(outputFile, row/2 + 8, modifier);
+            wattron(win, COLOR_PAIR(6));
+            box(win, 1, 1);
+            mvwprintw(win, 0, 2, (cursorBaseDir.baseName() + " -> " + DEFAULT_SERVICE_LOG_FILE).toUtf8());
+            wattroff(win, COLOR_PAIR(6));
+            if (not contents.trimmed().isEmpty())
+                mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
+            wrefresh(win);
 
             /* write app header */
             attron(COLOR_PAIR(1));
