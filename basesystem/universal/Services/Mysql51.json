@@ -8,7 +8,7 @@
         }
     ],
     "install": {
-        "commands": "sofin get mysql",
+        "commands": "sofin get mysql51",
         "expectOutput": "All done"
     },
     "start": {
