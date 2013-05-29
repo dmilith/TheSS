@@ -182,6 +182,9 @@ int main(int argc, char *argv[]) {
             case KEY_F(5): /* refresh */ {
                     apps = getApps(home);
                     APPS_NUMBER = apps.length();
+                    getmaxyx(stdscr, row, col); /* get cols and rows amount - f.e. after terminal resize */
+                    app_index_first = 0;
+                    current_window_index = 0;
                     clear();
                     refresh();
                     status = "Reloaded services list.";
