@@ -329,6 +329,7 @@ int main(int argc, char *argv[]) {
             /* reload services list */
             apps = getApps(home);
             APPS_NUMBER = apps.length();
+            max_rows = min(APPS_NUMBER, row-4);
 
             if (APPS_NUMBER > 0) {
                 cursorBaseDir = apps.at(current_window_index);
