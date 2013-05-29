@@ -152,7 +152,11 @@ int main(int argc, char *argv[]) {
                     }
                     mvwprintw(win, 6, 29, newServiceName.toUtf8());
 
-                    if (not QDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR)).exists() /* service isn't already defined */) {
+                    QString aHomeDir = getenv("HOME");
+                    if (getuid() == 0) {
+                        aHomeDir = SYSTEMUSERS_HOME_DIR;
+                    }
+                    if (not QDir(aHomeDir + SOFTWARE_DATA_DIR).exists() /* service isn't already initialized */) {
                         if (services.contains(newServiceName.trimmed()) /* is available */) {
                             QDir home(userHomeDir + SOFTWARE_DATA_DIR);
                             getOrCreateDir(home.absolutePath() + "/" + newServiceName.trimmed()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/newServiceName */
