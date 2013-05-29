@@ -20,6 +20,9 @@
 void updateSSStatus() {
     /* ss status info */
     QString ssPidFile = QString(getenv("HOME")) + "/." + getenv("USER") + ".pid";
+    if (getuid() == 0) {
+        ssPidFile = QString(SYSTEMUSERS_HOME_DIR) + "/." + getenv("USER") + ".pid";
+    }
     QString aPid = QString(readFileContents(ssPidFile).c_str()).trimmed();
     bool ok = false;
     uint pid = aPid.toInt(&ok, 10);

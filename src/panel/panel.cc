@@ -38,11 +38,18 @@ int main(int argc, char *argv[]) {
     QString status = "Watching";
     int current_window_index = 0;
     int app_index_first = 0;
+
     QDir home(userHomeDir + SOFTWARE_DATA_DIR);
+    QString ignitersPrefix = "/Igniters/Services";
+    QDir ignitersHome(QString(getenv("HOME")) + ignitersPrefix);
+    if (getuid() == 0) { /* case when super user is running panel */
+        home = QDir(QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR);
+        ignitersHome = QDir(SYSTEMUSERS_HOME_DIR + ignitersPrefix);
+    }
 
     /* sanity check */
-    getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR));
-    getOrCreateDir(QString(getenv("HOME")) + "/Igniters/Services");
+    getOrCreateDir(home.path());
+    getOrCreateDir(ignitersHome.path());
 
     /* selected color */
     init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
@@ -152,13 +159,8 @@ int main(int argc, char *argv[]) {
                     }
                     mvwprintw(win, 6, 29, newServiceName.toUtf8());
 
-                    QString aHomeDir = getenv("HOME");
-                    if (getuid() == 0) {
-                        aHomeDir = SYSTEMUSERS_HOME_DIR;
-                    }
-                    if (not QDir(aHomeDir + SOFTWARE_DATA_DIR).exists() /* service isn't already initialized */) {
+                    if (not QDir(home.path() + newServiceName.trimmed()).exists() /* service isn't already initialized */) {
                         if (services.contains(newServiceName.trimmed()) /* is available */) {
-                            QDir home(userHomeDir + SOFTWARE_DATA_DIR);
                             getOrCreateDir(home.absolutePath() + "/" + newServiceName.trimmed()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/newServiceName */
                             status = "Initialized service: " + newServiceName.trimmed();
 
