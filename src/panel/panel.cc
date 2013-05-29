@@ -341,12 +341,23 @@ int main(int argc, char *argv[]) {
 
             /* render log window */
             QString contents = tail(outputFile, row/2 + 8, modifier);
+            QString errorContents = "";
+            if (QFile::exists(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE)) {
+                errorContents = tail(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE, row/2 + 8, 0);
+            }
             wattron(win, COLOR_PAIR(6));
             box(win, 1, 1);
             mvwprintw(win, 0, 2, ("Log source: " + cursorBaseDir.path() + "/" + cursorBaseDir.baseName() + DEFAULT_SERVICE_LOG_FILE).toUtf8());
             wattroff(win, COLOR_PAIR(6));
-            if (not contents.trimmed().isEmpty())
-                mvwprintw(win, 1, 1, contents.trimmed().toUtf8());
+            if (not contents.trimmed().isEmpty()) {
+                if (not errorContents.trimmed().isEmpty())
+                    mvwprintw(win, 1, 1, (contents + "\n ERRORS: " + errorContents).trimmed().toUtf8());
+                else
+                    mvwprintw(win, 1, 1, (contents).trimmed().toUtf8());
+            } else
+                if (not errorContents.trimmed().isEmpty())
+                    mvwprintw(win, 1, 1, ("\n ERRORS: " + errorContents).trimmed().toUtf8());
+
             wrefresh(win);
 
             /* write app header */
