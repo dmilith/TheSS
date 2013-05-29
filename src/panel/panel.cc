@@ -152,22 +152,25 @@ int main(int argc, char *argv[]) {
                     }
                     mvwprintw(win, 6, 29, newServiceName.toUtf8());
 
-                    if (services.contains(newServiceName.trimmed())) {
-                        QDir home(userHomeDir + SOFTWARE_DATA_DIR);
-                        getOrCreateDir(home.absolutePath() + "/" + newServiceName.trimmed()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/newServiceName */
-                        status = "Initialized service: " + newServiceName.trimmed();
+                    if (not QDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR)).exists() /* service isn't already defined */) {
+                        if (services.contains(newServiceName.trimmed()) /* is available */) {
+                            QDir home(userHomeDir + SOFTWARE_DATA_DIR);
+                            getOrCreateDir(home.absolutePath() + "/" + newServiceName.trimmed()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/newServiceName */
+                            status = "Initialized service: " + newServiceName.trimmed();
 
-                        /* reload services list */
-                        apps = getApps(home);
-                        APPS_NUMBER = apps.length();
-                        if (APPS_NUMBER == 1) /* NOTE: when adding first app, index remains the same => 0 */
-                            current_window_index = 0;
-                        else
-                            current_window_index += 1;
+                            /* reload services list */
+                            apps = getApps(home);
+                            APPS_NUMBER = apps.length();
+                            if (APPS_NUMBER == 1) /* NOTE: when adding first app, index remains the same => 0 */
+                                current_window_index = 0;
+                            else
+                                current_window_index += 1;
 
-                    } else {
-                        status = "Not found service igniter called: " + newServiceName;
-                    }
+                        } else
+                            status = "Not found service igniter called: " + newServiceName;
+
+                    } else
+                        status = "Already defined service called: " + newServiceName;
 
                     delwin(win);
                     curs_set(0); /* cursor invisible */
