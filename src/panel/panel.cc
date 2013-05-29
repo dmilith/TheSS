@@ -165,12 +165,8 @@ int main(int argc, char *argv[]) {
                             status = "Initialized service: " + newServiceName.trimmed();
 
                             /* reload services list */
-                            apps = getApps(home);
-                            APPS_NUMBER = apps.length();
-                            if (APPS_NUMBER == 1) /* NOTE: when adding first app, index remains the same => 0 */
-                                current_window_index = 0;
-                            else
-                                current_window_index += 1;
+                            apps << newServiceName.trimmed();
+                            keypad(stdscr, TRUE); /* this handles "required double key stroke" issue */
 
                         } else
                             status = "Not found service igniter called: " + newServiceName;
@@ -186,11 +182,12 @@ int main(int argc, char *argv[]) {
                 break;
 
             case KEY_F(5): /* refresh */ {
+                    getmaxyx(stdscr, row, col); /* get cols and rows amount - f.e. after terminal resize */
                     apps = getApps(home);
                     APPS_NUMBER = apps.length();
-                    getmaxyx(stdscr, row, col); /* get cols and rows amount - f.e. after terminal resize */
-                    app_index_first = 0;
+                    max_rows = min(APPS_NUMBER, row-4);
                     current_window_index = 0;
+                    app_index_first = current_window_index;
                     clear();
                     refresh();
                     status = "Reloaded services list.";
@@ -223,10 +220,12 @@ int main(int argc, char *argv[]) {
                                                 // removeDir(cursorAppDataDir);
                                                 removeDir(cursorAppDataDir);
                                                 status = "Data dir removed: " + cursorAppDataDir;
-                                                apps = getApps(home);
-                                                APPS_NUMBER = apps.length();
+                                                apps.removeAt(current_window_index); /* remove element */
+                                                APPS_NUMBER--;
+                                                max_rows--;
                                                 if (current_window_index > 0)
                                                     current_window_index -= 1;
+
                                                 clear();
                                                 break;
 
@@ -234,7 +233,7 @@ int main(int argc, char *argv[]) {
                                             status = "Permissions failure. Check your user priviledges on your software data dir";
                                             break;
                                         }
-                                        usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
+                                        // usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
                                     }
                                 }
                                 break;
@@ -331,8 +330,10 @@ int main(int argc, char *argv[]) {
             apps = getApps(home);
             APPS_NUMBER = apps.length();
 
-            cursorBaseDir = apps.at(current_window_index);
-            cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
+            if (APPS_NUMBER > 0) {
+                cursorBaseDir = apps.at(current_window_index);
+                cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
+            }
 
             /* create log window, and show it on right side */
             QString outputFile = cursorAppDataDir + DEFAULT_SERVICE_LOG_FILE;
