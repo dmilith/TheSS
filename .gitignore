@@ -7,3 +7,13 @@ moc_*.cpp
 /svddw
 /svdpanel
 .DS_Store
+/docs/*.aux
+/docs/*.fdb_latexmk
+/docs/*.fls
+/docs/*.log
+/docs/*.nav
+/docs/*.out
+/docs/*.pdf
+/docs/*.snm
+/docs/*.synctex.gz
+/docs/*.toc
