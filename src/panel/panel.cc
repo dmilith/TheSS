@@ -367,20 +367,40 @@ int main(int argc, char *argv[]) {
             mvprintw(0, 1, info.toUtf8());
 
             /* and footer */
-            QStringList functions, descriptions;
+            QStringList functions, actionFunctions, descriptionFunctions, descriptions;
             functions << "F1" << "F2" << "F3" << "F4" << "F5" << "F7" << "F8" << "F9";
             descriptions << "trace" << "debug" << "info" << "error" << "refresh" << "init new service" << "destroy service" << "ss shutdown (TERM)";
-            int position = 1;
+
+            actionFunctions << "A" << "S" << "T" << "R" << "V" << "I" << "C" << "q";
+            descriptionFunctions << "toggle autostart" << "start" << "stop" << "restart" << "validate" << "install" << "configure" << "quit panel";
+
+            int position = 1, position2 = 1;
+            QString prefix = "Panel actions: ", prefix2 = "Service actions: ";
+            mvprintw(row - 1, 1, prefix.toUtf8());
+            mvprintw(row - 2, 1, prefix2.toUtf8());
+            position += prefix.length();
+            position2 += prefix2.length();
+
             for (int indx = 0; indx < functions.length(); indx++) {
                 info = functions.at(indx);
                 attron(COLOR_PAIR(2));
                 mvprintw(row - 1, position, info.toUtf8());
                 position += info.length();
-                QString appendix = " " + descriptions.at(indx) + " | ";
+                QString appendix = ": " + descriptions.at(indx) + "  ";
                 info += appendix;
                 attron(COLOR_PAIR(1));
                 mvprintw(row - 1, position, appendix.toUtf8());
                 position += appendix.length();
+
+                info = actionFunctions.at(indx);
+                attron(COLOR_PAIR(2));
+                mvprintw(row - 2, position2, info.toUtf8());
+                position2 += info.length();
+                appendix = ": " + descriptionFunctions.at(indx) + "  ";
+                info += appendix;
+                attron(COLOR_PAIR(1));
+                mvprintw(row - 2, position2, appendix.toUtf8());
+                position2 += appendix.length();
             }
 
 
