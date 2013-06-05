@@ -366,6 +366,24 @@ int main(int argc, char *argv[]) {
             QString info = "Conrol Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
             mvprintw(0, 1, info.toUtf8());
 
+            /* and footer */
+            QStringList functions, descriptions;
+            functions << "F1" << "F2" << "F3" << "F4" << "F5" << "F7" << "F8" << "F9";
+            descriptions << "trace" << "debug" << "info" << "error" << "refresh" << "init new service" << "destroy service" << "ss shutdown (TERM)";
+            int position = 1;
+            for (int indx = 0; indx < functions.length(); indx++) {
+                info = functions.at(indx);
+                attron(COLOR_PAIR(2));
+                mvprintw(row - 1, position, info.toUtf8());
+                position += info.length();
+                QString appendix = " " + descriptions.at(indx) + " | ";
+                info += appendix;
+                attron(COLOR_PAIR(1));
+                mvprintw(row - 1, position, appendix.toUtf8());
+                position += appendix.length();
+            }
+
+
             /* services count info */
             attron(COLOR_PAIR(5));
             mvprintw(0, 88, "Defined services count: " + QString::number(APPS_NUMBER).toUtf8());
