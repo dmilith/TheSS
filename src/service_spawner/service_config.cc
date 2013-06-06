@@ -25,6 +25,9 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     uid = getuid();
     try {
         auto defaults = loadDefaultIgniter();
+        if (not defaults) {
+            logFatal() << "Igniters defaults must be always valid. Cannot continue.";
+        }
         softwareName = (*defaults)["softwareName"].asCString();
         autoStart = (*defaults)["autoStart"].asBool();
         reportAllErrors = (*defaults)["reportAllErrors"].asBool();
@@ -101,7 +104,13 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     try {
         auto defaults = loadDefaultIgniter();
         auto root = loadIgniter(); // NOTE: the question is.. how will this behave ;]
-
+        if (not defaults) {
+            logFatal() << "Igniters defaults must be always valid. Cannot continue.";
+        }
+        if (not root) {
+            logError() << "Error loading igniter for:" << serviceName << "!";
+            root = loadDefaultIgniter();
+        }
         softwareName = root->get("softwareName", (*defaults)["softwareName"]).asCString();
         autoStart = root->get("autoStart", (*defaults)["autoStart"]).asBool();
         reportAllErrors = root->get("reportAllErrors", (*defaults)["reportAllErrors"]).asBool();
