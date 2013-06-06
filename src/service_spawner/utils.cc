@@ -412,10 +412,83 @@ string readFileContents(const QString& fileName) {
 Json::Value* parseJSON(const QString& filename) {
     Json::Reader reader; /* parse json file */
     auto root = new Json::Value();
+
     auto parsedSuccess = reader.parse(readFileContents(filename), *root, false);
     if (!parsedSuccess) {
-        logError() << "JSON Parse Failure of file: " << filename;
+        logError() << "JSON Parse Failure of file:" << filename;
+        root = NULL; /* this indicates that json parser failed to get data from igniter */
         return root;
     }
+
+    /* checking schema rules for Igniter format */
+    QStringList listOfObjects, objectFields, listOfArrays, listOfStrings, listOfBools, listOfInts;
+    listOfObjects << "install" << "configure" << "start" << "afterStart" << "afterStart" << "stop" << "afterStop" << "reload" << "validate" << "babySitter";
+    objectFields << "commands";
+
+    listOfArrays << "dependencies" << "schedulerActions";
+
+    listOfInts << "staticPort";
+    listOfStrings << "softwareName" << "repository" << "dependencyOf";
+    listOfBools << "autoStart" << "reportAllErrors" << "reportAllInfos" << "reportAllDebugs" << "watchPort" << "alwaysOn";
+
+    /* objects */
+    for (int indx = 0; indx < listOfObjects.length(); indx++) {
+        auto valueObject = (*root)[listOfObjects.at(indx).toStdString()]; /* NOTE: Null is allowed, element may not exists */
+        if (valueObject.isInt() or valueObject.isBool() or valueObject.isNumeric() or valueObject.isString()) {
+            logError() << "JSON Type: Object - Failure in file:" << filename << "In object:" << listOfObjects.at(indx);
+            root = NULL;
+            return root;
+        }
+
+        Q_FOREACH(QString value, objectFields) {
+            auto obj = valueObject.get(value.toStdString(), "");
+            if (not obj.isString()) { /* NOTE: Null is allowed, element may not exists */
+                logError() << "JSON Type: Object - Failed in file:" << filename << "In object:" << listOfObjects.at(indx) << ", field:" << value;
+                root = NULL;
+                return root;
+            }
+        }
+    }
+
+    /* arrays */
+    for (int indx = 0; indx < listOfArrays.length(); indx++) {
+        auto value = (*root)[listOfArrays.at(indx).toStdString()]; /* NOTE: Null is allowed, element might not exists */
+        if (not value.isArray() or value.isString() or value.isInt() or value.isBool() or value.isNumeric()) {
+            logError() << "JSON Type: Array - Failed in file:" << filename << "In field:" << listOfArrays.at(indx);
+            root = NULL;
+            return root;
+        }
+    }
+
+    /* ints */
+    for (int indx = 0; indx < listOfInts.length(); indx++) {
+        auto value = root->get(listOfInts.at(indx).toStdString(), -1); /* default value: -1 is required */
+        if (not value.isNumeric()) {
+            logError() << "JSON Type: Numeric - Failed in file:" << filename << "In field:" << listOfInts.at(indx);
+            root = NULL;
+            return root;
+        }
+    }
+
+    /* strings */
+    for (int indx = 0; indx < listOfStrings.length(); indx++) {
+        auto value = root->get(listOfStrings.at(indx).toStdString(), ""); /* default value: "" for Strings */
+        if (not value.isString()) {
+            logError() << "JSON Type: String - Failed in file:" << filename << "In field:" << listOfStrings.at(indx);
+            root = NULL;
+            return root;
+        }
+    }
+
+    /* bools */
+    for (int indx = 0; indx < listOfBools.length(); indx++) {
+        auto value = root->get(listOfBools.at(indx).toStdString(), false); /* default value: false is required */
+        if (not value.isBool()) {
+            logError() << "JSON Type: Boolean - Failed in file:" << filename << "In field:" << listOfBools.at(indx);
+            root = NULL;
+            return root;
+        }
+    }
+
     return root; /* return user side igniter first by default */
 }
