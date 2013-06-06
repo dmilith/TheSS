@@ -135,11 +135,19 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         /* load service scheduler data */
         for (uint index = 0; index < (*root)["schedulerActions"].size(); ++index ) {
             try {
-                schedulerActions.push_back(
-                    new SvdSchedulerAction(
-                        (*root)["schedulerActions"][index].get("cronEntry", "0 0/10 * * * ?").asCString(),
-                        replaceAllSpecialsIn((*root)["schedulerActions"][index].get("commands", "true").asCString())
-                    ));
+                auto object = (*root)["schedulerActions"][index].get("cronEntry", "0 0/10 * * * ?");
+                auto object2 = (*root)["schedulerActions"][index].get("commands", "true");
+                if (object.isString() and object2.isString()) {
+                    schedulerActions.push_back(
+                        new SvdSchedulerAction(
+                            object.asCString(), replaceAllSpecialsIn(object2.asCString())
+                        ));
+                } else {
+                    if (not object2.isString())
+                        logError() << "JSON Type: Array - Failed parsing scheduler actions in igniter:" << name << " field: commands";
+                    else
+                        logError() << "JSON Type: Array - Failed parsing scheduler actions in igniter:" << name << " field: cronEntry";
+                }
             } catch (std::exception &e) {
                 logError() << "Exception while parsing scheduler actions of service:" << name << "-" << e.what();
             }
