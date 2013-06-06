@@ -12,10 +12,12 @@ HEADERS   += ../service_spawner/utils.h \
              ../cutelogger/ConsoleAppender.h \
              ../cutelogger/FileAppender.h \
              ../service_spawner/logger.h \
+             ../service_spawner/process.h \
              panel.h
 
 SOURCES   += ../service_spawner/utils.cc \
              ../service_spawner/logger.cc \
+             ../service_spawner/process.cc \
              panel.cc
 
 mac {
