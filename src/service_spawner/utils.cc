@@ -421,9 +421,10 @@ Json::Value* parseJSON(const QString& filename) {
     }
 
     /* checking schema rules for Igniter format */
-    QStringList listOfObjects, objectFields, listOfArrays, listOfStrings, listOfBools, listOfInts;
+    QStringList listOfObjects, objectStringFields, objectIntFields, listOfArrays, listOfStrings, listOfBools, listOfInts;
     listOfObjects << "install" << "configure" << "start" << "afterStart" << "afterStart" << "stop" << "afterStop" << "reload" << "validate" << "babySitter";
-    objectFields << "commands";
+    objectStringFields << "commands" << "expectOutput";
+    objectIntFields << "expectOutputTimeout";
 
     listOfArrays << "dependencies" << "schedulerActions";
 
@@ -440,9 +441,20 @@ Json::Value* parseJSON(const QString& filename) {
             return root;
         }
 
-        Q_FOREACH(QString value, objectFields) {
+        /* string elements */
+        Q_FOREACH(QString value, objectStringFields) {
             auto obj = valueObject.get(value.toStdString(), "");
             if (not obj.isString()) { /* NOTE: Null is allowed, element may not exists */
+                logError() << "JSON Type: Object - Failed in file:" << filename << "In object:" << listOfObjects.at(indx) << ", field:" << value;
+                root = NULL;
+                return root;
+            }
+        }
+
+        /* int elements */
+        Q_FOREACH(QString value, objectIntFields) {
+            auto obj = valueObject.get(value.toStdString(), 0); /* it's zero cause it's timeout field */
+            if (not obj.isNumeric()) { /* NOTE: Null is allowed, element may not exists */
                 logError() << "JSON Type: Object - Failed in file:" << filename << "In object:" << listOfObjects.at(indx) << ", field:" << value;
                 root = NULL;
                 return root;
