@@ -1,5 +1,4 @@
 ## TODO list (in order of importance):
-* JSON parser failures (ends with SIGABRTS/ SIGSEGVS of ss)
 * Disk space check (db agnostic backup/ db dumps/ etc)
 * Notifications (+Better error handling)
 * Multiple ports for one service support
