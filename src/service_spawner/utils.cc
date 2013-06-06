@@ -421,10 +421,11 @@ Json::Value* parseJSON(const QString& filename) {
     }
 
     /* checking schema rules for Igniter format */
-    QStringList listOfObjects, objectStringFields, objectIntFields, listOfArrays, listOfStrings, listOfBools, listOfInts;
+    QStringList listOfObjects, objectStringFields, objectIntFields, listOfArrays, listOfStrings, listOfBools, listOfInts; //, schedulerFields;
     listOfObjects << "install" << "configure" << "start" << "afterStart" << "afterStart" << "stop" << "afterStop" << "reload" << "validate" << "babySitter";
     objectStringFields << "commands" << "expectOutput";
     objectIntFields << "expectOutputTimeout";
+    // schedulerFields << "cronEntry" << "commands";
 
     listOfArrays << "dependencies" << "schedulerActions";
 
@@ -470,6 +471,21 @@ Json::Value* parseJSON(const QString& filename) {
             root = NULL;
             return root;
         }
+
+        // /* check scheduler fields */
+        // Q_FOREACH(QString val, schedulerFields) {
+        //     if (value.isValidIndex(indx)) {
+        //         auto entry = (*root)[listOfArrays.at(indx).toStdString()][indx];
+        //         if (not entry.empty() and not entry.isNull() and entry.isArray()) {
+        //             auto innerEntry = entry[val.toStdString()];
+        //             if (not innerEntry.isString()) {
+        //                 logError() << "JSON Type: Array - Failed in file:" << filename << "In field:" << listOfArrays.at(indx) << " index:" << val;
+        //                 root = NULL;
+        //                 return root;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     /* ints */
