@@ -178,7 +178,6 @@ void SvdService::babySitterSlot() {
     } else
         logDebug() << "Babysitter invoked for:" << name;
     QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
-    // emit validateSlot();
 
     if (config->alwaysOn) {
 
@@ -389,7 +388,7 @@ void SvdService::startSlot() {
                         depService->installSlot();
                         depService->configureSlot();
                     }
-                    depService->validateSlot();
+                    // depService->validateSlot();
                     depService->startSlot();
                     dependencyServices << depService;
                     logInfo() << "Launched dependency:" << dependency;
@@ -407,9 +406,8 @@ void SvdService::startSlot() {
 
         if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE)) {
             logWarn() << "Validation failure. Won't start service:" << name << "yet. Will retry later.";
-            this->thread()->sleep(10);
-            emit startSlot();
             delete config;
+            emit startSlot();
             return;
         }
 
@@ -644,7 +642,7 @@ void SvdService::restartSlot() {
         logWarn() << "Restarting service:" << name;
         // emit validateSlot();
         emit stopSlot();
-        emit validateSlot();
+        // emit validateSlot();
         emit startSlot();
         logInfo() << "Service restarted:" << name;
     }
@@ -696,15 +694,7 @@ void SvdService::validateSlot() {
             touch(indicator);
             auto process = new SvdProcess(name);
             process->spawnProcess(config->validate->commands);
-            auto exitcode = process->exitCode();
             process->waitForFinished(-1);
-
-            /* check validation process exit code */
-            logDebug() << "VALIDATION EXIT CODES:" << exitcode << "-" << process->exitCode();
-            if (exitcode != 0) {
-                logInfo() << "Validation failure of service:" << name;
-                touch(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE);
-            }
 
             deathWatch(process->pid());
             if (not expect(readFileContents(process->outputFile).c_str(), config->validate->expectOutput)) {
