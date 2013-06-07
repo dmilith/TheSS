@@ -274,7 +274,7 @@ bool removeDir(const QString& dirName) {
 
 
 void writeToFile(const QString& fileName, const QString& contents) {
-    writeToFile(fileName, contents, true);
+    writeToFile(fileName, contents, false);
 }
 
 
