@@ -5,12 +5,7 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
-if [ ! -x "$(pwd)/svdss" ]; then
-    printf "You need to build TheSS first. Use bin/build, then retry deployment.\n"
-    exit 1
-fi
-
-if [ ! -x "$(pwd)/svddw" ]; then
+if [ ! -x "$(pwd)/svdss" ] || [ ! -x "$(pwd)/svddw" ] || [ ! -x "$(pwd)/svdpanel" ]; then
     printf "You need to build TheSS first. Use bin/build, then retry deployment.\n"
     exit 1
 fi
@@ -18,4 +13,5 @@ fi
 bin/ignitersinstall
 cp ./svdss /bin/svdss
 cp ./svddw /bin/svddw
+cp ./svdpanel /bin/svdpanel
 printf "Success\n"
