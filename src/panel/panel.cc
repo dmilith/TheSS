@@ -175,17 +175,21 @@ int main(int argc, char *argv[]) {
                         mvwprintw(win, 1, 2, "Select service:");
                         wattron(win, COLOR_PAIR(2));
 
-                        for(int i=0; i<n; i++){
-                            int si = services_index_first + i;
+                        for(int i=0; i<max_rows; i++){
+                            if(i < n){
+                                int si = services_index_first + i;
 
-                            if(current_service_index == si){
-                                wattron(win, COLOR_PAIR(4));
+                                if(current_service_index == si){
+                                    wattron(win, COLOR_PAIR(4));
+                                } else {
+                                    wattroff(win, COLOR_PAIR(4));
+                                }
+
+                                mvwprintw(win, i+2, 2, "%2d", si+1);
+                                mvwprintw(win, i+2, 4, " %-40s", services.at(si).toUtf8().data());
                             } else {
-                                wattroff(win, COLOR_PAIR(4));
+                                mvwprintw(win, i+2, 2, "%45s", "");
                             }
-
-                            mvwprintw(win, i+2, 2, "%2d", si+1);
-                            mvwprintw(win, i+2, 4, " %-40s", services.at(si).toUtf8().data());
                         }
                         wattroff(win, COLOR_PAIR(4));
 
@@ -258,7 +262,7 @@ int main(int argc, char *argv[]) {
                                 services_index_first = 0;
                                 break;
                         }
-                    } while(ch != 27 && ch != 'q');
+                    } while(ch != 27);
 
                     delwin(win);
                     curs_set(0); /* cursor invisible */
@@ -280,6 +284,7 @@ int main(int argc, char *argv[]) {
                 }
                 break;
 
+            case 'X':
             case KEY_F(8): /* Remove current service */ {
                     if (APPS_NUMBER == 0) {
                         status = "You can't remove non existant service.";
