@@ -439,10 +439,10 @@ int main(int argc, char *argv[]) {
             wattroff(win, COLOR_PAIR(6));
 
             if (modifier == 0) { /* reload only when reached bottom of file */
-                contents = tail(outputFile, row/2 + 8, modifier);
+                contents = tail(outputFile, row/2 + 3, modifier);
                 QString errorContents = "";
                 if (QFile::exists(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE)) {
-                    errorContents = tail(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE, row/2 + 8, 0);
+                    errorContents = tail(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE, row/2 + 3, 0);
                 }
                 if (not contents.trimmed().isEmpty() ) {
                     if (not errorContents.trimmed().isEmpty())
@@ -453,7 +453,7 @@ int main(int argc, char *argv[]) {
                     if (not errorContents.trimmed().isEmpty())
                         mvwprintw(win, 1, 1, ("\n ERRORS: " + errorContents).trimmed().toUtf8());
             } else {
-                contents = tail(outputFile, row/2 + 8, modifier);
+                contents = tail(outputFile, row/2 + 3, modifier);
                 mvwprintw(win, 1, 1, (contents).trimmed().toUtf8());
             }
             wrefresh(win);
