@@ -429,8 +429,8 @@ Json::Value* parseJSON(const QString& filename) {
 
     listOfArrays << "dependencies" << "schedulerActions";
 
-    listOfInts << "staticPort";
-    listOfStrings << "softwareName" << "repository" << "dependencyOf";
+    listOfInts << "staticPort" << "portsPool";
+    listOfStrings << "softwareName" << "repository" << "dependencyOf" << "domain";
     listOfBools << "autoStart" << "reportAllErrors" << "reportAllInfos" << "reportAllDebugs" << "watchPort" << "alwaysOn";
 
     /* objects */

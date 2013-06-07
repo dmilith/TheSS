@@ -434,7 +434,7 @@ int main(int argc, char *argv[]) {
 
                 QString pid = QString(readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).c_str()).trimmed();
                 QString domain = QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
-                QString port = QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_FILE).c_str()).trimmed();
+                QString port = QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).c_str()).trimmed();
                 if (domain.isEmpty()) domain = "-";
                 if (port.isEmpty()) port = "-";
 
