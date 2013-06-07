@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
                         services_length = services.length();
                         n = min(max_rows, services_length);
 
-                        wclear(win);
+                        // wclear(win);
 
                         wattron(win, COLOR_PAIR(6));
                         box(win, '|', '-');
