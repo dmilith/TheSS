@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.30.1"
+    #define APP_VERSION "0.31.0"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -56,6 +56,7 @@
     #define DEFAULT_SERVICE_CONFIGURING_FILE "/.configuring"
     #define DEFAULT_SERVICE_RELOADING_FILE "/.reloading"
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
+    #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
     #define DEFAULT_SERVICE_LOG_FILE "/service.log"
     #define DEFAULT_SS_SHUTDOWN_HOOK_FILE "/.shutdown"
     #define DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE "/.data-collector"

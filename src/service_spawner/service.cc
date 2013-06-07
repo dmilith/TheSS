@@ -371,8 +371,6 @@ void SvdService::startSlot() {
             logInfo() << "Service" << name << "isn't yet configured. Proceeding with configuration.";
             emit configureSlot();
         }
-        logInfo() << "Validating service" << name;
-        emit validateSlot(); // invoke validation before each startSlot
 
         /* after successful installation of core app, we may proceed with installing additional dependencies */
         if (not config->dependencies.isEmpty()) {
@@ -403,6 +401,17 @@ void SvdService::startSlot() {
             }
         } else
             logDebug() << "Empty dependency list for service:" << name;
+
+        logInfo() << "Validating service" << name;
+        emit validateSlot(); // invoke validation before each startSlot
+
+        if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE)) {
+            logWarn() << "Validation failure. Won't start service:" << name << "yet. Will retry later.";
+            this->thread()->sleep(10);
+            emit startSlot();
+            delete config;
+            return;
+        }
 
         logInfo() << "Launching service" << name;
         logTrace() << "Launching commands:" << config->start->commands;
@@ -681,10 +690,22 @@ void SvdService::validateSlot() {
             logInfo() << "No need to validate service" << name << "because it's already validating.";
         } else {
             logTrace() << "Launching commands:" << config->validate->commands;
+            /* remove failure state */
+            QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE);
+            /* validation state */
             touch(indicator);
             auto process = new SvdProcess(name);
             process->spawnProcess(config->validate->commands);
+            auto exitcode = process->exitCode();
             process->waitForFinished(-1);
+
+            /* check validation process exit code */
+            logDebug() << "VALIDATION EXIT CODES:" << exitcode << "-" << process->exitCode();
+            if (exitcode != 0) {
+                logInfo() << "Validation failure of service:" << name;
+                touch(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE);
+            }
+
             deathWatch(process->pid());
             if (not expect(readFileContents(process->outputFile).c_str(), config->validate->expectOutput)) {
                 logError() << "Failed expectations of service:" << name << "with expected output of validate slot:" << config->validate->expectOutput;
