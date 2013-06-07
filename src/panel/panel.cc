@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
 
             case 'N':
             case KEY_F(7): /* Launch new service */ {
-                    WINDOW *win = newwin(row/2, col/2, 5, 5);
+                    WINDOW *win = newwin(row/2, 55, 5, 5);
 
                     QString newServiceName = "";
                     int ch = 0;
