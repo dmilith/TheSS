@@ -10,6 +10,8 @@
 
 
 int main(int argc, char *argv[]) {
+    if (getenv ("ESCDELAY") == NULL)
+      ESCDELAY = 0;
 
     QCoreApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
@@ -135,44 +137,128 @@ int main(int argc, char *argv[]) {
                 status = "Triggered log level change to: Warning";
                 break;
 
+            case 'N':
             case KEY_F(7): /* Launch new service */ {
                     WINDOW *win = newwin(row/2, col/2, 5, 5);
-                    wattron(win, COLOR_PAIR(6));
-                    box(win, 1, 1);
-                    wattroff(win, COLOR_PAIR(6));
 
                     QString newServiceName = "";
                     int ch = 0;
+                    int current_service_index = 0;
                     curs_set(1); /* cursor visible */
 
-                    wattron(win, COLOR_PAIR(2));
+                    auto all_services = availableServices();
+                    int services_index_first = 0;
+                    int max_rows = row/2 - 3;
+                    int services_length = all_services.length();
+                    int n = min(max_rows, services_length);
 
-                    auto services = availableServices();
-                    mvwprintw(win, 1, 1, "Available service igniters: " + services.join(", ").toUtf8());
-                    wattroff(win, COLOR_PAIR(2));
+                    keypad(win, TRUE);
 
-                    mvwprintw(win, 6, 1, "Enter service name to init: ");
-                    while (ch != '\n' and ch != '\r') {
+                    do {
+                        auto services = QStringList();
+                        Q_FOREACH (QString s, all_services) {
+                            if(s.toLower().contains(newServiceName.toLower())){
+                                services << s;
+                            }
+                        }
+
+                        services_length = services.length();
+                        n = min(max_rows, services_length);
+
+                        wclear(win);
+
+                        wattron(win, COLOR_PAIR(6));
+                        box(win, '|', '-');
+                        wattroff(win, COLOR_PAIR(6));
+
+                        wattron(win, COLOR_PAIR(2));
+                        mvwprintw(win, 1, 2, "Select service:");
+                        wattron(win, COLOR_PAIR(2));
+
+                        for(int i=0; i<n; i++){
+                            int si = services_index_first + i;
+
+                            if(current_service_index == si){
+                                wattron(win, COLOR_PAIR(4));
+                            } else {
+                                wattroff(win, COLOR_PAIR(4));
+                            }
+
+                            mvwprintw(win, i+2, 2, "%2d", si+1);
+                            mvwprintw(win, i+2, 4, " %-40s", services.at(si).toUtf8().data());
+                        }
+                        wattroff(win, COLOR_PAIR(4));
+
+                        // prompt
+                        mvwprintw(win, 1, 18, "%-40s", newServiceName.toUtf8().data());
+                        wmove(win, 1, 18 + newServiceName.length());
+
                         ch = wgetch(win);
-                        newServiceName += ch;
-                        mvwprintw(win, 6, 29, newServiceName.toUtf8());
-                    }
-                    mvwprintw(win, 6, 29, newServiceName.toUtf8());
 
-                    if (not QDir(home.path() + newServiceName.trimmed()).exists() /* service isn't already initialized */) {
-                        if (services.contains(newServiceName.trimmed()) /* is available */) {
-                            getOrCreateDir(home.absolutePath() + "/" + newServiceName.trimmed()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/newServiceName */
-                            status = "Initialized service: " + newServiceName.trimmed();
+                        switch(ch){
+                            case KEY_UP:
+                                ch = 0;
+                                if (services_length > 0) {
+                                    if (current_service_index > 0)
+                                        current_service_index -= 1;
+                                    else
+                                        current_service_index = 0;
 
-                            /* reload services list */
-                            apps << newServiceName.trimmed();
-                            keypad(stdscr, TRUE); /* this handles "required double key stroke" issue */
+                                    if(current_service_index < services_index_first)
+                                        services_index_first = current_service_index;
+                                }
+                                break;
 
-                        } else
-                            status = "Not found service igniter called: " + newServiceName;
+                            case KEY_DOWN:
+                                ch = 0;
+                                if (services_length > 0) {
+                                    if (current_service_index < services_length - 1)
+                                        current_service_index += 1;
+                                    else
+                                        current_service_index = services_length - 1;
 
-                    } else
-                        status = "Already defined service called: " + newServiceName;
+                                    if(current_service_index >= services_index_first + max_rows)
+                                        services_index_first++;
+
+                                }
+                                break;
+
+                            case 10:
+                                newServiceName = services.at(current_service_index);
+
+                                if (not QDir(home.path() + newServiceName.trimmed()).exists() /* service isn't already initialized */) {
+                                    if (services.contains(newServiceName.trimmed()) /* is available */ ) {
+                                        getOrCreateDir(home.absolutePath() + "/" + newServiceName.trimmed()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/newServiceName */
+                                        status = "Initialized service: " + newServiceName.trimmed();
+
+                                        /* reload services list */
+                                        apps << newServiceName.trimmed();
+                                        keypad(stdscr, TRUE); /* this handles "required double key stroke" issue */
+
+                                    } else {
+                                        status = "Not found service igniter called: " + newServiceName;
+                                    }
+
+                                } else {
+                                    status = "Already defined service called: " + newServiceName;
+                                }
+
+                                ch = 27;
+                                break;
+
+                            case 127: // backspace
+                                newServiceName.truncate(newServiceName.length()-1);
+                                current_service_index = 0;
+                                services_index_first = 0;
+                                break;
+
+                            default:
+                                newServiceName += ch;
+                                current_service_index = 0;
+                                services_index_first = 0;
+                                break;
+                        }
+                    } while(ch != 27 && ch != 'q');
 
                     delwin(win);
                     curs_set(0); /* cursor invisible */
