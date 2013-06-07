@@ -260,18 +260,36 @@ void TestLibrary::testStartingRedis() {
 
     service->startSlot(); // should install and start redis
     QString runningFile = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
-    QString portsFile = config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER;
     QString domainFile = config->prefixDir() + DEFAULT_SERVICE_DOMAIN_FILE;
     QString pidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
     QString outputFile = config->prefixDir() + DEFAULT_SERVICE_OUTPUT_FILE;
     QVERIFY(QFile::exists(runningFile));
 
+    QString portsFile = config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER;
     uint portOfRunningRedis = QString(readFileContents(portsFile).c_str()).trimmed().toUInt();
     logInfo() << "Redis port:" << portOfRunningRedis;
     uint port = registerFreeTcpPort(portOfRunningRedis);
     logInfo() << "Registered port:" << port;
     service->stopSlot();
 
+    QString value = config->replaceAllSpecialsIn(config->validate->commands);
+    QVERIFY(not config->validate->commands.contains("SERVICE_PORT"));
+    QVERIFY(not config->validate->commands.contains("SERVICE_PORT1"));
+    QVERIFY(not config->validate->commands.contains("SERVICE_PORT2"));
+    /* read port from file */
+    QString valueRead = QString(readFileContents(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/0").c_str()).trimmed();
+    QVERIFY(value.contains(valueRead));
+
+    QString valueRead1 = QString(readFileContents(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/1").c_str()).trimmed();
+    QVERIFY(value.contains(valueRead1));
+
+    QString valueRead2 = QString(readFileContents(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/2").c_str()).trimmed();
+    QVERIFY(value.contains(valueRead2));
+
+    QVERIFY(QDir().exists(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR));
+    QVERIFY(QFile::exists(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/0"));
+    QVERIFY(QFile::exists(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/1"));
+    QVERIFY(QFile::exists(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/2"));
     QVERIFY(QFile::exists(outputFile));
     QVERIFY(QFile::exists(config->userServiceRoot()));
     QVERIFY(QFile::exists(config->prefixDir()));
@@ -279,7 +297,7 @@ void TestLibrary::testStartingRedis() {
     QVERIFY(QFile::exists(domainFile));
     QVERIFY(not QFile::exists(pidFile));
     QVERIFY(not QFile::exists(runningFile));
-    QVERIFY(port != portOfRunningRedis);
+    // QVERIFY(port != portOfRunningRedis);
     // removeDir(config->prefixDir());
 
     delete service;

@@ -1,6 +1,7 @@
 {
     "softwareName": "Redis",
     "alwaysOn": false,
+    "portsPool": 3,
     "schedulerActions": [
         {
             "cronEntry": "0 0/10 * * * ?",
@@ -23,7 +24,9 @@ SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
-port SERVICE_PORT
+# port SERVICE_PORT
+# port SERVICE_PORT1
+port SERVICE_PORT2
 pidfile SERVICE_PREFIX/service.pid
 dir SERVICE_PREFIX/database
 dbfilename database.rdf
