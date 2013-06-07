@@ -2,10 +2,14 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.12.1",
+    "formatVersion": "0.14.0",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
+
+    "domain": "",
+
+    "portsPool": 1,
 
 /* defines name of software available in Sofin definitions */
     "softwareName": "No-Name",

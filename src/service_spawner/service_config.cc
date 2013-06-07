@@ -36,13 +36,19 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         watchPort = (*defaults)["watchPort"].asBool();
         alwaysOn = (*defaults)["alwaysOn"].asBool();
         staticPort = (*defaults)["staticPort"].asInt();
+        domain = (*defaults)["domain"].asCString();
+        portsPool = (*defaults)["portsPool"].asInt();
         repository = (*defaults)["repository"].asCString();
         dependencyOf = (*defaults)["dependencyOf"].asCString();
 
         /* load default service dependencies */
         for (uint index = 0; index < (*defaults)["dependencies"].size(); ++index ) {
             try {
-                dependencies.push_back((*defaults)["dependencies"][index].asCString());
+                auto element = (*defaults)["dependencies"][index];
+                if (element.isString())
+                    dependencies.push_back(element.asCString());
+                else
+                    logError() << "Invalid JSON Type for dependencies. They all should be Strings";
             } catch (std::exception &e) {
                 logDebug() << "Exception while parsing default dependencies of" << name;
             }
@@ -119,6 +125,8 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
+        portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
+        domain = root->get("domain", (*defaults)["domain"]).asCString();
         repository = root->get("repository", (*defaults)["repository"]).asCString();
         dependencyOf = root->get("dependencyOf", (*defaults)["dependencyOf"]).asCString();
 
@@ -313,14 +321,25 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
 
         /* Replace SERVICE_DOMAIN */
         QString domainFilePath = prefixDir() + QString(DEFAULT_SERVICE_DOMAIN_FILE);
-        QString userDomain = "";
-        if (QFile::exists(domainFilePath)) {
-            userDomain = QString(readFileContents(domainFilePath).c_str()).trimmed();
+        QString userDomain = QHostInfo::localHostName();
+        if (domain.isEmpty()) {
             ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+            writeToFile(domainFilePath, userDomain);
         } else {
-            ccont = ccont.replace("SERVICE_DOMAIN", QHostInfo::localHostName()); /* replace with default domain */
-            writeToFile(domainFilePath, QHostInfo::localHostName());
+            ccont = ccont.replace("SERVICE_DOMAIN", domain); /* replace with user domain content */
+            writeToFile(domainFilePath, domain);
+            userDomain = domain;
         }
+
+        /* check .domain value, if it differs from current domain value, recreate whole service configuration */
+        // QString domainFileContent = QString(readFileContents(DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
+        // if (not domain.isEmpty() and not domainFileContent.isEmpty())
+        //     if (domainFileContent == domain) {
+        //         logWarn() << "Domain change detected. Regenerating service configuration from scratch for service:" << name;
+        //         logDebug() << "Removing service configuration:" << prefixDir() + "/service.conf";
+        //         QFile::remove(prefixDir() + "/service.conf");
+        //         touch(prefixDir() + "/.restart");
+        //     }
 
         /* Replace SERVICE_ADDRESS */
         QString address = QString(DEFAULT_SYSTEM_ADDRESS);
@@ -342,25 +361,49 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             ccont = ccont.replace("SERVICE_ADDRESS", address);
         }
 
-        /* Replace SERVICE_PORT */
-        QString portFilePath = prefixDir() + QString(DEFAULT_SERVICE_PORTS_FILE);
-        if (QFile::exists(portFilePath)) {
-            portFilePath = QString(readFileContents(portFilePath).c_str()).trimmed();
-            ccont = ccont.replace("SERVICE_PORT", portFilePath); /* replace with user port content */
+        /* sanity check for legacy .ports file */
+        QString portsDirLocation = prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR);
+        if (not QDir().exists(portsDirLocation)) {
+            if (QFile::exists(portsDirLocation)) {
+                logWarn() << "Found legacy .ports file. Automatically removing this file from service:" << name;
+                QFile::remove(portsDirLocation);
+            } else
+                logDebug() << "Found no ports dir.";
+        }
+
+        /* replace port pool first */
+        logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
+        if (portsPool > 1)
+            for (int indx = 1; indx < portsPool; indx++) {
+                QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
+                if (not QFile::exists(portsDirLocation + QString::number(indx))) {
+                    logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
+                    uint freePort = registerFreeTcpPort();
+                    ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString::number(freePort)); /* replace with user port content */
+                    writeToFile(portFilePath, QString::number(freePort));
+                } else {
+                    logTrace() << "Port id:" << indx << " exists. Won't touch it.";
+                    ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString(readFileContents(portFilePath).c_str()).trimmed());
+                }
+            }
+
+        /* then replace main port */
+        QString portFilePath = getOrCreateDir(portsDirLocation) + QString(DEFAULT_SERVICE_PORT_NUMBER);
+        if (staticPort != -1) { /* defined static port */
+            logInfo() << "Set static port:" << staticPort << "for service" << name;
+            ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
+            writeToFile(portFilePath, QString::number(staticPort));
         } else {
-            if (staticPort != -1) { /* defined static port */
-                logDebug() << "Found static port:" << staticPort << "for service" << name;
-                ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
-                writeToFile(portFilePath, QString::number(staticPort));
+            if (QFile::exists(portFilePath)) {
+                logTrace() << "Main port exists. Won't touch it.";
+                ccont = ccont.replace("SERVICE_PORT", QString(readFileContents(portFilePath).c_str()).trimmed());
             } else {
-                uint freePort = registerFreeTcpPort();
-                logDebug() << "No port file for service:" << name << "(software:" << softwareName << ")! Ports file will be created and filled with generated port:" << freePort;
-                ccont = ccont.replace("SERVICE_PORT", QString::number(freePort)); /* this happens when no service port file exists */
-                writeToFile(portFilePath, QString::number(freePort));
+                QString freePort = QString::number(registerFreeTcpPort());
+                ccont = ccont.replace("SERVICE_PORT", freePort); /* replace main dynamic port */
+                writeToFile(portFilePath, freePort);
             }
         }
 
-        // logDebug() << "Given content: " << ccont.replace("\n", " ");
         return ccont;
     }
 }

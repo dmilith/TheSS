@@ -229,7 +229,8 @@ void SvdService::babySitterSlot() {
 
                 /* check dynamic port for service */
                 } else {
-                    QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_FILE);
+                    QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR) + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+
                     if (QFile::exists(portFilePath)) {
                         int currentPort = QString(readFileContents(portFilePath).c_str()).trimmed().toInt();
                         int port = registerFreeTcpPort(currentPort);
