@@ -29,7 +29,6 @@
 #include <signal.h>
 
 #include <QtCore>
-#include <QMap>
 #include <QTime>
 #include <QTextCodec>
 #include <QtNetwork/QHostInfo>

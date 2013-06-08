@@ -13,7 +13,7 @@
     "portsPool": 1,
 
 /* defines disk space check. By default user has to have at least 1 GiB free disk space */
-    "minimumRequiredDiskSpace": 1,
+    "minimumRequiredDiskSpace": 1024,
 
 /* defines name of software available in Sofin definitions */
     "softwareName": "No-Name",
