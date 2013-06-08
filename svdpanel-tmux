@@ -1,0 +1,13 @@
+#!/bin/sh
+
+tmux start-server
+tmux new-session -d -s SvdPanel -n svdpanel
+#tmux send-keys -tSvdPanel:0 'irb' C-m
+# tmux -tSvdPanel send-keys  C-b C-%
+tmux split-window -t SvdPanel -h
+tmux select-pane  -t 0
+tmux send-keys    -t 0 "./svdpanel" C-m
+# tmux select-pane  -t 1
+# tmux send-keys    -t 1 "ls" C-m
+# tmux select-pane  -t 0
+tmux attach-session -d -tSvdPanel

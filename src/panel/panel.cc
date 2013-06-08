@@ -69,6 +69,10 @@ int main(int argc, char *argv[]) {
     int max_rows = min(APPS_NUMBER, row-4);
     int modifier = 0; /* log viewer position modifier */
 
+    QFile file("/tmp/panel.log");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream dbg(&file);
+
     while (ch != 'q') {
         QFileInfo cursorBaseDir;
         QString cursorAppDataDir;
@@ -106,6 +110,33 @@ int main(int argc, char *argv[]) {
 
                 }
                 modifier = 0; /* reset modifier after changed log source */
+
+                {
+                    QString tpl =
+                        "tmux select-pane  -t 1\n"
+                        "tmux send-keys    -t 1 C-c\n"
+                        "tmux send-keys    -t 1 \"touch %1 && clear\" C-m\n"
+                        "tmux send-keys    -t 1 \"tail -F %2\" C-m\n"
+                        "tmux select-pane  -t 0\n";
+
+
+                    auto c = apps.at(current_window_index);
+                    QString file = c.absolutePath() + "/" + c.baseName() + DEFAULT_SERVICE_LOG_FILE;
+                    QString cmd = tpl.arg(file).arg(file);
+
+                    auto process = new SvdProcess("tail", getuid(), false);
+                    dbg << "spawning process " << cmd << endl;
+                    process->spawnProcess(cmd);
+                    // dbg << "waitForStarted: " << process->waitForStarted(60) << endl;
+                    dbg << "waitForFinished: " << process->waitForFinished() << endl;
+                    // dbg << "out: " << process->readAllStandardOutput() << endl;
+                    // dbg << "err: " << process->readAllStandardOutput() << endl;
+                    dbg << "pid " << process->pid() << endl;
+                    dbg << "done" << endl;
+                }
+
+
+
                 break;
 
             case KEY_PPAGE: { /* page up */
@@ -427,36 +458,36 @@ int main(int argc, char *argv[]) {
                 cursorAppDataDir = cursorBaseDir.absolutePath() + "/" + cursorBaseDir.baseName();
             }
 
-            /* create log window, and show it on right side */
-            QString outputFile = cursorAppDataDir + DEFAULT_SERVICE_LOG_FILE;
-            WINDOW *win = newwin(row - row/2 + 10, col - 20 - 90, 2, 95);
+            // /* create log window, and show it on right side */
+            // QString outputFile = cursorAppDataDir + DEFAULT_SERVICE_LOG_FILE;
+            // WINDOW *win = newwin(row - row/2 + 10, col - 20 - 90, 2, 95);
 
-            /* render log window */
-            QString contents = "";
-            wattron(win, COLOR_PAIR(6));
-            box(win, 1, 1);
-            mvwprintw(win, 0, 2, ("Log source: " + cursorBaseDir.path() + "/" + cursorBaseDir.baseName() + DEFAULT_SERVICE_LOG_FILE).toUtf8());
-            wattroff(win, COLOR_PAIR(6));
+            // /* render log window */
+            // QString contents = "";
+            // wattron(win, COLOR_PAIR(6));
+            // box(win, 1, 1);
+            // mvwprintw(win, 0, 2, ("Log source: " + cursorBaseDir.path() + "/" + cursorBaseDir.baseName() + DEFAULT_SERVICE_LOG_FILE).toUtf8());
+            // wattroff(win, COLOR_PAIR(6));
 
-            if (modifier == 0) { /* reload only when reached bottom of file */
-                contents = tail(outputFile, row/2 + 3, modifier);
-                QString errorContents = "";
-                if (QFile::exists(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE)) {
-                    errorContents = tail(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE, row/2 + 3, 0);
-                }
-                if (not contents.trimmed().isEmpty() ) {
-                    if (not errorContents.trimmed().isEmpty())
-                        mvwprintw(win, 1, 1, (contents + "\n ERRORS: " + errorContents).trimmed().toUtf8());
-                    else
-                        mvwprintw(win, 1, 1, (contents).trimmed().toUtf8());
-                } else
-                    if (not errorContents.trimmed().isEmpty())
-                        mvwprintw(win, 1, 1, ("\n ERRORS: " + errorContents).trimmed().toUtf8());
-            } else {
-                contents = tail(outputFile, row/2 + 3, modifier);
-                mvwprintw(win, 1, 1, (contents).trimmed().toUtf8());
-            }
-            wrefresh(win);
+            // if (modifier == 0) { /* reload only when reached bottom of file */
+            //     contents = tail(outputFile, row/2 + 3, modifier);
+            //     QString errorContents = "";
+            //     if (QFile::exists(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE)) {
+            //         errorContents = tail(cursorAppDataDir + DEFAULT_SERVICE_ERRORS_FILE, row/2 + 3, 0);
+            //     }
+            //     if (not contents.trimmed().isEmpty() ) {
+            //         if (not errorContents.trimmed().isEmpty())
+            //             mvwprintw(win, 1, 1, (contents + "\n ERRORS: " + errorContents).trimmed().toUtf8());
+            //         else
+            //             mvwprintw(win, 1, 1, (contents).trimmed().toUtf8());
+            //     } else
+            //         if (not errorContents.trimmed().isEmpty())
+            //             mvwprintw(win, 1, 1, ("\n ERRORS: " + errorContents).trimmed().toUtf8());
+            // } else {
+            //     contents = tail(outputFile, row/2 + 3, modifier);
+            //     mvwprintw(win, 1, 1, (contents).trimmed().toUtf8());
+            // }
+            // wrefresh(win);
 
             /* write app header */
             attron(COLOR_PAIR(1));
@@ -621,7 +652,7 @@ int main(int argc, char *argv[]) {
             standend();
 
             printStatus(status); /* print status - usually last command invoked */
-            delwin(win);
+            // delwin(win);
             refresh();
             usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
             standend();
