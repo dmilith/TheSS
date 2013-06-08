@@ -358,7 +358,7 @@ void SvdService::startSlot() {
 
     auto map = getDiskFree(config->prefixDir());
     Q_FOREACH(QString value, map.keys()) {
-        logInfo() << "Free disk space in service directory:" << value << "->" << map[value];
+        logDebug() << "Free disk space in service directory:" << value << "->" << map[value];
         if (map[value] <= config->minimumRequiredDiskSpace) {
             logError() << "Insufficient disk space for service:" << config->name << "on domain:" << config->domain << "Expected disk space amount (MiB):" << QString::number(config->minimumRequiredDiskSpace) << "but disk:" << value << "has:" << map[value] << "!";
         }
