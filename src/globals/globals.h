@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.33.1"
+    #define APP_VERSION "0.34.0"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -47,6 +47,7 @@
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
     #define DEFAULT_SERVICE_PORT_NUMBER "0"
     #define DEFAULT_SERVICE_OUTPUT_FILE "/.output"
+    #define DEFAULT_SERVICE_DESTROY_FILE "/.destroy"
     #define DEFAULT_SERVICE_ERRORS_FILE "/.errors"
     #define DEFAULT_SERVICE_AUTOSTART_FILE "/.autostart"
     #define DEFAULT_SERVICE_RUNNING_FILE "/.running"

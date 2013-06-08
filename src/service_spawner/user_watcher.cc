@@ -99,8 +99,18 @@ void SvdUserWatcher::collectServices() {
 
     Q_FOREACH(QString name, services) {
         if (not oldServices.contains(name)) {
-            logInfo() << "Initializing watchers for data dir of service:" << name;
-            this->serviceWatchers << new SvdServiceWatcher(name);
+            QString aFile = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name + DEFAULT_SERVICE_DESTROY_FILE;
+            logDebug() << "Checking for .destroy file in service:" << aFile;
+            if (QFile::exists(aFile)) {
+                logInfo() << "Service was destroyed:" << aFile;
+                int index = oldServices.indexOf(name);
+                oldServices.removeAt(index);
+                logInfo() << "Removed from services cache.";
+                removeDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name);
+            } else {
+                logInfo() << "Initializing watchers for data dir of service:" << name;
+                this->serviceWatchers << new SvdServiceWatcher(name);
+            }
         }
     }
 }
