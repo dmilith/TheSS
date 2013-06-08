@@ -29,11 +29,28 @@
 #include <signal.h>
 
 #include <QtCore>
+#include <QMap>
 #include <QTime>
 #include <QTextCodec>
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QNetworkInterface>
+
+#ifdef __linux__
+    #include <sys/statfs.h>
+    #include <sys/types.h>
+#else
+    #include <sys/ucred.h>
+#endif
+
+#include <sys/param.h>
+#include <sys/types.h>
+#include <sys/mount.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fstab.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -57,6 +74,7 @@ void writeToFile(const QString& fileName, const QString& contents);
 void writeToFile(const QString& fileName, const QString& contents, bool rotateFile);
 void rotateFile(const QString& fileName);
 void unixSignalHandler(int sigNum);
+QMap<QString, long> getDiskFree(const QString& path = getenv("HOME")); /* in MiB */
 
 uint registerFreeTcpPort(uint specificPort = 0);
 Json::Value* parseJSON(const QString& filename);
