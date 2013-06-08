@@ -92,6 +92,8 @@ void TestLibrary::testMultipleConfigsLoading() {
 
     config = new SvdServiceConfig("Redis");
     QCOMPARE(config->name, QString("Redis"));
+    QVERIFY(config->afterStop->commands.contains(".running"));
+    QVERIFY(config->afterStop->commands.contains("service.pid"));
     QVERIFY(config->install->commands == "sofin get redis");
     QVERIFY(config->watchPort == true);
     QVERIFY(config->alwaysOn == true);
@@ -264,6 +266,9 @@ void TestLibrary::testStartingRedis() {
     QString pidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
     QString outputFile = config->prefixDir() + DEFAULT_SERVICE_OUTPUT_FILE;
     QVERIFY(QFile::exists(runningFile));
+
+    QVERIFY(config->afterStop->commands.contains("service.pid"));
+    QVERIFY(config->afterStop->commands.contains("kongo bongo"));
 
     QString portsFile = config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER;
     uint portOfRunningRedis = QString(readFileContents(portsFile).c_str()).trimmed().toUInt();

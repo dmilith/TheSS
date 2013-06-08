@@ -177,7 +177,8 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
             replaceAllSpecialsIn((*root)["start"].get("expectOutput", (*defaults)["start"]["expectOutput"]).asCString()));
 
         afterStart = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["afterStart"].get("commands", (*defaults)["afterStart"]["commands"]).asCString()),
+            replaceAllSpecialsIn(
+                QString((*root)["afterStart"].get("commands", Json::Value("")).asCString()) + QString((*defaults)["afterStart"]["commands"].asCString())), /* merge with value from Default */
             replaceAllSpecialsIn((*root)["afterStart"].get("expectOutput", (*defaults)["afterStart"]["expectOutput"]).asCString()));
 
         stop = new SvdShellOperations(
@@ -185,7 +186,8 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
             replaceAllSpecialsIn((*root)["stop"].get("expectOutput", (*defaults)["stop"]["expectOutput"]).asCString()));
 
         afterStop = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["afterStop"].get("commands", (*defaults)["afterStop"]["commands"]).asCString()),
+            replaceAllSpecialsIn(
+                QString((*root)["afterStop"].get("commands", Json::Value("")).asCString()) + QString((*defaults)["afterStop"]["commands"].asCString())), /* merge with value from Default */
             replaceAllSpecialsIn((*root)["afterStop"].get("expectOutput", (*defaults)["afterStop"]["expectOutput"]).asCString()));
 
         reload = new SvdShellOperations(
