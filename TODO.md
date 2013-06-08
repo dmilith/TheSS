@@ -1,5 +1,4 @@
 ## TODO list (in order of importance):
-* Disk space check (db agnostic backup/ db dumps/ etc)
 * Notifications (+Better error handling)
 * Multiple domains for one service support
 * UDP protocol support
