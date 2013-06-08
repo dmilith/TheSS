@@ -1,8 +1,7 @@
 ## TODO list (in order of importance):
 * Notifications (+Better error handling)
-* Multiple domains for one service support
+* Internal/ External networks support (VPN/ Internet)
+* Auto scaling support (distributed architecture support)
 * UDP protocol support
 * Coreginx/ Nginx watchers + Nginx config generation (on the fly)
-* Internal/ External networks support (VPN/ Internet)
-* Multiple hosts support
-* Auto scaling support (distributed architecture support)
+* Multiple domains for one service support
