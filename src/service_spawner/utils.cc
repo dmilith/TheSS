@@ -520,3 +520,29 @@ Json::Value* parseJSON(const QString& filename) {
 
     return root; /* return user side igniter first by default */
 }
+
+
+QMap<QString, long> getDiskFree(const QString& path) {
+    struct statfs *mntbuf, *buf;
+    long mntsize = getmntinfo(&mntbuf, MNT_NOWAIT);
+    // statfs(path.toUtf8().data(), mntbuf);
+    QMap<QString, long> results;
+
+    for (int index = 0; index < mntsize; index++) {
+        long mibSizeCount = mntbuf[index].f_bfree * mntbuf[index].f_bsize / 1024 / 1024;
+        QString value = QString(mntbuf[index].f_mntonname);
+
+        if (value.startsWith("/") and not value.endsWith("dev")
+            #ifdef __APPLE__
+                and not value.endsWith("home")
+            #endif
+            and not value.endsWith("net")) {
+                results[value.toUtf8()] = mibSizeCount;
+        }
+    }
+    qDebug() << "FREE disk map: ";
+    Q_FOREACH(QString key, results.keys()) {
+        qDebug() << key << " -> " << results[key];
+    }
+    return results;
+}
