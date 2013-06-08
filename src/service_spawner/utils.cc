@@ -523,23 +523,36 @@ Json::Value* parseJSON(const QString& filename) {
 
 
 QMap<QString, long> getDiskFree(const QString& path) {
-    struct statfs *mntbuf, *buf;
-    long mntsize = getmntinfo(&mntbuf, MNT_NOWAIT);
-    // statfs(path.toUtf8().data(), mntbuf);
     QMap<QString, long> results;
 
-    for (int index = 0; index < mntsize; index++) {
-        long mibSizeCount = mntbuf[index].f_bfree * mntbuf[index].f_bsize / 1024 / 1024;
-        QString value = QString(mntbuf[index].f_mntonname);
+    #ifdef __linux__
+        char tmp[1024];
+        struct statfs sb;
 
-        if (value.startsWith("/") and not value.endsWith("dev")
-            #ifdef __APPLE__
-                and not value.endsWith("home")
-            #endif
-            and not value.endsWith("net")) {
-                results[value.toUtf8()] = mibSizeCount;
+        statfs(path.toUtf8().data(), &sb);
+        long mibSizeCount = sb.f_bfree * sb.f_bsize / 1024 / 1024;
+        if (path.startsWith("/") and not path.endsWith("dev") and not path.endsWith("net")) {
+            results[path.toUtf8()] = mibSizeCount;
         }
-    }
+    #else
+        struct statfs *mntbuf;
+        long mntsize = getmntinfo(&mntbuf, 0);
+        statfs(path.toUtf8(), mntbuf);
+
+        for (int index = 0; index < mntsize; index++) {
+            long mibSizeCount = mntbuf[index].f_bfree * mntbuf[index].f_bsize / 1024 / 1024;
+            QString value = QString(mntbuf[index].f_mntonname);
+
+            if (value.startsWith("/") and not value.endsWith("dev")
+                #ifdef __APPLE__
+                    and not value.endsWith("home")
+                #endif
+                and not value.endsWith("net")) {
+                    results[value.toUtf8()] = mibSizeCount;
+            }
+        }
+    #endif
+
     qDebug() << "FREE disk map: ";
     Q_FOREACH(QString key, results.keys()) {
         qDebug() << key << " -> " << results[key];

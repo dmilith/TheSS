@@ -36,8 +36,14 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QNetworkInterface>
 
+#ifdef __linux__
+    #include <sys/statfs.h>
+    #include <sys/types.h>
+#else
+    #include <sys/ucred.h>
+#endif
+
 #include <sys/param.h>
-#include <sys/ucred.h>
 #include <sys/types.h>
 #include <sys/mount.h>
 #include <stdio.h>
