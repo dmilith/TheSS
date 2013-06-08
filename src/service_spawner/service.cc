@@ -355,6 +355,12 @@ void SvdService::startSlot() {
 
     logTrace() << "Loading service igniter" << name;
     auto config = new SvdServiceConfig(name);
+
+    auto map = getDiskFree(config->prefixDir());
+    Q_FOREACH(QString value, map.keys()) {
+        logInfo() << "Free disk space in service directory:" << value << "->" << map[value];
+    }
+
     auto defaultLogFile = config->prefixDir() + DEFAULT_SERVICE_LOG_FILE;
     if (QFile::exists(defaultLogFile)) {
         logDebug() << "Rotating last log";
