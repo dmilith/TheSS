@@ -36,6 +36,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         watchPort = (*defaults)["watchPort"].asBool();
         alwaysOn = (*defaults)["alwaysOn"].asBool();
         staticPort = (*defaults)["staticPort"].asInt();
+        minimumRequiredDiskSpace = (*defaults)["minimumRequiredDiskSpace"].asInt();
         domain = (*defaults)["domain"].asCString();
         portsPool = (*defaults)["portsPool"].asInt();
         repository = (*defaults)["repository"].asCString();
@@ -126,6 +127,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
         portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
+        minimumRequiredDiskSpace = root->get("minimumRequiredDiskSpace", (*defaults)["minimumRequiredDiskSpace"]).asInt();
         domain = root->get("domain", (*defaults)["domain"]).asCString();
         repository = root->get("repository", (*defaults)["repository"]).asCString();
         dependencyOf = root->get("dependencyOf", (*defaults)["dependencyOf"]).asCString();
