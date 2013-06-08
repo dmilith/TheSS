@@ -15,7 +15,7 @@
 #include <QtCore>
 
 
-#define DEFAULT_DEATH_WATCHER_PAUSE 5000000 /* 5 seconds by default */
+#define DEFAULT_DEATH_WATCHER_PAUSE 2500000 /* 2.5 seconds by default */
 
 /**
  * Function performs endless loop, sending signals to process until it dies.
