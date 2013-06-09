@@ -48,8 +48,7 @@ int PanelGui::kbhit() {
 
 void PanelGui::displayHeader(){
     attron(COLOR_PAIR(1));
-    QString info = "Control Panel v" + QString(APP_VERSION) + ". "; // + QString(COPYRIGHT);
-    mvprintw(0, 0, "%-31s", info.toUtf8().data());
+    mvprintw(0, 0, "Control Panel v%s. © 2013 verknowsys.com", APP_VERSION);
 }
 
 void PanelGui::displayFooter(){
@@ -108,11 +107,11 @@ void PanelGui::displayStatus(){
     /* SS status info */
     if(panel->isSSOnline()){
         attron(C_SS_STATUS_ON);
-        mvprintw(0, 31, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvprintw(0, 45, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
         attroff(C_SS_STATUS_ON);
     } else {
         attron(C_SS_STATUS_OFF);
-        mvprintw(0, 31, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvprintw(0, 45, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
         attroff(C_SS_STATUS_OFF);
     }
 
