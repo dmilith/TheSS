@@ -287,6 +287,15 @@ void PanelGui::removeCurrentService(){
     }
 }
 
+void PanelGui::reload(int r, int c){
+    rows = r;
+    cols = c;
+    servicesList->reset(rows - 4);
+    clear();
+    refresh();
+    status = "Reloaded";
+}
+
 bool PanelGui::confirm(QString msg){
     int c = min(cols-2, 100);
     WINDOW *win = newwin(5, c, (rows-5)/2, (cols-c)/2);
@@ -339,11 +348,9 @@ void PanelGui::key(int ch){
             break;
 
         case KEY_F(5): /* refresh */
-            getmaxyx(stdscr, rows, cols); /* get cols and rows amount - f.e. after terminal resize */
-            servicesList->reset(rows - 4);
-            clear();
-            refresh();
-            status = "Reloaded";
+            int r,c;
+            getmaxyx(stdscr, r, c);
+            reload(r, c);
             break;
 
         case KEY_F(6): /* switch tailer */
