@@ -147,6 +147,7 @@ public:
     void pageUp();
     void pageDown();
     void helpDialog();
+    void searchLog();
     void reload(int r, int c);
 private:
     Panel * panel;

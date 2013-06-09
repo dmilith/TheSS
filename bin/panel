@@ -10,6 +10,9 @@ setw -g mouse-resize-pane on
 setw -g mouse-select-pane on
 setw -g mouse-select-window on
 
+# binds
+bind-key -n Escape select-pane -t 0
+
 # color scheme (style based on vim-powerline)
 setw -g status-left-length 52
 setw -g status-right-length 451

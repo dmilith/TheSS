@@ -145,7 +145,7 @@ void PanelGui::displayLog(){
         loggedServicePath = service->dir.absolutePath();
 
         QString tpl =
-            "q C-c \" touch %1 && clear\" C-m";
+            "C-m q C-c \" touch %1 && clear\" C-m";
 
         if(tailer == "most") {
             tpl += " \" most -w +u %2\" C-m B F F\n";
@@ -163,7 +163,7 @@ void PanelGui::displayLog(){
 void PanelGui::displayConfig(){
     const PanelService * service = servicesList->currentItem();
     if(service != NULL){
-        QString cmd = "q C-c \" most -w +u %1\" C-m";
+        QString cmd = "C-m q C-c \" most -w +u %1\" C-m";
         tmux(cmd.arg(service->dir.absolutePath() + "/service.conf"));
     }
 }
@@ -173,13 +173,21 @@ void PanelGui::cleanup(){
 
     if(TMUX){
         QString cmd =
-            " tmux send-keys -t 1 q C-c\n"
+            " tmux send-keys -t 1 C-m q C-c\n"
             " tmux send-keys -t 1 \" exit\" C-m\n"
             " tmux send-keys -t 0 C-c \" exit\" C-m\n";
         auto process = new SvdProcess("tail", getuid(), false);
         process->spawnProcess(cmd);
         process->waitForFinished();
     }
+}
+
+void PanelGui::searchLog(){
+    tmux("/");
+    QString cmd = " tmux select-pane -t 1\n";
+    auto process = new SvdProcess("tail", getuid(), false);
+    process->spawnProcess(cmd);
+    process->waitForFinished();
 }
 
 void PanelGui::helpDialog(){
@@ -367,6 +375,10 @@ void PanelGui::key(int ch){
 
         case '?':
             helpDialog();
+            break;
+
+        case '/':
+            searchLog();
             break;
 
         case KEY_PPAGE:
