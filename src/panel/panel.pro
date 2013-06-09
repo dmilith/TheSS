@@ -18,7 +18,11 @@ HEADERS   += ../service_spawner/utils.h \
 SOURCES   += ../service_spawner/utils.cc \
              ../service_spawner/logger.cc \
              ../service_spawner/process.cc \
-             panel.cc
+             panel.cc \
+             Panel.cpp \
+             PanelGui.cpp \
+             ScrollList.cpp \
+             PanelService.cpp
 
 mac {
       LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncurses
