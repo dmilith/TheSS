@@ -161,6 +161,14 @@ void PanelGui::displayLog(){
     }
 }
 
+void PanelGui::displayConfig(){
+    const PanelService * service = servicesList->currentItem();
+    if(service != NULL){
+        QString cmd = "q C-c \" most -w +u %1\" C-m";
+        tmux(cmd.arg(service->dir.absolutePath() + "/service.conf"));
+    }
+}
+
 void PanelGui::cleanup(){
     endwin();
 
@@ -196,6 +204,7 @@ void PanelGui::helpDialog(){
     list << "  V       - Validate current service";
     list << "  A       - Toggle autostart";
     list << "  F8, x   - Delete current service";
+    list << "  K       - Show app config (service.conf)";
     list << "";
     list << "Other actions:";
     list << "  F1      - Set trace log level";
@@ -425,6 +434,10 @@ void PanelGui::key(int ch){
                 servicesList->currentItem()->toggleAutostart();
                 status = "Triggered autostart of application: " + servicesList->currentItem()->name;
             }
+            break;
+
+        case 'K':
+            displayConfig();
             break;
 
         case 10: /* TODO: implement details view */

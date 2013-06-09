@@ -138,6 +138,7 @@ public:
     void displayStatus();
     void displayFooter();
     void displayLog();
+    void displayConfig();
     void newServiceDialog();
     void key(int ch);
     void removeCurrentService();
