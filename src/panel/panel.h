@@ -145,6 +145,7 @@ public:
     void cleanup();
     void pageUp();
     void pageDown();
+    void helpDialog();
 private:
     Panel * panel;
     void init();

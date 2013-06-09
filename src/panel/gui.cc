@@ -78,6 +78,11 @@ void PanelGui::displayFooter(){
         mvprintw(y, x++, " ");
     }
 
+    attron(C_GREEN);
+    mvprintw(y, x++, "?");
+    attron(C_DEFAULT);
+    mvprintw(y, x++, "=Help");
+
     y++;
     x=0;
 
@@ -168,6 +173,46 @@ void PanelGui::cleanup(){
         process->spawnProcess(cmd);
         process->waitForFinished();
     }
+}
+
+void PanelGui::helpDialog(){
+    WINDOW *win = newwin(rows-4, cols-2, 2, 1);
+
+    wattron(win, COLOR_PAIR(6));
+    box(win, '|', '-');
+    wattroff(win, COLOR_PAIR(6));
+
+    QList<QString> list;
+    list << COPYRIGHT;
+    list << "";
+    list << "Available key bindings";
+    list << "";
+    list << "Current service actions:";
+    list << "  S       - Start current service";
+    list << "  T       - Stop current service";
+    list << "  R       - Restart current service";
+    list << "  I       - Install current service";
+    list << "  C       - Configure current service";
+    list << "  V       - Validate current service";
+    list << "  A       - Toggle autostart";
+    list << "  F8, x   - Delete current service";
+    list << "";
+    list << "Other actions:";
+    list << "  F1      - Set trace log level";
+    list << "  F2      - Set debug log level";
+    list << "  F3      - Set info log level";
+    list << "  F4      - Set error log level";
+    list << "  F5      - Refresh panel";
+    list << "  F6      - Toggle between most and tail";
+    list << "  F7, N   - Add new service";
+    list << "  F9      - Shutdown TheSS ";
+
+    for(int i=0; i<list.length(); i++){
+        mvwprintw(win, i+1, 2, "%s", list.at(i).toUtf8().data());
+    }
+
+    wgetch(win);
+    delwin(win);
 }
 
 void PanelGui::newServiceDialog(){
@@ -300,10 +345,13 @@ void PanelGui::key(int ch){
             displayLog();
             break;
 
-
         case KEY_F(9):
             panel->shutdown();
             status = "Terminating ServiceSpawner (services remain in background)";
+            break;
+
+        case '?':
+            helpDialog();
             break;
 
         case KEY_PPAGE:
