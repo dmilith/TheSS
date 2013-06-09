@@ -204,7 +204,7 @@ void PanelGui::removeCurrentService(){
     if(service->isRunning){
       status = "You can't remove running service: " + service->name;
     } else {
-      if(confirm("Are you sure you want to destroy data and configuration of service: " + service->name + "?")){
+      if(confirm(" Are you sure you want to destroy data\n and configuration of service: " + service->name + "?")){
         if(service->remove()){
           status = "Data dir removed: " + service->dir.absolutePath();
         } else {
@@ -218,15 +218,22 @@ void PanelGui::removeCurrentService(){
 }
 
 bool PanelGui::confirm(QString msg){
-  WINDOW *win = newwin(5, 100, (rows-5)/2, (cols-100)/2);
+  int c = min(cols-2, 100);
+  WINDOW *win = newwin(5, c, (rows-5)/2, (cols-c)/2);
   keypad(win, TRUE);
 
   wattron(win, COLOR_PAIR(8));
   box(win, '|', '-');
-  mvwprintw(win, 2, 3, (msg + " (Y/y/↵ to confirm)").toUtf8().data());
-  wattron(win, COLOR_PAIR(2));
+
+  WINDOW *inner = derwin(win, 3, c-2, 1, 1);
+
+  mvwprintw(inner, 0, 0, (msg + " (Y/y/↵ to confirm)").toUtf8().data());
+  wattron(inner, COLOR_PAIR(2));
+  wrefresh(win);
   int ch = wgetch(win);
 
+  delwin(inner);
+  delwin(win);
   return (ch == 10 || ch == 'y' || ch == 'Y');
 }
 
