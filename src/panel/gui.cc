@@ -202,7 +202,7 @@ void PanelGui::helpDialog(){
     list << "  C       - Configure current service";
     list << "  V       - Validate current service";
     list << "  A       - Toggle autostart";
-    list << "  F8, x   - Delete current service";
+    list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
     list << "";
     list << "Other actions:";
