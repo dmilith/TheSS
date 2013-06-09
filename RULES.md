@@ -4,6 +4,9 @@
 ## Repository rules:
 * "master" branch is a stable branch.
 * "new feature" equals "new branch".
+* file naming convention: "file.c" for C file. "file.cc" for C++ file.
+* project files naming convention: "Project.pro" for main project definition. "project.pro" for source side project details ("project.pro" requires "src/project/project.pro" due to qmake convention).
+* indentation => 4 spaces.
 
 
 ## Project versioning rules:
