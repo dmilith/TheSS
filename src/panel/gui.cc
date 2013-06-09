@@ -149,7 +149,7 @@ void PanelGui::displayLog(){
             "q C-c \" touch %1 && clear\" C-m";
 
         if(tailer == "most") {
-            tpl += " \" most +d -w +u %2\" C-m B F F\n";
+            tpl += " \" most -w +u %2\" C-m B F F\n";
         } else {
             tpl += " \" tail -F %2\" C-m";
         }
