@@ -131,14 +131,6 @@ void tmux(QString cmd){
     }
 }
 
-void PanelGui::pageUp(){
-    tmux("C-Up");
-}
-
-void PanelGui::pageDown(){
-    tmux("C-Down");
-}
-
 void PanelGui::displayLog(){
     const PanelService * service = servicesList->currentItem();
     if(TMUX && service != NULL && (loggedServicePath != service->dir.absolutePath())){
@@ -147,14 +139,17 @@ void PanelGui::displayLog(){
         QString tpl =
             "C-m C-m q C-c \" touch %1 && clear\" C-m";
 
+        QString file = loggedServicePath + DEFAULT_SERVICE_LOG_FILE;
+        QString cmd;
+
         if(tailer == "most") {
-            tpl += " \" most -w +u %2\" C-m B F F\n";
+            tpl += " \" most %2 +u %3\" C-m B F F\n";
+            cmd = tpl.arg(file).arg(wrapLines ? "-w" : "").arg(file);
         } else {
             tpl += " \" tail -F %2\" C-m";
+            cmd = tpl.arg(file).arg(file);
         }
 
-        QString file = loggedServicePath + DEFAULT_SERVICE_LOG_FILE;
-        QString cmd = tpl.arg(file).arg(file);
 
         tmux(cmd);
     }
@@ -163,8 +158,13 @@ void PanelGui::displayLog(){
 void PanelGui::displayConfig(){
     const PanelService * service = servicesList->currentItem();
     if(service != NULL){
-        QString cmd = "C-m C-m q C-c \" most -w +u %1\" C-m";
-        tmux(cmd.arg(service->dir.absolutePath() + "/service.conf"));
+        QString file = service->dir.absolutePath() + "/service.conf";
+        if(QFile::exists(file)){
+            QString cmd = "C-m C-m q C-c \" most %1 +u %2\" C-m";
+            tmux(cmd.arg(wrapLines ? "-w" : "").arg(file));
+        } else {
+            status = QString("No config file (%1)").arg(file);
+        }
     }
 }
 
@@ -212,6 +212,10 @@ void PanelGui::helpDialog(){
     list << "  A       - Toggle autostart";
     list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
+    list << "";
+    list << "Log window actions:";
+    list << "  [, ', ;, \\ - Move in log window";
+    list << "  W       - Toggle line wrap";
     list << "";
     list << "Other actions:";
     list << "  F1      - Set trace log level";
@@ -383,12 +387,20 @@ void PanelGui::key(int ch){
 
         case KEY_PPAGE:
         case '[':
-            pageUp();
+            tmux("10 C-Up");
             break;
 
         case KEY_NPAGE:
         case '\'':
-            pageDown();
+            tmux("10 C-Down");
+            break;
+
+        case ';':
+            tmux("10 C-Left");
+            break;
+
+        case '\\':
+            tmux("10 C-Right");
             break;
 
         case 'S': /* Start */
@@ -452,6 +464,12 @@ void PanelGui::key(int ch){
                 servicesList->currentItem()->toggleAutostart();
                 status = "Triggered autostart of application: " + servicesList->currentItem()->name;
             }
+            break;
+
+        case 'W': /* Toggle wrap on most */
+            wrapLines = !wrapLines;
+            tmux(":o");
+            tmux("w");
             break;
 
         case 'K':

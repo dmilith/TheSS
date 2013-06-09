@@ -144,8 +144,6 @@ public:
     void removeCurrentService();
     bool confirm(QString msg);
     void cleanup();
-    void pageUp();
-    void pageDown();
     void helpDialog();
     void searchLog();
     void reload(int r, int c);
@@ -158,6 +156,7 @@ private:
     ServicesList * servicesList;
     QString loggedServicePath = "";
     QString tailer = "most";
+    bool wrapLines = true;
 };
 
 #endif
