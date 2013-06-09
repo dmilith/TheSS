@@ -143,6 +143,8 @@ public:
     void removeCurrentService();
     bool confirm(QString msg);
     void cleanup();
+    void pageUp();
+    void pageDown();
 private:
     Panel * panel;
     void init();
@@ -151,6 +153,7 @@ private:
     int kbhit();
     ServicesList * servicesList;
     QString loggedServicePath = "";
+    QString tailer = "most";
 };
 
 #endif

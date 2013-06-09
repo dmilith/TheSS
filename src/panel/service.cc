@@ -35,13 +35,13 @@ PanelService::PanelService(QFileInfo baseDir){
         if(pid.isEmpty()) {
             uint __port = registerFreeTcpPort(port.toUInt());
             if (port.toUInt() == __port) {
-                    status = SERVICE_STATUS_WORKING;
+                status = SERVICE_STATUS_WORKING;
             } else {
-                    status = SERVICE_STATUS_RUNNING;
+                status = SERVICE_STATUS_RUNNING;
             }
             pid = "    -";
         } else {
-                status = SERVICE_STATUS_RUNNING;
+            status = SERVICE_STATUS_RUNNING;
         }
     } else if(se){
         status = SERVICE_STATUS_ERRORS;

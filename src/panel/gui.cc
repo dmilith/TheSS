@@ -118,24 +118,41 @@ void PanelGui::displayStatus(){
     clrtoeol();
 }
 
+void tmux(QString cmd){
+    if(TMUX){
+        cmd = " tmux send-keys -t 1 " + cmd + "\n";
+        auto process = new SvdProcess("tail", getuid(), false);
+        process->spawnProcess(cmd);
+        process->waitForFinished();
+    }
+}
+
+void PanelGui::pageUp(){
+    tmux("C-Up");
+}
+
+void PanelGui::pageDown(){
+    tmux("C-Down");
+}
+
 void PanelGui::displayLog(){
     const PanelService * service = servicesList->currentItem();
     if(TMUX && service != NULL && (loggedServicePath != service->dir.absolutePath())){
         loggedServicePath = service->dir.absolutePath();
 
         QString tpl =
-            "tmux select-pane  -t 1\n"
-            "tmux send-keys    -t 1 C-c\n"
-            "tmux send-keys    -t 1 \" touch %1 && clear\" C-m\n"
-            "tmux send-keys    -t 1 \" tail -n 1000000 -F %2\" C-m\n"
-            "tmux select-pane  -t 0\n";
+            "q C-c \" touch %1 && clear\" C-m";
+
+        if(tailer == "most") {
+            tpl += " \" most +d -w +u %2\" C-m B F F\n";
+        } else {
+            tpl += " \" tail -F %2\" C-m";
+        }
 
         QString file = loggedServicePath + DEFAULT_SERVICE_LOG_FILE;
         QString cmd = tpl.arg(file).arg(file);
 
-        auto process = new SvdProcess("tail", getuid(), false);
-        process->spawnProcess(cmd);
-        process->waitForFinished();
+        tmux(cmd);
     }
 }
 
@@ -144,20 +161,17 @@ void PanelGui::cleanup(){
 
     if(TMUX){
         QString cmd =
-            "tmux select-pane  -t 1\n"
-            "tmux send-keys    -t 1 C-c\n"
-            "tmux send-keys    -t 1 \" exit\" C-m\n"
-            "tmux select-pane  -t 0\n"
-            "tmux send-keys    -t 0 C-c \" exit\" C-m\n";
-
+            " tmux send-keys -t 1 q C-c\n"
+            " tmux send-keys -t 1 \" exit\" C-m\n"
+            " tmux send-keys -t 0 C-c \" exit\" C-m\n";
         auto process = new SvdProcess("tail", getuid(), false);
         process->spawnProcess(cmd);
-        process->waitForFinished(-1);
+        process->waitForFinished();
     }
 }
 
 void PanelGui::newServiceDialog(){
-    int r = max(rows-6, 23);
+    int r = min(rows-6, 23);
     WINDOW *win = newwin(r, 46, 2, 5);
     AvailableServicesList list(panel->availableServices(), r - 3, win);
     QString name = "";
@@ -279,9 +293,27 @@ void PanelGui::key(int ch){
             status = "Reloaded";
             break;
 
+        case KEY_F(6): /* switch tailer */
+            if(tailer == "most") tailer = "tail";
+            else tailer = "most";
+            loggedServicePath = "";
+            displayLog();
+            break;
+
+
         case KEY_F(9):
             panel->shutdown();
             status = "Terminating ServiceSpawner (services remain in background)";
+            break;
+
+        case KEY_PPAGE:
+        case '[':
+            pageUp();
+            break;
+
+        case KEY_NPAGE:
+        case '\'':
+            pageDown();
             break;
 
         case 'S': /* Start */
