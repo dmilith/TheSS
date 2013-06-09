@@ -127,7 +127,7 @@ void PanelGui::displayLog(){
             "tmux select-pane  -t 1\n"
             "tmux send-keys    -t 1 C-c\n"
             "tmux send-keys    -t 1 \" touch %1 && clear\" C-m\n"
-            "tmux send-keys    -t 1 \" tail -F %2\" C-m\n"
+            "tmux send-keys    -t 1 \" tail -n 1000000 -F %2\" C-m\n"
             "tmux select-pane  -t 0\n";
 
         QString file = loggedServicePath + DEFAULT_SERVICE_LOG_FILE;
