@@ -48,63 +48,66 @@ int PanelGui::kbhit() {
 
 void PanelGui::displayHeader(){
   attron(COLOR_PAIR(1));
-  QString info = "Control Panel, version: " + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
-  mvprintw(0, 0, info.toUtf8());
+  QString info = "Control Panel v" + QString(APP_VERSION) + ". "; // + QString(COPYRIGHT);
+  mvprintw(0, 0, "%-31s", info.toUtf8().data());
 }
 
 void PanelGui::displayFooter(){
-  QStringList functions, actionFunctions, descriptionFunctions, descriptions;
-  functions << "F1" << "F2" << "F3" << "F4" << "F5" << "F7" << "F8" << "F9";
-  descriptions << "trace" << "debug" << "info" << "error" << "refresh" << "init new service" << "destroy service" << "ss shutdown (TERM)";
+  QList<QString> actions, functions;
 
-  actionFunctions << "A" << "S" << "T" << "R" << "V" << "I" << "C" << "q";
-  descriptionFunctions << "toggle autostart" << "start" << "stop" << "restart" << "validate" << "install" << "configure" << "quit panel";
+  actions << "Autostart" << "Start" << "sTop" << "Restart";
+  actions << "Validate" << "Install" << "Configure" << "New" << "eXplode";
+  functions << "F1" << "trace" << "F2" << "debug";
+  functions << "F3" << "info" << "F4" << "error";
+  functions << "F5" << "refresh" << "F7" << "new service";
+  functions << "F8" << "destroy" << "F9" << "SS shutdown";
 
-  int position = 0, position2 = 0;
-  QString prefix = "Panel actions: ", prefix2 = "Service actions: ";
-  mvprintw(rows - 1, 0, prefix.toUtf8());
-  mvprintw(rows - 2, 0, prefix2.toUtf8());
-  position += prefix.length();
-  position2 += prefix2.length();
+  int x = 0, y = rows - 2;
+  char * str;
+  int i;
 
-  for (int indx = 0; indx < functions.length(); indx++) {
-      QString info = functions.at(indx);
-      attron(C_GREEN);
-      mvprintw(rows - 1, position, info.toUtf8());
-      position += info.length();
-      QString appendix = ": " + descriptions.at(indx) + "  ";
-      info += appendix;
-      attron(C_DEFAULT);
-      mvprintw(rows - 1, position, appendix.toUtf8());
-      position += appendix.length();
-
-      info = actionFunctions.at(indx);
-      attron(C_GREEN);
-      mvprintw(rows - 2, position2, info.toUtf8());
-      position2 += info.length();
-      appendix = ": " + descriptionFunctions.at(indx) + "  ";
-      info += appendix;
-      attron(C_DEFAULT);
-      mvprintw(rows - 2, position2, appendix.toUtf8());
-      position2 += appendix.length();
+  mvprintw(y, x, "Services: ");
+  x+=10;
+  Q_FOREACH(auto action, actions){
+    str = action.toUtf8().data();
+    for(i=0; i<action.length(); i++){
+      if(str[i] >= 'A' && str[i] <= 'Z') attron(C_GREEN);
+      else attron(C_DEFAULT);
+      mvprintw(y, x++, "%c", str[i]);
+    }
+    mvprintw(y, x++, " ");
   }
 
+  y++;
+  x=0;
+
+  for(i=0; i<functions.length()/2; i++){
+    QString a = functions.at(2*i);
+    QString b = functions.at(2*i+1);
+
+    attron(C_STATUS);
+    mvprintw(y, x, "%s", a.toUtf8().data());
+    x+=a.length();
+    attron(C_DEFAULT);
+    mvprintw(y, x, "=%s ", b.toUtf8().data());
+    x+=b.length()+2;
+  }
 }
 
 void PanelGui::displayStatus(){
   /* services count info */
-  attron(COLOR_PAIR(5));
-  mvprintw(0, 88, "Defined services count: " + QString::number(panel->services.length()).toUtf8());
-  attroff(COLOR_PAIR(5));
+  // attron(COLOR_PAIR(5));
+  // mvprintw(0, 88, "Defined services count: " + QString::number(panel->services.length()).toUtf8());
+  // attroff(COLOR_PAIR(5));
 
   /* SS status info */
   if(panel->isSSOnline()){
     attron(C_SS_STATUS_ON);
-    mvprintw(0, 116, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
+    mvprintw(0, 31, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
     attroff(C_SS_STATUS_ON);
   } else {
     attron(C_SS_STATUS_OFF);
-    mvprintw(0, 116, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
+    mvprintw(0, 31, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
     attroff(C_SS_STATUS_OFF);
   }
 
@@ -223,7 +226,7 @@ bool PanelGui::confirm(QString msg){
   keypad(win, TRUE);
 
   wattron(win, COLOR_PAIR(8));
-  box(win, '|', '-');
+  wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
 
   WINDOW *inner = derwin(win, 3, c-2, 1, 1);
 
