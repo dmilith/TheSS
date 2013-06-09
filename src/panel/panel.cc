@@ -12,7 +12,7 @@ bool TMUX;
 
 int main(int argc, char *argv[]) {
     // Require to be run inside tmux
-    TMUX = QString(getenv("TMUX")) != "";
+    TMUX = QString(getenv("TMUX_PANE")) != "";
 
     if(!TMUX){
         printf("Must be run inside tmux\n");
