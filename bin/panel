@@ -31,5 +31,5 @@ tmux start-server
 tmux new-session -d -s SvdPanel -n svdpanel
 tmux split-window -t SvdPanel -h
 tmux select-pane  -t 0
-tmux send-keys    -t 0 "./svdpanel" C-m
+tmux send-keys    -t 0 "$(dirname $0)/../svdpanel" C-m
 tmux attach-session $@ -d -tSvdPanel
