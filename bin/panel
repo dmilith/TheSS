@@ -1,0 +1,12 @@
+#!/bin/sh
+
+panelbin="$(dirname $0)/../svdpanel"
+tmuxconf="$(dirname $0)/../etc/tmux.conf"
+tmuxbin="tmux -f $tmuxconf"
+
+$tmuxbin start-server
+$tmuxbin new-session -d -s SvdPanel -n svdpanel
+$tmuxbin split-window -t SvdPanel -h
+$tmuxbin select-pane  -t 0
+$tmuxbin send-keys    -t 0 $panelbin C-m
+$tmuxbin attach-session $@ -d -tSvdPanel
