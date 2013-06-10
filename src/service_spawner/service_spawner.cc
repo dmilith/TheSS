@@ -10,6 +10,7 @@
 
 #include "../globals/globals.h"
 #include "../notifications/notifications.h"
+#include "../notifications/transports/hipchat_appender.h"
 #include "logger.h"
 #include "service_config.h"
 #include "service_watcher.h"
@@ -42,8 +43,6 @@ int main(int argc, char *argv[]) {
     QRegExp rxPrintVersion("-v");
     uint uid = getuid();
 
-    notification("pam pam pam suko");
-
     bool debug = false, trace = false;
     for (int i = 1; i < args.size(); ++i) {
         if (rxEnableDebug.indexIn(args.at(i)) != -1 ) {
@@ -71,6 +70,11 @@ int main(int argc, char *argv[]) {
         consoleAppender->setDetailsLevel(Logger::Info);
         consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
     }
+
+    HipChatAppender *hipchatAppender = new HipChatAppender();
+    Logger::registerAppender(hipchatAppender);
+    hipchatAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+    hipchatAppender->setDetailsLevel(Logger::Error);
 
     /* file lock setup */
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
