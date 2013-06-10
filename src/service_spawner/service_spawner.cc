@@ -6,14 +6,15 @@
  */
 
 
-#include "logger.h"
+#include <QtCore>
+
 #include "../globals/globals.h"
+#include "../notifications/notifications.h"
+#include "logger.h"
 #include "service_config.h"
 #include "service_watcher.h"
 #include "user_watcher.h"
 #include "utils.h"
-
-#include <QtCore>
 
 
 // void spawnSSForEachUser() {
@@ -40,6 +41,8 @@ int main(int argc, char *argv[]) {
     QRegExp rxEnableTrace("-t");
     QRegExp rxPrintVersion("-v");
     uint uid = getuid();
+
+    notification("pam pam pam suko");
 
     bool debug = false, trace = false;
     for (int i = 1; i < args.size(); ++i) {

@@ -8,6 +8,8 @@ include(../Common.pro)
 
 QT += network
 HEADERS   += service.h \
+             ../notifications/notifications.h \
+             ../notifications/transports/hipchat.h \
              ../death_watch/death_watch.h \
              process.h \
              data_collector.h \
@@ -39,6 +41,7 @@ SOURCES   += service.cc \
              ../death_watch/death_watch.cc \
              service_spawner.cc \
              cron_entry.cc \
-             logger.cc
+             logger.cc \
+             ../notifications/notifications.cc
 LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../svdss

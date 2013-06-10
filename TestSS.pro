@@ -7,4 +7,4 @@
 include(src/Common.pro)
 
 TEMPLATE           = subdirs
-SUBDIRS            = src/jsoncpp src/cutelogger src/quazip src/test
+SUBDIRS            = src/notifications src/jsoncpp src/cutelogger src/quazip src/test
