@@ -356,6 +356,10 @@ void SvdService::startSlot() {
     logTrace() << "Loading service igniter" << name;
     auto config = new SvdServiceConfig(name);
 
+    logInfo() << "Performing sanity dir checks for service:" << name;
+    getOrCreateDir(config->prefixDir());
+    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
+
     auto map = getDiskFree(config->prefixDir());
     Q_FOREACH(QString value, map.keys()) {
         logDebug() << "Free disk space in service directory:" << value << "->" << map[value];

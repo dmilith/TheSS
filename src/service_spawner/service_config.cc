@@ -254,9 +254,9 @@ const QString SvdServiceConfig::serviceRoot() {
 
 const QString SvdServiceConfig::prefixDir() {
     if (uid == 0) {
-        return getOrCreateDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + name);
+        return QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + name;
     } else {
-        return getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + name);
+        return getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + name;
     }
 }
 
@@ -309,9 +309,9 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* Replace SERVICE_DEPENDENCY_PREFIX */
         QString depsFull;
         if (uid != 0)
-            depsFull = getOrCreateDir(getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
+            depsFull = getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf; // getOrCreateDir(
         else
-            depsFull = getOrCreateDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf);
+            depsFull = QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf; // getOrCreateDir(
 
         if (dependencyOf.isEmpty()) {
             logTrace() << "No dependencies for:" << name;
@@ -392,7 +392,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             }
 
         /* then replace main port */
-        QString portFilePath = getOrCreateDir(portsDirLocation) + QString(DEFAULT_SERVICE_PORT_NUMBER);
+        QString portFilePath = portsDirLocation + QString(DEFAULT_SERVICE_PORT_NUMBER); // getOrCreateDir
         if (staticPort != -1) { /* defined static port */
             logInfo() << "Set static port:" << staticPort << "for service" << name;
             ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
