@@ -45,7 +45,18 @@ class HipChatNotification: public Notification {
             params.addQueryItem("room_id", this->roomName());
             params.addQueryItem("from", this->fromName());
             params.addQueryItem("notify", this->notifyAll()); /* don't notify all about it */
-            params.addQueryItem("color", this->notifyColor()); /* don't notify all about it */
+            switch (getLevel()) {
+                case WARNING:
+                    params.addQueryItem("color", this->warningColor());
+                    break;
+
+                case ERROR:
+                    params.addQueryItem("color", this->errorColor());
+                    break;
+
+                default:
+                    break;
+            }
             params.addQueryItem("message", notificationMessage);
 
             QByteArray data;

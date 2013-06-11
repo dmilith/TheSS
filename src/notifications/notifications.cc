@@ -16,6 +16,9 @@ void notification(const QString& notificationMessage) {
         history[notificationMessage]++;
     } else {
         auto notification = new HipChatNotification();
+        if (notificationMessage.contains("Error")) {
+            notification->setLevel(ERROR);
+        }
         notification->notification(notificationMessage);
         delete notification;
         history[notificationMessage]++;

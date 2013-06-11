@@ -16,7 +16,8 @@
 #include <QtNetwork/QNetworkRequest>
 
 
-enum NotificationType {HIPCHAT, DEFAULT = 1};
+enum NotificationType {HIPCHAT, DEFAULT};
+enum NotificationLevels {NOTIFY, WARNING, ERROR};
 
 
 static QNetworkAccessManager *networkAccessManager = new QNetworkAccessManager();
@@ -24,7 +25,7 @@ static QMap<QString, int> history = QMap<QString, int>(); /* content, amount */
 
 
 class Notification {
-
+    NotificationLevels level = WARNING;
 
     public:
         QString fromName() { return "TheSS"; };
@@ -37,6 +38,8 @@ class Notification {
         QString urlAddress();
         QString apiKey();
 
+        void setLevel(NotificationLevels newLevel) { this->level = newLevel; };
+        NotificationLevels getLevel() { return this->level; };
 };
 
 
