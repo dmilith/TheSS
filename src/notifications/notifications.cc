@@ -12,9 +12,14 @@
 
 
 void notification(const QString& notificationMessage) {
-    auto notification = new HipChatNotification();
-    notification->notification(notificationMessage);
-    delete notification;
+    if (history[notificationMessage] > 0) {
+        history[notificationMessage]++;
+    } else {
+        auto notification = new HipChatNotification();
+        notification->notification(notificationMessage);
+        delete notification;
+        history[notificationMessage]++;
+    }
 }
 
 

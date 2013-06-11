@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     HipChatAppender *hipchatAppender = new HipChatAppender();
     hipchatAppender->ansiColors = false;
     Logger::registerAppender(hipchatAppender);
-    hipchatAppender->setFormat("[%-7l] %m @" + QHostInfo::localHostName());
+    hipchatAppender->setFormat("%t{HH:mm:ss} [%-7l] %m @" + QHostInfo::localHostName());
     hipchatAppender->setDetailsLevel(Logger::Warning);
 
     /* file lock setup */

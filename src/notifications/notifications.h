@@ -20,6 +20,7 @@ enum NotificationType {HIPCHAT, DEFAULT = 1};
 
 
 static QNetworkAccessManager *networkAccessManager = new QNetworkAccessManager();
+static QMap<QString, int> history = QMap<QString, int>(); /* content, amount */
 
 
 class Notification {
