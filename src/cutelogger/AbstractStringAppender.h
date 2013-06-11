@@ -38,6 +38,10 @@
 class CUTELOGGERSHARED_EXPORT AbstractStringAppender : public AbstractAppender
 {
   public:
+
+    /* 2013-06-11 02:28:54 - dmilith - NOTE: it's almost hack for turning on and off ANSI colors */
+    bool ansiColors = true;
+
     //! Constructs a new string appender object
     AbstractStringAppender();
 

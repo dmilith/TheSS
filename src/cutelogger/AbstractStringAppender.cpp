@@ -157,22 +157,23 @@ QString AbstractStringAppender::formattedString(const QDateTime& timeStamp, Logg
     ++i;
   }
 
-  switch (logLevel)
-  {
-    case Logger::Trace:
-      result.prepend("\033[35m"); // Magenta
-    case Logger::Debug:
-      result.prepend("\033[36m"); // Cyan
-    case Logger::Info:
-      result.prepend("\033[37m"); // White
-    case Logger::Warning:
-      result.prepend("\033[33m"); // Yellow
-    case Logger::Error:
-      result.prepend("\033[31m"); // Red
-    case Logger::Fatal:
-      result.prepend("\033[34m"); // Blue
+  if (ansiColors) {
+    switch (logLevel)
+    {
+      case Logger::Trace:
+        result.prepend("\033[35m"); // Magenta
+      case Logger::Debug:
+        result.prepend("\033[36m"); // Cyan
+      case Logger::Info:
+        result.prepend("\033[37m"); // White
+      case Logger::Warning:
+        result.prepend("\033[33m"); // Yellow
+      case Logger::Error:
+        result.prepend("\033[31m"); // Red
+      case Logger::Fatal:
+        result.prepend("\033[34m"); // Blue
+    }
+    result.append("\033[0m"); // Clear
   }
-  result.append("\033[0m"); // Clear
-
   return result;
 }
