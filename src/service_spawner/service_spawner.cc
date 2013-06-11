@@ -72,9 +72,10 @@ int main(int argc, char *argv[]) {
     }
 
     HipChatAppender *hipchatAppender = new HipChatAppender();
+    hipchatAppender->ansiColors = false;
     Logger::registerAppender(hipchatAppender);
-    hipchatAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-    hipchatAppender->setDetailsLevel(Logger::Error);
+    hipchatAppender->setFormat("[%-7l] %m @" + QHostInfo::localHostName());
+    hipchatAppender->setDetailsLevel(Logger::Warning);
 
     /* file lock setup */
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
