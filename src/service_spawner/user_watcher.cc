@@ -102,7 +102,7 @@ void SvdUserWatcher::collectServices() {
             QString aFile = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name + DEFAULT_SERVICE_DESTROY_FILE;
             logDebug() << "Checking for .destroy file in service:" << aFile;
             if (QFile::exists(aFile)) {
-                logInfo() << "Service was destroyed:" << aFile;
+                notification("Service was destroyed: " + aFile, "", NOTIFY);
                 int index = oldServices.indexOf(name);
                 oldServices.removeAt(index);
                 logInfo() << "Removed from services cache.";
@@ -146,7 +146,8 @@ void SvdUserWatcher::shutdownSlot() {
 
 void SvdUserWatcher::checkUserControlTriggers() {
     if (QFile::exists(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
-        logInfo() << "Invoked shutdown trigger. Sending SS down.";
+        QString msg = "Invoked shutdown trigger. Sending SS down.";
+        notification(msg, "", NOTIFY);
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         QFile::remove(homeDir + "/." + getenv("USER") + ".pid");

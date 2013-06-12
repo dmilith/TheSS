@@ -16,7 +16,7 @@
 #include <QtNetwork/QNetworkRequest>
 
 
-enum NotificationLevels {NOTIFY, WARNING, ERROR};
+enum NotificationLevels {NOTIFY, WARNING, ERROR, FATAL};
 
 
 static QMap<QString, int> history = QMap<QString, int>(); /* content, amount */

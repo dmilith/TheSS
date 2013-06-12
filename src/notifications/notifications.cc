@@ -30,6 +30,12 @@ void notification(const QString& notificationMessage, const QString& serviceName
             logError() << notificationMessage;
             postfix = ".error";
             break;
+
+        case FATAL:
+            logFatal() << notificationMessage;
+            postfix = ".fatal";
+            break;
+
     }
 
     if (history[notificationMessage] > 0) {
