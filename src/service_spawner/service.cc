@@ -426,8 +426,7 @@ void SvdService::startSlot() {
         emit validateSlot(); // invoke validation before each startSlot
 
         if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE)) {
-            const QDateTime now = QDateTime::currentDateTime();
-            QString msg = now.toString("yyyy-MM-dd hh:mm:ss") + " - Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
+            QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
             notification(msg, name, ERROR);
             delete config;
 
