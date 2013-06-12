@@ -1,4 +1,4 @@
-# ServeD natives - low level notification center
+# ServeD natives - low level notification mechanism
 #
 # author:
 #   Daniel (dmilith) Dettlaff
@@ -13,4 +13,4 @@ CONFIG += staticlib
 
 HEADERS   += notifications.h
 
-SOURCES   += notifications.cc
+SOURCES   += notifications.cc ../service_spawner/utils.cc
