@@ -434,7 +434,8 @@ void SvdService::startSlot() {
             return;
         }
 
-        logInfo() << "Launching service" << name;
+        notification("Launching service: " + name, name, NOTIFY);
+
         logTrace() << "Launching commands:" << config->start->commands;
         // touch(indicator);
         auto process = new SvdProcess(name);
