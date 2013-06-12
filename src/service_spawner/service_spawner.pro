@@ -25,7 +25,8 @@ HEADERS   += service.h \
              webapp_types.h \
              webapp_watcher.h \
              cron_entry.h \
-             logger.h
+             logger.h \
+             ../notifications/notifications.h
 SOURCES   += service.cc \
              data_collector.cc \
              process.cc \
@@ -40,6 +41,7 @@ SOURCES   += service.cc \
              ../death_watch/death_watch.cc \
              service_spawner.cc \
              cron_entry.cc \
-             logger.cc
-LIBS      += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
+             logger.cc \
+             ../notifications/notifications.cc
+LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../svdss
