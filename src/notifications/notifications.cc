@@ -27,22 +27,22 @@ void notification(const QString& notificationMessage, const QString& serviceName
     QString postfix;
     switch (level) {
         case NOTIFY:
-            logInfo() << message;
+            logInfo() << notificationMessage;
             postfix = ".notice";
             break;
 
         case WARNING:
-            logWarn() << message;
+            logWarn() << notificationMessage;
             postfix = ".warning";
             break;
 
         case ERROR:
-            logError() << message;
+            logError() << notificationMessage;
             postfix = ".error";
             break;
 
         case FATAL:
-            logFatal() << message;
+            logFatal() << notificationMessage;
             postfix = ".fatal";
             break;
 
