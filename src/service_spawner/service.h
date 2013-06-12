@@ -38,6 +38,7 @@
 #include "../globals/globals.h"
 #include "service_config.h"
 #include "utils.h"
+#include "../notifications/notifications.h"
 #include "../death_watch/death_watch.h"
 
 #include <signal.h>

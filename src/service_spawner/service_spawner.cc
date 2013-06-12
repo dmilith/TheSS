@@ -10,7 +10,6 @@
 
 #include "../globals/globals.h"
 #include "../notifications/notifications.h"
-#include "../notifications/transports/hipchat_appender.h"
 #include "logger.h"
 #include "service_config.h"
 #include "service_watcher.h"
@@ -70,12 +69,6 @@ int main(int argc, char *argv[]) {
         consoleAppender->setDetailsLevel(Logger::Info);
         consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
     }
-
-    HipChatAppender *hipchatAppender = new HipChatAppender();
-    hipchatAppender->ansiColors = false;
-    Logger::registerAppender(hipchatAppender);
-    hipchatAppender->setFormat("%t{HH:mm:ss} [%-7l] %m @" + QHostInfo::localHostName());
-    hipchatAppender->setDetailsLevel(Logger::Warning);
 
     /* file lock setup */
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";

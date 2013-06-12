@@ -37,6 +37,6 @@ SOURCES += ../service_spawner/service_config.cc \
            ../service_spawner/cron_entry.cc \
            TestLibrary.cc
 
-LIBS += ../libjsoncpp.a ../liblogger.a ../libquazip.a -lz
+LIBS += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libquazip.a -lz
 
 TARGET = ../../test
