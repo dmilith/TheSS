@@ -18,7 +18,7 @@ void notification(const QString& notificationMessage, const QString& serviceName
 
     /* make sure that every notification begins with proper data and time */
     const QDateTime now = QDateTime::currentDateTime();
-    if (not notificationMessage.startsWith(now.toString("dd-hh:mm"))) {
+    if (not notificationMessage.startsWith(now.toString("dd-hh:mm"))) { // XXX: hardcoded
         message = now.toString("dd-hh:mm:ss - ") + notificationMessage;
     } else
         message = notificationMessage;
