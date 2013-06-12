@@ -14,7 +14,7 @@ SvdSchedulerAction::SvdSchedulerAction(const QString& initialCronEntry, const QS
     commands = initialCommands;
     auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
     QString content = cronEntry + commands;
-    hash->addData(content.toUtf8(), content.length() + 1);
+    hash->addData(content.toUtf8(), content.length());
     sha = hash->result().toHex();
     delete hash;
 }
