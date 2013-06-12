@@ -16,6 +16,7 @@ Panel * panel;
 PanelGui * gui;
 
 void handle_winch(int sig){
+    Q_UNUSED(sig);
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     gui->reload(w.ws_row, w.ws_col);
