@@ -17,3 +17,5 @@ moc_*.cpp
 /docs/*.snm
 /docs/*.synctex.gz
 /docs/*.toc
+
+/svdnom
