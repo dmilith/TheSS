@@ -12,9 +12,10 @@
 #include "../notifications/notifications.h"
 #include "../service_spawner/utils.h"
 #include <ncurses.h>
+#include <stdlib.h>
 
 
-unsigned int rows = 0, cols = 0, x = 0, y = 0; /* x,y - cursor position */
+int rows = 0, cols = 0, x = 0, y = 0; /* x,y - cursor position */
 WINDOW *win = NULL;
 
 
@@ -107,7 +108,6 @@ void gatherNotifications() {
                 notifications.append(n);
             }
         }
-        wrefresh(win);
         // refresh();
     }
 
@@ -115,8 +115,16 @@ void gatherNotifications() {
     qSort(notifications.begin(), notifications.end(), NotificationLessThan);
 
     // Display
-    for(int i=0; i<notifications.size(); i++){
-        Notification n = notifications.at(i);
+    wclear(win);
+
+    int s = notifications.size();
+    int start = max(0, s - rows);
+    int stop = min(s, rows);
+
+    logTrace() << "s: " << s << " start: " << start << " stop: " << stop;
+
+    for(int i=0; i<stop; i++){
+        Notification n = notifications.at(i+start);
         switch(n.level){
             case NOTIFICATION_LEVEL_ERROR:
                 wattron(win, COLOR_PAIR(8));
@@ -130,9 +138,10 @@ void gatherNotifications() {
         }
 
         mvwprintw(win, i, x, n.content.toUtf8());
+        wclrtoeol(win);
     }
 
-
+    wrefresh(win);
 }
 
 
