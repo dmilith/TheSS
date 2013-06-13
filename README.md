@@ -34,7 +34,7 @@
 ```sh
 
 startHook # will execute:
-# ifNotInstalled(installHook -> configureHook) -> validateHook -> startHook -> afterStartHook
+# ifNotInstalled(installHook) -> configureHook -> validateHook -> startHook -> afterStartHook
 
 afterStartHook # will execute:
 # afterStartHook
@@ -46,7 +46,7 @@ afterStopHook # will execute:
 # afterStopHook
 
 restartHook # will execute:
-# stopHook -> afterStopHook -> validateHook -> startHook -> afterStartHook
+# stopHook -> afterStopHook -> configureHook -> validateHook -> startHook -> afterStartHook
 
 validateHook # will execute:
 # validateHook

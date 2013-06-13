@@ -388,8 +388,6 @@ void SvdService::startSlot() {
         if (!config->serviceInstalled()) {
             logInfo() << "Service" << name << "isn't yet installed. Proceeding with installation.";
             emit installSlot();
-            logInfo() << "Service" << name << "isn't yet configured. Proceeding with configuration.";
-            emit configureSlot();
         }
 
         /* after successful installation of core app, we may proceed with installing additional dependencies */
@@ -422,6 +420,8 @@ void SvdService::startSlot() {
         } else
             logDebug() << "Empty dependency list for service:" << name;
 
+        logInfo() << "Configuring service:" << name;
+        emit configureSlot();
         logInfo() << "Validating service" << name;
         emit validateSlot(); // invoke validation before each startSlot
 
