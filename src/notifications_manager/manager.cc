@@ -18,6 +18,21 @@ unsigned int rows = 0, cols = 0, x = 0, y = 0; /* x,y - cursor position */
 WINDOW *win = NULL;
 
 
+#define NOTIFICATION_LEVEL_ERROR    0
+#define NOTIFICATION_LEVEL_WARNING  1
+#define NOTIFICATION_LEVEL_NOTICE   2
+
+struct Notification {
+    int level;
+    QString content;
+    QDateTime time;
+};
+
+bool NotificationLessThan(const Notification &a, const Notification &b){
+    return a.time < b.time;
+}
+
+
 void gui_init() {
     initscr();
     start_color();
@@ -71,42 +86,53 @@ void gatherNotifications() {
     QString userSoftwarePrefix = QString(getenv("HOME")) + QString(SOFTWARE_DATA_DIR);
     auto userSoftwareList = QDir(userSoftwarePrefix).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    /* iterate through user software to find software notifications */
-    int outdex = 0;
-    Q_FOREACH(QString service, userSoftwareList) {
+    QList<Notification> notifications;
 
-        logTrace() << "Found service:" << service;
+    /* iterate through user software to find software notifications */
+    Q_FOREACH(QString service, userSoftwareList) {
         QString notificationsPrefix = userSoftwarePrefix + "/" + service + NOTIFICATIONS_DATA_DIR;
         if (QDir().exists(notificationsPrefix)) {
-            QStringList notificationsByDateSource = QDir(notificationsPrefix).entryList(QDir::Files, QDir::Time);
-            QStringList notificationsByDate = notificationsByDateSource;
+            auto files = QDir(notificationsPrefix).entryInfoList(QDir::Files, QDir::Time);
 
-            int indx = 0;
-            Q_FOREACH(QString notify, notificationsByDate) {
-                QString notificationFile = notificationsPrefix + "/" + notify;
-                QString content = QString(readFileContents(notificationFile).c_str()).trimmed();
-                if (notify.endsWith(".error")) {
-                    wattron(win, COLOR_PAIR(8));
-                    mvwprintw(win, indx + outdex, x, content.toUtf8());
-                    wattroff(win, COLOR_PAIR(8));
-                }
-                if (notify.endsWith(".warning")) {
-                    wattron(win, COLOR_PAIR(6));
-                    mvwprintw(win, indx + outdex, x, content.toUtf8());
-                    wattroff(win, COLOR_PAIR(6));
-                }
-                if (notify.endsWith(".notice")) {
-                    wattron(win, COLOR_PAIR(2));
-                    mvwprintw(win, indx + outdex, x, content.toUtf8());
-                    wattroff(win, COLOR_PAIR(2));
-                }
-                indx++;
+            Q_FOREACH(auto file, files) {
+                Notification n;
+                QString ext = file.suffix();
+
+                if (ext == "error")         n.level = NOTIFICATION_LEVEL_ERROR;
+                else if (ext == "warning")  n.level = NOTIFICATION_LEVEL_WARNING;
+                else if(ext == "notice")    n.level = NOTIFICATION_LEVEL_NOTICE;
+
+                n.content = QString(readFileContents(file.absoluteFilePath()).c_str()).trimmed();
+                n.time = file.created();
+                notifications.append(n);
             }
-            outdex += indx;
         }
         wrefresh(win);
         // refresh();
     }
+
+    // Sort
+    qSort(notifications.begin(), notifications.end(), NotificationLessThan);
+
+    // Display
+    for(int i=0; i<notifications.size(); i++){
+        Notification n = notifications.at(i);
+        switch(n.level){
+            case NOTIFICATION_LEVEL_ERROR:
+                wattron(win, COLOR_PAIR(8));
+                break;
+            case NOTIFICATION_LEVEL_WARNING:
+                wattron(win, COLOR_PAIR(6));
+                break;
+            case NOTIFICATION_LEVEL_NOTICE:
+                wattron(win, COLOR_PAIR(2));
+                break;
+        }
+
+        mvwprintw(win, i, x, n.content.toUtf8());
+    }
+
+
 }
 
 
