@@ -212,6 +212,7 @@ void PanelGui::helpDialog(){
     list << "  A       - Toggle autostart";
     list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
+    list << "  L       - Refresh log pane (service.log)";
     list << "";
     list << "Log window actions:";
     list << "  [, ', ;, \\ - Move in log window";
@@ -232,6 +233,8 @@ void PanelGui::helpDialog(){
     }
 
     wgetch(win);
+    werase(win);
+    wrefresh(win);
     delwin(win);
 }
 
@@ -323,6 +326,10 @@ bool PanelGui::confirm(QString msg){
     wrefresh(win);
     int ch = wgetch(win);
 
+    werase(inner);
+    werase(win);
+    wrefresh(inner);
+    wrefresh(win);
     delwin(inner);
     delwin(win);
     return (ch == 10 || ch == 'y' || ch == 'Y');
@@ -474,6 +481,11 @@ void PanelGui::key(int ch){
 
         case 'K':
             displayConfig();
+            break;
+
+        case 'L': // refresh log window
+            loggedServicePath = "";
+            displayLog();
             break;
 
         case 10: /* TODO: implement details view */

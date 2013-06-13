@@ -59,8 +59,12 @@ void ScrollList<T>::key(int ch){
 
 template<class T>
 const T * ScrollList<T>::currentItem(){
-    if(items->empty()) return NULL;
-    else return &(items->at(current));
+    if(items->empty()) {
+        return NULL;
+    } else {
+        if(this->current < 0) this->current = 0; // Fix for case when ading first service
+        return &(items->at(current));
+    }
 }
 
 
