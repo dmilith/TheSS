@@ -212,6 +212,7 @@ void PanelGui::helpDialog(){
     list << "  A       - Toggle autostart";
     list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
+    list << "  L       - Refresh log pane (service.log)";
     list << "";
     list << "Log window actions:";
     list << "  [, ', ;, \\ - Move in log window";
@@ -474,6 +475,11 @@ void PanelGui::key(int ch){
 
         case 'K':
             displayConfig();
+            break;
+
+        case 'L': // refresh log window
+            loggedServicePath = "";
+            displayLog();
             break;
 
         case 10: /* TODO: implement details view */
