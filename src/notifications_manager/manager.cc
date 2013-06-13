@@ -121,7 +121,8 @@ void gatherNotifications() {
 
     logTrace() << "s: " << s << " start: " << start << " stop: " << stop;
 
-    for(int i=0; i<stop; i++){
+    int i=0;
+    for(; i<stop; i++){
         Notification n = notifications.at(i+start);
         switch(n.level){
             case NOTIFICATION_LEVEL_ERROR:
@@ -136,6 +137,10 @@ void gatherNotifications() {
         }
 
         mvwprintw(win, i, x, n.content.toUtf8());
+        wclrtoeol(win);
+    }
+    for(; i<rows;i++){
+        wmove(win, i, x);
         wclrtoeol(win);
     }
 
