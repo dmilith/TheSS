@@ -233,6 +233,8 @@ void PanelGui::helpDialog(){
     }
 
     wgetch(win);
+    werase(win);
+    wrefresh(win);
     delwin(win);
 }
 
@@ -324,6 +326,10 @@ bool PanelGui::confirm(QString msg){
     wrefresh(win);
     int ch = wgetch(win);
 
+    werase(inner);
+    werase(win);
+    wrefresh(inner);
+    wrefresh(win);
     delwin(inner);
     delwin(win);
     return (ch == 10 || ch == 'y' || ch == 'Y');
