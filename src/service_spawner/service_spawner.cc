@@ -6,14 +6,15 @@
  */
 
 
-#include "logger.h"
+#include <QtCore>
+
 #include "../globals/globals.h"
+#include "../notifications/notifications.h"
+#include "logger.h"
 #include "service_config.h"
 #include "service_watcher.h"
 #include "user_watcher.h"
 #include "utils.h"
-
-#include <QtCore>
 
 
 // void spawnSSForEachUser() {

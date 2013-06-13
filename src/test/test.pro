@@ -5,7 +5,7 @@ CONFIG += qtestlib
 QT -= gui
 QT += network
 TEMPLATE = app
-TARGET = ../../test
+TARGET = ../../bin/test-app
 
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -37,6 +37,4 @@ SOURCES += ../service_spawner/service_config.cc \
            ../service_spawner/cron_entry.cc \
            TestLibrary.cc
 
-LIBS += ../libjsoncpp.a ../liblogger.a ../libquazip.a -lz
-
-TARGET = ../../test
+LIBS += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libquazip.a -lz

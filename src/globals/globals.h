@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.34.0"
+    #define APP_VERSION "0.36.3"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -22,6 +22,15 @@
 
     #define DEFAULT_STRING_CODEC "utf8"
     #define LOCALE "en_GB.UTF-8"
+
+    #define NOTIFICATIONS_LAST_SHOWN 7 /* amount of notification before moving to history */
+    #define NOTIFICATIONS_HISTORY_KEEP_UPTO 100 /* how many files to keep in history */
+
+    #ifdef __APPLE__
+        #define DEFAULT_DEATH_WATCHER_PAUSE 500000 /* .5 seconds by default for developer machine */
+    #else
+        #define DEFAULT_DEATH_WATCHER_PAUSE 4500000 /* 4.5 seconds by default for production */
+    #endif
 
     #define DEFAULT_USER_UID 501
     #define AMOUNT_OF_LOG_FILES_TO_KEEP 125
@@ -45,10 +54,11 @@
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
     #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
+    #define NOTIFICATIONS_DATA_DIR "/.notifications/"
+    #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
     #define DEFAULT_SERVICE_PORT_NUMBER "0"
     #define DEFAULT_SERVICE_OUTPUT_FILE "/.output"
     #define DEFAULT_SERVICE_DESTROY_FILE "/.destroy"
-    #define DEFAULT_SERVICE_ERRORS_FILE "/.errors"
     #define DEFAULT_SERVICE_AUTOSTART_FILE "/.autostart"
     #define DEFAULT_SERVICE_RUNNING_FILE "/.running"
     #define DEFAULT_SERVICE_INSTALLING_FILE "/.installing"

@@ -173,8 +173,8 @@ void PanelGui::cleanup(){
 
     if(TMUX){
         QString cmd =
-            " tmux send-keys -t 1 C-m C-m q C-c\n"
-            " tmux send-keys -t 1 \" exit\" C-m\n"
+            " tmux send-keys -t 2 C-m C-m q C-c \" exit\" C-m\n"
+            " tmux send-keys -t 1 C-m C-m q C-c \" exit\" C-m\n"
             " tmux send-keys -t 0 C-c \" exit\" C-m\n";
         auto process = new SvdProcess("tail", getuid(), false);
         process->spawnProcess(cmd);

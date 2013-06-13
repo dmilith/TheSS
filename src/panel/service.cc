@@ -16,7 +16,7 @@ PanelService::PanelService(QFileInfo baseDir){
     bool sv = QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE);
     bool sc = QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE);
     bool si = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE);
-    bool se = QFile::exists(basePath + DEFAULT_SERVICE_ERRORS_FILE);
+    bool se = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE); // XXX: FIXME: no more .errors file!!
     autostart = QFile::exists(basePath + DEFAULT_SERVICE_AUTOSTART_FILE);
 
     pid = QString(readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).c_str()).trimmed();

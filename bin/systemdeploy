@@ -11,7 +11,8 @@ if [ ! -x "$(pwd)/svdss" ] || [ ! -x "$(pwd)/svddw" ] || [ ! -x "$(pwd)/svdpanel
 fi
 
 bin/ignitersinstall
-cp ./svdss /bin/svdss
-cp ./svddw /bin/svddw
-cp ./svdpanel /bin/svdpanel
+cp bin/svdss /bin/svdss
+cp bin/svddw /bin/svddw
+cp bin/svdnom /bin/svdnom
+cp bin/svdpanel /bin/svdpanel
 printf "Success\n"

@@ -1,11 +1,12 @@
 *.o
 Makefile
 *.a
-svdss
 moc_*.cpp
-/test
-/svddw
-/svdpanel
+test-app
+svddw
+svdpanel
+svdss
+svdnom
 .DS_Store
 /docs/*.aux
 /docs/*.fdb_latexmk
