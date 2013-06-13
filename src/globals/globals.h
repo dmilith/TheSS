@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.36.1"
+    #define APP_VERSION "0.36.2"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -23,6 +23,8 @@
     #define DEFAULT_STRING_CODEC "utf8"
     #define LOCALE "en_GB.UTF-8"
 
+    #define NOTIFICATIONS_LAST_SHOWN 7 /* amount of notification before moving to history */
+    #define NOTIFICATIONS_HISTORY_KEEP_UPTO 100 /* how many files to keep in history */
     #define DEFAULT_USER_UID 501
     #define AMOUNT_OF_LOG_FILES_TO_KEEP 125
 
@@ -46,6 +48,7 @@
     #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
     #define NOTIFICATIONS_DATA_DIR "/.notifications/"
+    #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
     #define DEFAULT_SERVICE_PORT_NUMBER "0"
     #define DEFAULT_SERVICE_OUTPUT_FILE "/.output"
     #define DEFAULT_SERVICE_DESTROY_FILE "/.destroy"

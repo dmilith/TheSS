@@ -12,6 +12,36 @@
 #include "notifications.h"
 
 
+void moveOldNotificationsToHistoryAndCleanHistory(const QString& notificationRoot, const QString& historyRoot) {
+    /* count notifications on "current" list */
+    auto items = QDir(notificationRoot).entryList(QDir::Files, QDir::Time);
+    int notificationAmount = items.size();
+    logDebug() << "Notification items in dir:" << notificationRoot << ":" << QString::number(notificationAmount);
+
+    /* moving old items to history */
+    for (int i = notificationAmount - 1; i > 0; i--) {
+        if (i > NOTIFICATIONS_LAST_SHOWN) {
+            QString item = items.at(i);
+            logDebug() << "Moving old notification to history:" << item;
+            QFile::copy(notificationRoot + "/" + item, historyRoot + "/" + item);
+            QFile::remove(notificationRoot + "/" + item);
+        }
+    }
+
+    /* history max amount check */
+    items = QDir(historyRoot).entryList(QDir::Files, QDir::Time);
+    notificationAmount = items.size();
+    logDebug() << "Notification history items in dir:" << historyRoot << ":" << QString::number(notificationAmount);
+    for (int i = notificationAmount - 1; i > 0; i--) {
+        if (i > NOTIFICATIONS_HISTORY_KEEP_UPTO) {
+            QString item = items.at(i);
+            logDebug() << "Removing old notification from notification history:" << item;
+            QFile::remove(historyRoot + "/" + item);
+        }
+    }
+}
+
+
 void notification(const QString& notificationMessage, const QString& serviceName, NotificationLevels level) {
 
     QString message;
@@ -53,8 +83,10 @@ void notification(const QString& notificationMessage, const QString& serviceName
     } else {
 
         if (serviceName.isEmpty()) {
+            QString historyRoot = notificationRoot + NOTIFICATIONS_HISTORY_DATA_DIR;
             notificationRoot += NOTIFICATIONS_DATA_DIR;
             getOrCreateDir(notificationRoot); /* create it only for common notifications - unrelated to services*/
+            getOrCreateDir(historyRoot);
 
             auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
             QString content = message;
@@ -62,10 +94,14 @@ void notification(const QString& notificationMessage, const QString& serviceName
             QString notificationFileName = hash->result().toHex() + postfix;
             delete hash;
             writeToFile(notificationRoot + "/" + notificationFileName, message);
+
+            moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
 
         } else { /* it's service side notification! */
             notificationRoot += "/" + serviceName + NOTIFICATIONS_DATA_DIR;
+            QString historyRoot = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + NOTIFICATIONS_HISTORY_DATA_DIR;
             getOrCreateDir(notificationRoot); /* create it only for common notifications - unrelated to services*/
+            getOrCreateDir(historyRoot);
 
             auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
             QString content = message;
@@ -74,6 +110,7 @@ void notification(const QString& notificationMessage, const QString& serviceName
             delete hash;
             writeToFile(notificationRoot + "/" + notificationFileName, message);
 
+            moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
         }
     }
 }
