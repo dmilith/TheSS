@@ -115,8 +115,6 @@ void gatherNotifications() {
     qSort(notifications.begin(), notifications.end(), NotificationLessThan);
 
     // Display
-    wclear(win);
-
     int s = notifications.size();
     int start = max(0, s - rows);
     int stop = min(s, rows);
