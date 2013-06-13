@@ -13,18 +13,22 @@
 #include "../service_spawner/utils.h"
 #include <ncurses.h>
 
-unsigned int rows = 0, cols = 0, x = 0, y = 1; /* x,y - cursor position */
+
+unsigned int rows = 0, cols = 0, x = 0, y = 0; /* x,y - cursor position */
+WINDOW *win = NULL;
 
 
 void gui_init() {
     initscr();
-    getmaxyx(stdscr, rows, cols); // get cols and rows amount
-    cbreak();
     start_color();
-    curs_set(0); // cursor invisible
+    cbreak();
     keypad(stdscr, TRUE);
+    curs_set(0); // cursor invisible
     noecho();
-    refresh();
+
+    getmaxyx(stdscr, rows, cols); // get cols and rows amount
+    // y = rows - 1; /* set cursor to bottom */
+    // win = newwin(rows, cols, 1, 1);
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
     init_pair(2, COLOR_GREEN, COLOR_BLACK); // running service
@@ -34,10 +38,19 @@ void gui_init() {
     init_pair(6, COLOR_YELLOW, COLOR_BLACK);
     init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(8, COLOR_RED, COLOR_BLACK);
+
+    win = newwin(rows, cols, 0, 0);
+    wattron(win, COLOR_PAIR(6));
+    box(win, 1, 1);
+    wattroff(win, COLOR_PAIR(6));
+    scrollok(win, FALSE);
+
+    refresh();
 }
 
 
 void gui_destroy() {
+    delwin(win);
     endwin();
 }
 
@@ -66,34 +79,33 @@ void gatherNotifications() {
         QString notificationsPrefix = userSoftwarePrefix + "/" + service + NOTIFICATIONS_DATA_DIR;
         if (QDir().exists(notificationsPrefix)) {
             QStringList notificationsByDateSource = QDir(notificationsPrefix).entryList(QDir::Files, QDir::Time);
-            QStringList notificationsByDate;
-            notificationsByDate.reserve(notificationsByDateSource.size());
-            reverse_copy(notificationsByDateSource.begin(), notificationsByDateSource.end(), back_inserter(notificationsByDate)); /* C++ list reverse.. huh */
+            QStringList notificationsByDate = notificationsByDateSource;
 
             int indx = 0;
             Q_FOREACH(QString notify, notificationsByDate) {
                 QString notificationFile = notificationsPrefix + "/" + notify;
                 QString content = QString(readFileContents(notificationFile).c_str()).trimmed();
                 if (notify.endsWith(".error")) {
-                    attron(COLOR_PAIR(8));
-                    mvprintw(y + indx + outdex, x, content.toUtf8());
-                    attroff(COLOR_PAIR(8));
+                    wattron(win, COLOR_PAIR(8));
+                    mvwprintw(win, indx + outdex, x, content.toUtf8());
+                    wattroff(win, COLOR_PAIR(8));
                 }
                 if (notify.endsWith(".warning")) {
-                    attron(COLOR_PAIR(6));
-                    mvprintw(y + indx + outdex, x, content.toUtf8());
-                    attroff(COLOR_PAIR(6));
+                    wattron(win, COLOR_PAIR(6));
+                    mvwprintw(win, indx + outdex, x, content.toUtf8());
+                    wattroff(win, COLOR_PAIR(6));
                 }
                 if (notify.endsWith(".notice")) {
-                    attron(COLOR_PAIR(2));
-                    mvprintw(y + indx + outdex, x, content.toUtf8());
-                    attroff(COLOR_PAIR(2));
+                    wattron(win, COLOR_PAIR(2));
+                    mvwprintw(win, indx + outdex, x, content.toUtf8());
+                    wattroff(win, COLOR_PAIR(2));
                 }
                 indx++;
             }
             outdex += indx;
         }
-        refresh();
+        wrefresh(win);
+        // refresh();
     }
 }
 
@@ -108,18 +120,20 @@ int main(int argc, char *argv[]) {
     /* Logger setup */
     QString logFile = QString(getenv("HOME")) + "/.notifications-manager.log";
     QFile::remove(logFile);
+
     FileAppender *fileAppender = new FileAppender(logFile);
     // fileAppender->ansiColors = false;
     fileAppender->setFormat("%m\n");
     Logger::registerAppender(fileAppender);
-    fileAppender->setDetailsLevel(Logger::Debug);
+    fileAppender->setDetailsLevel(Logger::Trace);
 
-    logInfo() << "Notifications manager v0.1.0";
+    logInfo() << "Notifications manager v0.2.0";
 
     int input = '\0';
     while (input != 'q' and input != 'Q') {
         while (!kbhit()) {
             gatherNotifications();
+            // wrefresh(win);
             usleep(250000);
         }
 
@@ -128,9 +142,9 @@ int main(int argc, char *argv[]) {
             case KEY_F(5): {
 
                 refresh();
-                return 0;
             }
         }
+        // wrefresh(win);
     }
 
     gui_destroy();
