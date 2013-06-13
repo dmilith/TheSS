@@ -25,6 +25,13 @@
 
     #define NOTIFICATIONS_LAST_SHOWN 7 /* amount of notification before moving to history */
     #define NOTIFICATIONS_HISTORY_KEEP_UPTO 100 /* how many files to keep in history */
+
+    #ifdef __APPLE__
+        #define DEFAULT_DEATH_WATCHER_PAUSE 500000 /* .5 seconds by default for developer machine */
+    #else
+        #define DEFAULT_DEATH_WATCHER_PAUSE 4500000 /* 4.5 seconds by default for production */
+    #endif
+
     #define DEFAULT_USER_UID 501
     #define AMOUNT_OF_LOG_FILES_TO_KEEP 125
 
