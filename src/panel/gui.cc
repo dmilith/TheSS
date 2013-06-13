@@ -32,7 +32,7 @@ void PanelGui::init(){
     init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(8, COLOR_RED, COLOR_BLACK);
 
-    servicesList = new ServicesList(rows - 4);
+    servicesList = new ServicesList(rows - 6);
 }
 
 int PanelGui::kbhit() {
@@ -305,7 +305,7 @@ void PanelGui::removeCurrentService(){
 void PanelGui::reload(int r, int c){
     rows = r;
     cols = c;
-    servicesList->reset(rows - 4);
+    servicesList->reset(rows - 6);
     clear();
     refresh();
     status = "Reloaded";
