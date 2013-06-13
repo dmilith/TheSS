@@ -1,7 +1,7 @@
 #!/bin/sh
 
-panelbin="$(dirname $0)/../svdpanel"
-nombin="$(dirname $0)/../svdnom"
+panelbin="$(dirname $0)/svdpanel"
+nombin="$(dirname $0)/svdnom"
 tmuxconf="$(dirname $0)/../etc/tmux.conf"
 tmuxbin="tmux -f $tmuxconf"
 

@@ -11,4 +11,4 @@ SOURCES += death_watch.cc \
 HEADERS += death_watch.h
 
 LIBS      += ../liblogger.a
-TARGET    = ../../svddw
+TARGET    = ../../bin/svddw

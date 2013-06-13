@@ -44,4 +44,4 @@ SOURCES   += service.cc \
              logger.cc \
              ../notifications/notifications.cc
 LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
-TARGET    = ../../svdss
+TARGET    = ../../bin/svdss

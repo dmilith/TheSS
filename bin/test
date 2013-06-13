@@ -1,4 +1,4 @@
 #!/bin/sh
 
 bin/build test
-./test -nocrashhandler -random
+bin/test-app -nocrashhandler -random

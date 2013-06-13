@@ -7,7 +7,7 @@
 include(../Common.pro)
 
 QT += network
-TARGET = ../../svdnom
+TARGET = ../../bin/svdnom
 TEMPLATE = app
 
 HEADERS   += ../notifications/notifications.h manager.h
