@@ -262,6 +262,8 @@ void PanelGui::newServiceDialog(){
                 {
                     QString selected = *list.currentItem();
                     status = panel->addService(selected);
+                    servicesList->setItems(&panel->services);
+                    servicesList->setCurrent(selected);
                     ch = 27;
                 }
                 break;

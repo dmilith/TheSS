@@ -75,5 +75,7 @@ QString Panel::addService(QString name){
     } else {
             status = "Already defined service called: " + name;
     }
+
+    refreshServicesList();
     return status;
 }

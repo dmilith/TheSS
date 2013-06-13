@@ -109,6 +109,7 @@ public:
     void displayHeader();
     void displayItem(PanelService service, int i, int num, bool current);
     void displayEmptyItem(int i);
+    void setCurrent(QString selected);
 };
 
 

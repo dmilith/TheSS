@@ -196,6 +196,15 @@ void ServicesList::displayEmptyItem(int i){
     mvprintw(i+4, 0, "%100s", "");
 }
 
+void ServicesList::setCurrent(QString selected){
+    for(int i=0; i<items->size(); i++){
+        if(items->at(i).name == selected){
+            this->current = i;
+            break;
+        }
+    }
+}
+
 
 template class ScrollList<QString>;
 template class ScrollList<PanelService>;
