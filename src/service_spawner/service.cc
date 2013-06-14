@@ -464,33 +464,37 @@ void SvdService::startSlot() {
         deathWatch(process->pid());
 
         /* XXX: pause a bit to give time for dependencies to launch before invoking first service baby sitter */
-        if (config->dependencies.length() > 0) {
-            auto defaultTimeout = BABYSITTER_TIMEOUT_INTERVAL / 1000;
-            auto fractionOfTimeout = defaultTimeout / 4; /* 7.5s for 30s babysitter default timer */
-            logDebug() << "Calling babysitter with increased interval of:" << fractionOfTimeout << "miliseconds per dependency ( times" << QString::number(config->dependencies.length()) << ")";
-            babySitter.setInterval(defaultTimeout + fractionOfTimeout * config->dependencies.size());
-            if (not babySitter.isActive()) {
-                babySitter.start();
-            }
-        } else {
-            logDebug() << "Calling babysitter with standard interval:" << QString::number(BABYSITTER_TIMEOUT_INTERVAL / 1000) << "miliseconds";
-            if (not babySitter.isActive()) {
-                babySitter.start();
-            }
-        }
+        // if (config->dependencies.length() > 0) {
+            // auto defaultTimeout = BABYSITTER_TIMEOUT_INTERVAL / 1000;
+            // auto fractionOfTimeout = defaultTimeout / 4; /* 7.5s for 30s babysitter default timer */
+            // logDebug() << "Calling babysitter with increased interval of:" << fractionOfTimeout << "miliseconds per dependency ( times" << QString::number(config->dependencies.length()) << ")";
+            // babySitter.setInterval(defaultTimeout);
+            // if (not babySitter.isActive()) {
+                // babySitter.start();
+            // }
+        // } else {
 
-        if (config->schedulerActions.size() > 0) {
-            logDebug() << "Initializing cronSitter for" << config->schedulerActions.size() << "scheduler tasks.";
-
-            if (not cronSitter.isActive()) {
-                logDebug() << "Bounding cron to service:" << name;
-                cronSitter.start();
-            }
-        }
+        // }
 
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
             QString msg = "Failed expectations of service: " + name + " with expected output of start slot - No match for: '" + config->start->expectOutput + "'";
             notification(msg, name, ERROR);
+        } else {
+            logInfo() << "Service expectations were successful. Launching cron and baby sitter for service:" << name;
+
+            logDebug() << "Calling babysitter with standard interval:" << QString::number(BABYSITTER_TIMEOUT_INTERVAL / 1000) << "miliseconds";
+            if (not babySitter.isActive()) {
+                babySitter.start();
+            }
+
+            if (config->schedulerActions.size() > 0) {
+                logDebug() << "Initializing cronSitter for" << config->schedulerActions.size() << "scheduler tasks.";
+
+                if (not cronSitter.isActive()) {
+                    logDebug() << "Bounding cron to service:" << name;
+                    cronSitter.start();
+                }
+            }
         }
 
         delete process;
