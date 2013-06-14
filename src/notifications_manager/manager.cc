@@ -14,21 +14,12 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
+#include "manager.h"
 
 
 int rows = 0, cols = 0, x = 0, y = 0; /* x,y - cursor position */
 WINDOW *win = NULL;
 
-
-#define NOTIFICATION_LEVEL_ERROR    0
-#define NOTIFICATION_LEVEL_WARNING  1
-#define NOTIFICATION_LEVEL_NOTICE   2
-
-struct Notification {
-    int level;
-    QString content;
-    QDateTime time;
-};
 
 bool NotificationLessThan(const Notification &a, const Notification &b){
     return a.time < b.time;
@@ -72,7 +63,7 @@ void gui_destroy() {
 }
 
 
-int kbhit() {
+int kbhit() { // XXX: non DRY, duplicate function
     struct timeval tv;
     fd_set fds;
     tv.tv_sec = 0;
@@ -84,7 +75,7 @@ int kbhit() {
 }
 
 
-void handle_winch(int sig){
+void handle_winch(int sig) { // XXX: non DRY, duplicate function
     Q_UNUSED(sig);
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
@@ -176,7 +167,7 @@ int main(int argc, char *argv[]) {
     Logger::registerAppender(fileAppender);
     fileAppender->setDetailsLevel(Logger::Trace);
 
-    logInfo() << "Notifications manager v0.2.0";
+    logInfo() << "Notifications manager" << APP_VERSION << ". " << COPYRIGHT;
 
     // handle window resize
     struct sigaction sa;
@@ -188,18 +179,15 @@ int main(int argc, char *argv[]) {
     while (input != 'q' and input != 'Q') {
         while (!kbhit()) {
             gatherNotifications();
-            // wrefresh(win);
             usleep(250000);
         }
 
         input = getch();
         switch (input) {
             case KEY_F(5): {
-
-                refresh();
+                handle_winch(0);
             }
         }
-        // wrefresh(win);
     }
 
     gui_destroy();
