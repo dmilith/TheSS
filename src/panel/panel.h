@@ -156,7 +156,7 @@ private:
     int kbhit();
     ServicesList * servicesList;
     QString loggedServicePath = "";
-    QString tailer = "most";
+    QString tailer = "tail";
     bool wrapLines = true;
 };
 
