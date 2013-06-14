@@ -140,6 +140,7 @@ public:
     void displayFooter();
     void displayLog();
     void displayConfig();
+    void displayFile(QString file);
     void newServiceDialog();
     void key(int ch);
     void removeCurrentService();
@@ -156,7 +157,6 @@ private:
     int kbhit();
     ServicesList * servicesList;
     QString loggedServicePath = "";
-    QString tailer = "tail";
     bool wrapLines = true;
 };
 

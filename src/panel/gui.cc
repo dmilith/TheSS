@@ -131,40 +131,28 @@ void tmux(QString cmd){
     }
 }
 
+void PanelGui::displayFile(QString file){
+    QString tpl = ":e %1 C-m";
+
+    tmux("C-c");
+    tmux(tpl.arg(file));
+
+    if(QFile::exists(file)) tmux("F");
+}
+
 void PanelGui::displayLog(){
     const PanelService * service = servicesList->currentItem();
     if(TMUX && service != NULL && (loggedServicePath != service->dir.absolutePath())){
         loggedServicePath = service->dir.absolutePath();
 
-        QString tpl =
-            "C-m C-m q C-c \" touch %1 && clear\" C-m";
-
-        QString file = loggedServicePath + DEFAULT_SERVICE_LOG_FILE;
-        QString cmd;
-
-        if(tailer == "most") {
-            tpl += " \" most %2 +u %3\" C-m B F F\n";
-            cmd = tpl.arg(file).arg(wrapLines ? "-w" : "").arg(file);
-        } else {
-            tpl += " \" tail -F %2\" C-m";
-            cmd = tpl.arg(file).arg(file);
-        }
-
-
-        tmux(cmd);
+        displayFile(loggedServicePath + DEFAULT_SERVICE_LOG_FILE);
     }
 }
 
 void PanelGui::displayConfig(){
     const PanelService * service = servicesList->currentItem();
     if(service != NULL){
-        QString file = service->dir.absolutePath() + "/service.conf";
-        if(QFile::exists(file)){
-            QString cmd = "C-m C-m q C-c \" most %1 +u %2\" C-m";
-            tmux(cmd.arg(wrapLines ? "-w" : "").arg(file));
-        } else {
-            status = QString("No config file (%1)").arg(file);
-        }
+        displayFile(service->dir.absolutePath() + "/service.conf");
     }
 }
 
@@ -172,6 +160,9 @@ void PanelGui::cleanup(){
     endwin();
 
     if(TMUX){
+        tmux("C-c q");
+        tmux("C-c");
+
         QString cmd =
             " tmux send-keys -t 2 C-m C-m q C-c \" exit\" C-m\n"
             " tmux send-keys -t 1 C-m C-m q C-c \" exit\" C-m\n"
@@ -183,6 +174,7 @@ void PanelGui::cleanup(){
 }
 
 void PanelGui::searchLog(){
+    tmux("C-c");
     tmux("/");
     QString cmd = " tmux select-pane -t 1\n";
     auto process = new SvdProcess("tail", getuid(), false);
@@ -224,7 +216,7 @@ void PanelGui::helpDialog(){
     list << "  F3      - Set info log level";
     list << "  F4      - Set error log level";
     list << "  F5      - Refresh panel";
-    list << "  F6      - Toggle between most and tail";
+    list << "  F6      - Display thess log";
     list << "  F7, N   - Add new service";
     list << "  F9      - Shutdown TheSS ";
 
@@ -374,11 +366,8 @@ void PanelGui::key(int ch){
             reload(r, c);
             break;
 
-        case KEY_F(6): /* switch tailer */
-            if(tailer == "most") tailer = "tail";
-            else tailer = "most";
-            loggedServicePath = "";
-            displayLog();
+        case KEY_F(6): /* display thess log */
+            displayFile(panel->home.absoluteFilePath(".thess.log"));
             break;
 
         case KEY_F(9):
@@ -396,20 +385,24 @@ void PanelGui::key(int ch){
 
         case KEY_PPAGE:
         case '[':
-            tmux("10 C-Up");
+            tmux("C-c");
+            tmux("u");
             break;
 
         case KEY_NPAGE:
         case '\'':
-            tmux("10 C-Down");
+            tmux("C-c");
+            tmux("d");
             break;
 
         case ';':
-            tmux("10 C-Left");
+            tmux("C-c");
+            tmux("Escape \\(");
             break;
 
         case '\\':
-            tmux("10 C-Right");
+            tmux("C-c");
+            tmux("Escape \\)");
             break;
 
         case 'S': /* Start */
@@ -477,8 +470,8 @@ void PanelGui::key(int ch){
 
         case 'W': /* Toggle wrap on most */
             wrapLines = !wrapLines;
-            tmux(":o");
-            tmux("w");
+            tmux("C-c -S C-m");
+            tmux("F C-m");
             break;
 
         case 'K':
