@@ -12,6 +12,7 @@
 SvdHookTriggerFiles::SvdHookTriggerFiles(const QString& path) {
     install   = new SvdHookTriggerFile(path + "/.install");
     configure = new SvdHookTriggerFile(path + "/.configure");
+    reConfigure = new SvdHookTriggerFile(path + "/.reconfigure");
     start     = new SvdHookTriggerFile(path + "/.start");
     stop      = new SvdHookTriggerFile(path + "/.stop");
     afterStart= new SvdHookTriggerFile(path + "/.afterStart");
@@ -25,6 +26,7 @@ SvdHookTriggerFiles::SvdHookTriggerFiles(const QString& path) {
 SvdHookTriggerFiles::~SvdHookTriggerFiles() {
     delete install;
     delete configure;
+    delete reConfigure;
     delete start;
     delete afterStart;
     delete stop;
@@ -79,6 +81,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     /* connect watcher signals to slots of service: */
     connect(this, SIGNAL(installService()), service, SLOT(installSlot()));
     connect(this, SIGNAL(configureService()), service, SLOT(configureSlot()));
+    connect(this, SIGNAL(reConfigureService()), service, SLOT(reConfigureSlot()));
     connect(this, SIGNAL(validateService()), service, SLOT(validateSlot()));
     connect(this, SIGNAL(startService()), service, SLOT(startSlot()));
     connect(this, SIGNAL(afterStartService()), service, SLOT(afterStartSlot()));
@@ -115,6 +118,14 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
         triggerFiles->configure->remove();
         logDebug() << "Emitting configureService() signal.";
         emit configureService();
+        return;
+    }
+
+    /* reconfigure */
+    if (triggerFiles->reConfigure->exists()) {
+        triggerFiles->reConfigure->remove();
+        logDebug() << "Emitting reConfigureService() signal.";
+        emit reConfigureService();
         return;
     }
 

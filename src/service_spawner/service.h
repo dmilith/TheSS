@@ -69,6 +69,7 @@ class SvdService: public QThread {
         void babySitterSlot();
         void installSlot();
         void configureSlot();
+        void reConfigureSlot();
         void startSlot();
         void afterStartSlot();
         void stopSlot();

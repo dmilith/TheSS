@@ -329,6 +329,13 @@ void SvdService::installSlot() {
 }
 
 
+void SvdService::reConfigureSlot() {
+    emit configureSlot();
+    emit restartSlot();
+    logInfo() << "Performed re-configuration of service:" << name;
+}
+
+
 void SvdService::configureSlot() {
     logDebug() << "Invoked configure slot for service:" << name;
     auto config = new SvdServiceConfig(name);
@@ -405,9 +412,10 @@ void SvdService::startSlot() {
                     depService->start();
                     if (not depConf->serviceInstalled()) {
                         depService->installSlot();
+                    }
+                    if (not depConf->serviceConfigured()) {
                         depService->configureSlot();
                     }
-                    // depService->validateSlot();
                     depService->startSlot();
                     dependencyServices << depService;
                     logInfo() << "Launched dependency:" << dependency;
@@ -420,8 +428,10 @@ void SvdService::startSlot() {
         } else
             logDebug() << "Empty dependency list for service:" << name;
 
-        logInfo() << "Configuring service:" << name;
-        emit configureSlot();
+        if (not config->serviceConfigured()) {
+            logInfo() << "Configuring service:" << name;
+            emit configureSlot();
+        }
         logInfo() << "Validating service" << name;
         emit validateSlot(); // invoke validation before each startSlot
 

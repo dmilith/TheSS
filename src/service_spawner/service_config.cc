@@ -252,6 +252,11 @@ bool SvdServiceConfig::serviceInstalled() {
 }
 
 
+bool SvdServiceConfig::serviceConfigured() {
+    return QFile::exists(prefixDir() + "/" + softwareName.toLower() + ".configured");
+}
+
+
 const QString SvdServiceConfig::serviceRoot() {
     return QString(SOFTWARE_DIR) + "/" + softwareName; // low prio
 }
