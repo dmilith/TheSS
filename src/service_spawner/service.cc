@@ -298,6 +298,15 @@ void SvdService::installSlot() {
 
     auto config = new SvdServiceConfig(name);
     logInfo() << "Performing sanity dir checks for service:" << name;
+
+    QString portsDirLocation = config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
+    if (not QDir().exists(portsDirLocation)) {
+        if (QFile::exists(portsDirLocation)) {
+            logWarn() << "Found legacy .ports file. Automatically removing this file from service:" << name;
+            QFile::remove(portsDirLocation);
+        } else
+            logDebug() << "No legacy ports file.";
+    }
     getOrCreateDir(config->prefixDir());
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
 

@@ -29,7 +29,6 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         if (not defaults) {
             QString msg = "Igniters defaults must be always valid. Cannot continue.";
             notification(msg, "", FATAL);
-            logFatal() << msg;
         }
         softwareName = (*defaults)["softwareName"].asCString();
         autoStart = (*defaults)["autoStart"].asBool();
@@ -377,13 +376,6 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
 
         /* sanity check for legacy .ports file */
         QString portsDirLocation = prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR);
-        if (not QDir().exists(portsDirLocation)) {
-            if (QFile::exists(portsDirLocation)) {
-                logWarn() << "Found legacy .ports file. Automatically removing this file from service:" << name;
-                QFile::remove(portsDirLocation);
-            } else
-                logDebug() << "Found no ports dir.";
-        }
 
         /* replace port pool first */
         logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
@@ -402,7 +394,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             }
 
         /* then replace main port */
-        QString portFilePath = portsDirLocation + QString(DEFAULT_SERVICE_PORT_NUMBER); // getOrCreateDir
+        QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
         if (staticPort != -1) { /* defined static port */
             logInfo() << "Set static port:" << staticPort << "for service" << name;
             ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
