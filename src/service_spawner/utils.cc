@@ -267,7 +267,7 @@ bool removeDir(const QString& dirName) {
                 return result;
             }
         }
-        result = dir.rmdir(dirName);
+        result = dir.rmpath(dirName);
     }
     return result;
 }
