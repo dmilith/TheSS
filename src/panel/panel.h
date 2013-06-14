@@ -51,6 +51,7 @@ public:
     void validate() const;
     void install() const;
     void configure() const;
+    void reconfigure() const;
     void restart() const;
     void toggleAutostart() const;
     bool remove() const;
@@ -140,6 +141,7 @@ public:
     void displayFooter();
     void displayLog();
     void displayConfig();
+    void displayEnv();
     void displayFile(QString file);
     void newServiceDialog();
     void key(int ch);

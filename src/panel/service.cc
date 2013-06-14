@@ -63,6 +63,7 @@ void PanelService::stop() const { touch(dir.absoluteFilePath(".stop")); }
 void PanelService::validate() const { touch(dir.absoluteFilePath(".validate")); }
 void PanelService::install() const { touch(dir.absoluteFilePath(".install")); }
 void PanelService::configure() const { touch(dir.absoluteFilePath(".configure")); }
+void PanelService::reconfigure() const { touch(dir.absoluteFilePath(".reconfigure")); }
 void PanelService::restart() const { touch(dir.absoluteFilePath(".restart")); }
 void PanelService::toggleAutostart() const {
     QString file = dir.absoluteFilePath(".autostart");

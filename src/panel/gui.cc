@@ -156,6 +156,13 @@ void PanelGui::displayConfig(){
     }
 }
 
+void PanelGui::displayEnv(){
+    const PanelService * service = servicesList->currentItem();
+    if(service != NULL){
+        displayFile(service->dir.absolutePath() + "/service.env");
+    }
+}
+
 void PanelGui::cleanup(){
     endwin();
 
@@ -200,10 +207,12 @@ void PanelGui::helpDialog(){
     list << "  R       - Restart current service";
     list << "  I       - Install current service";
     list << "  C       - Configure current service";
+    list << "  F       - Reconfigure current service";
     list << "  V       - Validate current service";
     list << "  A       - Toggle autostart";
     list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
+    list << "  E       - Show app env (service.env)";
     list << "  L       - Refresh log pane (service.log)";
     list << "";
     list << "Log window actions:";
@@ -450,6 +459,15 @@ void PanelGui::key(int ch){
             }
             break;
 
+        case 'F': /* Reconfigure */
+            if (servicesList->currentItem() == NULL) {
+                    status = "Can't reconfigure non existant service";
+            } else {
+                servicesList->currentItem()->reconfigure();
+                status = "Triggered reconfiguration of application: " + servicesList->currentItem()->name;
+            }
+            break;
+
         case 'R': /* Restart */
             if (servicesList->currentItem() == NULL) {
                     status = "Can't restart non existant service";
@@ -476,6 +494,10 @@ void PanelGui::key(int ch){
 
         case 'K':
             displayConfig();
+            break;
+
+        case 'E':
+            displayEnv();
             break;
 
         case 'L': // refresh log window
