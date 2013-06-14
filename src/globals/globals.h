@@ -9,9 +9,6 @@
     #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh" // "/bin/svdshell" //
 
     #define DEFAULT_SS_COMMAND "/bin/svdss"
-    #ifdef __APPLE__
-        #define CLOCK_REALTIME REALTIME_CLOCK
-    #endif
 
     #define SYSTEMUSERS_HOME_DIR "/SystemUsers"
 
@@ -27,6 +24,7 @@
     #define NOTIFICATIONS_HISTORY_KEEP_UPTO 100 /* how many files to keep in history */
 
     #ifdef __APPLE__
+        #define CLOCK_REALTIME REALTIME_CLOCK
         #define DEFAULT_DEATH_WATCHER_PAUSE 500000 /* .5 seconds by default for developer machine */
     #else
         #define DEFAULT_DEATH_WATCHER_PAUSE 4500000 /* 4.5 seconds by default for production */
@@ -35,8 +33,8 @@
     #define DEFAULT_USER_UID 501
     #define AMOUNT_OF_LOG_FILES_TO_KEEP 125
 
-    #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0"
-    #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND_LINUX "openvpn --mktun --dev tap0 && ifconfig tap0 10.20.0.1 netmask 255.255.0.0"
+    #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0 && ifconfig tap0 10.11.0.1 netmask 255.255.0.0 && echo 'success'"
+    #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND_LINUX "openvpn --mktun --dev tap0 && openvpn --mktun --dev tap1 && ifconfig tap0 10.20.0.1 netmask 255.255.0.0 && ifconfig tap1 10.21.0.1 netmask 255.255.0.0 && echo 'success'"
     #define DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND "ifconfig tap0 destroy"
 
     #define SOFTWARE_DIR "/Software"
