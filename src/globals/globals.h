@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.40.5"
+    #define APP_VERSION "0.40.6"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -55,7 +55,6 @@
     #define NOTIFICATIONS_DATA_DIR "/.notifications/"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
     #define DEFAULT_SERVICE_PORT_NUMBER "0"
-    #define DEFAULT_SERVICE_OUTPUT_FILE "/.output"
     #define DEFAULT_SERVICE_DESTROY_FILE "/.destroy"
     #define DEFAULT_SERVICE_AUTOSTART_FILE "/.autostart"
     #define DEFAULT_SERVICE_RUNNING_FILE "/.running"
@@ -67,6 +66,7 @@
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
     #define DEFAULT_SERVICE_LOG_FILE "/service.log"
+    #define DEFAULT_SERVICE_OUTPUT_FILE DEFAULT_SERVICE_LOG_FILE
     #define DEFAULT_SS_SHUTDOWN_HOOK_FILE "/.shutdown"
     #define DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE "/.data-collector"
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"

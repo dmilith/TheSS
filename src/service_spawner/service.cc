@@ -188,7 +188,7 @@ void SvdService::babySitterSlot() {
             if (QFile::exists(servicePidFile)) {
                 bool ok;
                 logDebug() << "Babysitter has found service pid for" << name;
-                QString aPid = QString(readFileContents(servicePidFile).c_str()).trimmed();
+                QString aPid = readFileContents(servicePidFile).trimmed();
                 pid_t pid = aPid.toInt(&ok, 10);
 
                 if (ok) {
@@ -235,7 +235,7 @@ void SvdService::babySitterSlot() {
                     QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR) + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
 
                     if (QFile::exists(portFilePath)) {
-                        int currentPort = QString(readFileContents(portFilePath).c_str()).trimmed().toInt();
+                        int currentPort = readFileContents(portFilePath).trimmed().toInt();
                         int port = registerFreeTcpPort(currentPort);
                         logDebug() << "Port compare:" << currentPort << "with" << port << "(should be different)";
                         if (port == currentPort) {
@@ -260,7 +260,7 @@ void SvdService::babySitterSlot() {
             babySit->waitForFinished(-1); // TODO: implement support for config->babySitter->expectOutputTimeout
             deathWatch(babySit->pid());
             logDebug() << "Checking contents of file:" << babySit->outputFile;
-            if (not expect(readFileContents(babySit->outputFile).c_str(), config->babySitter->expectOutput)) {
+            if (not expect(readFileContents(babySit->outputFile), config->babySitter->expectOutput)) {
                 QString msg = "Failed expectations of service: " + name + " with expected output of babySitter slot: " + config->babySitter->expectOutput;
                 notification(msg, name, ERROR);
                 emit restartSlot();
@@ -322,7 +322,7 @@ void SvdService::installSlot() {
         process->waitForFinished(-1); // no timeout
         deathWatch(process->pid());
         QFile::remove(indicator); // this indicates finish of installing process
-        if (not expect(readFileContents(process->outputFile).c_str(), config->install->expectOutput)) {
+        if (not expect(readFileContents(process->outputFile), config->install->expectOutput)) {
             QString msg = "Failed expectations of service: " + name + " with expected output of install slot: " + config->babySitter->expectOutput;
             notification(msg, name, ERROR);
         }
@@ -357,7 +357,7 @@ void SvdService::configureSlot() {
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
     } else if (QFile::exists(configuredIndicator)) {
-        logInfo() << "Service already configured:" << name;
+        notification("Service already configured: " + name, name, WARNING);
     } else {
         logTrace() << "Loading service igniter" << name;
         touch(indicator);
@@ -369,8 +369,8 @@ void SvdService::configureSlot() {
         QFile::remove(indicator);
         logDebug() << "Service configured:" << name;
         touch(config->prefixDir() + "/.configured");
-        if (not expect(readFileContents(process->outputFile).c_str(), config->configure->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of configure slot: " + config->configure->expectOutput + " - No match for: '" + config->configure->expectOutput + "'";
+        if (not expect(readFileContents(process->outputFile), config->configure->expectOutput)) {
+            QString msg = "Failed expectations of service: " + name + " with expected output of configure slot - No match for: '" + config->configure->expectOutput + "'";
             notification(msg, name, ERROR);
         }
 
@@ -488,8 +488,8 @@ void SvdService::startSlot() {
             }
         }
 
-        if (not expect(process->outputFile, config->start->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of start slot: " + config->start->expectOutput + " - No match for: '" + config->start->expectOutput + "'";
+        if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
+            QString msg = "Failed expectations of service: " + name + " with expected output of start slot - No match for: '" + config->start->expectOutput + "'";
             notification(msg, name, ERROR);
         }
 
@@ -565,8 +565,8 @@ void SvdService::afterStartSlot() {
         process->spawnProcess(config->afterStart->commands);
         process->waitForFinished(-1);
         deathWatch(process->pid());
-        if (not expect(readFileContents(process->outputFile).c_str(), config->afterStart->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of afterStart slot: " + config->afterStart->expectOutput + " - No match for: '" + config->afterStart->expectOutput + "'";
+        if (not expect(readFileContents(process->outputFile), config->afterStart->expectOutput)) {
+            QString msg = "Failed expectations of service: " + name + " with expected output of afterStart slot - No match for: '" + config->afterStart->expectOutput + "'";
             notification(msg, name, ERROR);
 
         }
@@ -606,7 +606,7 @@ void SvdService::stopSlot() {
 
         QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
         if (QFile::exists(servicePidFile)) {
-            uint pid = QString(readFileContents(servicePidFile).c_str()).toUInt();
+            uint pid = readFileContents(servicePidFile).toUInt();
             logDebug() << "Service pid found:" << QString::number(pid) << "in file:" << servicePidFile;
             deathWatch(pid);
             QFile::remove(servicePidFile);
@@ -614,8 +614,8 @@ void SvdService::stopSlot() {
         }
         process->waitForFinished(-1);
         deathWatch(process->pid());
-        if (not expect(readFileContents(process->outputFile).c_str(), config->stop->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of stop slot: " + config->stop->expectOutput + " - No match for: '" + config->stop->expectOutput + "'";
+        if (not expect(readFileContents(process->outputFile), config->stop->expectOutput)) {
+            QString msg = "Failed expectations of service: " + name + " with expected output of stop slot - No match for: '" + config->stop->expectOutput + "'";
             notification(msg, name, ERROR);
         }
 
@@ -661,8 +661,8 @@ void SvdService::afterStopSlot() {
         process->waitForFinished(-1);
         deathWatch(process->pid());
         QFile::remove(indicator);
-        if (not expect(readFileContents(process->outputFile).c_str(), config->afterStop->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of afterStop slot: " + config->afterStop->expectOutput + " - No match for: '" + config->afterStop->expectOutput + "'";
+        if (not expect(readFileContents(process->outputFile), config->afterStop->expectOutput)) {
+            QString msg = "Failed expectations of service: " + name + " with expected output of afterStop slot - No match for: '" + config->afterStop->expectOutput + "'";
             notification(msg, name, ERROR);
         }
 
@@ -701,8 +701,8 @@ void SvdService::reloadSlot() {
         process->spawnProcess(config->reload->commands);
         process->waitForFinished(-1);
         deathWatch(process->pid());
-        if (not expect(readFileContents(process->outputFile).c_str(), config->reload->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of reload slot: " + config->reload->expectOutput + " - No match for: '" + config->reload->expectOutput + "'";
+        if (not expect(readFileContents(process->outputFile), config->reload->expectOutput)) {
+            QString msg = "Failed expectations of service: " + name + " with expected output of reload slot - No match for: '" + config->reload->expectOutput + "'";
             notification(msg, name, ERROR);
         }
 
@@ -735,8 +735,8 @@ void SvdService::validateSlot() {
             process->waitForFinished(-1);
 
             deathWatch(process->pid());
-            if (not expect(readFileContents(process->outputFile).c_str(), config->validate->expectOutput)) {
-                QString msg = "Failed expectations of service: " + name + " with expected output of validate slot: " + config->validate->expectOutput + " - No match for: '" + config->validate->expectOutput + "'";
+            if (not expect(readFileContents(process->outputFile), config->validate->expectOutput)) {
+                QString msg = "Failed expectations of service: " + name + " with expected output of validate slot - No match for: '" + config->validate->expectOutput + "'";
                 notification(msg, name, ERROR);
             }
 

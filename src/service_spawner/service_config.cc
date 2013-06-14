@@ -380,32 +380,30 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* replace port pool first */
         logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
         if (portsPool > 1)
-            for (int indx = 1; indx < portsPool; indx++) {
-                QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
-                if (not QFile::exists(portsDirLocation + QString::number(indx))) {
-                    logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
-                    uint freePort = registerFreeTcpPort();
-                    ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString::number(freePort)); /* replace with user port content */
-                    writeToFile(portFilePath, QString::number(freePort));
-                } else {
-                    logTrace() << "Port id:" << indx << " exists. Won't touch it.";
-                    ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString(readFileContents(portFilePath).c_str()).trimmed());
+            if (QDir().exists(portsDirLocation))
+                for (int indx = 1; indx < portsPool; indx++) {
+                    QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
+                    if (not QFile::exists(portsDirLocation + QString::number(indx))) {
+                        logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
+                        uint freePort = registerFreeTcpPort();
+                        // ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString::number(freePort)); /* replace with user port content */
+                        writeToFile(portFilePath, QString::number(freePort));
+                    // } else {
+                        // logTrace() << "Port id:" << indx << " exists. Won't touch it.";
+                        // ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString(readFileContents(portFilePath).c_str()).trimmed());
+                    }
                 }
-            }
 
         /* then replace main port */
         QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
         if (staticPort != -1) { /* defined static port */
             logInfo() << "Set static port:" << staticPort << "for service" << name;
-            ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
+            // ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
             writeToFile(portFilePath, QString::number(staticPort));
         } else {
-            if (QFile::exists(portFilePath)) {
-                logTrace() << "Main port exists. Won't touch it.";
-                ccont = ccont.replace("SERVICE_PORT", QString(readFileContents(portFilePath).c_str()).trimmed());
-            } else {
+            if (not QFile::exists(portFilePath)) {
                 QString freePort = QString::number(registerFreeTcpPort());
-                ccont = ccont.replace("SERVICE_PORT", freePort); /* replace main dynamic port */
+                // ccont = ccont.replace("SERVICE_PORT", freePort); /* replace main dynamic port */
                 writeToFile(portFilePath, freePort);
             }
         }

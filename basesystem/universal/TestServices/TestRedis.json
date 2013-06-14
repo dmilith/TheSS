@@ -27,9 +27,7 @@ SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
-# port SERVICE_PORT
-# port SERVICE_PORT1
-port SERVICE_PORT2
+port $(cat SERVICE_PREFIX/.ports/0)
 pidfile SERVICE_PREFIX/service.pid
 dir SERVICE_PREFIX/database
 dbfilename database.rdf

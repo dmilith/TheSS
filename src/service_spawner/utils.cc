@@ -267,7 +267,7 @@ bool removeDir(const QString& dirName) {
                 return result;
             }
         }
-        result = dir.rmdir(dirName);
+        result = dir.rmpath(dirName);
     }
     return result;
 }
@@ -387,12 +387,12 @@ uint registerFreeTcpPort(uint specificPort) {
 /*
  *  Read file contents of text file
  */
-string readFileContents(const QString& fileName) {
+QString readFileContents(const QString& fileName) {
     QString lines = "";
     QFile f(fileName);
     f.open(QIODevice::ReadOnly);
     QTextStream stream(&f);
-    stream.setCodec(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    // stream.setCodec(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
     while (!stream.atEnd()) {
         QString line = stream.readLine();
         if (!line.trimmed().isEmpty()) {
@@ -402,7 +402,7 @@ string readFileContents(const QString& fileName) {
     }
     lines += "\n";
     f.close();
-    return string(lines.toUtf8());
+    return lines;
 }
 
 
@@ -413,7 +413,7 @@ Json::Value* parseJSON(const QString& filename) {
     Json::Reader reader; /* parse json file */
     auto root = new Json::Value();
 
-    auto parsedSuccess = reader.parse(readFileContents(filename), *root, false);
+    auto parsedSuccess = reader.parse(readFileContents(filename).toUtf8().data(), *root, false);
     if (!parsedSuccess) {
         logError() << "JSON Parse Failure of file:" << filename;
         root = NULL; /* this indicates that json parser failed to get data from igniter */

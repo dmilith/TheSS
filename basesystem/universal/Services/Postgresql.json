@@ -22,7 +22,7 @@ host all all 0.0.0.0/0 password
 ' > SERVICE_PREFIX/database/pg_hba.conf
 
 test ! -f SERVICE_PREFIX/database/postgresql.conf && printf '
-port = SERVICE_PORT
+port = $(cat SERVICE_PREFIX/.ports/0)
 max_connections = 200
 checkpoint_segments = 24
 password_encryption = on

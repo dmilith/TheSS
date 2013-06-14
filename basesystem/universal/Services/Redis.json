@@ -27,7 +27,7 @@ test ! -f SERVICE_PREFIX/service.conf && printf '
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
-port SERVICE_PORT
+port $(cat SERVICE_PREFIX/.ports/0)
 pidfile SERVICE_PREFIX/service.pid
 dir SERVICE_PREFIX/database
 dbfilename database.rdf

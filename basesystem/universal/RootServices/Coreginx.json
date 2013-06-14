@@ -39,7 +39,7 @@ http {
     keepalive_timeout 270;
     error_log SERVICE_PREFIX/service.log;
     server {
-        listen SERVICE_PORT;
+        listen $(cat SERVICE_PREFIX/.ports/0);
         server_name SERVICE_DOMAIN;
         location / {
             root SERVICE_PREFIX/html;

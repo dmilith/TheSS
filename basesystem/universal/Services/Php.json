@@ -26,7 +26,7 @@ test ! -f SERVICE_PREFIX/service.conf && printf '
     events.mechanism = kqueue
     ;security.limit_extensions = .php .html .htm .less .js .coffee
 [www]
-    listen = SERVICE_DOMAIN:SERVICE_PORT
+    listen = SERVICE_DOMAIN:$(cat SERVICE_PREFIX/.ports/0)
     pm = dynamic
     pm.max_children = 5
     pm.start_servers = 2
