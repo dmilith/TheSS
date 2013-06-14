@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.40.5"
+    #define APP_VERSION "0.40.6"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
