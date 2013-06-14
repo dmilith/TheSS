@@ -330,9 +330,9 @@ void SvdService::installSlot() {
 
 
 void SvdService::reConfigureSlot() {
+    notification("Performed re-configuration of service: " + name, name, NOTIFY);
     emit configureSlot();
     emit restartSlot();
-    logInfo() << "Performed re-configuration of service:" << name;
 }
 
 
@@ -351,6 +351,8 @@ void SvdService::configureSlot() {
         process->waitForFinished(-1);
         deathWatch(process->pid());
         QFile::remove(indicator);
+        logDebug() << "Service configured:" << name;
+        touch(config->prefixDir() + "/.configured");
         if (not expect(readFileContents(process->outputFile).c_str(), config->configure->expectOutput)) {
             QString msg = "Failed expectations of service: " + name + " with expected output of configure slot: " + config->configure->expectOutput + " - No match for: '" + config->configure->expectOutput + "'";
             notification(msg, name, ERROR);
