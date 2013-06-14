@@ -12,7 +12,7 @@ SERVICE_ROOT/exports/elasticsearch \\
 -p SERVICE_PREFIX/service.pid \\
 -f -Xmx1g \\
 -Des.network.host=SERVICE_ADDRESS \\
--Des.http.port=SERVICE_PORT \\
+-Des.http.port=$(cat SERVICE_PREFIX/ports/0) \\
 -Des.index.storage.type=niofs \\
 -Des.max-open-files=true \\
 -Des.bootstrap.mlockall=true \\

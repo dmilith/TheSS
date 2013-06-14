@@ -16,7 +16,7 @@ wick3d,10.10.0.4
 
 test ! -e SERVICE_PREFIX/service.conf && printf '
 daemon
-port SERVICE_PORT
+port $(cat SERVICE_PREFIX/.ports/0)
 proto udp
 dev tap
 
