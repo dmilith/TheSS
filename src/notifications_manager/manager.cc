@@ -13,6 +13,7 @@
 #include "../service_spawner/utils.h"
 #include <ncurses.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 
 
 int rows = 0, cols = 0, x = 0, y = 0; /* x,y - cursor position */
@@ -80,6 +81,17 @@ int kbhit() {
     FD_SET(STDIN_FILENO, &fds); //STDIN_FILENO is 0
     select(STDIN_FILENO+1, &fds, NULL, NULL, &tv);
     return FD_ISSET(STDIN_FILENO, &fds);
+}
+
+
+void handle_winch(int sig){
+    Q_UNUSED(sig);
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+    rows = w.ws_row;
+    cols = w.ws_col;
+    clear();
+    refresh();
 }
 
 
@@ -165,6 +177,12 @@ int main(int argc, char *argv[]) {
     fileAppender->setDetailsLevel(Logger::Trace);
 
     logInfo() << "Notifications manager v0.2.0";
+
+    // handle window resize
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(struct sigaction));
+    sa.sa_handler = handle_winch;
+    sigaction(SIGWINCH, &sa, NULL);
 
     int input = '\0';
     while (input != 'q' and input != 'Q') {
