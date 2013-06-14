@@ -26,9 +26,6 @@ HEADERS += TestLibrary.h \
            ../service_spawner/cron_entry.h
 SOURCES += ../service_spawner/service_config.cc \
            ../service_spawner/utils.cc \
-           ../jsoncpp/json_reader.cpp \
-           ../jsoncpp/json_writer.cpp \
-           ../jsoncpp/json_value.cpp \
            ../service_spawner/process.cc \
            ../service_spawner/service.cc \
            ../service_spawner/webapp_types.cc \

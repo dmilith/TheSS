@@ -10,10 +10,11 @@ build () {
             ;;
     esac
 
+    (qmake ${OPTS} Notifications.pro) || exit 1
+    (make && printf "Successfully built notifications system\n") || exit 1
+
     case "$1" in
         panel|svdpanel)
-            (qmake ${OPTS} Notifications.pro) || exit 1
-            (make && printf "Successfully built notifications system\n") || exit 1
             (qmake ${OPTS} Panel.pro) || exit 1
             (make && printf "Successfully built svdpanel\n") || exit 1
             ;;
@@ -21,11 +22,6 @@ build () {
         ss|svdss)
             (qmake ${OPTS} TheSS.pro) || exit 1
             (make && printf "Successfully built ss\n") || exit 1
-            ;;
-
-        ns|notification|notifications)
-            (qmake ${OPTS} Notifications.pro) || exit 1
-            (make && printf "Successfully built notifications system\n") || exit 1
             ;;
 
         tests|test)

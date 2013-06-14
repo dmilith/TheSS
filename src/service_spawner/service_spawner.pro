@@ -41,7 +41,7 @@ SOURCES   += service.cc \
              ../death_watch/death_watch.cc \
              service_spawner.cc \
              cron_entry.cc \
-             logger.cc \
-             ../notifications/notifications.cc
-LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
+             logger.cc
+             # ../notifications/notifications.cc
+LIBS      += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a ../libquazip.a -lz
 TARGET    = ../../bin/svdss

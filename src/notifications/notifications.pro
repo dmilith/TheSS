@@ -13,4 +13,4 @@ CONFIG += staticlib
 
 HEADERS   += notifications.h
 
-SOURCES   += notifications.cc ../service_spawner/utils.cc
+SOURCES   += notifications.cc
