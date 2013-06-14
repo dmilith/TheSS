@@ -91,7 +91,6 @@ SERVICE_DOMAIN            # default host domain name. It's stored in ~/SoftwareD
 SERVICE_ADDRESS           # by default it's default host IP address (resolved from SERVICE_DOMAIN)
 SERVICE_ROOT              # by default: ~/Apps/AppName
 SERVICE_VERSION           # by default taken from Sofin's: ~/Apps/AppName/appname.version
-SERVICE_PORT              # by default: random port, stored in ~/SoftwareData/AppName/.ports
 ```
 
 * Supports cron-compliant scheduler built in (since v0.24.x). Commands defined in schedulers have full support for igniter constants (listed above) and each command is in Zsh-compatible script format.
