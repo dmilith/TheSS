@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.40.2"
+    #define APP_VERSION "0.40.3"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -77,7 +77,7 @@
     #define CONTROL_PANEL_LOG_FILE "/.control-panel.log"
 
     #define DEFAULT_PANEL_SCROLL_SIZE 256 /* panel log viewer scroll value in bytes */
-    #define DEFAULT_PANEL_REFRESH_INTERVAL 300000
+    #define DEFAULT_PANEL_REFRESH_INTERVAL 250000
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
     #define DEFAULT_CRON_CHECK_DELAY 10000000 // 10s

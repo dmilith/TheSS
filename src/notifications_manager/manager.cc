@@ -6,14 +6,6 @@
  */
 
 
-#include <QtCore>
-
-#include "../globals/globals.h"
-#include "../notifications/notifications.h"
-#include "../service_spawner/utils.h"
-#include <ncurses.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
 #include "manager.h"
 
 
@@ -35,8 +27,6 @@ void gui_init() {
     noecho();
 
     getmaxyx(stdscr, rows, cols); // get cols and rows amount
-    // y = rows - 1; /* set cursor to bottom */
-    // win = newwin(rows, cols, 1, 1);
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
     init_pair(2, COLOR_GREEN, COLOR_BLACK); // running service
@@ -111,7 +101,6 @@ void gatherNotifications() {
                 notifications.append(n);
             }
         }
-        // refresh();
     }
 
     // Sort
@@ -179,7 +168,7 @@ int main(int argc, char *argv[]) {
     while (input != 'q' and input != 'Q') {
         while (!kbhit()) {
             gatherNotifications();
-            usleep(250000);
+            usleep(DEFAULT_PANEL_REFRESH_INTERVAL);
         }
 
         input = getch();
