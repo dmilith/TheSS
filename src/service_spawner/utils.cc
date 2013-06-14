@@ -413,7 +413,7 @@ Json::Value* parseJSON(const QString& filename) {
     Json::Reader reader; /* parse json file */
     auto root = new Json::Value();
 
-    auto parsedSuccess = reader.parse(readFileContents(filename), *root, false);
+    auto parsedSuccess = reader.parse(readFileContents(filename).toUtf8().data(), *root, false);
     if (!parsedSuccess) {
         logError() << "JSON Parse Failure of file:" << filename;
         root = NULL; /* this indicates that json parser failed to get data from igniter */
