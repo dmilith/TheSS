@@ -387,7 +387,7 @@ uint registerFreeTcpPort(uint specificPort) {
 /*
  *  Read file contents of text file
  */
-string readFileContents(const QString& fileName) {
+QString readFileContents(const QString& fileName) {
     QString lines = "";
     QFile f(fileName);
     f.open(QIODevice::ReadOnly);
@@ -402,7 +402,7 @@ string readFileContents(const QString& fileName) {
     }
     lines += "\n";
     f.close();
-    return string(lines.toUtf8());
+    return lines;
 }
 
 

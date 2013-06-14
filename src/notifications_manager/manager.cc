@@ -96,7 +96,7 @@ void gatherNotifications() {
                 else if (ext == "warning")  n.level = NOTIFICATION_LEVEL_WARNING;
                 else if(ext == "notice")    n.level = NOTIFICATION_LEVEL_NOTICE;
 
-                n.content = QString(readFileContents(file.absoluteFilePath()).c_str()).trimmed();
+                n.content = readFileContents(file.absoluteFilePath()).trimmed();
                 n.time = file.created();
                 notifications.append(n);
             }

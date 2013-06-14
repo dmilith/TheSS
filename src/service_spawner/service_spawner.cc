@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
     if (QFile::exists(lockName)) {
         bool ok;
-        QString aPid = QString(readFileContents(lockName).c_str()).trimmed();
+        QString aPid = readFileContents(lockName).trimmed();
         uint pid = aPid.toInt(&ok, 10);
         if (ok) {
             if (pidIsAlive(pid) or pid == 0) { /* NOTE: if pid == 0 it means that SS is runned from SS root maintainer */

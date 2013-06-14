@@ -271,7 +271,7 @@ void TestLibrary::testStartingRedis() {
     QVERIFY(config->afterStop->commands.contains("kongo bongo"));
 
     QString portsFile = config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER;
-    uint portOfRunningRedis = QString(readFileContents(portsFile).c_str()).trimmed().toUInt();
+    uint portOfRunningRedis = readFileContents(portsFile).trimmed().toUInt();
     logInfo() << "Redis port:" << portOfRunningRedis;
     uint port = registerFreeTcpPort(portOfRunningRedis);
     logInfo() << "Registered port:" << port;

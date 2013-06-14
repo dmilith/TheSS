@@ -56,7 +56,7 @@ using namespace std;
 
 QList<int> gatherUserUids();
 
-string readFileContents(const QString& fileName);
+QString readFileContents(const QString& fileName);
 
 bool expect(const QString& inputFileContent, const QString& expectedString);
 bool removeDir(const QString& dirName);

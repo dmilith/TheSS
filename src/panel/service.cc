@@ -19,9 +19,9 @@ PanelService::PanelService(QFileInfo baseDir){
     bool se = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE); // XXX: FIXME: no more .errors file!!
     autostart = QFile::exists(basePath + DEFAULT_SERVICE_AUTOSTART_FILE);
 
-    pid = QString(readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).c_str()).trimmed();
-    domain = QString(readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
-    port = QString(readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).c_str()).trimmed();
+    pid = readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).trimmed();
+    domain = readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).trimmed();
+    port = readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     if (domain.isEmpty()) domain = "-";
     if (port.isEmpty()) port = "-";
 
