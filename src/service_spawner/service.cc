@@ -297,6 +297,10 @@ void SvdService::installSlot() {
     logDebug() << "Invoked install slot for service:" << name;
 
     auto config = new SvdServiceConfig(name);
+    logInfo() << "Performing sanity dir checks for service:" << name;
+    getOrCreateDir(config->prefixDir());
+    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
+
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
         logInfo() << "No need to install service" << name << "because it's already installed.";
@@ -372,10 +376,6 @@ void SvdService::startSlot() {
     logTrace() << "Loading service igniter" << name;
     auto config = new SvdServiceConfig(name);
 
-    logInfo() << "Performing sanity dir checks for service:" << name;
-    getOrCreateDir(config->prefixDir());
-    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
-
     auto map = getDiskFree(config->prefixDir());
     Q_FOREACH(QString value, map.keys()) {
         logDebug() << "Free disk space in service directory:" << value << "->" << map[value];
@@ -394,10 +394,8 @@ void SvdService::startSlot() {
     if (QFile::exists(indicator)) {
         logInfo() << "No need to run service" << name << "because it's already running.";
     } else {
-        if (!config->serviceInstalled()) {
-            logInfo() << "Service" << name << "isn't yet installed. Proceeding with installation.";
-            emit installSlot();
-        }
+        logDebug() << "Emitting install slot for service:" << name;
+        emit installSlot();
 
         /* after successful installation of core app, we may proceed with installing additional dependencies */
         if (not config->dependencies.isEmpty()) {
@@ -412,9 +410,7 @@ void SvdService::startSlot() {
                 if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {// XXX: not reliable
                     auto depService = new SvdService(dependency);
                     depService->start();
-                    if (not depConf->serviceInstalled()) {
-                        depService->installSlot();
-                    }
+                    depService->installSlot();
                     if (not depConf->serviceConfigured()) {
                         depService->configureSlot();
                     }
