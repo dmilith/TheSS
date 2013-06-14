@@ -23,7 +23,7 @@ void SvdProcess::init(const QString& name, uid_t uid) {
     // }
     // file.close();
     if (this->redirectOutput)
-        setStandardOutputFile(outputFile, QIODevice::Truncate);
+        setStandardOutputFile(outputFile, QIODevice::Append);
 }
 
 
