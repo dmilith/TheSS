@@ -156,11 +156,10 @@ int main(int argc, char *argv[]) {
     gui_init();
 
     /* Logger setup */
-    QString logFile = QString(getenv("HOME")) + "/.notifications-manager.log";
+    QString logFile = QString(getenv("HOME")) + NOTIFICATION_MANAGER_LOG_FILE;
     QFile::remove(logFile);
 
     FileAppender *fileAppender = new FileAppender(logFile);
-    // fileAppender->ansiColors = false;
     fileAppender->setFormat("%m\n");
     Logger::registerAppender(fileAppender);
     fileAppender->setDetailsLevel(Logger::Trace);

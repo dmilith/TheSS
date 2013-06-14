@@ -35,10 +35,13 @@ int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
 
+    QString logFile = QString(getenv("HOME")) + CONTROL_PANEL_LOG_FILE;
+    QFile::remove(logFile);
+
     // Logger setup - turn it off
-    ConsoleAppender *consoleAppender = new ConsoleAppender();
+    FileAppender *consoleAppender = new FileAppender(logFile);
     Logger::registerAppender(consoleAppender);
-    consoleAppender->setDetailsLevel(Logger::Fatal);
+    consoleAppender->setDetailsLevel(Logger::Info);
 
     // Panel setup
     QString user = getenv("USER");
