@@ -12,6 +12,8 @@ build () {
 
     case "$1" in
         panel|svdpanel)
+            (qmake ${OPTS} Notifications.pro) || exit 1
+            (make && printf "Successfully built notifications system\n") || exit 1
             (qmake ${OPTS} Panel.pro) || exit 1
             (make && printf "Successfully built svdpanel\n") || exit 1
             ;;
