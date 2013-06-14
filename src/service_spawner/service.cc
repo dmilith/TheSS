@@ -344,8 +344,11 @@ void SvdService::configureSlot() {
     logDebug() << "Invoked configure slot for service:" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE;
+    QString configuredIndicator = config->prefixDir() + "/.configured";
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
+    } else if (QFile::exists(configuredIndicator)) {
+        logInfo() << "Service already configured:" << name;
     } else {
         logTrace() << "Loading service igniter" << name;
         touch(indicator);
