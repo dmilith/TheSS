@@ -72,16 +72,9 @@ void PanelService::toggleAutostart() const {
 }
 
 bool PanelService::remove() const {
-    while (fileInfo.exists()) { // XXX: blocking and locking in case of "bad folder owner permissions".
-        if (fileInfo.isWritable() &&
-            fileInfo.isReadable() &&
-            fileInfo.isExecutable()) {
-            removeDir(basePath);
-            return true;
-        } else {
-            return false;
-        }
-    }
+    auto prc = new SvdProcess("SS", getuid(), false);
+    prc->spawnProcess("rm -rf " + basePath);
+    prc->waitForFinished(10);
 
     return true;
 }
