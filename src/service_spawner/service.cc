@@ -161,19 +161,19 @@ void SvdService::babySitterSlot() {
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE)
     ) {
         logDebug() << "Skipping babysitter, service is busy:" << name;
-        delete config;
+        config->deleteLater();
         return;
     }
     if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
         logDebug() << "Skipping babysitter, service is not running:" << name;
-        delete config;
+        config->deleteLater();
         return;
     }
     /* look for three required files as indicators of already running services software */
     bool filesExistance = QFile::exists(config->prefixDir() + "/.domain") && QFile::exists(config->prefixDir() + "/.ports") && QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
     if (not filesExistance) {
         logDebug() << "Skipping babysitter spawn for service:" << name << ", because no service baby around.";
-        delete config;
+        config->deleteLater();
         return;
     } else
         logDebug() << "Babysitter invoked for:" << name;
@@ -267,7 +267,7 @@ void SvdService::babySitterSlot() {
             } else {
                 logDebug() << "Babysitter expectations passed for service:" << name;
             }
-            delete babySit;
+            babySit->deleteLater();
 
         }
 
@@ -288,7 +288,7 @@ void SvdService::babySitterSlot() {
     } else {
         logTrace() << "alwaysOn option disabled for service:" << name;
     }
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -336,9 +336,9 @@ void SvdService::installSlot() {
         }
 
         logTrace() << "After proc install execution:" << name;
-        delete process;
+        process->deleteLater();
     }
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -347,7 +347,7 @@ void SvdService::reConfigureSlot() {
     auto config = new SvdServiceConfig(name);
     QString configuredIndicator = config->prefixDir() + "/.configured";
     QFile::remove(configuredIndicator);
-    delete config;
+    config->deleteLater();
     emit configureSlot();
     emit restartSlot();
 }
@@ -379,9 +379,9 @@ void SvdService::configureSlot() {
         }
 
         logTrace() << "After process configure execution:" << name;
-        delete process;
+        process->deleteLater();
     }
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -437,7 +437,7 @@ void SvdService::startSlot() {
                     logInfo() << "Already running dependency:" << dependency;
                 }
 
-                delete depConf;
+                depConf->deleteLater();
             }
         } else
             logDebug() << "Empty dependency list for service:" << name;
@@ -452,7 +452,7 @@ void SvdService::startSlot() {
         if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE)) {
             QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
             notification(msg, name, ERROR);
-            delete config;
+            config->deleteLater();
 
             // emit startSlot(); // -> don't try to retry. Notification is enough
             return;
@@ -501,9 +501,9 @@ void SvdService::startSlot() {
             }
         }
 
-        delete process;
+        process->deleteLater();
     }
-    delete config;
+    config->deleteLater();
 
     /* invoke after start slot */
     logTrace() << "After process start execution:" << name;
@@ -518,7 +518,7 @@ void SvdService::cronSitterSlot() {
         if (cronSitter.isActive())
             cronSitter.stop();
         logDebug() << "Skipping cronSitter, service is not running:" << name;
-        delete config;
+        config->deleteLater();
         return;
     }
 
@@ -535,7 +535,7 @@ void SvdService::cronSitterSlot() {
             if (QFile::exists(indicator)) {
                 logDebug() << "No need to launching cron service with indicator:" << indicator << "because it's already been invoked once for service:" << name;
                 delete crontabEntry;
-                delete config;
+                config->deleteLater();
                 return;
             }
             logDebug() << "Crontab match! Spawning" << entry->commands;
@@ -555,7 +555,7 @@ void SvdService::cronSitterSlot() {
         delete crontabEntry;
     }
 
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -581,9 +581,9 @@ void SvdService::afterStartSlot() {
 
         QFile::remove(indicator);
         logTrace() << "After process afterStart execution:" << name;
-        delete process;
+        process->deleteLater();
     }
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -640,14 +640,13 @@ void SvdService::stopSlot() {
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE);
 
         logTrace() << "After process stop execution:" << name;
-        delete process;
+        process->deleteLater();
     }
 
     logDebug() << "Stopping internal baby sitter timer for process:" << name;
     if (babySitter.isActive())
         babySitter.stop();
-    // delete babySitter;
-    delete config;
+    config->deleteLater();
 
     /* invoke after stop slot */
     emit afterStopSlot();
@@ -675,9 +674,9 @@ void SvdService::afterStopSlot() {
         }
 
         logTrace() << "After process afterStop execution:" << name;
-        delete process;
+        process->deleteLater();
     }
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -716,9 +715,9 @@ void SvdService::reloadSlot() {
 
         QFile::remove(indicator);
         logTrace() << "After process reload execution:" << name;
-        delete process;
+        process->deleteLater();
     }
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -750,12 +749,12 @@ void SvdService::validateSlot() {
 
             QFile::remove(indicator);
             logTrace() << "After process validate execution:" << name;
-            delete process;
+            process->deleteLater();
         }
     } else {
         logDebug() << "Skipping validate slot (not defined in igniter) for service:" << name;
     }
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -767,6 +766,14 @@ void SvdService::destroySlot() {
 
     disconnect(&cronSitter, SIGNAL(timeout()));
     cronSitter.stop();
+
+    if (not dependencyServices.empty()) {
+        logDebug() << "Destroying dependency services of service:" << name;
+        Q_FOREACH(SvdService *el, dependencyServices) {
+            el->exit();
+            el->deleteLater();
+        }
+    }
 }
 
 

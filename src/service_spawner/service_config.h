@@ -43,7 +43,7 @@ class SvdShellOperations {
 };
 
 
-class SvdServiceConfig : QObject {
+class SvdServiceConfig : public QObject {
     Q_OBJECT
 
     public:
