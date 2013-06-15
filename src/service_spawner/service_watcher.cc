@@ -61,8 +61,15 @@ SvdHookIndicatorFiles::~SvdHookIndicatorFiles() {
 }
 
 
+QString SvdServiceWatcher::name() {
+    return appName;
+}
+
+
 SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     logDebug() << "Starting SvdServiceWatcher for service:" << name;
+
+    appName = name;
 
     dataDir = getServiceDataDir(name);
 
@@ -222,8 +229,10 @@ void SvdServiceWatcher::fileChangedSlot(const QString& file) {
 
 
 SvdServiceWatcher::~SvdServiceWatcher() {
-    delete fileEvents;
     delete triggerFiles;
     delete indicatorFiles;
-    delete service;
+    if (fileEvents) {
+        fileEvents->unregisterFile(dataDir);
+        fileEvents->deleteLater();
+    }
 }

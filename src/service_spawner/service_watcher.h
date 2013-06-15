@@ -60,6 +60,7 @@ class SvdServiceWatcher: public QObject {
     Q_OBJECT
 
     public:
+        QString name();
         SvdServiceWatcher(const QString& name);
         ~SvdServiceWatcher();
 
@@ -67,7 +68,7 @@ class SvdServiceWatcher: public QObject {
         SvdFileEventsManager *fileEvents;
         SvdHookTriggerFiles *triggerFiles;
         SvdHookIndicatorFiles *indicatorFiles;
-        QString dataDir;
+        QString dataDir, appName;
         SvdService *service;
 
         void cleanupTriggerHookFiles();
