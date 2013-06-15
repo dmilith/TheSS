@@ -54,7 +54,7 @@ void SvdProcess::spawnProcess(const QString& command) {
     logTrace() << "Spawning command:" << QString(command);
     write(command.toUtf8());
     write("\nexit\n");
-    closeWriteChannel();
+    // closeWriteChannel();
     // stop();
 }
 
