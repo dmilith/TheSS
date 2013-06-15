@@ -604,9 +604,11 @@ void SvdService::stopSlot() {
 
         /* stop dependency services */
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
-            logDebug() << "Invoking dependency stop slot and destroying service:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
-            depService->stopSlot();
-            depService->quit();
+            if (depService) {
+                logDebug() << "Invoking dependency stop slot and destroying service:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
+                depService->stopSlot();
+                depService->exit();
+            }
         }
 
         logTrace() << "Loading service igniter" << name;
@@ -770,10 +772,16 @@ void SvdService::destroySlot() {
     if (not dependencyServices.empty()) {
         logDebug() << "Destroying dependency services of service:" << name;
         Q_FOREACH(SvdService *el, dependencyServices) {
-            el->exit();
-            el->deleteLater();
+            if (el != NULL) {
+                logTrace() << "Deleting dependencyService for service:" << name;
+                el->exit();
+                el->deleteLater();
+            }
         }
     }
+
+    this->exit();
+    this->deleteLater();
 }
 
 
