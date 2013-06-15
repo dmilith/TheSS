@@ -15,7 +15,7 @@
     "validate": {
         "commands": "
 test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
-test ! -f SERVICE_PREFIX/service.conf && printf '
+test ! -f SERVICE_PREFIX/service.conf && printf \"
 bind_ip = SERVICE_ADDRESS
 port = $(cat SERVICE_PREFIX/.ports/0)
 dbpath = SERVICE_PREFIX/database
@@ -24,7 +24,7 @@ logpath = SERVICE_PREFIX/service.log
 pidfilepath = SERVICE_PREFIX/service.pid
 unixSocketPrefix = SERVICE_PREFIX
 fork = true
-' > SERVICE_PREFIX/service.conf
+\" > SERVICE_PREFIX/service.conf
 "
     },
     "start": {

@@ -21,7 +21,7 @@ SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_PREFIX/service.conf --skip-g
         "commands": "
 test ! -d SERVICE_PREFIX/tmp && mkdir -p SERVICE_PREFIX/tmp && chmod 700 SERVICE_PREFIX/tmp
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
-test ! -f SERVICE_PREFIX/service.conf && printf '
+test ! -f SERVICE_PREFIX/service.conf && printf \"
 [mysqld_safe]
 socket = SERVICE_PREFIX/service.sock
 nice = 0
@@ -62,7 +62,7 @@ max_allowed_packet = 16M
 
 [isamchk]
 key_buffer = 16M
-' > SERVICE_PREFIX/service.conf
+\" > SERVICE_PREFIX/service.conf
 "
     }
 }

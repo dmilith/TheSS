@@ -14,9 +14,11 @@ dmilith,10.10.0.3
 wick3d,10.10.0.4
 ' > SERVICE_PREFIX/ipp.txt
 
-test ! -e SERVICE_PREFIX/service.conf && printf '
-daemon
+test ! -e SERVICE_PREFIX/service.conf && printf \"
 port $(cat SERVICE_PREFIX/.ports/0)
+\" > SERVICE_PREFIX/service.conf && printf '
+daemon
+
 proto udp
 dev tap
 
@@ -42,7 +44,7 @@ push \"redirect-gateway def1\"
 push \"no-reply\"
 
 ifconfig-pool-persist SERVICE_PREFIX/ipp.txt 0
-' > SERVICE_PREFIX/service.conf
+' >> SERVICE_PREFIX/service.conf
 "
     },
     "start": {

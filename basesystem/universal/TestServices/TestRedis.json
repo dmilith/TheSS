@@ -23,7 +23,7 @@ SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
         "commands": "kongo bongo"
     },
     "validate": {
-        "commands": "test ! -f SERVICE_PREFIX/service.conf && printf '
+        "commands": "test ! -f SERVICE_PREFIX/service.conf && printf \"
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
@@ -40,6 +40,6 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log' > SERVICE_PREFIX/service.conf"
+logfile SERVICE_PREFIX/service.log\" > SERVICE_PREFIX/service.conf"
     }
 }
