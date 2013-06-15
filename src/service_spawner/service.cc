@@ -343,7 +343,11 @@ void SvdService::installSlot() {
 
 
 void SvdService::reConfigureSlot() {
-    notification("Performed re-configuration of service: " + name, name, NOTIFY);
+    notification("Performing reconfiguration and restart of service: " + name, name, NOTIFY);
+    auto config = new SvdServiceConfig(name);
+    QString configuredIndicator = config->prefixDir() + "/.configured";
+    QFile::remove(configuredIndicator);
+    delete config;
     emit configureSlot();
     emit restartSlot();
 }
@@ -759,7 +763,6 @@ void SvdService::destroySlot() {
     logDebug() << "Destroying service:" << name;
     babySitter.stop();
     cronSitter.stop();
-    this->exit();
 }
 
 
