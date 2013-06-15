@@ -357,7 +357,7 @@ void SvdService::configureSlot() {
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
     } else if (QFile::exists(configuredIndicator)) {
-        notification("Service already configured: " + name, name, WARNING);
+        notification("Service already configured: " + name, name, NOTIFY);
     } else {
         logTrace() << "Loading service igniter" << name;
         touch(indicator);
