@@ -107,9 +107,34 @@ void SvdUserWatcher::collectServices() {
                 oldServices.removeAt(index);
                 logInfo() << "Removed from services cache.";
                 removeDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name);
+
+                /* detect user watcher */
+                for (int ind = 0; ind < this->serviceWatchers.length(); ind++) {
+                    SvdServiceWatcher *watch = this->serviceWatchers.at(ind);
+                    if (name == watch->name()) {
+                        logDebug() << "Found old user watcher! Destroying!";
+                        this->serviceWatchers.removeAt(ind);
+                    }
+                }
+
             } else {
                 logInfo() << "Initializing watchers for data dir of service:" << name;
-                this->serviceWatchers << new SvdServiceWatcher(name);
+
+                /* detect user watcher */
+                if (this->serviceWatchers.length() == 0) {
+                    logDebug() << "Adding new service watcher:" << name;
+                    this->serviceWatchers << new SvdServiceWatcher(name);
+                } else {
+                    for (int ind = 0; ind < this->serviceWatchers.length(); ind++) {
+                        logDebug() << "Comparing:" << serviceWatchers.at(ind)->name() << "and" << name;
+                        if (name == serviceWatchers.at(ind)->name()) {
+                            logDebug() << "Found old user watcher! Replacing!";
+                            serviceWatchers.at(ind)->deleteLater();
+                            this->serviceWatchers.removeAt(ind);
+                        }
+                    }
+                    this->serviceWatchers << new SvdServiceWatcher(name);
+                }
             }
         }
     }
@@ -184,7 +209,12 @@ void SvdUserWatcher::fileChangedSlot(const QString& file) {
 
 
 SvdUserWatcher::~SvdUserWatcher() {
-    delete fileEvents;
     delete triggerFiles;
     delete indicatorFiles;
+
+    disconnect(fileEvents, SIGNAL(directoryChanged(QString)));
+    disconnect(fileEvents, SIGNAL(fileChanged(QString)));
+    fileEvents->unregisterFile(homeDir);
+    fileEvents->unregisterFile(softwareDataDir);
+    fileEvents->deleteLater();
 }

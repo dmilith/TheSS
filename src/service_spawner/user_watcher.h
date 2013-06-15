@@ -50,7 +50,6 @@ class SvdUserWatcher: public QObject {
         SvdUserWatcher();
         ~SvdUserWatcher();
         QList<SvdServiceWatcher *> serviceWatchers;
-        QList<SvdWebAppWatcher *> webAppWatchers;
         QStringList services;
         QStringList webApps;
 
