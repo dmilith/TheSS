@@ -453,8 +453,7 @@ void SvdService::startSlot() {
             QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
             notification(msg, name, ERROR);
             config->deleteLater();
-
-            // emit startSlot(); // -> don't try to retry. Notification is enough
+            /* NOTE: don't try to retry. Notification is enough */
             return;
         }
 
@@ -466,19 +465,6 @@ void SvdService::startSlot() {
         process->spawnProcess(config->start->commands);
         process->waitForFinished(-1);
         deathWatch(process->pid());
-
-        /* XXX: pause a bit to give time for dependencies to launch before invoking first service baby sitter */
-        // if (config->dependencies.length() > 0) {
-            // auto defaultTimeout = BABYSITTER_TIMEOUT_INTERVAL / 1000;
-            // auto fractionOfTimeout = defaultTimeout / 4; /* 7.5s for 30s babysitter default timer */
-            // logDebug() << "Calling babysitter with increased interval of:" << fractionOfTimeout << "miliseconds per dependency ( times" << QString::number(config->dependencies.length()) << ")";
-            // babySitter.setInterval(defaultTimeout);
-            // if (not babySitter.isActive()) {
-                // babySitter.start();
-            // }
-        // } else {
-
-        // }
 
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
             QString msg = "Failed expectations of service: " + name + " with expected output of start slot - No match for: '" + config->start->expectOutput + "'";
