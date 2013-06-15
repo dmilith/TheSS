@@ -761,7 +761,11 @@ void SvdService::validateSlot() {
 
 void SvdService::destroySlot() {
     logDebug() << "Destroying service:" << name;
+
+    disconnect(&babySitter, SIGNAL(timeout()));
     babySitter.stop();
+
+    disconnect(&cronSitter, SIGNAL(timeout()));
     cronSitter.stop();
 }
 
