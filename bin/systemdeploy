@@ -1,18 +1,20 @@
 #!/bin/sh
 
+BINDIR="$(cd "$(dirname "$0")" && pwd)"
+
 if [ "$(id -u)" != "0" ]; then
     printf "This script must be run as root!\n"
     exit 1
 fi
 
-if [ ! -x "$(pwd)/svdss" ] || [ ! -x "$(pwd)/svddw" ] || [ ! -x "$(pwd)/svdpanel" ]; then
+if [ ! -x "$BINDIR/svdss" ] || [ ! -x "$BINDIR/svddw" ] || [ ! -x "$BINDIR/svdpanel" ]; then
     printf "You need to build TheSS first. Use bin/build, then retry deployment.\n"
     exit 1
 fi
 
-bin/ignitersinstall
-cp bin/svdss /bin/svdss
-cp bin/svddw /bin/svddw
-cp bin/svdnom /bin/svdnom
-cp bin/svdpanel /bin/svdpanel
+$BINDIR/ignitersinstall
+cp $BINDIR/svdss /bin/svdss
+cp $BINDIR/svddw /bin/svddw
+cp $BINDIR/svdnom /bin/svdnom
+cp $BINDIR/svdpanel /bin/svdpanel
 printf "Success\n"
