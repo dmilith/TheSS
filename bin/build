@@ -1,5 +1,7 @@
 #!/bin/sh
 
+printf "Loading Sofin environment\n"
+. $HOME/.profile
 
 build () {
     SYSTEM_NAME="$(uname)"
