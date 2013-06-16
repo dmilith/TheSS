@@ -299,6 +299,10 @@ void SvdService::installSlot() {
     auto config = new SvdServiceConfig(name);
     logInfo() << "Performing sanity dir checks for service:" << name;
 
+    logDebug() << "Checking notification dirs";
+    getOrCreateDir(config->prefixDir() + NOTIFICATIONS_DATA_DIR);
+    getOrCreateDir(config->prefixDir() + NOTIFICATIONS_HISTORY_DATA_DIR);
+
     QString portsDirLocation = config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
     if (not QDir().exists(portsDirLocation)) {
         if (QFile::exists(portsDirLocation)) {
