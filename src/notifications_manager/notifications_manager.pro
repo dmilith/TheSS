@@ -10,9 +10,9 @@ QT += network
 TARGET = ../../bin/svdnom
 TEMPLATE = app
 
-HEADERS   += ../notifications/notifications.h manager.h
+HEADERS   += ../notifications/notifications.h manager.h ../service_spawner/process.h
 
-SOURCES   += ../service_spawner/utils.cc manager.cc
+SOURCES   += ../service_spawner/utils.cc ../service_spawner/process.cc manager.cc
 
 mac {
       LIBS      += ../libnotifications.a ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncurses
