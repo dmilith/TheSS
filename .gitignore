@@ -20,3 +20,4 @@ svdnom
 /docs/*.toc
 *.log
 TheSS.xcodeproj/
+tmp/
