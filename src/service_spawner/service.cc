@@ -372,11 +372,11 @@ void SvdService::configureSlot() {
         deathWatch(process->pid());
         QFile::remove(indicator);
         logDebug() << "Service configured:" << name;
-        touch(config->prefixDir() + "/.configured");
         if (not expect(readFileContents(process->outputFile), config->configure->expectOutput)) {
             QString msg = "Failed expectations of service: " + name + " with expected output of configure slot - No match for: '" + config->configure->expectOutput + "'";
             notification(msg, name, ERROR);
-        }
+        } else
+            touch(config->prefixDir() + "/.configured");
 
         logTrace() << "After process configure execution:" << name;
         process->deleteLater();
