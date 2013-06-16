@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 default_root_igniters_dir="/SystemUsers/Igniters/Services"
 default_igniters_dir="/Common/Igniters/Services"

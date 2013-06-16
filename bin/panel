@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 panelbin=" $(dirname $0)/svdpanel"
 nombin=" $(dirname $0)/svdnom"
