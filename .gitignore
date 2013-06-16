@@ -18,3 +18,5 @@ svdnom
 /docs/*.snm
 /docs/*.synctex.gz
 /docs/*.toc
+*.log
+TheSS.xcodeproj/
