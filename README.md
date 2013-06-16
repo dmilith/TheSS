@@ -68,17 +68,16 @@ reconfigureHook # will execute:
 * Using kernel file watchers (kqueue on OSX & BSD, epoll on Linux) to watch software config/ data dirs.
 * Supports "touch .hookname" method of manual launching of hooks. (for example: touch ~/SoftwareData/MyApp/.install will invoke install hook of MyApp igniter definition.)
 * Supports basic hook dependency model. (for example: touch ~/SoftwareData/MyApp/.start will invoke: install hook, configure hook, validate hook and start hook of MyApp igniter definition)
-* Supports software hook expectations with error reporting through ~/SoftwareData/MyApp/.errors file.
+* Supports software hook expectations with error reporting through built in Notification mechanism.
 * Supports software "baby sitting". By default watches for software pid ("alwaysOn" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
-* Supports software TCP server checking. ("watchPort" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
+* Supports TCP port checking. ("watchPort" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
 * Supports free port checking for TCP services, automatically generates random port for new services, (but also supports "staticPort" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)), to provide static port binding for software. (for example staticPort is 80 for Nginx). By default, service ports are stored in ~/SoftwareData/AppName/.ports and reused on next software start.
 * Supports service autostarting. You need only to touch ~/SoftwareData/MyApp/.autostart file.
 * Is designed to work with user privileges as a little user side daemon.
 * Uses almost no memory: ~5 MiB RSS on 64bit system when working with several services.
 * Supports super user mode, to support root services (ports: 1-1024). Just run svdss as root and that's it.
-* Should be system agnostic. I didn't try windows, but it should work after few minor changes.
 * Supports state files. For example if process is running the lock file is created: ~/SoftwareData/MyApp/.running
-* Supports unified process configuration model. By default ~/SoftwareData/MyApp/service.pid and ~/SoftwareData/MyApp/service.log are created for each software.
+* Supports unified process configuration model. By default ~/SoftwareData/MyApp/service.pid and ~/SoftwareData/MyApp/service.log are created for each software. If service requires configuration, it's by default stored in ~/SoftwareData/MyApp/service.conf
 * Supports dynamic, live log level change invoked by touch ~/.log-level, where "log-level" is one of: error, info, debug, trace. By default log level is info.
 * Supports auto igniter reload support on hook level. You don't need to update, sync or reload igniters. After change, next hook invoke will use latest version of software igniter by default.
 * Supports multiple directory sources for igniters. Default order of checking igniters existance for regular user is: ~/Igniters/Services, then /Common/Igniters/Services. For root it's: /Common/Igniters/Services, then /SystemUsers/Igniters.
@@ -149,7 +148,7 @@ bin/systemdeploy
 bin/ignitersinstall # which installs default igniters to /Common
 
 # to build and run tests:
-bin/test && ./test
+bin/test
 
 # to only build TheSS executables:
 bin/build
@@ -158,16 +157,20 @@ bin/build
 bin/systemdeploy
 
 # and now just:
-./svdss # or svdss if used install process
+bin/svdss # or svdss if used install process
 # (it supports -d param for explicit debug output and -t for trace level output
 #  which may be later changed using "log level change" feature)
 
-# on second terminal, do:
+# to actually spawn something, on second terminal, do:
 mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
 # wait a while, software install process should work in background.
-# This process has own log file here: ~/SoftwareData/Redis/.output.
-# Software should pick random port, generate configuration for Redis
+# This process should log output to file: ~/SoftwareData/Redis/service.log,
+# then should pick random port, generate configuration for Redis
 # service and just start it.
+
+# you may also use built in panel:
+bin/panel
+# Hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.
 ```
 
 
@@ -176,4 +179,4 @@ mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
 * Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
 * JSON CPP implementation with JSON comments support by Baptiste Lepilleur (MIT licensed)
 * QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)
-* QT4 4.8.x implementation (LGPL licensed)
+* QT4 4.8.x implementation by Trolltech & Nokia (LGPL licensed)
