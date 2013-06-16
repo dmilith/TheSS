@@ -1,9 +1,9 @@
 #!/bin/sh
 
-panelbin="$(dirname $0)/svdpanel"
-nombin="$(dirname $0)/svdnom"
-tmuxconf="$(dirname $0)/../etc/tmux.conf"
-tmuxbin="tmux -f $tmuxconf"
+panelbin=" $(dirname $0)/svdpanel"
+nombin=" $(dirname $0)/svdnom"
+tmuxconf=" $(dirname $0)/../etc/tmux.conf"
+tmuxbin=" tmux -f $tmuxconf"
 
 $tmuxbin start-server
 $tmuxbin new-session -d -s SvdPanel -n svdpanel
@@ -13,7 +13,7 @@ $tmuxbin split-window -t SvdPanel -h
 $tmuxbin resize-pane -t 2 -D 100
 $tmuxbin resize-pane -t 2 -U 4
 $tmuxbin select-pane -t 0
-$tmuxbin send-keys -t 1 "touch $HOME/.thess.log && less --follow-name -Q -R $HOME/.thess.log" C-m
+$tmuxbin send-keys -t 1 " touch $HOME/.thess.log && less --follow-name -Q -R $HOME/.thess.log" C-m
 $tmuxbin send-keys -t 2 $nombin C-m
 $tmuxbin send-keys -t 0 $panelbin C-m
 $tmuxbin attach-session $@ -d -tSvdPanel

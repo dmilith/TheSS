@@ -26,6 +26,9 @@ int main(int argc, char *argv[]) {
     // Require to be run inside tmux
     TMUX = QString(getenv("TMUX_PANE")) != "";
 
+    printf("Waiting for log...\n");
+    sleep(1);
+
     if(!TMUX){
         printf("Must be run inside tmux\n");
         exit(-1);
