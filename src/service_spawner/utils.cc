@@ -36,25 +36,25 @@ QString tail(const QString& absoluteFileName, int lines, int positionModifier) {
 
 
 void setupDefaultVPNNetwork() {
-    #ifdef __FreeBSD__
-        logInfo() << "Launching VPN Network Setup";
+    #ifndef __APPLE__
+        logInfo() << "Launching VPN Networks Setup";
         auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
         proc->spawnProcess(DEFAULT_VPN_INTERFACE_SETUP_COMMAND);
         proc->waitForFinished(-1);
         proc->close();
-        delete proc;
+        proc->deleteLater();
     #endif
 }
 
 
 void shutdownDefaultVPNNetwork() {
-    #ifdef __FreeBSD__
-        logInfo() << "Shutting down VPN Network Setup";
-        auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
+    #ifndef __APPLE__
+        SvdProcess *proc; = new SvdProcess("VPN-setup", 0, false); // don't redirect output
+        logInfo() << "Shutting down VPN Networks Setup";
         proc->spawnProcess(DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND);
         proc->waitForFinished(-1);
         proc->close();
-        delete proc;
+        proc->deleteLater();
     #endif
 }
 
