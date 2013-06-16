@@ -216,5 +216,4 @@ SvdUserWatcher::~SvdUserWatcher() {
     disconnect(fileEvents, SIGNAL(fileChanged(QString)));
     fileEvents->unregisterFile(homeDir);
     fileEvents->unregisterFile(softwareDataDir);
-    fileEvents->deleteLater();
 }

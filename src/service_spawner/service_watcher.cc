@@ -233,6 +233,5 @@ SvdServiceWatcher::~SvdServiceWatcher() {
     delete indicatorFiles;
     if (fileEvents) {
         fileEvents->unregisterFile(dataDir);
-        fileEvents->deleteLater();
     }
 }
