@@ -5,45 +5,47 @@ printf "Loading Sofin environment\n"
 
 build () {
     SYSTEM_NAME="$(uname)"
-    OPTS=""
+    MAKE_OPTS="-f tmp/Makefile"
     case "${SYSTEM_NAME}" in
         Darwin)
-            OPTS="-spec darwin-g++"
+            QMAKE_OPTS="-spec darwin-g++ -o tmp/Makefile"
             ;;
+        *)
+            QMAKE_OPTS="-o tmp/Makefile"
     esac
 
-    (qmake ${OPTS} Notifications.pro) || exit 1
-    (make && printf "Successfully built notifications system\n") || exit 1
+    (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
+    (make ${MAKE_OPTS} && printf "Successfully built notifications system\n") || exit 1
 
     case "$1" in
         panel|svdpanel)
-            (qmake ${OPTS} Panel.pro) || exit 1
-            (make && printf "Successfully built svdpanel\n") || exit 1
+            (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built svdpanel\n") || exit 1
             ;;
 
         ss|svdss)
-            (qmake ${OPTS} TheSS.pro) || exit 1
-            (make && printf "Successfully built ss\n") || exit 1
+            (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built ss\n") || exit 1
             ;;
 
         tests|test)
-            (qmake ${OPTS} TestSS.pro) || exit 1
-            (make && printf "Successfully built tests\n") || exit 1
+            (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built tests\n") || exit 1
             ;;
 
         *)
-            (qmake ${OPTS} TheSS.pro) || exit 1
-            (make && printf "Successfully built ss\n") || exit 1
-            (qmake ${OPTS} Notifications.pro) || exit 1
-            (make && printf "Successfully built notifications system\n") || exit 1
-            (qmake ${OPTS} Panel.pro) || exit 1
-            (make && printf "Successfully built svdpanel\n") || exit 1
-            (qmake ${OPTS} TestSS.pro) || exit 1
-            (make && printf "Successfully built tests\n") || exit 1
+            (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built ss\n") || exit 1
+            (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built notifications system\n") || exit 1
+            (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built svdpanel\n") || exit 1
+            (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built tests\n") || exit 1
             ;;
     esac
 }
 
 build "$1"
 
-printf "NOTE: Please run as root: bin/ignitersinstall to install default igniters to /Common/Igniters. They're required for ss to run properly!\n"
+printf "\nNOTE: Please run 'sudo make install' to install default igniters to /Common/Igniters. \nThey're required for TheSS to run properly!\n"

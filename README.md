@@ -12,6 +12,11 @@
 * [Sofin](http://verknowsys.github.io/sofin). (all igniters by default will try to use Sofin to install software)
 * [Qt4 4.8.x](http://qt-project.org/downloads) (only QtCore part)
 
+## Installation:
+```sh
+make
+sudo make install
+```
 
 ## Features
 * Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).
