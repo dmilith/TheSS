@@ -174,6 +174,11 @@ bin/panel
 ```
 
 
+## Conflicts/ Problems/ Known issues:
+* Sofin build mechanism is known to be in conflict with other software managment solutions like: BSD Ports, HomeBrew, MacPorts, Fink. Keep that in mind before reporting problems.
+* It's recommended to change shell by doing: `chsh -s /Software/Zsh/exports/zsh` for each user which will use TheSS. TheSS internally uses Shell from that path by default (currently Shell path is hardcoded due to lack of TheSS config in current version)
+
+
 ## Used 3rd party software and licenses info:
 * CuteLogger MT logger implementation by Boris Moiseev (LGPL licensed)
 * Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
