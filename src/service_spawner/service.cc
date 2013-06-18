@@ -312,7 +312,7 @@ void SvdService::installSlot() {
 
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
-        logInfo() << "No need to install service" << name << "because it's already installed.";
+        logInfo() << "No need to install already installed service:" << name;
     } else {
         logDebug() << "Loaded service igniter" << name;
         logTrace() << "Launching commands:" << config->install->commands;
@@ -413,13 +413,13 @@ void SvdService::startSlot() {
         logDebug() << "Emitting install slot for service:" << name;
         emit installSlot();
 
-        /* after successful installation of core app, we may proceed with installing additional dependencies */
+        /* configure all dependencies before continue */
         if (not config->dependencies.isEmpty()) {
             QFile::remove(indicator);
             logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
 
             Q_FOREACH(auto dependency, config->dependencies) {
-                logTrace() << "Proceeding with dependency:" << dependency;
+                logDebug() << "Launching dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
 
                 /* if dependency is already running - skip it */
