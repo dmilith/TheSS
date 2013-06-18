@@ -591,6 +591,7 @@ void SvdService::stopSlot() {
     logDebug() << "Invoked stop slot for service:" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
+    stopSitters();
     if (not QFile::exists(indicator)) {
         logInfo() << "No need to stop service" << name << "because it's already stopped.";
     } else {
@@ -602,7 +603,6 @@ void SvdService::stopSlot() {
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
             if (depService) {
                 logDebug() << "Invoking dependency stop slot and destroying service:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
-                depService->stopSitters();
                 depService->stopSlot();
                 depService->exit();
             }
@@ -644,7 +644,6 @@ void SvdService::stopSlot() {
 
     logDebug() << "Stopping internal baby sitter timer for process:" << name;
 
-    stopSitters();
     config->deleteLater();
 
     /* invoke after stop slot */
@@ -770,7 +769,6 @@ void SvdService::stopSitters() {
 void SvdService::destroySlot() {
     logDebug() << "Destroying service:" << name;
 
-    stopSitters();
     if (not dependencyServices.empty()) {
         logDebug() << "Destroying dependency services of service:" << name;
         Q_FOREACH(SvdService *el, dependencyServices) {
