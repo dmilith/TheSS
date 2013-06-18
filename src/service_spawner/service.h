@@ -51,7 +51,6 @@ class SvdService: public QThread {
 
     public:
         SvdService(const QString& name);
-        ~SvdService();
         qint64 getUptime();
         bool checkProcessStatus(pid_t pid);
 

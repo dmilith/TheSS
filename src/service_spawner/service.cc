@@ -35,10 +35,6 @@ void SvdService::run() {
 }
 
 
-SvdService::~SvdService() {
-}
-
-
 qint64 SvdService::getUptime() {
     int value = 0;
     if (uptime.isValid())
