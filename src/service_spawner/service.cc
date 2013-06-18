@@ -296,6 +296,8 @@ void SvdService::installSlot() {
     logInfo() << "Performing sanity dir checks for service:" << name;
 
     logDebug() << "Checking notification dirs";
+    getOrCreateDir(config->prefixDir());
+    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
     getOrCreateDir(config->prefixDir() + NOTIFICATIONS_DATA_DIR);
     getOrCreateDir(config->prefixDir() + NOTIFICATIONS_HISTORY_DATA_DIR);
 
@@ -307,8 +309,6 @@ void SvdService::installSlot() {
         } else
             logDebug() << "No legacy ports file.";
     }
-    getOrCreateDir(config->prefixDir());
-    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
 
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
@@ -682,7 +682,7 @@ void SvdService::restartSlot() {
         logWarn() << "Ignoring restart slot of service:" << name << "cause shutdown hook was called.";
     } else {
         logDebug() << "Invoked restart slot for service:" << name;
-        usleep(DEFAULT_SERVICE_PAUSE_INTERVAL);
+        // usleep(DEFAULT_SERVICE_PAUSE_INTERVAL);
         logWarn() << "Restarting service:" << name;
         emit stopSlot();
         emit startSlot();
