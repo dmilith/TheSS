@@ -415,6 +415,23 @@ void SvdService::startSlot() {
 
         /* configure all dependencies before continue */
         if (not config->dependencies.isEmpty()) {
+            Q_FOREACH(auto dependency, config->dependencies) {
+                logInfo() << "Installing and configuring dependency:" << dependency;
+                auto depConf = new SvdServiceConfig(dependency);
+
+                SvdService *depService = new SvdService(dependency);
+                depService->start();
+                depService->installSlot();
+                if (not depConf->serviceConfigured()) {
+                    depService->configureSlot();
+                }
+                depService->exit();
+                depConf->deleteLater();
+            }
+        }
+
+        /* after successful installation of core app and configuring dependencies, we may proceed */
+        if (not config->dependencies.isEmpty()) {
             QFile::remove(indicator);
             logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
 
@@ -423,16 +440,13 @@ void SvdService::startSlot() {
                 auto depConf = new SvdServiceConfig(dependency);
 
                 /* if dependency is already running - skip it */
-                if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {// XXX: not reliable
+                if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
                     auto depService = new SvdService(dependency);
                     depService->start();
-                    depService->installSlot();
-                    if (not depConf->serviceConfigured()) {
-                        depService->configureSlot();
-                    }
                     depService->startSlot();
                     dependencyServices << depService;
                     logInfo() << "Launched dependency:" << dependency;
+                    depService->exit();
                 } else {
                     logInfo() << "Already running dependency:" << dependency;
                 }
