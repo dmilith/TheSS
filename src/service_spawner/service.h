@@ -53,6 +53,7 @@ class SvdService: public QThread {
         SvdService(const QString& name);
         qint64 getUptime();
         bool checkProcessStatus(pid_t pid);
+        void stopSitters();
 
     protected:
         void run();

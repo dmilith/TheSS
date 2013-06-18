@@ -598,14 +598,11 @@ void SvdService::stopSlot() {
         logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "of uptime.";
         uptime.invalidate();
 
-        /* stop crontab sitter */
-        if (cronSitter.isActive())
-            cronSitter.stop();
-
         /* stop dependency services */
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
             if (depService) {
                 logDebug() << "Invoking dependency stop slot and destroying service:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
+                depService->stopSitters();
                 depService->stopSlot();
                 depService->exit();
             }
@@ -646,8 +643,8 @@ void SvdService::stopSlot() {
     }
 
     logDebug() << "Stopping internal baby sitter timer for process:" << name;
-    if (babySitter.isActive())
-        babySitter.stop();
+
+    stopSitters();
     config->deleteLater();
 
     /* invoke after stop slot */
@@ -674,7 +671,6 @@ void SvdService::afterStopSlot() {
             QString msg = "Failed expectations of service: " + name + " with expected output of afterStop slot - No match for: '" + config->afterStop->expectOutput + "'";
             notification(msg, name, ERROR);
         }
-
         logTrace() << "After process afterStop execution:" << name;
         process->deleteLater();
     }
@@ -760,15 +756,21 @@ void SvdService::validateSlot() {
 }
 
 
+void SvdService::stopSitters() {
+    logDebug() << "Stopping sitters for service:" << name;
+
+    if (babySitter.isActive())
+        babySitter.stop();
+
+    if (cronSitter.isActive())
+        cronSitter.stop();
+}
+
+
 void SvdService::destroySlot() {
     logDebug() << "Destroying service:" << name;
 
-    disconnect(&babySitter, SIGNAL(timeout()));
-    babySitter.stop();
-
-    disconnect(&cronSitter, SIGNAL(timeout()));
-    cronSitter.stop();
-
+    stopSitters();
     if (not dependencyServices.empty()) {
         logDebug() << "Destroying dependency services of service:" << name;
         Q_FOREACH(SvdService *el, dependencyServices) {
