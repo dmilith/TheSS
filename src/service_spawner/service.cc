@@ -18,11 +18,11 @@ SvdService::SvdService(const QString& name) {
     this->uptime.invalidate();
 
     /* setup baby sitter */
+    babySitter.setInterval(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
     connect(&babySitter, SIGNAL(timeout()), this, SLOT(babySitterSlot()));
-    babySitter.start(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
 
     /* setup cron sitter */
-    this->cronSitter.setInterval(DEFAULT_CRON_CHECK_DELAY / 1000);
+    cronSitter.setInterval(DEFAULT_CRON_CHECK_DELAY / 1000);
     connect(&cronSitter, SIGNAL(timeout()), this, SLOT(cronSitterSlot()));
 }
 
@@ -760,9 +760,11 @@ void SvdService::stopSitters() {
 
     if (babySitter.isActive())
         babySitter.stop();
+    disconnect(&babySitter);
 
     if (cronSitter.isActive())
         cronSitter.stop();
+    disconnect(&cronSitter);
 }
 
 
