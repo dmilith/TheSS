@@ -85,7 +85,7 @@ reconfigureHook # will execute:
 
 ```sh
 SERVICE_PREFIX            # by default: ~/SoftwareData/AppName
-SERVICE_DEPENDENCY_PREFIX # defines prefix of service dependency
+PARENT_SERVICE_PREFIX     # defines prefix of service parent
 SERVICE_DOMAIN            # default host domain name. It's stored in ~/SoftwareData/AppName/.domain file by default.
 SERVICE_ADDRESS           # by default it's default host IP address (resolved from SERVICE_DOMAIN)
 SERVICE_ROOT              # by default: ~/Apps/AppName

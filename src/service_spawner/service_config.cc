@@ -42,7 +42,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         domain = (*defaults)["domain"].asCString();
         portsPool = (*defaults)["portsPool"].asInt();
         repository = (*defaults)["repository"].asCString();
-        dependencyOf = (*defaults)["dependencyOf"].asCString();
+        parentService = (*defaults)["parentService"].asCString();
 
         /* load default service dependencies */
         for (uint index = 0; index < (*defaults)["dependencies"].size(); ++index ) {
@@ -132,7 +132,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         minimumRequiredDiskSpace = root->get("minimumRequiredDiskSpace", (*defaults)["minimumRequiredDiskSpace"]).asInt();
         domain = root->get("domain", (*defaults)["domain"]).asCString();
         repository = root->get("repository", (*defaults)["repository"]).asCString();
-        dependencyOf = root->get("dependencyOf", (*defaults)["dependencyOf"]).asCString();
+        parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
 
         /* load service dependencies data */
         for (uint index = 0; index < (*root)["dependencies"].size(); ++index ) {
@@ -315,18 +315,18 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         if (not repository.isEmpty())
             ccont = ccont.replace("SERVICE_REPOSITORY", repository);
 
-        /* Replace SERVICE_DEPENDENCY_PREFIX */
+        /* Replace PARENT_SERVICE_PREFIX */
         QString depsFull;
         if (uid != 0)
-            depsFull = getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf; // getOrCreateDir(
+            depsFull = getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + parentService; // getOrCreateDir(
         else
-            depsFull = QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + dependencyOf; // getOrCreateDir(
+            depsFull = QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + parentService; // getOrCreateDir(
 
-        if (dependencyOf.isEmpty()) {
+        if (parentService.isEmpty()) {
             logTrace() << "No dependencies for:" << name;
-            ccont = ccont.replace("SERVICE_DEPENDENCY_PREFIX", prefixDir()); /* fallback to original prefix dir */
+            ccont = ccont.replace("PARENT_SERVICE_PREFIX", prefixDir()); /* fallback to original prefix dir */
         } else {
-            ccont = ccont.replace("SERVICE_DEPENDENCY_PREFIX", depsFull);
+            ccont = ccont.replace("PARENT_SERVICE_PREFIX", depsFull);
         }
 
         /* Replace SERVICE_PREFIX */

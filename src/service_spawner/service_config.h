@@ -67,7 +67,7 @@ class SvdServiceConfig : public QObject {
 
 
         uint uid; // user uid who loads igniter config
-        QString name, softwareName, repository, dependencyOf, domain;
+        QString name, softwareName, repository, parentService, domain;
         bool autoStart, reportAllErrors, reportAllInfos, reportAllDebugs, watchPort, alwaysOn;
         int staticPort, portsPool, minimumRequiredDiskSpace;
         QStringList dependencies;
