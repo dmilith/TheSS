@@ -412,6 +412,10 @@ void SvdService::startSlot() {
     } else {
         logDebug() << "Emitting install slot for service:" << name;
         emit installSlot();
+        if (not config->serviceConfigured()) {
+            logInfo() << "Configuring service:" << name;
+            emit configureSlot();
+        }
 
         /* configure all dependencies before continue */
         if (not config->dependencies.isEmpty()) {
@@ -456,10 +460,6 @@ void SvdService::startSlot() {
         } else
             logDebug() << "Empty dependency list for service:" << name;
 
-        if (not config->serviceConfigured()) {
-            logInfo() << "Configuring service:" << name;
-            emit configureSlot();
-        }
         logInfo() << "Validating service" << name;
         emit validateSlot(); // invoke validation before each startSlot
 
