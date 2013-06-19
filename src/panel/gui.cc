@@ -123,12 +123,10 @@ void PanelGui::displayStatus(){
 }
 
 void tmux(QString cmd){
-    if(TMUX){
-        cmd = " tmux send-keys -t 1 " + cmd + "\n";
-        auto process = new SvdProcess("tail", getuid(), false);
-        process->spawnProcess(cmd);
-        process->waitForFinished();
-    }
+    cmd = " tmux send-keys -t 1 " + cmd + "\n";
+    auto process = new SvdProcess("tail", getuid(), false);
+    process->spawnProcess(cmd);
+    process->waitForFinished();
 }
 
 void PanelGui::displayFile(QString file){
@@ -142,7 +140,7 @@ void PanelGui::displayFile(QString file){
 
 void PanelGui::displayLog(){
     const PanelService * service = servicesList->currentItem();
-    if(TMUX && service != NULL && (loggedServicePath != service->dir.absolutePath())){
+    if(service != NULL && (loggedServicePath != service->dir.absolutePath())){
         loggedServicePath = service->dir.absolutePath();
 
         displayFile(loggedServicePath + DEFAULT_SERVICE_LOG_FILE);
@@ -165,12 +163,9 @@ void PanelGui::displayEnv(){
 
 void PanelGui::cleanup(){
     endwin();
-
-    if(TMUX){
-        auto process = new SvdProcess("tail", getuid(), false);
-        process->spawnProcess(" tmux kill-session");
-        process->waitForFinished(60);
-    }
+    QProcess process;
+    process.start("tmux", QStringList() << "kill-session");
+    process.waitForFinished();
 }
 
 void PanelGui::searchLog(){

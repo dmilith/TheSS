@@ -41,8 +41,6 @@
 
 #define C_CURRENT COLOR_PAIR(4)
 
-extern bool TMUX;
-
 class PanelService {
 public:
     PanelService(QFileInfo baseDir);

@@ -10,8 +10,6 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 
-bool TMUX;
-
 Panel * panel;
 PanelGui * gui;
 
@@ -24,12 +22,11 @@ void handle_winch(int sig){
 
 int main(int argc, char *argv[]) {
     // Require to be run inside tmux
-    TMUX = QString(getenv("TMUX_PANE")) != "";
 
     printf("Waiting for log...\n");
     sleep(1);
 
-    if(!TMUX){
+    if(QString(getenv("TMUX")) == ""){
         printf("Must be run inside tmux\n");
         exit(-1);
     }
