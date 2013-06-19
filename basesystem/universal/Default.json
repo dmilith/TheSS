@@ -2,7 +2,7 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.16.1",
+    "formatVersion": "0.16.2",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
