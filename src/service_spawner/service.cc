@@ -408,6 +408,12 @@ void SvdService::startSlot() {
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to run service" << name << "because it's already running.";
+        logDebug() << "Checking babysitter state for service:" << name;
+        if (not babySitter.isActive())
+            babySitter.start();
+        logDebug() << "Checking cronSitter state for service:" << name;
+        if (not cronSitter.isActive())
+            cronSitter.start();
     } else {
         logDebug() << "Emitting install slot for service:" << name;
         emit installSlot();
@@ -485,14 +491,17 @@ void SvdService::startSlot() {
         } else {
             logInfo() << "Service expectations were successful. Launching cron and baby sitters for service:" << name;
 
-            logDebug() << "Calling babysitter with standard interval:" << QString::number(BABYSITTER_TIMEOUT_INTERVAL / 1000) << "miliseconds";
-            babySitter.start();
+            if (not babySitter.isActive()) {
+                logDebug() << "Calling babysitter with standard interval:" << QString::number(BABYSITTER_TIMEOUT_INTERVAL / 1000) << "miliseconds";
+                babySitter.start();
+            }
 
             if (config->schedulerActions.size() > 0) {
                 logDebug() << "Initializing cronSitter for" << config->schedulerActions.size() << "scheduler tasks.";
 
                 logDebug() << "Bounding cron to service:" << name;
-                cronSitter.start();
+                if (not cronSitter.isActive())
+                    cronSitter.start();
             }
         }
 

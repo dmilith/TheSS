@@ -107,6 +107,11 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
         logInfo() << "Performing autostart of service:" << name;
         emit startService();
     }
+
+    if (indicatorFiles->running->exists()) {
+        logInfo() << "Found already started service. Resuming background tasks for service:" << name;
+        service->startSlot();
+    }
 }
 
 
