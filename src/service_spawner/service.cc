@@ -270,7 +270,7 @@ void SvdService::babySitterSlot() {
         Q_FOREACH(auto dependency, config->dependencies) {
             bool add = true;
             Q_FOREACH(SvdService *orphan, this->dependencyServices) {
-                if (orphan->name == dependency) {
+                if (orphan->name == dependency) { // XXX: FIXME: BUG: it's a hack because we may have deep tree of dependencies and here only one level of depth is handled. recursive dependencies aren't handled!
                     add = false;
                 }
             }
