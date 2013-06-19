@@ -587,21 +587,22 @@ void SvdService::stopSlot() {
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     stopSitters();
+
+    /* stop dependency services */
+    Q_FOREACH(SvdService *depService, this->dependencyServices) {
+        if (depService) {
+            logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
+            depService->stopSlot();
+            depService->exit();
+        }
+    }
+
     if (not QFile::exists(indicator)) {
         logInfo() << "No need to stop service" << name << "because it's already stopped.";
     } else {
         auto process = new SvdProcess(name);
         logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "of uptime.";
         uptime.invalidate();
-
-        /* stop dependency services */
-        Q_FOREACH(SvdService *depService, this->dependencyServices) {
-            if (depService) {
-                logDebug() << "Invoking dependency stop slot and destroying service:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
-                depService->stopSlot();
-                depService->exit();
-            }
-        }
 
         logTrace() << "Loading service igniter" << name;
         process->spawnProcess(config->stop->commands); // invoke igniter stop, and then try to look for service.pid in prefix directory:
