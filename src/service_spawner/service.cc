@@ -14,8 +14,12 @@ SvdService::SvdService(const QString& name) {
     /* setup service */
     this->name = name;
     this->dependencyServices = QList<SvdService*>();
-
     this->uptime.invalidate();
+}
+
+
+/* thread */
+void SvdService::run() {
 
     /* setup baby sitter */
     babySitter.setInterval(BABYSITTER_TIMEOUT_INTERVAL / 1000); // miliseconds
@@ -24,12 +28,7 @@ SvdService::SvdService(const QString& name) {
     /* setup cron sitter */
     cronSitter.setInterval(DEFAULT_CRON_CHECK_DELAY / 1000);
     connect(&cronSitter, SIGNAL(timeout()), this, SLOT(cronSitterSlot()));
-}
 
-
-/* thread */
-void SvdService::run() {
-    /* first init of uptime timer */
     logTrace() << "Creating SvdService with name" << this->name;
     exec();
 }
@@ -484,20 +483,16 @@ void SvdService::startSlot() {
             QString msg = "Failed expectations of service: " + name + " with expected output of start slot - No match for: '" + config->start->expectOutput + "'";
             notification(msg, name, ERROR);
         } else {
-            logInfo() << "Service expectations were successful. Launching cron and baby sitter for service:" << name;
+            logInfo() << "Service expectations were successful. Launching cron and baby sitters for service:" << name;
 
             logDebug() << "Calling babysitter with standard interval:" << QString::number(BABYSITTER_TIMEOUT_INTERVAL / 1000) << "miliseconds";
-            if (not babySitter.isActive()) {
-                babySitter.start();
-            }
+            babySitter.start();
 
             if (config->schedulerActions.size() > 0) {
                 logDebug() << "Initializing cronSitter for" << config->schedulerActions.size() << "scheduler tasks.";
 
-                if (not cronSitter.isActive()) {
-                    logDebug() << "Bounding cron to service:" << name;
-                    cronSitter.start();
-                }
+                logDebug() << "Bounding cron to service:" << name;
+                cronSitter.start();
             }
         }
 
@@ -758,13 +753,8 @@ void SvdService::validateSlot() {
 void SvdService::stopSitters() {
     logDebug() << "Stopping sitters for service:" << name;
 
-    if (babySitter.isActive())
-        babySitter.stop();
-    disconnect(&babySitter);
-
-    if (cronSitter.isActive())
-        cronSitter.stop();
-    disconnect(&cronSitter);
+    babySitter.stop();
+    cronSitter.stop();
 }
 
 
