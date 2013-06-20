@@ -411,8 +411,11 @@ void PanelGui::key(int ch){
             if (servicesList->currentItem() == NULL) {
                     status = "Can't start non existant service";
             } else {
-                servicesList->currentItem()->start();
-                status = "Triggered start of application: " + servicesList->currentItem()->name;
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->start();
+                    status = "Triggered start of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
             }
             break;
 
@@ -420,8 +423,11 @@ void PanelGui::key(int ch){
             if (servicesList->currentItem() == NULL) {
                     status = "Can't stop non existant service";
             } else {
-                servicesList->currentItem()->stop();
-                status = "Triggered stop of application: " + servicesList->currentItem()->name;
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->stop();
+                    status = "Triggered stop of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
             }
             break;
 
@@ -429,8 +435,11 @@ void PanelGui::key(int ch){
             if (servicesList->currentItem() == NULL) {
                     status = "Can't validate non existant service";
             } else {
-                servicesList->currentItem()->validate();
-                status = "Triggered validation of application: " + servicesList->currentItem()->name;
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->validate();
+                    status = "Triggered validation of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
             }
             break;
 
@@ -438,8 +447,11 @@ void PanelGui::key(int ch){
             if (servicesList->currentItem() == NULL) {
                     status = "Can't install non existant service";
             } else {
-                servicesList->currentItem()->install();
-                status = "Triggered installation of application: " + servicesList->currentItem()->name;
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->install();
+                    status = "Triggered installation of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
             }
             break;
 
@@ -447,8 +459,11 @@ void PanelGui::key(int ch){
             if (servicesList->currentItem() == NULL) {
                     status = "Can't configure non existant service";
             } else {
-                servicesList->currentItem()->configure();
-                status = "Triggered configuration of application: " + servicesList->currentItem()->name;
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->configure();
+                    status = "Triggered configuration of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
             }
             break;
 
@@ -456,8 +471,11 @@ void PanelGui::key(int ch){
             if (servicesList->currentItem() == NULL) {
                     status = "Can't reconfigure non existant service";
             } else {
-                servicesList->currentItem()->reconfigure();
-                status = "Triggered reconfiguration of application: " + servicesList->currentItem()->name;
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->reconfigure();
+                    status = "Triggered reconfiguration of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
             }
             break;
 
@@ -465,8 +483,11 @@ void PanelGui::key(int ch){
             if (servicesList->currentItem() == NULL) {
                     status = "Can't restart non existant service";
             } else {
-                servicesList->currentItem()->restart();
-                status = "Triggered restart of application: " + servicesList->currentItem()->name;
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->restart();
+                    status = "Triggered restart of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
             }
             break;
 
