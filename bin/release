@@ -1,0 +1,9 @@
+#!/bin/sh
+
+bin/clean
+mkdir -p releases
+
+version="$(grep -R 'APP_VERSION' src/globals/globals.h | awk '{ gsub("\"", "", $4); print $4}')"
+printf "Preparing package of thess with version: ${version}\n"
+
+tar --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/thess-${version}.tar.bz2 ./
