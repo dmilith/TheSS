@@ -26,9 +26,6 @@ int main(int argc, char *argv[]) {
     // Require to be run inside tmux
     TMUX = QString(getenv("TMUX_PANE")) != "";
 
-    printf("Waiting for log...\n");
-    sleep(1);
-
     if(!TMUX){
         printf("Must be run inside tmux\n");
         exit(-1);
@@ -59,6 +56,11 @@ int main(int argc, char *argv[]) {
 
     panel = new Panel(user, homeDir, ignitersDir);
     gui = new PanelGui(panel);
+
+    while (not panel->isSSOnline()) {
+        printf("Waiting for TheSS service..\n");
+        sleep(3);
+    }
 
     // handle window resize
     struct sigaction sa;
