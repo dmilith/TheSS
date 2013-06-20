@@ -237,4 +237,5 @@ SvdServiceWatcher::~SvdServiceWatcher() {
     if (fileEvents) {
         fileEvents->unregisterFile(dataDir);
     }
+    this->deleteLater();
 }
