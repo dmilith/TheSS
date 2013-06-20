@@ -162,6 +162,8 @@ void SvdService::babySitterSlot() {
     if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
         logDebug() << "Skipping babysitter, service is not running:" << name;
         config->deleteLater();
+        stopSitters();
+        exit();
         return;
     }
     /* look for three required files as indicators of already running services software */
@@ -276,7 +278,9 @@ void SvdService::babySitterSlot() {
             }
             if (add) {
                 logDebug() << "Orphaned service found:" << dependency;
-                dependencyServices << new SvdService(dependency);
+                SvdService *svce = new SvdService(dependency);
+                dependencyServices << svce;
+                svce->exit();
             }
         }
 
@@ -523,6 +527,8 @@ void SvdService::cronSitterSlot() {
             cronSitter.stop();
         logDebug() << "Skipping cronSitter, service is not running:" << name;
         config->deleteLater();
+        stopSitters();
+        exit();
         return;
     }
 
@@ -531,7 +537,7 @@ void SvdService::cronSitterSlot() {
         QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
 
         auto crontabEntry = new SvdCrontab(entry->cronEntry, entry->commands);
-        logDebug() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "  -=>";
+        logTrace() << "Processing crontab entry:" << entry->cronEntry << "with commands:" << entry->commands << "  -=>";
         crontabEntry->pp();
 
         /* If current time matches cron entry.. */
