@@ -99,42 +99,22 @@ void SvdUserWatcher::collectServices() {
 
     Q_FOREACH(QString name, services) {
         if (not oldServices.contains(name)) {
-            QString aFile = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name + DEFAULT_SERVICE_DESTROY_FILE;
-            logDebug() << "Checking for .destroy file in service:" << aFile;
-            if (QFile::exists(aFile)) {
-                notification("Service was destroyed: " + aFile, "", NOTIFY);
-                int index = oldServices.indexOf(name);
-                oldServices.removeAt(index);
-                logInfo() << "Removed from services cache.";
-                removeDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name);
+            logInfo() << "Initializing watchers for data dir of service:" << name;
 
-                /* detect user watcher */
+            /* detect user watcher */
+            if (this->serviceWatchers.length() == 0) {
+                logDebug() << "Adding new service watcher:" << name;
+                this->serviceWatchers << new SvdServiceWatcher(name);
+            } else {
                 for (int ind = 0; ind < this->serviceWatchers.length(); ind++) {
-                    SvdServiceWatcher *watch = this->serviceWatchers.at(ind);
-                    if (name == watch->name()) {
-                        logDebug() << "Found old user watcher! Destroying!";
+                    logDebug() << "Comparing:" << serviceWatchers.at(ind)->name() << "and" << name;
+                    if (name == serviceWatchers.at(ind)->name()) {
+                        logDebug() << "Found old user watcher! Replacing!";
+                        serviceWatchers.at(ind)->deleteLater();
                         this->serviceWatchers.removeAt(ind);
                     }
                 }
-
-            } else {
-                logInfo() << "Initializing watchers for data dir of service:" << name;
-
-                /* detect user watcher */
-                if (this->serviceWatchers.length() == 0) {
-                    logDebug() << "Adding new service watcher:" << name;
-                    this->serviceWatchers << new SvdServiceWatcher(name);
-                } else {
-                    for (int ind = 0; ind < this->serviceWatchers.length(); ind++) {
-                        logDebug() << "Comparing:" << serviceWatchers.at(ind)->name() << "and" << name;
-                        if (name == serviceWatchers.at(ind)->name()) {
-                            logDebug() << "Found old user watcher! Replacing!";
-                            serviceWatchers.at(ind)->deleteLater();
-                            this->serviceWatchers.removeAt(ind);
-                        }
-                    }
-                    this->serviceWatchers << new SvdServiceWatcher(name);
-                }
+                this->serviceWatchers << new SvdServiceWatcher(name);
             }
         }
     }
