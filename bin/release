@@ -4,6 +4,11 @@ bin/clean
 mkdir -p releases
 
 version="$(grep -R 'APP_VERSION' src/globals/globals.h | awk '{ gsub("\"", "", $4); print $4}')"
-printf "Preparing package of thess with version: ${version}\n"
+archive_name="thess-${version}.tar.bz2"
+printf "Preparing package: ${archive_name} with version: ${version}\n"
 
-tar --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/thess-${version}.tar.bz2 ./
+tar --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/${archive_name} ./
+
+printf "Pushing package to remote server\n"
+scp releases/thess-${version}.tar.bz2 sofin@v:/opt/software/source/
+ssh sofin@v "sha1sum /opt/software/source/thess-${version}.tar.bz2"
