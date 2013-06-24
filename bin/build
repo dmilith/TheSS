@@ -1,7 +1,11 @@
 #!/bin/sh
 
 printf "Loading Sofin environment\n"
-. $HOME/.profile
+if [ "$(id -u)" = "0" ]; then
+    . /etc/profile_sofin
+else
+    . $HOME/.profile
+fi
 
 build () {
     SYSTEM_NAME="$(uname)"
