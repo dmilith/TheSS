@@ -21,9 +21,9 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf && printf 'Nginx start
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop && printf 'Nginx stopped\n' >> SERVICE_PREFIX/service.log 2>&1
 "
     },
-    "validate": {
+    "configure": {
         "commands": "
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+printf \"
 worker_processes 2;
 events {
     worker_connections 1024;
@@ -45,6 +45,10 @@ http {
     }
 }
 \" > SERVICE_PREFIX/service.conf
+"
+    },
+    "validate": {
+        "commands": "
 SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf && printf 'Ngins started\n' >> SERVICE_PREFIX/service.log 2>&1
 ",
         "expectOutput": "test is successful"
