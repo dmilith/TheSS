@@ -398,7 +398,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* then replace main port */
         QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
         if (staticPort != -1) { /* defined static port */
-            logInfo() << "Set static port:" << staticPort << "for service" << name;
+            logDebug() << "Set static port:" << staticPort << "for service" << name;
             // ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
             writeToFile(portFilePath, QString::number(staticPort));
         } else {
