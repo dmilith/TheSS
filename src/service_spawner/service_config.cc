@@ -335,12 +335,13 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* Replace SERVICE_DOMAIN */
         QString domainFilePath = prefixDir() + QString(DEFAULT_SERVICE_DOMAIN_FILE);
         QString userDomain = QHostInfo::localHostName();
-        if (domain.isEmpty()) {
+        if (not QFile::exists(domainFilePath)) { //(domain.isEmpty()) {
             ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+            domain = userDomain;
             writeToFile(domainFilePath, userDomain);
         } else {
+            domain = readFileContents(domainFilePath).trimmed();
             ccont = ccont.replace("SERVICE_DOMAIN", domain); /* replace with user domain content */
-            writeToFile(domainFilePath, domain);
             userDomain = domain;
         }
 
