@@ -282,7 +282,7 @@ void writeToFile(const QString& fileName, const QString& contents, bool rotateTh
     if (rotateThisFile)
         rotateFile(fileName);
     QFile file(fileName);
-    if (file.open(QIODevice::ReadWrite)) {
+    if (file.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text | QIODevice::Unbuffered)) {
         QTextStream stream(&file);
         stream << contents << endl;
     }
