@@ -52,8 +52,8 @@ int main(int argc, char *argv[]) {
             trace = true;
         }
         if (rxPrintVersion.indexIn(args.at(i)) != -1) {
-            cout << "ServeD Service Spawner v" << APP_VERSION << ". " << COPYRIGHT;
-            exit(EXIT_SUCCESS);
+            cout << "ServeD Service Spawner v" << APP_VERSION << ". " << COPYRIGHT << endl;
+            return EXIT_SUCCESS;
         }
     }
 
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
         if (ok) {
             if (pidIsAlive(pid) or pid == 0) { /* NOTE: if pid == 0 it means that SS is runned from SS root maintainer */
                 logError() << "Service Spawner is already running.";
-                exit(LOCK_FILE_OCCUPIED_ERROR); /* can not open */
+                return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
             } else
                 logDebug() << "No alive Service Spawner pid found";
 
