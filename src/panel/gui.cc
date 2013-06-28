@@ -196,6 +196,7 @@ void PanelGui::helpDialog(){
     list << "";
     list << "Current service actions:";
     list << "  S       - Start current service";
+    list << "  D       - Change domain of current service";
     list << "  T       - Stop current service";
     list << "  R       - Restart current service";
     list << "  I       - Install current service";
