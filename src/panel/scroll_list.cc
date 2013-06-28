@@ -68,9 +68,10 @@ const T * ScrollList<T>::currentItem(){
 }
 
 
-AvailableServicesList::AvailableServicesList(QList<QString> * items, int maxRows, WINDOW * win): ScrollList(items, maxRows){
+AvailableServicesList::AvailableServicesList(QList<QString> * items, int maxRows, WINDOW * win, QString aHeader): ScrollList(items, maxRows){
     this->all = QList<QString>(*items);
     this->win = win;
+    this->header = aHeader;
     setName("");
 }
 
@@ -80,7 +81,7 @@ void AvailableServicesList::displayHeader(){
     wattroff(win, COLOR_PAIR(6));
 
     wattron(win, COLOR_PAIR(2));
-    mvwprintw(win, 1, 2, "Select service:");
+    mvwprintw(win, 1, 2, header.toUtf8());
     wattron(win, COLOR_PAIR(2));
 }
 

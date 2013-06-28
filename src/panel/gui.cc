@@ -277,6 +277,50 @@ void PanelGui::newServiceDialog(){
     curs_set(0);
 }
 
+
+QString PanelGui::newDomain() {
+    int r = min(rows-6, 23);
+    WINDOW *win = newwin(r, 46, 2, 5);
+    QList<QString> *aList = new QList<QString>();
+    AvailableServicesList list(aList, r - 3, win, "   Domain name: ");
+    QString name = "";
+    int ch = 0;
+
+    keypad(win, TRUE);
+    curs_set(1); // cursor visible
+
+    do {
+        list.display();
+        ch = wgetch(win);
+
+        switch(ch){
+
+            case 27: // escape
+                name = "";
+                break;
+
+            case 10: // enter
+                ch = 27;
+                break;
+
+            case 127: // backspace
+                name.truncate(name.length()-1);
+                list.setName(name);
+                break;
+
+            default:
+                name += ch;
+                list.setName(name);
+                break;
+        }
+    } while (ch != 27);
+
+    delete aList;
+    curs_set(0);
+    return name;
+}
+
+
 void PanelGui::removeCurrentService(){
     auto service = servicesList->currentItem();
     if(service == NULL){
@@ -340,6 +384,24 @@ void PanelGui::key(int ch){
         case KEY_UP:
         case KEY_DOWN:
             servicesList->key(ch);
+            break;
+
+        case 'D':
+            if (servicesList->currentItem() == NULL) {
+                status = "Can't change domain for non existant service";
+            } else {
+                QString name = servicesList->currentItem()->name;
+                QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
+                if (getuid() == 0) {
+                    prefixPath = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + name;
+                }
+                QString domainFilePath = prefixPath + QString(DEFAULT_SERVICE_DOMAIN_FILE);
+                QString domain = newDomain();
+                status = "Changing domain for service: " + name + " to: " + domain;
+                if (not domain.trimmed().isEmpty())
+                    writeToFile(domainFilePath, domain);
+
+            }
             break;
 
         case KEY_F(1): /* Trace */

@@ -91,7 +91,7 @@ public:
 
 class AvailableServicesList : public ScrollList<QString> {
 public:
-    AvailableServicesList(QList<QString> * items, int maxRows, WINDOW * win);
+    AvailableServicesList(QList<QString> * items, int maxRows, WINDOW * win, QString aHeader = "Select service:");
     void displayHeader();
     void displayFooter();
     void setName(QString name);
@@ -99,7 +99,7 @@ public:
     void displayEmptyItem(int i);
 private:
     WINDOW *win;
-    QString name;
+    QString name, header;
     QList<QString> all;
 };
 
@@ -136,6 +136,7 @@ class PanelGui {
 public:
     PanelGui(Panel * panel):panel(panel){};
     void run();
+    QString newDomain();
     void displayHeader();
     void displayStatus();
     void displayFooter();
