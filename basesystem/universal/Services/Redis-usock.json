@@ -1,5 +1,6 @@
 {
     "softwareName": "Redis",
+    "watchPort": false,
     "schedulerActions": [
         {
             "cronEntry": "*/50 * * * * ?",
@@ -20,10 +21,9 @@ SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf
     "validate": {
         "commands": "
 test ! -f SERVICE_PREFIX/service.conf && printf \"
-# Default Redis service configuration
-# bind SERVICE_DOMAIN
-bind SERVICE_ADDRESS
-port $(cat SERVICE_PREFIX/.ports/0)
+# Default Redis service configuration for UNIX sockets
+unixsocket SERVICE_PREFIX/service.sock
+port 0
 pidfile SERVICE_PREFIX/service.pid
 dir SERVICE_PREFIX/database
 dbfilename database.rdf
