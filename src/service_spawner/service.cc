@@ -783,13 +783,13 @@ void SvdService::destroySlot() {
             if (el != NULL) {
                 logTrace() << "Deleting dependencyService for service:" << name;
                 el->exit();
-                el->deleteLater();
+                // el->deleteLater();
             }
         }
     }
 
     this->exit();
-    this->deleteLater();
+    // this->deleteLater();
 }
 
 
