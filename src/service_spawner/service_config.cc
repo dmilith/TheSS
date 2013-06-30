@@ -364,10 +364,13 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             if (!info.addresses().isEmpty()) {
                 auto address = info.addresses().first();
                 userAddress = address.toString();
-                // logDebug() << "Resolved address of domain " << userDomain << " is " << userAddress;
+                logTrace() << "Resolved address of domain " << userDomain << " is " << userAddress;
                 ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
             } else {
                 logWarn() << "Empty domain resolve of: " << userDomain;
+                address = QString(DEFAULT_SYSTEM_ADDRESS);
+                domain = QString(DEFAULT_SYSTEM_ADDRESS);
+                logWarn() << "Domain fallback to:" << domain << "(" << address << ") for service:" << name;
                 ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
             }
         } else {
