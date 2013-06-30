@@ -1,7 +1,6 @@
 {
     "softwareName": "Bind",
     "watchPort": false,
-    "staticPort": 53,
 
     "install": {
         "commands": "sofin get bind",
