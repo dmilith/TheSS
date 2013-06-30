@@ -3,8 +3,8 @@
     "watchPort": false,
     "schedulerActions": [
         {
-            "cronEntry": "0 */3 * * * ?",
-            "commands": "echo 'Mysql what? Misa nie rozumić mysql crap.'"
+            "cronEntry": "0 9,21 * * * ?",
+            "commands": "do_mysql_all_dbs_sql_dump"
         }
     ],
     "install": {
