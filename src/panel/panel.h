@@ -53,6 +53,7 @@ public:
     void configure() const;
     void reconfigure() const;
     void restart() const;
+    void reload() const;
     void toggleAutostart() const;
     bool remove() const;
 

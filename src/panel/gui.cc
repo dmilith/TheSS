@@ -199,6 +199,7 @@ void PanelGui::helpDialog(){
     list << "  D       - Change domain of current service";
     list << "  T       - Stop current service";
     list << "  R       - Restart current service";
+    list << "  O       - Reload current service";
     list << "  I       - Install current service";
     list << "  C       - Configure current service";
     list << "  F       - Reconfigure current service";
@@ -549,6 +550,18 @@ void PanelGui::key(int ch){
                 if (panel->isSSOnline()) {
                     servicesList->currentItem()->restart();
                     status = "Triggered restart of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
+            }
+            break;
+
+        case 'O': /* RelOad */
+            if (servicesList->currentItem() == NULL) {
+                    status = "Can't reload non existant service";
+            } else {
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->reload();
+                    status = "Triggered reload of application: " + servicesList->currentItem()->name;
                 } else
                     status = "No Service Spawner running. Skipping task.";
             }

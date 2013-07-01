@@ -65,6 +65,7 @@ void PanelService::install() const { touch(dir.absoluteFilePath(".install")); }
 void PanelService::configure() const { touch(dir.absoluteFilePath(".configure")); }
 void PanelService::reconfigure() const { touch(dir.absoluteFilePath(".reconfigure")); }
 void PanelService::restart() const { touch(dir.absoluteFilePath(".restart")); }
+void PanelService::reload() const { touch(dir.absoluteFilePath(".reload")); }
 void PanelService::toggleAutostart() const {
     QString file = dir.absoluteFilePath(".autostart");
     if (not QFile::exists(file)) touch(file);
