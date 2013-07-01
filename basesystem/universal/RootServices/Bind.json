@@ -9,7 +9,6 @@
     "start": {
         "commands": "
 printf 'Launching DNS server\n' >> SERVICE_PREFIX/service.log 2>&1
-chown -R nobody SERVICE_PREFIX >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/named -4 -n 8 -u nobody -c SERVICE_PREFIX/service.conf -g >> SERVICE_PREFIX/service.log 2>&1 &
 "
     },
@@ -139,6 +138,14 @@ zone \".\" {
 
 EOF
 
+chown nobody SERVICE_PREFIX
+chown nobody SERVICE_PREFIX/service.log
+chown nobody SERVICE_PREFIX/service.conf
+chown nobody SERVICE_PREFIX/service.pid
+chown nobody SERVICE_PREFIX/SERVICE_DOMAIN.conf
+chown nobody SERVICE_ROOT/etc/rndc.key
+chown nobody SERVICE_ROOT/etc/bind.keys
+chown nobody SERVICE_ROOT/etc/root.servers
 "
     },
     "reload": {
