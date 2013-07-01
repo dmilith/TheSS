@@ -2,7 +2,7 @@
     "softwareName": "Nginx",
     "schedulerActions": [
         {
-            "cronEntry": "0/45 0 * * * ?",
+            "cronEntry": "0 0/1 * * * ?",
             "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload"
         }
     ],
@@ -33,6 +33,14 @@ http {
     include SERVICE_ROOT/conf/mime.types;
     default_type application/octet-stream;
     sendfile on;
+    gzip on;
+    gzip_disable \"msie6\";
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 1;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
     keepalive_timeout 270;
     error_log SERVICE_PREFIX/service.log;
     server {
