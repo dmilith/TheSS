@@ -789,7 +789,7 @@ void SvdService::destroySlot() {
     }
 
     this->exit();
-    this->deleteLater();
+    // this->deleteLater();
 }
 
 
