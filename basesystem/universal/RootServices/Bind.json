@@ -22,6 +22,8 @@ printf 'Stopping DNS server\n' >> SERVICE_PREFIX/service.log 2>&1
     "configure": {
         "commands": "
 printf \"Configuring DNS server\" >> SERVICE_PREFIX/service.log 2>&1
+test ! -d SERVICE_PREFIX/domains && mkdir -p SERVICE_PREFIX/domains
+
 test ! -f SERVICE_ROOT/etc/rndc.key && SERVICE_ROOT/exports/rndc-confgen -a >> SERVICE_PREFIX/service.log 2>&1 &
 
 test ! -f SERVICE_ROOT/etc/root.servers && printf '
@@ -127,36 +129,6 @@ options {
   // disables all transfers
   allow-transfer {
     \"none\";
-  };
-
-// Closed DNS - permits only local IPs to issue recursive queries
-//  allow-recursion {
-//    10.20.0.0/24;
-//  };
-
-//  listen-on {
-//    127.0.0.1;
-//    192.168.1.100;
-//  };
-
-//  allow-query {
-//    127.0.0.1;
-//    192.168.1.0/24;
-//  };
-};
-
-logging {
-
-  channel named_log {
-    file \"SERVICE_PREFIX/service.log\" versions 3 size 2m;
-    severity info;
-    print-severity yes;
-    print-time yes;
-    print-category yes;
-  };
-
-  category default {
-    named_log;
   };
 };
 
