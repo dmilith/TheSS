@@ -335,25 +335,20 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* Replace SERVICE_DOMAIN */
         QString domainFilePath = prefixDir() + QString(DEFAULT_SERVICE_DOMAIN_FILE);
         QString userDomain = QHostInfo::localHostName();
-        if (not QFile::exists(domainFilePath)) { //(domain.isEmpty()) {
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
-            domain = userDomain;
-            writeToFile(domainFilePath, userDomain);
-        } else {
-            domain = readFileContents(domainFilePath).trimmed();
-            ccont = ccont.replace("SERVICE_DOMAIN", domain); /* replace with user domain content */
+        if (not domain.isEmpty()) { /* predefined value of domain from igniter has a higher priority over dynamic one */
             userDomain = domain;
+            ccont = ccont.replace("SERVICE_DOMAIN", domain);
+            writeToFile(domainFilePath, domain);
+        } else {
+            if (not QFile::exists(domainFilePath)) { //(domain.isEmpty()) {
+                ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+                writeToFile(domainFilePath, userDomain);
+            } else {
+                QString aDomain = readFileContents(domainFilePath).trimmed();
+                ccont = ccont.replace("SERVICE_DOMAIN", aDomain); /* replace with user domain content */
+                userDomain = aDomain;
+            }
         }
-
-        /* check .domain value, if it differs from current domain value, recreate whole service configuration */
-        // QString domainFileContent = QString(readFileContents(DEFAULT_SERVICE_DOMAIN_FILE).c_str()).trimmed();
-        // if (not domain.isEmpty() and not domainFileContent.isEmpty())
-        //     if (domainFileContent == domain) {
-        //         logWarn() << "Domain change detected. Regenerating service configuration from scratch for service:" << name;
-        //         logDebug() << "Removing service configuration:" << prefixDir() + "/service.conf";
-        //         QFile::remove(prefixDir() + "/service.conf");
-        //         touch(prefixDir() + "/.restart");
-        //     }
 
         /* Replace SERVICE_ADDRESS */
         QString address = QString(DEFAULT_SYSTEM_ADDRESS);
@@ -367,10 +362,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 logTrace() << "Resolved address of domain " << userDomain << " is " << userAddress;
                 ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
             } else {
-                logWarn() << "Empty domain resolve of: " << userDomain;
-                address = QString(DEFAULT_SYSTEM_ADDRESS);
-                domain = QString(DEFAULT_SYSTEM_ADDRESS);
-                logWarn() << "Domain fallback to:" << domain << "(" << address << ") for service:" << name;
+                logWarn() << "Empty domain resolve of: " << userDomain << "Domain fallback to:" << domain << "(" << address << ") for service:" << name;
                 ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
             }
         } else {
@@ -390,24 +382,19 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     if (not QFile::exists(portsDirLocation + QString::number(indx))) {
                         logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
                         uint freePort = registerFreeTcpPort();
-                        // ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString::number(freePort)); /* replace with user port content */
                         writeToFile(portFilePath, QString::number(freePort));
-                    // } else {
-                        // logTrace() << "Port id:" << indx << " exists. Won't touch it.";
-                        // ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), QString(readFileContents(portFilePath).c_str()).trimmed());
                     }
                 }
 
         /* then replace main port */
         QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
         if (staticPort != -1) { /* defined static port */
-            logDebug() << "Set static port:" << staticPort << "for service" << name;
-            // ccont = ccont.replace("SERVICE_PORT", QString::number(staticPort));
+            logTrace() << "Set static port:" << staticPort << "for service" << name;
             writeToFile(portFilePath, QString::number(staticPort));
         } else {
             if (not QFile::exists(portFilePath)) {
                 QString freePort = QString::number(registerFreeTcpPort());
-                // ccont = ccont.replace("SERVICE_PORT", freePort); /* replace main dynamic port */
+                logTrace() << "Set random free port:" << freePort << "for service" << name;
                 writeToFile(portFilePath, freePort);
             }
         }
