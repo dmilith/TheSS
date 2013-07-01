@@ -119,16 +119,20 @@ M.ROOT-SERVERS.NET.      3600000      AAAA  2001:DC3::35
 cat > SERVICE_PREFIX/SERVICE_DOMAIN.conf <<EOF
 ; Zone File for *.SERVICE_DOMAIN - © VerKnowSys 2013
 \\$TTL 1h
-@             IN      SOA       SERVICE_DOMAIN.  *.SERVICE_DOMAIN.  (
+@             IN      SOA       ns.SERVICE_DOMAIN.  *.SERVICE_DOMAIN.  (
                                 003            ; Serial
                                 1H             ; Refresh
                                 1H             ; Retry
                                 4W             ; Expire
                                 1D )           ; Minimum
 
-                IN      NS       SERVICE_ADDRESS
+                   IN      NS       ns.SERVICE_DOMAIN.
+
 SERVICE_DOMAIN.    IN      A        SERVICE_ADDRESS
 *.SERVICE_DOMAIN.  IN      A        SERVICE_ADDRESS
+
+                   IN      PTR      SERVICE_DOMAIN.
+*                  IN      PTR      SERVICE_DOMAIN.
 
 EOF
 
