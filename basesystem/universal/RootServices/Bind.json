@@ -124,6 +124,7 @@ options {
   directory \"SERVICE_PREFIX\";
   pid-file \"SERVICE_PREFIX/service.pid\";
   version \"go away mon' 2066\";
+  auth-nxdomain yes;
 
   // disables all transfers
   allow-transfer {
