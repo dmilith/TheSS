@@ -17,8 +17,10 @@ for i in ${homedirs}/*; do
         mkdir -p $i/Logs/Thess
         chown \"${username}\" $i/Logs/Thess
         printf \"Autostarting user side TheSS for account: $i\n\" >> SERVICE_PREFIX/service.log 2> /dev/null
+        mv $i/Logs/Thess/service.log $i/Logs/Thess/service-$(date +'%Y-%m-%d--%H%M').log
+        rm -f $i/Logs/Thess/service.log
         su - \"${username}\" -c \"sofin update&&sofin get thess >> $i/Logs/Thess/service.log 2>&1\"
-        su - \"${username}\" -c \"$i/Apps/Thess/exports/svdss -d >> $i/Logs/Thess/service.log 2>&1 &\"
+        su - \"${username}\" -c \"$i/Apps/Thess/exports/svdss >> $i/Logs/Thess/service.log 2>&1 &\"
     fi
 done
 printf 'Finished\n'
