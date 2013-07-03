@@ -1,7 +1,6 @@
 {
     "softwareName": "Mongodb",
     "domain": "localhost",
-    "portsPool": 10,
     "install": {
         "commands": "sofin get mongodb",
         "expectOutput": "All done"
