@@ -1,6 +1,7 @@
 {
     "softwareName": "Bind",
     "watchPort": false,
+    "resolveDomain": false,
     "domain": "dmilith.dev",
 
     "install": {
