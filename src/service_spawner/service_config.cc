@@ -37,6 +37,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         reportAllDebugs = (*defaults)["reportAllDebugs"].asBool();
         watchPort = (*defaults)["watchPort"].asBool();
         alwaysOn = (*defaults)["alwaysOn"].asBool();
+        resolveDomain = (*defaults)["resolveDomain"].asBool();
         staticPort = (*defaults)["staticPort"].asInt();
         minimumRequiredDiskSpace = (*defaults)["minimumRequiredDiskSpace"].asInt();
         domain = (*defaults)["domain"].asCString();
@@ -127,6 +128,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         reportAllDebugs = root->get("reportAllDebugs", (*defaults)["reportAllDebugs"]).asBool();
         watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
+        resolveDomain = root->get("resolveDomain", (*defaults)["resolveDomain"]).asBool();
         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
         portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
         minimumRequiredDiskSpace = root->get("minimumRequiredDiskSpace", (*defaults)["minimumRequiredDiskSpace"]).asInt();
@@ -355,15 +357,20 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         QString userAddress = "";
         QHostInfo info;
         if (!userDomain.isEmpty()) {
-            info = QHostInfo::fromName(QString(userDomain));
-            if (!info.addresses().isEmpty()) {
-                auto address = info.addresses().first();
-                userAddress = address.toString();
-                logTrace() << "Resolved address of domain " << userDomain << " is " << userAddress;
+            if (resolveDomain) { /* by default domain resolve is done for each domain given by user */
+                info = QHostInfo::fromName(QString(userDomain));
+                if (!info.addresses().isEmpty()) {
+                    auto address = info.addresses().first();
+                    userAddress = address.toString();
+                    logTrace() << "Resolved address of domain " << userDomain << " is " << userAddress;
+                    ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
+                } else {
+                    logWarn() << "Empty domain resolve of: " << userDomain << "Domain fallback to:" << domain << "(" << address << ") for service:" << name;
+                    ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
+                }
+            } else { /* don't resolve domain */
+                logTrace() << "Set address of domain " << userDomain << " as " << userAddress;
                 ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
-            } else {
-                logWarn() << "Empty domain resolve of: " << userDomain << "Domain fallback to:" << domain << "(" << address << ") for service:" << name;
-                ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
             }
         } else {
             // logDebug() << "Filling address with default value";

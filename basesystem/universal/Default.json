@@ -2,12 +2,15 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.16.2",
+    "formatVersion": "0.16.3",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
 
     "domain": "",
+
+/* when set to false, domain won't be resolved for spcified igniter */
+    "resolveDomain": true,
 
 /* defines pool of ports used by service */
     "portsPool": 1,
