@@ -8,8 +8,8 @@
     },
     "schedulerActions": [
         {
-            "cronEntry": "0 0/1 * * * ?",
-            "commands": "echo 'Mongo pom pom'"
+            "cronEntry": "0 8,20 * * * ?",
+            "commands": "mongodump --host SERVICE_DOMAIN --port $(cat SERVICE_PREFIX/.ports/0) --out $HOME/Mongo-dumps/$(date +'%Y-%m-%d--%H%M')"
         }
     ],
     "configure": {
