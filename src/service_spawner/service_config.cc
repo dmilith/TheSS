@@ -369,8 +369,8 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
                 }
             } else { /* don't resolve domain */
-                logTrace() << "Set address of domain " << userDomain << " as " << userAddress;
-                ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
+                logTrace() << "Set address of domain " << userDomain << " as " << DEFAULT_SYSTEM_ADDRESS;
+                ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_SYSTEM_ADDRESS); /* replace with user address content */
             }
         } else {
             // logDebug() << "Filling address with default value";
