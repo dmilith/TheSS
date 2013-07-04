@@ -29,7 +29,7 @@ printf '
 
 ;       This file holds the information on root name servers needed to
 ;       initialize cache of Internet domain name servers
-;       (e.g. reference this file in the 'cache  .  <file>'
+;       (e.g. reference this file in the cache  .  <file>
 ;       configuration file of BIND domain name servers).
 ;
 ;       This file is made available by InterNIC
