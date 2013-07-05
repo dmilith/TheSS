@@ -5,13 +5,27 @@
  *
  */
 
- #include "panel.h"
+#include "service.h"
 
-PanelService::PanelService(QFileInfo baseDir){
-    this->fileInfo = baseDir;
+PanelService::PanelService(Panel * panel, QFileInfo baseDir){
+    this->panel = panel;
+    this->baseDir = baseDir;
     name = baseDir.baseName();
     basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
     this->dir = QDir(basePath);
+
+    this->log = new Tail(this, basePath, "service.log");
+    this->conf  = new Tail(this, basePath, "service.conf");
+    this->env   = new Tail(this, basePath, "service.env");
+
+    refresh();
+}
+
+void PanelService::refresh(){
+
+    // logDebug() << "new tail";
+    // logTail(basePath, "service.log");
+
     isRunning = QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE);
     bool sv = QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE);
     bool sc = QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE);
@@ -58,21 +72,23 @@ PanelService::PanelService(QFileInfo baseDir){
     flags[5] = '\0';
 }
 
-void PanelService::start() const { touch(dir.absoluteFilePath(".start")); }
-void PanelService::stop() const { touch(dir.absoluteFilePath(".stop")); }
-void PanelService::validate() const { touch(dir.absoluteFilePath(".validate")); }
-void PanelService::install() const { touch(dir.absoluteFilePath(".install")); }
-void PanelService::configure() const { touch(dir.absoluteFilePath(".configure")); }
-void PanelService::reconfigure() const { touch(dir.absoluteFilePath(".reconfigure")); }
-void PanelService::restart() const { touch(dir.absoluteFilePath(".restart")); }
-void PanelService::reload() const { touch(dir.absoluteFilePath(".reload")); }
-void PanelService::toggleAutostart() const {
+
+void PanelService::start() {        touch(dir.absoluteFilePath(".start"));      refresh();  }
+void PanelService::stop() {         touch(dir.absoluteFilePath(".stop"));       refresh();  }
+void PanelService::validate() {     touch(dir.absoluteFilePath(".validate"));   refresh();  }
+void PanelService::install() {      touch(dir.absoluteFilePath(".install"));    refresh();  }
+void PanelService::configure() {    touch(dir.absoluteFilePath(".configure"));  refresh();  }
+void PanelService::reconfigure() {  touch(dir.absoluteFilePath(".reconfigure"));refresh();  }
+void PanelService::restart() {      touch(dir.absoluteFilePath(".restart"));    refresh();  }
+void PanelService::reload() {       touch(dir.absoluteFilePath(".reload"));     refresh();  }
+void PanelService::toggleAutostart() {
     QString file = dir.absoluteFilePath(".autostart");
     if (not QFile::exists(file)) touch(file);
     else QFile::remove(file);
+    refresh();
 }
 
-bool PanelService::remove() const {
+bool PanelService::remove(){
     auto prc = new SvdProcess("SS", getuid(), false);
     prc->spawnProcess("rm -rf " + basePath);
     prc->waitForFinished(10);

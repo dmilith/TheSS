@@ -5,21 +5,75 @@
  *
  */
 
- #include "panel.h"
+#include "panel.h"
 
 Panel::Panel(QString user, QDir home, QDir ignitersDir):
     home(home), user(user), ignitersDir(ignitersDir) {
 
     getOrCreateDir(home.path());
     getOrCreateDir(ignitersDir.path());
+
+    eventsManager = new SvdFileEventsManager();
+    eventsManager->registerFile(home.path() + SOFTWARE_DATA_DIR);
+
+    connect(eventsManager, SIGNAL(directoryChanged(QString)), this, SLOT(onDirectoryChanged(QString)));
+    // connect(eventsManager, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
+
+}
+
+void Panel::setGui(PanelGui * gui){
+    this->gui = gui;
+    connect(this, SIGNAL(refreshed()), gui, SLOT(display()));
+}
+
+void Panel::onDirectoryChanged(QString dir){
+    refresh();
+}
+
+void Panel::refresh(){
+    refreshMutex.lock();
+    // logDebug() << "refershing";
+    refreshServicesList();
+    refreshMutex.unlock();
+    emit refreshed();
 }
 
 void Panel::refreshServicesList() {
     QDir dir(home.absolutePath() + "/" + QString(SOFTWARE_DATA_DIR));
     QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoDot);
-    services.clear();
+
     Q_FOREACH(auto f, list){
-        services << PanelService(f);
+        bool found = false;
+        Q_FOREACH(auto s, services){
+            if(s->baseDir == f){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            logDebug() << "Found new service" << f.absoluteFilePath();
+            services << new PanelService(this, f);
+        }
+    }
+
+    Q_FOREACH(auto s, services){
+        bool found = false;
+        Q_FOREACH(auto f, list){
+            if(s->baseDir == f){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            logDebug() << "Found removed service" << s->baseDir.absoluteFilePath();
+            services.removeOne(s);
+        }
+    }
+
+    Q_FOREACH(auto s, services){
+        s->refresh();
     }
 }
 
@@ -76,6 +130,6 @@ QString Panel::addService(QString name){
             status = "Already defined service called: " + name;
     }
 
-    refreshServicesList();
+    refresh();
     return status;
 }

@@ -5,7 +5,8 @@
  *
  */
 
- #include "panel.h"
+#include "gui.h"
+#include <time.h>
 
 void PanelGui::init(){
     // remove ESC key delay
@@ -29,10 +30,20 @@ void PanelGui::init(){
     init_pair(4, COLOR_BLACK, COLOR_CYAN); // selected service
     init_pair(5, COLOR_CYAN, COLOR_BLACK); // status
     init_pair(6, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(7, COLOR_BLACK, COLOR_WHITE);
     init_pair(8, COLOR_RED, COLOR_BLACK);
 
-    servicesList = new ServicesList(rows - 6);
+    panel->setGui(this);
+
+    mainWindow = newwin(rows, cols/2, 0, 0);
+    logWindow = newwin(rows, cols/2, 0, cols/2);
+
+    servicesList = new ServicesList(rows - 6, mainWindow);
+    servicesList->setItems(&panel->services);
+
+    if(panel->services.length() == 0){
+        status = "No initialized services found in data directory. Hit F7 to add new.";
+    }
 }
 
 int PanelGui::kbhit() {
@@ -47,8 +58,8 @@ int PanelGui::kbhit() {
 }
 
 void PanelGui::displayHeader(){
-    attron(COLOR_PAIR(1));
-    mvprintw(0, 0, "Control Panel v%s. © 2013 verknowsys.com", APP_VERSION);
+    wattron(mainWindow, COLOR_PAIR(1));
+    mvwprintw(mainWindow, 0, 0, "Control Panel v%s. © 2013 verknowsys.com %d", APP_VERSION, time(NULL));
 }
 
 void PanelGui::displayFooter(){
@@ -65,22 +76,22 @@ void PanelGui::displayFooter(){
     char * str;
     int i;
 
-    mvprintw(y, x, "Services: ");
+    mvwprintw(mainWindow, y, x, "Services: ");
     x+=10;
     Q_FOREACH(auto action, actions){
         str = action.toUtf8().data();
         for(i=0; i<action.length(); i++){
             if(str[i] >= 'A' && str[i] <= 'Z') attron(C_GREEN);
             else attron(C_DEFAULT);
-            mvprintw(y, x++, "%c", str[i]);
+            mvwprintw(mainWindow, y, x++, "%c", str[i]);
         }
-        mvprintw(y, x++, " ");
+        mvwprintw(mainWindow, y, x++, " ");
     }
 
-    attron(C_GREEN);
-    mvprintw(y, x++, "?");
-    attron(C_DEFAULT);
-    mvprintw(y, x++, "=Help");
+    wattron(mainWindow, C_GREEN);
+    mvwprintw(mainWindow, y, x++, "?");
+    wattron(mainWindow, C_DEFAULT);
+    mvwprintw(mainWindow, y, x++, "=Help");
 
     y++;
     x=0;
@@ -89,11 +100,11 @@ void PanelGui::displayFooter(){
         QString a = functions.at(2*i);
         QString b = functions.at(2*i+1);
 
-        attron(C_STATUS);
-        mvprintw(y, x, "%s", a.toUtf8().data());
+        wattron(mainWindow, C_STATUS);
+        mvwprintw(mainWindow, y, x, "%s", a.toUtf8().data());
         x+=a.length();
-        attron(C_DEFAULT);
-        mvprintw(y, x, "=%s ", b.toUtf8().data());
+        wattron(mainWindow, C_DEFAULT);
+        mvwprintw(mainWindow, y, x, "=%s ", b.toUtf8().data());
         x+=b.length()+2;
     }
 }
@@ -106,81 +117,55 @@ void PanelGui::displayStatus(){
 
     /* SS status info */
     if(panel->isSSOnline()){
-        attron(C_SS_STATUS_ON);
-        mvprintw(0, 45, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
-        attroff(C_SS_STATUS_ON);
+        wattron(mainWindow, C_SS_STATUS_ON);
+        mvwprintw(mainWindow, 0, 45, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
+        wattroff(mainWindow, C_SS_STATUS_ON);
     } else {
-        attron(C_SS_STATUS_OFF);
-        mvprintw(0, 45, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
-        attroff(C_SS_STATUS_OFF);
+        wattron(mainWindow, C_SS_STATUS_OFF);
+        mvwprintw(mainWindow, 0, 45, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
+        wattroff(mainWindow, C_SS_STATUS_OFF);
     }
 
-    attron(C_STATUS);
-    mvprintw(1, 0, "status: %-130s", status.toUtf8().data()); // XXX: hardcoded max length of status content
-    attroff(C_STATUS);
-    move(2, 0);
-    clrtoeol();
+    wattron(mainWindow, C_STATUS);
+    mvwprintw(mainWindow, 1, 0, "status: %-130s", status.toUtf8().data()); // XXX: hardcoded max length of status content
+    wattroff(mainWindow, C_STATUS);
+    wmove(mainWindow, 2, 0);
+    wclrtoeol(mainWindow);
 }
 
-void tmux(QString cmd){
-    if(TMUX){
-        cmd = " tmux send-keys -t 1 " + cmd + "\n";
-        auto process = new SvdProcess("tail", getuid(), false);
-        process->spawnProcess(cmd);
-        process->waitForFinished();
-    }
-}
 
-void PanelGui::displayFile(QString file){
-    QString tpl = ":e %1 C-m";
+// void PanelGui::displayFile(QString file){
+//     QString tpl = ":e %1 C-m";
 
-    tmux("C-c");
-    tmux(tpl.arg(file));
+//     tmux("C-c");
+//     tmux(tpl.arg(file));
 
-    if(QFile::exists(file)) tmux("F");
-}
+//     if(QFile::exists(file)) tmux("F");
+// }
 
-void PanelGui::displayLog(){
-    const PanelService * service = servicesList->currentItem();
-    if(TMUX && service != NULL && (loggedServicePath != service->dir.absolutePath())){
-        loggedServicePath = service->dir.absolutePath();
+// void PanelGui::displayLog(){
+//     const PanelService * service = servicesList->currentItem();
+//     if(TMUX && service != NULL && (loggedServicePath != service->dir.absolutePath())){
+//         loggedServicePath = service->dir.absolutePath();
 
-        displayFile(loggedServicePath + DEFAULT_SERVICE_LOG_FILE);
-    }
-}
+//         displayFile(loggedServicePath + DEFAULT_SERVICE_LOG_FILE);
+//     }
+// }
 
-void PanelGui::displayConfig(){
-    const PanelService * service = servicesList->currentItem();
-    if(service != NULL){
-        displayFile(service->dir.absolutePath() + "/service.conf");
-    }
-}
 
-void PanelGui::displayEnv(){
-    const PanelService * service = servicesList->currentItem();
-    if(service != NULL){
-        displayFile(service->dir.absolutePath() + "/service.env");
-    }
-}
 
 void PanelGui::cleanup(){
     endwin();
-
-    if(TMUX){
-        auto process = new SvdProcess("tail", getuid(), false);
-        process->spawnProcess(" tmux kill-session");
-        process->waitForFinished(60);
-    }
 }
 
-void PanelGui::searchLog(){
-    tmux("C-c");
-    tmux("/");
-    QString cmd = " tmux select-pane -t 1\n";
-    auto process = new SvdProcess("tail", getuid(), false);
-    process->spawnProcess(cmd);
-    process->waitForFinished();
-}
+// void PanelGui::searchLog(){
+//     tmux("C-c");
+//     tmux("/");
+//     QString cmd = " tmux select-pane -t 1\n";
+//     auto process = new SvdProcess("tail", getuid(), false);
+//     process->spawnProcess(cmd);
+//     process->waitForFinished();
+// }
 
 void PanelGui::helpDialog(){
     WINDOW *win = newwin(rows-4, cols-2, 2, 1);
@@ -256,7 +241,7 @@ void PanelGui::newServiceDialog(){
 
             case 10: // enter
                 {
-                    QString selected = *list.currentItem();
+                    QString selected = list.currentItem();
                     status = panel->addService(selected);
                     servicesList->setItems(&panel->services);
                     servicesList->setCurrent(selected);
@@ -280,47 +265,47 @@ void PanelGui::newServiceDialog(){
 }
 
 
-QString PanelGui::newDomain() {
-    int r = min(rows-6, 23);
-    WINDOW *win = newwin(r, 46, 2, 5);
-    QList<QString> *aList = new QList<QString>();
-    AvailableServicesList list(aList, r - 3, win, "   Domain name: ");
-    QString name = "";
-    int ch = 0;
+// QString PanelGui::newDomain() {
+//     int r = min(rows-6, 23);
+//     WINDOW *win = newwin(r, 46, 2, 5);
+//     QList<QString> *aList = new QList<QString>();
+//     AvailableServicesList list(aList, r - 3, win, "   Domain name: ");
+//     QString name = "";
+//     int ch = 0;
 
-    keypad(win, TRUE);
-    curs_set(1); // cursor visible
+//     keypad(win, TRUE);
+//     curs_set(1); // cursor visible
 
-    do {
-        list.display();
-        ch = wgetch(win);
+//     do {
+//         list.display();
+//         ch = wgetch(win);
 
-        switch(ch){
+//         switch(ch){
 
-            case 27: // escape
-                name = "";
-                break;
+//             case 27: // escape
+//                 name = "";
+//                 break;
 
-            case 10: // enter
-                ch = 27;
-                break;
+//             case 10: // enter
+//                 ch = 27;
+//                 break;
 
-            case 127: // backspace
-                name.truncate(name.length()-1);
-                list.setName(name);
-                break;
+//             case 127: // backspace
+//                 name.truncate(name.length()-1);
+//                 list.setName(name);
+//                 break;
 
-            default:
-                name += ch;
-                list.setName(name);
-                break;
-        }
-    } while (ch != 27);
+//             default:
+//                 name += ch;
+//                 list.setName(name);
+//                 break;
+//         }
+//     } while (ch != 27);
 
-    delete aList;
-    curs_set(0);
-    return name;
-}
+//     delete aList;
+//     curs_set(0);
+//     return name;
+// }
 
 
 void PanelGui::removeCurrentService(){
@@ -379,32 +364,29 @@ bool PanelGui::confirm(QString msg){
 
 void PanelGui::key(int ch){
     switch(ch){
-        case 'q':
-            // just exit
-            break;
-
         case KEY_UP:
         case KEY_DOWN:
             servicesList->key(ch);
+            displayLog();
             break;
 
-        case 'D':
-            if (servicesList->currentItem() == NULL) {
-                status = "Can't change domain for non existant service";
-            } else {
-                QString name = servicesList->currentItem()->name;
-                QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
-                if (getuid() == 0) {
-                    prefixPath = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + name;
-                }
-                QString domainFilePath = prefixPath + QString(DEFAULT_SERVICE_DOMAIN_FILE);
-                QString domain = newDomain();
-                status = "Changing domain for service: " + name + " to: " + domain;
-                if (not domain.trimmed().isEmpty())
-                    writeToFile(domainFilePath, domain);
+//         case 'D':
+//             if (servicesList->currentItem() == NULL) {
+//                 status = "Can't change domain for non existant service";
+//             } else {
+//                 QString name = servicesList->currentItem()->name;
+//                 QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
+//                 if (getuid() == 0) {
+//                     prefixPath = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + name;
+//                 }
+//                 QString domainFilePath = prefixPath + QString(DEFAULT_SERVICE_DOMAIN_FILE);
+//                 QString domain = newDomain();
+//                 status = "Changing domain for service: " + name + " to: " + domain;
+//                 if (not domain.trimmed().isEmpty())
+//                     writeToFile(domainFilePath, domain);
 
-            }
-            break;
+//             }
+//             break;
 
         case KEY_F(1): /* Trace */
             panel -> setLogLevel("trace");
@@ -432,44 +414,42 @@ void PanelGui::key(int ch){
             reload(r, c);
             break;
 
-        case KEY_F(6): /* display thess log */
-            displayFile(panel->home.absoluteFilePath(".thess.log"));
-            break;
+//         case KEY_F(6): /* display thess log */
+//             displayFile(panel->home.absoluteFilePath(".thess.log"));
+//             break;
 
-        case KEY_F(9):
-            panel->shutdown();
-            status = "Terminating ServiceSpawner (services remain in background)";
-            break;
+//         case KEY_F(9):
+//             panel->shutdown();
+//             status = "Terminating ServiceSpawner (services remain in background)";
+//             break;
 
         case '?':
             helpDialog();
             break;
 
-        case '/':
-            searchLog();
-            break;
+//         case '/':
+//             searchLog();
+//             break;
 
         case KEY_PPAGE:
         case '[':
-            tmux("C-c");
-            tmux("u");
+            tailScroll(5);
             break;
 
         case KEY_NPAGE:
         case '\'':
-            tmux("C-c");
-            tmux("d");
+            tailScroll(-5);
             break;
 
-        case ';':
-            tmux("C-c");
-            tmux("Escape \\(");
-            break;
+//         case ';':
+//             tmux("C-c");
+//             tmux("Escape \\(");
+//             break;
 
-        case '\\':
-            tmux("C-c");
-            tmux("Escape \\)");
-            break;
+//         case '\\':
+//             tmux("C-c");
+//             tmux("Escape \\)");
+//             break;
 
         case 'S': /* Start */
             if (servicesList->currentItem() == NULL) {
@@ -576,10 +556,8 @@ void PanelGui::key(int ch){
             }
             break;
 
-        case 'W': /* Toggle wrap on most */
-            wrapLines = !wrapLines;
-            tmux("C-c -S C-m");
-            tmux("F C-m");
+        case 'W':
+            tailToggleWrap();
             break;
 
         case 'K':
@@ -591,13 +569,12 @@ void PanelGui::key(int ch){
             break;
 
         case 'L': // refresh log window
-            loggedServicePath = "";
             displayLog();
             break;
 
-        case 10: /* TODO: implement details view */
-            status = "Not implemented";
-            break;
+//         case 10: /* TODO: implement details view */
+//             status = "Not implemented";
+//             break;
 
         case 'N':
         case KEY_F(7): /* Launch new service */
@@ -612,34 +589,110 @@ void PanelGui::key(int ch){
     }
 }
 
+void PanelGui::display(){
+    // logDebug() << "display";
+    displayHeader();
+    displayStatus();
+    servicesList->setItems(&panel->services);
+    servicesList->display();
+    displayFooter();
+    wrefresh(mainWindow);
+    standend();
+}
+
+void PanelGui::tailUpdate(){
+    const PanelService * service = servicesList->currentItem();
+
+    if(service != NULL){
+        if(tail == NULL) tail = service->log;
+        tail->display(logWindow, rows, cols);
+    }
+
+
+    // logDebug() << "service " << (long)service;
+    // if(service != NULL){
+    //     // tailUpdate();
+    // }
+        // logDebug() << "tailUpdate?";
+    // if(tail != NULL){
+    //     logDebug() << "tailUpdate!";
+    //     tail->display(logWindow, rows, cols);
+    // }
+
+    wrefresh(logWindow);
+}
+
+void PanelGui::tailToggleWrap(){
+    if(tail != NULL){
+        tail->toggleWrap();
+        tailUpdate();
+    }
+}
+
+void PanelGui::tailReset(){
+    if(tail != NULL){
+        tail->resetScroll();
+        tailUpdate();
+    }
+}
+
+void PanelGui::tailScroll(int n){
+    if(tail != NULL){
+        tail->scrollLog(n, rows);
+        tailUpdate();
+    }
+}
+
+void PanelGui::displayConfig(){
+    PanelService * service = servicesList->currentItem();
+    if(service != NULL){
+        tail = service->conf;
+        tailUpdate();
+    }
+}
+
+void PanelGui::displayEnv(){
+    const PanelService * service = servicesList->currentItem();
+    if(service != NULL){
+        tail = service->env;
+        tailUpdate();
+    }
+}
+
+void PanelGui::displayLog(){
+    const PanelService * service = servicesList->currentItem();
+    if(service != NULL){
+        tail = service->log;
+        tailUpdate();
+    }
+}
+
 void PanelGui::run(){
     init();
 
-    int ch = 0;
-    while(ch != 'q'){
-        while(!kbhit()){
-            panel->refreshServicesList();
-            servicesList->setItems(&panel->services);
+    // connect(this, SIGNAL(getInput()), this, SLOT(readInput())); // this will prevent blocking
 
-            if(panel->services.length() == 0){
-                status = "No initialized services found in data directory. Hit F7 to add new.";
-            }
+    // emit display();
+    // emit getInput();
+}
 
-            displayHeader();
-            displayStatus();
-            servicesList->display();
-            displayFooter();
-
-            refresh();
-            displayLog();
-
-            usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
-            standend();
+void PanelGui::readInput(){
+    // logDebug() << "readInput";
+    if(kbhit()){
+        int ch = getch();
+        if(ch == 'q'){
+            logDebug() << "cleanup";
+            cleanup();
+            emit quit();
+            return;
+        } else {
+            key(ch);
+            // emit display();
         }
-
-        ch = getch();
-        key(ch);
+    } else {
+        // usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
     }
 
-    cleanup();
+    // emit getInput();
 }
+
