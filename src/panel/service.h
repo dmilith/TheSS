@@ -1,3 +1,10 @@
+/**
+ *  @author teamon
+ *
+ *   © 2013 - VerKnowSys
+ *
+ */
+
 #ifndef __PANEL_SERVICE_H__
 #define __PANEL_SERVICE_H__
 

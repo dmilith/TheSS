@@ -1,3 +1,10 @@
+/**
+ *  @author teamon
+ *
+ *   © 2013 - VerKnowSys
+ *
+ */
+
 #include "tail.h"
 
 Tail::Tail(PanelService * service, const QString& dirname, const QString& filename):

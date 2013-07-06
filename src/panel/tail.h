@@ -1,3 +1,10 @@
+/**
+ *  @author teamon
+ *
+ *   © 2013 - VerKnowSys
+ *
+ */
+
 #ifndef __TAIL_H__
 #define __TAIL_H__
 
