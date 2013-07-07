@@ -175,9 +175,7 @@ void PanelGui::helpDialog(){
     wattroff(win, COLOR_PAIR(6));
 
     QList<QString> list;
-    list << COPYRIGHT;
-    list << "";
-    list << "Available key bindings";
+    list << "Available key bindings:";
     list << "";
     list << "Current service actions:";
     list << "  S       - Start current service";
@@ -200,14 +198,11 @@ void PanelGui::helpDialog(){
     list << "  W       - Toggle line wrap";
     list << "";
     list << "Other actions:";
-    list << "  F1      - Set trace log level";
-    list << "  F2      - Set debug log level";
-    list << "  F3      - Set info log level";
-    list << "  F4      - Set error log level";
+    list << "  F1-F4   - Set log level (trace, debug, info, error)";
     list << "  F5      - Refresh panel";
     list << "  F6      - Display thess log";
     list << "  F7, N   - Add new service";
-    list << "  F9      - Shutdown TheSS ";
+    list << "  F9      - Shutdown TheSS (won't touch services)";
 
     for(int i=0; i<list.length(); i++){
         mvwprintw(win, i+1, 2, "%s", list.at(i).toUtf8().data());
