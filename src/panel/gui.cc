@@ -343,7 +343,7 @@ bool PanelGui::confirm(QString msg){
 
     WINDOW *inner = derwin(win, 3, c-2, 1, 1);
 
-    mvwprintw(inner, 0, 0, (msg + " (Y/y/↵ to confirm)").toUtf8().data());
+    mvwprintw(inner, 0, 0, (msg + " (Y to confirm)").toUtf8().data());
     wattron(inner, COLOR_PAIR(2));
     wrefresh(win);
     int ch = wgetch(win);
@@ -354,7 +354,7 @@ bool PanelGui::confirm(QString msg){
     wrefresh(win);
     delwin(inner);
     delwin(win);
-    return (ch == 10 || ch == 'y' || ch == 'Y');
+    return ch == 'Y';
 }
 
 void PanelGui::key(int ch){
