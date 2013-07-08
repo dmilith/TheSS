@@ -27,6 +27,7 @@ void Panel::setGui(PanelGui * gui){
 }
 
 void Panel::onDirectoryChanged(QString dir){
+    Q_UNUSED(dir);
     refresh();
 }
 
