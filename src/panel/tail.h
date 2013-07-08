@@ -8,6 +8,7 @@
 #ifndef __TAIL_H__
 #define __TAIL_H__
 
+#include <sys/ioctl.h>
 #include "panel.h"
 
 class Tail : QObject {

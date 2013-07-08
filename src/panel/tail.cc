@@ -1,5 +1,5 @@
 /**
- *  @author teamon
+ *  @author teamon, dmilith
  *
  *   © 2013 - VerKnowSys
  *
@@ -43,8 +43,12 @@ void Tail::onDirectoryChanged(const QString& dir){
         if(!eventsManager->isWatchingFile(path)){
             eventsManager->registerFile(path);
 
+            // get amount of rows of terminal window:
+            struct winsize w;
+            ioctl(0, TIOCGWINSZ, &w);
+
             // File created, seek to the end and read n lines from bottom
-            readLinesBack(5);
+            readLinesBack(w.ws_row);
             onFileChanged(path);
         }
     } else {
@@ -145,7 +149,6 @@ void Tail::onFileChanged(const QString& p){
         return;
     }
 
-    auto size = file.size();
     int newcount=0;
 
     QTextStream stream(&file);
