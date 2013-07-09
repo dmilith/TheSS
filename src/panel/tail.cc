@@ -26,7 +26,6 @@ Tail::Tail(PanelService * service, const QString& dirname, const QString& filena
     // QTimer::singleShot(100, this, SLOT(readMoreLines()));
 
     connect(this, SIGNAL(updated()), service->panel->gui, SLOT(tailUpdate()));
-    service->panel->gui->tailUpdate();
 }
 
 // Tail::~Tail(){
