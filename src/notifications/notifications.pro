@@ -11,9 +11,9 @@ TARGET = ../notifications
 TEMPLATE = lib
 CONFIG += staticlib
 
-HEADERS   += notifications.h manager.h ../service_spawner/process.h
+HEADERS   += notifications.h ../service_spawner/process.h
 
-SOURCES   += notifications.cc ../service_spawner/utils.cc ../service_spawner/process.cc manager.cc
+SOURCES   += notifications.cc ../service_spawner/utils.cc ../service_spawner/process.cc
 
 mac {
       LIBS      += ../libnotifications.a ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncurses
