@@ -30,8 +30,8 @@ SOURCES   += ../service_spawner/utils.cc \
              tail.cc
 
 mac {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncurses
+      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncurses
 } else {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncursesw
+      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncursesw
 }
 TARGET    = ../../bin/panel

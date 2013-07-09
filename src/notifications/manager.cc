@@ -10,7 +10,7 @@
 
 
 int rows = 0, cols = 0, x = 0, y = 0; /* x,y - cursor position */
-WINDOW *win = NULL;
+WINDOW *notificationWindow = NULL;
 
 
 bool NotificationLessThan(const Notification &a, const Notification &b){
@@ -37,18 +37,18 @@ void gui_init() {
     init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(8, COLOR_RED, COLOR_BLACK);
 
-    win = newwin(rows, cols, 0, 0);
-    wattron(win, COLOR_PAIR(6));
-    box(win, 1, 1);
-    wattroff(win, COLOR_PAIR(6));
-    scrollok(win, FALSE);
+    notificationWindow = newwin(rows, cols, 0, 0);
+    wattron(notificationWindow, COLOR_PAIR(6));
+    box(notificationWindow, 1, 1);
+    wattroff(notificationWindow, COLOR_PAIR(6));
+    scrollok(notificationWindow, FALSE);
 
     refresh();
 }
 
 
 void gui_destroy() {
-    delwin(win);
+    delwin(notificationWindow);
     endwin();
 }
 
@@ -118,67 +118,67 @@ void gatherNotifications() {
         Notification n = notifications.at(i+start);
         switch(n.level){
             case NOTIFICATION_LEVEL_ERROR:
-                wattron(win, COLOR_PAIR(8));
+                wattron(notificationWindow, COLOR_PAIR(8));
                 break;
             case NOTIFICATION_LEVEL_WARNING:
-                wattron(win, COLOR_PAIR(6));
+                wattron(notificationWindow, COLOR_PAIR(6));
                 break;
             case NOTIFICATION_LEVEL_NOTICE:
-                wattron(win, COLOR_PAIR(2));
+                wattron(notificationWindow, COLOR_PAIR(2));
                 break;
         }
 
-        mvwprintw(win, i, x, n.content.toUtf8());
-        wclrtoeol(win);
+        mvwprintw(notificationWindow, i, x, n.content.toUtf8());
+        wclrtoeol(notificationWindow);
     }
     for(; i<rows;i++){
-        wmove(win, i, x);
-        wclrtoeol(win);
+        wmove(notificationWindow, i, x);
+        wclrtoeol(notificationWindow);
     }
 
-    wrefresh(win);
+    wrefresh(notificationWindow);
 }
 
 
-int main(int argc, char *argv[]) {
+// int main(int argc, char *argv[]) {
 
-    QCoreApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
-    QStringList args = app.arguments();
-    gui_init();
+//     QCoreApplication app(argc, argv);
+//     QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+//     QStringList args = app.arguments();
+//     gui_init();
 
-    /* Logger setup */
-    QString logFile = QString(getenv("HOME")) + NOTIFICATION_MANAGER_LOG_FILE;
-    QFile::remove(logFile);
+//     /* Logger setup */
+//     QString logFile = QString(getenv("HOME")) + NOTIFICATION_MANAGER_LOG_FILE;
+//     QFile::remove(logFile);
 
-    FileAppender *fileAppender = new FileAppender(logFile);
-    fileAppender->setFormat("%m\n");
-    Logger::registerAppender(fileAppender);
-    fileAppender->setDetailsLevel(Logger::Trace);
+//     FileAppender *fileAppender = new FileAppender(logFile);
+//     fileAppender->setFormat("%m\n");
+//     Logger::registerAppender(fileAppender);
+//     fileAppender->setDetailsLevel(Logger::Trace);
 
-    logInfo() << "Notifications manager" << APP_VERSION << ". " << COPYRIGHT;
+//     logInfo() << "Notifications manager" << APP_VERSION << ". " << COPYRIGHT;
 
-    // handle window resize
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(struct sigaction));
-    sa.sa_handler = handle_winch;
-    sigaction(SIGWINCH, &sa, NULL);
+//     // handle window resize
+//     struct sigaction sa;
+//     memset(&sa, 0, sizeof(struct sigaction));
+//     sa.sa_handler = handle_winch;
+//     sigaction(SIGWINCH, &sa, NULL);
 
-    int input = '\0';
-    while (input != 'q' and input != 'Q') {
-        while (!kbhit()) {
-            gatherNotifications();
-            usleep(DEFAULT_PANEL_REFRESH_INTERVAL);
-        }
+//     int input = '\0';
+//     while (input != 'q' and input != 'Q') {
+//         while (!kbhit()) {
+//             gatherNotifications();
+//             usleep(DEFAULT_PANEL_REFRESH_INTERVAL);
+//         }
 
-        input = getch();
-        switch (input) {
-            case KEY_F(5): {
-                handle_winch(0);
-            }
-        }
-    }
+//         input = getch();
+//         switch (input) {
+//             case KEY_F(5): {
+//                 handle_winch(0);
+//             }
+//         }
+//     }
 
-    gui_destroy();
-    return 0;
-}
+//     gui_destroy();
+//     return 0;
+// }
