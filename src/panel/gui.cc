@@ -40,7 +40,6 @@ void PanelGui::init(){
     notificationWindow = newwin(rows - 6, cols/2, rows - 6, 0);
     box(notificationWindow, ' ', ' ');
     wborder(notificationWindow, ' ', ' ', '-', '-', '-', '-', ' ', ' ');
-    mvwprintw(notificationWindow, 1, 1, "Trolololol odlfods fsdoi fsdiufnsdhbf bdsfhjbdsfjhbsd hfbds jhfbsdjhbf jhdsb fjdhsb fjdhsbfjhbdsjhfb dsjhbf sdjh bfshjd bfksdbfuiebowqu brw;g[enga zsoivou sorubgqi brgowbg pireuhnagvfdunaigulo bfdaigf ldshbgk3qbi587 g9rwagvydusfba vjbqo3bto ugbfjlhdbs auog3bgubajfbsljbg5 hu2bgoljrabglb3qlu btljabgljbjkbdsgbwib i g wgi ewipg erwighr3ipuwgb wigf s gfdkjlsgb kjlsg bwb gerw gfb gfds gfdsg jk3 j3kn tkjn46jknyj5kn j n5kj n5j nj5n 5kjn5 kj 5nkj5n kj5 n5kj n5kj n5kj n5kjnj\ndupa jasio second line bla bl ba asjfuibrhgisug rpwhn rteh pneriothp3n4uotr8syv98ds76gfvyhqwoui rwh wq eru wey gyuew guryeg uiywe ruyew guyer gu erugy reuyg reug reguyer guer gruyg erug reyu g\ngbergbyeugbe r erue eurbg uey vduys9r 3qo g hfd jdh gb5h3 bjhgrwuyvi a ybdvjshgv dhujfd gfg\nABC");
     wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - 6, mainWindow);
@@ -50,6 +49,77 @@ void PanelGui::init(){
         status = "No initialized services found in data directory. Hit F7 to add new.";
     }
 }
+
+
+bool NotificationLessThan(const Notification &a, const Notification &b){
+    return a.time < b.time;
+}
+
+
+void PanelGui::gatherNotifications() {
+    int i = 0, x = 0, notificationRows = 6;
+    QString userSoftwarePrefix = QString(getenv("HOME")) + QString(SOFTWARE_DATA_DIR);
+    auto userSoftwareList = QDir(userSoftwarePrefix).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    QList<Notification> notifications;
+
+    /* iterate through user software to find software notifications */
+    Q_FOREACH(QString service, userSoftwareList) {
+        QString notificationsPrefix = userSoftwarePrefix + "/" + service + NOTIFICATIONS_DATA_DIR;
+        if (QDir().exists(notificationsPrefix)) {
+            auto files = QDir(notificationsPrefix).entryInfoList(QDir::Files, QDir::Time);
+
+            Q_FOREACH(auto file, files) {
+                Notification n;
+                QString ext = file.suffix();
+
+                if (ext == "error")         n.level = NOTIFICATION_LEVEL_ERROR;
+                else if (ext == "warning")  n.level = NOTIFICATION_LEVEL_WARNING;
+                else if(ext == "notice")    n.level = NOTIFICATION_LEVEL_NOTICE;
+
+                n.content = readFileContents(file.absoluteFilePath()).trimmed();
+                n.time = file.created();
+                notifications.append(n);
+            }
+        }
+    }
+
+    // Sort
+    qSort(notifications.begin(), notifications.end(), NotificationLessThan);
+
+    // Display
+    int s = notifications.size();
+    int start = max(0, s - notificationRows);
+    int stop = min(s, notificationRows);
+
+    logTrace() << "s: " << s << " start: " << start << " stop: " << stop;
+
+    for(; i<stop; i++){
+        Notification n = notifications.at(i+start);
+        switch(n.level){
+            case NOTIFICATION_LEVEL_ERROR:
+                wattron(notificationWindow, COLOR_PAIR(8));
+                break;
+            case NOTIFICATION_LEVEL_WARNING:
+                wattron(notificationWindow, COLOR_PAIR(6));
+                break;
+            case NOTIFICATION_LEVEL_NOTICE:
+                wattron(notificationWindow, COLOR_PAIR(2));
+                break;
+        }
+
+        mvwprintw(notificationWindow, i, x, n.content.toUtf8());
+        wclrtoeol(notificationWindow);
+    }
+    for(; i<rows;i++){
+        wmove(notificationWindow, i, x);
+        wclrtoeol(notificationWindow);
+    }
+
+    wrefresh(notificationWindow);
+    refresh();
+}
+
 
 int PanelGui::kbhit() {
     struct timeval tv;

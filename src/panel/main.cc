@@ -75,6 +75,9 @@ int main(int argc, char *argv[]) {
     app.connect(timer2, SIGNAL(timeout()), gui, SLOT(readInput()));
     timer2->start(10);
 
+    QTimer *timerNotification = new QTimer(&app);
+    app.connect(timerNotification, SIGNAL(timeout()), gui, SLOT(gatherNotifications()));
+    timerNotification->start(100);
 
     return app.exec();
 }

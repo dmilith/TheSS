@@ -1,6 +1,10 @@
 #ifndef __PANEL_GUI_H__
 #define __PANEL_GUI_H__
 
+#include <QtCore>
+#include <ncurses.h>
+
+#include "../notifications/notifications.h"
 #include "panel.h"
 
 class PanelGui : public QObject {
@@ -26,6 +30,7 @@ public slots:
     void displayConfig();
     void displayEnv();
     void tailUpdate();
+    void gatherNotifications();
 
 signals:
     void quit();
