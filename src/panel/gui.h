@@ -58,6 +58,7 @@ private:
     QString status;
     WINDOW * mainWindow;
     WINDOW * logWindow;
+    WINDOW * notificationWindow;
     Tail * tail = NULL;
 };
 

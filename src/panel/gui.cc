@@ -35,8 +35,13 @@ void PanelGui::init(){
 
     panel->setGui(this);
 
-    mainWindow = newwin(rows, cols/2, 0, 0);
+    mainWindow = newwin(rows - 6, cols/2, 0, 0);
     logWindow = newwin(rows, cols/2, 0, cols/2);
+    notificationWindow = newwin(rows - 6, cols/2, rows - 6, 0);
+    box(notificationWindow, ' ', ' ');
+    wborder(notificationWindow, ' ', ' ', '-', '-', '-', '-', ' ', ' ');
+    mvwprintw(notificationWindow, 1, 1, "Trolololol odlfods fsdoi fsdiufnsdhbf bdsfhjbdsfjhbsd hfbds jhfbsdjhbf jhdsb fjdhsb fjdhsbfjhbdsjhfb dsjhbf sdjh bfshjd bfksdbfuiebowqu brw;g[enga zsoivou sorubgqi brgowbg pireuhnagvfdunaigulo bfdaigf ldshbgk3qbi587 g9rwagvydusfba vjbqo3bto ugbfjlhdbs auog3bgubajfbsljbg5 hu2bgoljrabglb3qlu btljabgljbjkbdsgbwib i g wgi ewipg erwighr3ipuwgb wigf s gfdkjlsgb kjlsg bwb gerw gfb gfds gfdsg jk3 j3kn tkjn46jknyj5kn j n5kj n5j nj5n 5kjn5 kj 5nkj5n kj5 n5kj n5kj n5kj n5kjnj\ndupa jasio second line bla bl ba asjfuibrhgisug rpwhn rteh pneriothp3n4uotr8syv98ds76gfvyhqwoui rwh wq eru wey gyuew guryeg uiywe ruyew guyer gu erugy reuyg reug reguyer guer gruyg erug reyu g\ngbergbyeugbe r erue eurbg uey vduys9r 3qo g hfd jdh gb5h3 bjhgrwuyvi a ybdvjshgv dhujfd gfg\nABC");
+    wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - 6, mainWindow);
     servicesList->setItems(&panel->services);
@@ -72,7 +77,7 @@ void PanelGui::displayFooter(){
     functions << "F5" << "refresh" << "F7" << "new service";
     functions << "F8" << "destroy" << "F9" << "SS shutdown";
 
-    int x = 0, y = rows - 2;
+    int x = 0, y = rows - 9;
     char * str;
     int i;
 
