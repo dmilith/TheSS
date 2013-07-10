@@ -248,6 +248,42 @@ void SvdService::babySitterSlot() {
                 }
             }
 
+            /* support UDP port check: */
+            if (config->watchUdpPort) {
+                logDebug() << "Checking UDP port availability for service" << name;
+
+                /* check static port if it's defined for service */
+                if (config->staticPort != -1) {
+                    int port = registerFreeUdpPort(config->staticPort);
+                    if (port == config->staticPort) {
+                        /* if port is equal then it implies that nothing is listening on that port */
+                        QString msg = "Babysitter has found unoccupied static UDP port: " + QString::number(config->staticPort) + " registered for service " + name;
+                        notification(msg, name, ERROR);
+                        emit restartSlot();
+                    }
+
+                /* check dynamic port for service */
+                } else {
+                    QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR) + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+
+                    if (QFile::exists(portFilePath)) {
+                        int currentPort = readFileContents(portFilePath).trimmed().toInt();
+                        int port = registerFreeUdpPort(currentPort);
+                        logDebug() << "UDP port compare:" << currentPort << "with" << port << "(should be different)";
+                        if (port == currentPort) {
+                            /* if port is equal then it implies that nothing is listening on that port */
+                            QString msg = "Babysitter has found unoccupied dynamic UDP port: " + QString::number(currentPort) + " registered for service: " + name;
+                            notification(msg, name, ERROR);
+                            emit restartSlot();
+                        }
+                    } else {
+                        QString msg = "Babysitter hasn't found port file for service: " + name;
+                        notification(msg, name, ERROR);
+                    }
+                }
+
+            }
+
         /* case when custom babysitter must be invoked, cause there's f.e. auto managment of pid by service */
         } else {
             logTrace() << "Dealing with custom service baby sitter for" << name << "with commands:" << config->babySitter->commands;
