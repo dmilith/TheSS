@@ -70,7 +70,7 @@ reconfigureHook # will execute:
 * Supports basic hook dependency model. (for example: touch ~/SoftwareData/MyApp/.start will invoke: install hook, configure hook, validate hook and start hook of MyApp igniter definition)
 * Supports software hook expectations with error reporting through built in Notification mechanism.
 * Supports software "baby sitting". By default watches for software pid ("alwaysOn" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
-* Supports TCP port checking. ("watchPort" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
+* Supports TCP/ UDP port checking. ("watchPort" and "watchUdpPort" options in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
 * Supports free port checking for TCP services, automatically generates random port for new services, (but also supports "staticPort" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)), to provide static port binding for software. (for example staticPort is 80 for Nginx). By default, service ports are stored in ~/SoftwareData/AppName/.ports and reused on next software start.
 * Supports service autostarting. You need only to touch ~/SoftwareData/MyApp/.autostart file.
 * Is designed to work with user privileges as a little user side daemon.

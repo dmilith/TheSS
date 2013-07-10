@@ -384,6 +384,33 @@ uint registerFreeTcpPort(uint specificPort) {
 }
 
 
+/* author: dmilith */
+uint registerFreeUdpPort(uint specificPort) {
+    QTime midnight(0, 0, 0);
+    qsrand(midnight.msecsTo(QTime::currentTime())); // accuracy is in ms.. so let's hack it a bit
+    usleep(10000); // this practically means no chance to generate same port when generating multiple ports at once
+    uint port = 0, rand = (qrand() % 40000);
+    if (specificPort == 0) {
+        port = 10000 + rand;
+    } else
+        port = specificPort;
+
+    int sockfd;
+    struct sockaddr_in servaddr;
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    bzero(&servaddr, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(port);
+    if (bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) {
+        return registerFreeUdpPort(10000 + rand);
+    }
+    close(sockfd);
+    return port;
+}
+
+
 /*
  *  Read file contents of text file
  */

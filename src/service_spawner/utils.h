@@ -24,6 +24,10 @@
 #define logError LOG_ERROR
 #define logFatal LOG_FATAL
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <signal.h>
@@ -76,6 +80,7 @@ void unixSignalHandler(int sigNum);
 QMap<QString, long> getDiskFree(const QString& path = getenv("HOME")); /* in MiB */
 
 uint registerFreeTcpPort(uint specificPort = 0);
+uint registerFreeUdpPort(uint specificPort = 0);
 Json::Value* parseJSON(const QString& filename);
 
 QString tail(const QString& pathToFile, int lines, int positionModifier = 0);

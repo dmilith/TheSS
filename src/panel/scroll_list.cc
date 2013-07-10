@@ -5,7 +5,7 @@
  *
  */
 
- #include "panel.h"
+#include "panel.h"
 
 template<class T>
 void ScrollList<T>::display(){
@@ -58,19 +58,18 @@ void ScrollList<T>::key(int ch){
 }
 
 template<class T>
-const T * ScrollList<T>::currentItem(){
+T ScrollList<T>::currentItem(){
     if(items->empty()) {
         return NULL;
     } else {
-        if(this->current < 0) this->current = 0; // Fix for case when ading first service
-        return &(items->at(current));
+        if(current < 0) current = 0; // Fix for case when ading first service
+        return items->at(current);
     }
 }
 
 
-AvailableServicesList::AvailableServicesList(QList<QString> * items, int maxRows, WINDOW * win, QString aHeader): ScrollList(items, maxRows){
+AvailableServicesList::AvailableServicesList(QList<QString> * items, int maxRows, WINDOW * win, QString aHeader): ScrollList(items, maxRows, win){
     this->all = QList<QString>(*items);
-    this->win = win;
     this->header = aHeader;
     setName("");
 }
@@ -121,14 +120,14 @@ void AvailableServicesList::displayEmptyItem(int i){
 
 
 void ServicesList::displayHeader(){
-    mvprintw(3, 0, " # Name                        PID Address               Status        Flags   Autostart");
+    mvwprintw(win, 3, 0, " # Name                        PID Address               Status        Flags   Autostart");
 }
 
-void ServicesList::displayItem(PanelService service, int i, int num, bool current){
+void ServicesList::displayItem(PanelService * service, int i, int num, bool current){
     QString status;
     int color;
 
-    switch(service.status){
+    switch(service->status){
         case SERVICE_STATUS_INSTALLING:
             status = "Installing...";
             color = C_STATUS_INSTALLING;
@@ -161,45 +160,45 @@ void ServicesList::displayItem(PanelService service, int i, int num, bool curren
 
     if(current) color = C_CURRENT;
 
-    attron(color);
+    wattron(win, color);
 
     int x = 0, y = i + 4;
 
     /* # */
-    mvprintw(y, x, "%2d", num+1);
+    mvwprintw(win, y, x, "%2d", num+1);
     x += 2;
 
     /* name */
-    mvprintw(y, x, " %-26s", service.name.toUtf8().data());
+    mvwprintw(win, y, x, " %-26s", service->name.toUtf8().data());
     x += 27;
 
     /* pid */
-    mvprintw(y, x, "%5s", service.pid.toUtf8().data());
+    mvwprintw(win, y, x, "%5s", service->pid.toUtf8().data());
     x += 5;
 
     /* domain:port */
-    mvprintw(y, x, " %-21s", (service.domain + ":" + service.port).toUtf8().data());
+    mvwprintw(win, y, x, " %-21s", (service->domain + ":" + service->port).toUtf8().data());
     x += 22;
 
     /* flags & status */
-    mvprintw(y, x, " %-14s", status.toUtf8().data());
+    mvwprintw(win, y, x, " %-14s", status.toUtf8().data());
     x += 14;
-    mvprintw(y, x, " %s", service.flags);
+    mvwprintw(win, y, x, " %s", service->flags);
     x += 6;
 
-    if(service.autostart)  mvprintw(y, x, "   YES       ");
-    else    mvprintw(y, x, "             ");
+    if(service->autostart)  mvwprintw(win, y, x, "   YES       ");
+    else    mvwprintw(win, y, x, "             ");
 
-    attroff(color);
+    wattroff(win, color);
 }
 
 void ServicesList::displayEmptyItem(int i){
-    mvprintw(i+4, 0, "%100s", "");
+    mvwprintw(win, i+4, 0, "%100s", "");
 }
 
 void ServicesList::setCurrent(QString selected){
     for(int i=0; i<items->size(); i++){
-        if(items->at(i).name == selected){
+        if(items->at(i)->name == selected){
             this->current = i;
             break;
         }
@@ -208,4 +207,4 @@ void ServicesList::setCurrent(QString selected){
 
 
 template class ScrollList<QString>;
-template class ScrollList<PanelService>;
+template class ScrollList<PanelService *>;

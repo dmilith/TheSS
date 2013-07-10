@@ -21,3 +21,4 @@ svdnom
 *.log
 TheSS.xcodeproj/
 releases/
+/bin/panel

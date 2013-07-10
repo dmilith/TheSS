@@ -36,6 +36,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         reportAllInfos = (*defaults)["reportAllInfos"].asBool();
         reportAllDebugs = (*defaults)["reportAllDebugs"].asBool();
         watchPort = (*defaults)["watchPort"].asBool();
+        watchUdpPort = (*defaults)["watchUdpPort"].asBool();
         alwaysOn = (*defaults)["alwaysOn"].asBool();
         resolveDomain = (*defaults)["resolveDomain"].asBool();
         staticPort = (*defaults)["staticPort"].asInt();
@@ -127,6 +128,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         reportAllInfos = root->get("reportAllInfos", (*defaults)["reportAllInfos"]).asBool();
         reportAllDebugs = root->get("reportAllDebugs", (*defaults)["reportAllDebugs"]).asBool();
         watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
+        watchUdpPort = root->get("watchUdpPort", (*defaults)["watchUdpPort"]).asBool();
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
         resolveDomain = root->get("resolveDomain", (*defaults)["resolveDomain"]).asBool();
         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
@@ -365,7 +367,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     logTrace() << "Resolved address of domain " << userDomain << " is " << userAddress;
                     ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
                 } else {
-                    logWarn() << "Empty domain resolve of: " << userDomain << "Domain fallback to:" << domain << "(" << address << ") for service:" << name;
+                    logDebug() << "Empty domain resolve of: " << userDomain << "for service:" << name;
                     ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
                 }
             } else { /* don't resolve domain */

@@ -15,6 +15,21 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 
+#include "../globals/globals.h"
+#include "../notifications/notifications.h"
+#include "../service_spawner/utils.h"
+#include <sys/ioctl.h>
+
+
+#define NOTIFICATION_LEVEL_ERROR    0
+#define NOTIFICATION_LEVEL_WARNING  1
+#define NOTIFICATION_LEVEL_NOTICE   2
+
+struct Notification {
+    int level;
+    QString content;
+    QDateTime time;
+};
 
 enum NotificationLevels {NOTIFY, WARNING, ERROR, FATAL};
 
