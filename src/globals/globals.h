@@ -2,7 +2,7 @@
 #define __GLOBALS__
 
     /* global constants */
-    #define APP_VERSION "0.48.0"
+    #define APP_VERSION "0.48.1"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -49,6 +49,7 @@
     #define DEFAULTSOFTWARETEMPLATESDIR "/Common/Igniters/Services"
     #define DEFAULTUSERIGNITERSDIR "/Igniters/Services"
     #define DEFAULT_SYSTEM_ADDRESS "127.0.0.1"
+    #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
     #define DEFAULT_SYSTEM_DOMAIN "localhost"
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
     #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"

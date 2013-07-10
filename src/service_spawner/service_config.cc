@@ -367,12 +367,12 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     logTrace() << "Resolved address of domain " << userDomain << " is " << userAddress;
                     ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
                 } else {
-                    logDebug() << "Empty domain resolve of: " << userDomain << "for service:" << name;
-                    ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
+                    logDebug() << "Empty domain resolve of: " << userDomain << "for service:" << name << "Setting wildcard address: " << DEFAULT_WILDCARD_ADDRESS;
+                    ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS); /* replace with user address content */
                 }
             } else { /* don't resolve domain */
-                logTrace() << "Set address of domain " << userDomain << " as " << DEFAULT_SYSTEM_ADDRESS;
-                ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_SYSTEM_ADDRESS); /* replace with user address content */
+                logDebug() << "Set address of domain " << userDomain << " as wildcard address: " << DEFAULT_WILDCARD_ADDRESS;
+                ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS); /* replace with user address content */
             }
         } else {
             // logDebug() << "Filling address with default value";
