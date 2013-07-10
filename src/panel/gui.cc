@@ -753,7 +753,6 @@ void PanelGui::readInput(){
         if(ch == 'q'){
             logDebug() << "cleanup";
             cleanup();
-            endwin();
             emit quit();
             return;
         } else {
