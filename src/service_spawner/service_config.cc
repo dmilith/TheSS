@@ -367,7 +367,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     logTrace() << "Resolved address of domain " << userDomain << " is " << userAddress;
                     ccont = ccont.replace("SERVICE_ADDRESS", userAddress); /* replace with user address content */
                 } else {
-                    logWarn() << "Empty domain resolve of: " << userDomain << "Domain fallback to:" << domain << "(" << address << ") for service:" << name;
+                    logDebug() << "Empty domain resolve of: " << userDomain << "for service:" << name;
                     ccont = ccont.replace("SERVICE_ADDRESS", address); /* replace with user address content */
                 }
             } else { /* don't resolve domain */
