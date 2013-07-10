@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     QRegExp rxPrintVersion("-v");
     uint uid = getuid();
 
-    bool debug = false, trace = false, backgroundMode = false;
+    bool debug = false, trace = false;
     for (int i = 1; i < args.size(); ++i) {
         if (rxEnableDebug.indexIn(args.at(i)) != -1 ) {
             debug = true;
