@@ -70,6 +70,7 @@ http {
 test ! -d SERVICE_PREFIX/html && mkdir -p SERVICE_PREFIX/html && echo '<html>Hello I am Nginx and I am not configured yet!</html>' > SERVICE_PREFIX/html/index.html
 test ! -f SERVICE_PREFIX/service.conf && printf \"
 worker_processes 2;
+pid SERVICE_PREFIX/service.pid;
 events {
     worker_connections 1024;
 }
