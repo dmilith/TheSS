@@ -16,6 +16,9 @@ printf 'Launching Nginx\n' >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf && printf 'Nginx started\n' >> SERVICE_PREFIX/service.log 2>&1
 "
     },
+    "afterStop": {
+        "commands": ""
+    },
     "stop": {
         "commands": "
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop && printf 'Nginx stopped\n' >> SERVICE_PREFIX/service.log 2>&1
@@ -58,7 +61,7 @@ http {
     },
     "validate": {
         "commands": "
-SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf && printf 'Ngins started\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf && printf 'Nginx started\n' >> SERVICE_PREFIX/service.log 2>&1
 ",
         "expectOutput": "test is successful"
     },
@@ -68,10 +71,5 @@ commands": "
 printf 'Reloading Nginx\n' >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_PREFIX/service.log 2>&1
 "
-    },
-    "babySitter": {
-        "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t",
-        "expectOutput": "test is successful",
-        "expectOutputTimeout": 60
     }
 }

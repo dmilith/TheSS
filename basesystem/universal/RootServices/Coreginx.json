@@ -18,6 +18,9 @@ printf 'Launching Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf >> SERVICE_PREFIX/service.log 2>&1
 "
     },
+    "afterStop": {
+        "commands": ""
+    },
     "stop": {
         "commands": "
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PREFIX/service.log 2>&1
@@ -97,12 +100,5 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t
 printf 'Reloading Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1
 "
-    },
-    "babySitter": {
-        "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t
-",
-        "expectOutput": "test is successful",
-        "expectOutputTimeout": 20
     }
 }
