@@ -490,3 +490,12 @@ void TestLibrary::testMkdir() {
     QVERIFY(not QDir("/tmp/abc123/4/5/6/7/8/9/zażółcam-gęślą").exists());
     QVERIFY(not QDir("/tmp/abc123").exists());
 }
+
+
+void TestLibrary::testUdpPort() {
+    // int port = registerFreeUdpPort(12345);
+    // QVERIFY(port != 12345);
+    int port = registerFreeUdpPort(12346);
+    QVERIFY(port == 12346);
+}
+

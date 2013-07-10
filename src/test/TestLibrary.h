@@ -41,6 +41,7 @@ class TestLibrary: public QObject {
             void testCrontabEntry();
             void testTail();
             void testMkdir();
+            void testUdpPort();
 
 };
 
