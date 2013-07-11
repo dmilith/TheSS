@@ -484,10 +484,6 @@ void PanelGui::key(int ch){
             reload(r, c);
             break;
 
-//         case KEY_F(6): /* display thess log */
-//             displayFile(panel->home.absoluteFilePath(".thess.log"));
-//             break;
-
         case KEY_F(9):
             panel->shutdown();
             status = "Terminating ServiceSpawner (services remain in background)";
@@ -496,10 +492,6 @@ void PanelGui::key(int ch){
         case '?':
             helpDialog();
             break;
-
-//         case '/':
-//             searchLog();
-//             break;
 
         case KEY_PPAGE:
         case '[':
@@ -510,16 +502,6 @@ void PanelGui::key(int ch){
         case '\'':
             tailScroll(-5);
             break;
-
-//         case ';':
-//             tmux("C-c");
-//             tmux("Escape \\(");
-//             break;
-
-//         case '\\':
-//             tmux("C-c");
-//             tmux("Escape \\)");
-//             break;
 
         case 'S': /* Start */
             if (servicesList->currentItem() == NULL) {
