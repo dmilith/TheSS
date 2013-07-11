@@ -46,6 +46,8 @@ private:
     bool wrap = true;
     bool frontReached = false;
     QMutex mutex;
+
+    QString fileRemovedLine = "**** FILE REMOVED ****";
 };
 
 

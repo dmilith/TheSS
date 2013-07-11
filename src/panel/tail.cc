@@ -53,7 +53,9 @@ void Tail::onDirectoryChanged(const QString& dir){
     } else {
         eventsManager->unregisterFile(path);
         frontPos = backPos = 0;
-        buffer.push_back("** FILE REMOVED **");
+        if(!buffer.isEmpty()){
+          if(buffer.last() != fileRemovedLine) buffer.push_back(fileRemovedLine);
+        }
     }
 
     logDebug() << "updated";
