@@ -66,6 +66,7 @@ private:
     WINDOW * logWindow;
     WINDOW * notificationWindow;
     Tail * tail = NULL;
+    const PanelService * recentService = NULL;
 };
 
 

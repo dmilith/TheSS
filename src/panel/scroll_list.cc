@@ -63,6 +63,7 @@ T ScrollList<T>::currentItem(){
         return NULL;
     } else {
         if(current < 0) current = 0; // Fix for case when ading first service
+        if(current >= items->size()) current = items->size() - 1;
         return items->at(current);
     }
 }

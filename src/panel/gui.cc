@@ -602,6 +602,7 @@ void PanelGui::key(int ch){
 
 void PanelGui::display(){
     // logDebug() << "display";
+    tailUpdate();
     displayHeader();
     displayStatus();
     servicesList->setItems(&panel->services);
@@ -615,6 +616,12 @@ void PanelGui::tailUpdate(){
     const PanelService * service = servicesList->currentItem();
 
     if(service != NULL){
+
+        if(service != recentService) {
+            recentService = service;
+            displayLog();
+        }
+
         if(tail == NULL) tail = service->log;
         tail->display(logWindow, rows, cols);
     }
