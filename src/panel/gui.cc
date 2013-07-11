@@ -156,8 +156,8 @@ void PanelGui::displayFooter(){
     Q_FOREACH(auto action, actions){
         str = action.toUtf8().data();
         for(i=0; i<action.length(); i++){
-            if(str[i] >= 'A' && str[i] <= 'Z') attron(C_GREEN);
-            else attron(C_DEFAULT);
+            if(str[i] >= 'A' && str[i] <= 'Z') wattron(mainWindow, C_GREEN);
+            else wattron(mainWindow, C_DEFAULT);
             mvwprintw(mainWindow, y, x++, "%c", str[i]);
         }
         mvwprintw(mainWindow, y, x++, " ");
