@@ -222,7 +222,7 @@ void SvdService::babySitterSlot() {
                     int port = registerFreeTcpPort(config->staticPort);
                     if (port == config->staticPort) {
                         /* if port is equal then it implies that nothing is listening on that port */
-                        QString msg = "Babysitter has found unoccupied static port: " + QString::number(config->staticPort) + "registered for service " + name;
+                        QString msg = "Babysitter has found unoccupied static port: " + QString::number(config->staticPort) + " registered for service " + name;
                         notification(msg, name, ERROR);
                         emit restartSlot();
                     }
