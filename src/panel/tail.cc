@@ -198,6 +198,17 @@ void Tail::toggleWrap(){
 }
 
 void Tail::display(WINDOW * win, int rows, int cols){
+  // Header
+  wattron(win, C_SCROLLING);
+  wbkgdset(win, C_SCROLLING);
+  mvwprintw(win, 0, 1, " Showing %s", path.toUtf8().data());
+  if(!QFile::exists(path)) wprintw(win, "  --  File does not exist");
+  wclrtoeol(win);
+  wattroff(win, C_SCROLLING);
+  wbkgdset(win, 0);
+
+  rows--;
+
   int s = buffer.size() - scrollOffset;
   int off = max(s-rows, 0);
   int m = min(s, rows);
@@ -205,12 +216,12 @@ void Tail::display(WINDOW * win, int rows, int cols){
   int w = cols/2 - 2;
 
   wmove(win, 0, 0);
-  wvline(win, '|', rows);
+  wvline(win, '|', rows+1);
 
 
   QList<QString> buf;
 
-  logDebug() << "tail display" << "bufsize: " << buffer.size() << "off " << off << "m: " << m;
+  // logDebug() << "tail display" << "bufsize: " << buffer.size() << "off " << off << "m: " << m;
 
   for(i=0; i<m; i++){
       QString line = buffer.at(i+off);
@@ -235,17 +246,16 @@ void Tail::display(WINDOW * win, int rows, int cols){
 
   for(i=0; i<m; i++){
       QString line = buf.at(i+off);
-      mvwprintw(win, i, 0, "| %s", line.toUtf8().data());
+      mvwprintw(win, i+1, 0, "| %s", line.toUtf8().data());
       wclrtoeol(win);
   }
 
-  for(;i<rows; i++){
+  for(;i<=rows; i++){
       wmove(win, i, 2);
       wclrtoeol(win);
   }
 
   if(scrollOffset > 0){
-    rows -= 1;
     wattron(win, C_SCROLLING);
     wbkgdset(win, C_SCROLLING);
     mvwprintw(win, rows, 1, " Scrolling (%d lines up)", scrollOffset);
