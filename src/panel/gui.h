@@ -21,6 +21,7 @@ public:
     void removeCurrentService();
     bool confirm(QString msg);
     void init();
+    QString newDomain();
 
 public slots:
     void run();
