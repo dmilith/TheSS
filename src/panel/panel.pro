@@ -27,7 +27,8 @@ SOURCES   += ../service_spawner/utils.cc \
              gui.cc \
              scroll_list.cc \
              service.cc \
-             tail.cc
+             tail.cc \
+             ansi.cc
 
 mac {
       LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncurses

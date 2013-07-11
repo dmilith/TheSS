@@ -248,7 +248,8 @@ void Tail::display(WINDOW * win, int rows, int cols){
 
   for(i=0; i<m; i++){
       QString line = buf.at(i+off);
-      mvwprintw(win, i+1, 0, "| %s", line.toUtf8().data());
+      mvwprintw(win, i+1, 0, "| ");
+      ansi_print(win, i+1, 2, line);
       wclrtoeol(win);
   }
 

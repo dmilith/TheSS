@@ -25,23 +25,29 @@
 #define SERVICE_STATUS_ERRORS       5
 #define SERVICE_STATUS_STOPPED      6
 
-#define C_DEFAULT COLOR_PAIR(1)
-#define C_GREEN COLOR_PAIR(2)
-#define C_STATUS COLOR_PAIR(5)
-#define C_SS_STATUS_ON COLOR_PAIR(2)
-#define C_SS_STATUS_OFF COLOR_PAIR(8)
+#define COLOR(x) COLOR_PAIR((x)+1)
 
-#define C_STATUS              COLOR_PAIR(5)
-#define C_STATUS_INSTALLING   COLOR_PAIR(6)
-#define C_STATUS_VALIDATING   COLOR_PAIR(6)
-#define C_STATUS_CONFIGURING  COLOR_PAIR(6)
-#define C_STATUS_WORKING      COLOR_PAIR(6)
-#define C_STATUS_RUNNING      COLOR_PAIR(2)
-#define C_STATUS_ERRORS       COLOR_PAIR(8)
-#define C_STATUS_STOPPED      (COLOR_PAIR(3) | A_BOLD)
+#define C_DEFAULT       COLOR(8*COLOR_WHITE)
+#define C_GREEN         COLOR(8*COLOR_GREEN)
+#define C_SS_STATUS_ON  COLOR(8*COLOR_GREEN)
+#define C_SS_STATUS_OFF COLOR(8*COLOR_RED)
+#define C_BORDER        COLOR(8*COLOR_YELLOW)
 
-#define C_CURRENT COLOR_PAIR(4)
-#define C_SCROLLING COLOR_PAIR(7)
+#define C_STATUS              COLOR(8*COLOR_CYAN)
+#define C_STATUS_INSTALLING   COLOR(8*COLOR_YELLOW)
+#define C_STATUS_VALIDATING   COLOR(8*COLOR_YELLOW)
+#define C_STATUS_CONFIGURING  COLOR(8*COLOR_YELLOW)
+#define C_STATUS_WORKING      COLOR(8*COLOR_YELLOW)
+#define C_STATUS_RUNNING      COLOR(8*COLOR_GREEN)
+#define C_STATUS_ERRORS       COLOR(8*COLOR_RED)
+#define C_STATUS_STOPPED      (COLOR(8*COLOR_BLACK) | A_BOLD)
+
+#define C_CURRENT   COLOR(8*COLOR_BLACK + COLOR_CYAN)
+#define C_SCROLLING COLOR(8*COLOR_BLACK + COLOR_WHITE)
+
+#define C_NOTIFICATION_ERROR    COLOR(8*COLOR_RED)
+#define C_NOTIFICATION_WARNING  COLOR(8*COLOR_YELLOW)
+#define C_NOTIFICATION_NOTICE   COLOR(8*COLOR_GREEN)
 
 
 // Forward referecnes, C++ you're such a moron
@@ -133,5 +139,9 @@ public:
     void displayEmptyItem(int i);
     void setCurrent(QString selected);
 };
+
+
+void ansi_setup();
+void ansi_print(WINDOW * win, int y, int x, QString str);
 
 #endif

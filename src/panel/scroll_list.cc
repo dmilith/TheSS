@@ -76,13 +76,13 @@ AvailableServicesList::AvailableServicesList(QList<QString> * items, int maxRows
 }
 
 void AvailableServicesList::displayHeader(){
-    wattron(win, COLOR_PAIR(6));
+    wattron(win, C_BORDER);
     box(win, '|', '-');
-    wattroff(win, COLOR_PAIR(6));
+    wattroff(win, C_BORDER);
 
-    wattron(win, COLOR_PAIR(2));
+    wattron(win, C_GREEN);
     mvwprintw(win, 1, 2, header.toUtf8());
-    wattron(win, COLOR_PAIR(2));
+    wattron(win, C_GREEN);
 }
 
 void AvailableServicesList::displayFooter(){
@@ -105,14 +105,14 @@ void AvailableServicesList::setName(QString name){
 
 void AvailableServicesList::displayItem(QString item, int i, int num, bool current){
     if(current){
-        wattron(win, COLOR_PAIR(4));
+        wattron(win, C_CURRENT);
     } else {
-        wattroff(win, COLOR_PAIR(4));
+        wattroff(win, C_CURRENT);
     }
 
     mvwprintw(win, i+2, 2, "%2d", num+1);
     mvwprintw(win, i+2, 4, " %-40s", item.toUtf8().data());
-    wattroff(win, COLOR_PAIR(4));
+    wattroff(win, C_CURRENT);
 }
 
 void AvailableServicesList::displayEmptyItem(int i){

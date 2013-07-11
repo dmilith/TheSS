@@ -18,20 +18,12 @@ void PanelGui::init(){
     getmaxyx(stdscr, rows, cols); // get cols and rows amount
     cbreak();
     start_color();
+    ansi_setup();
     curs_set(0); // cursor invisible
     keypad(stdscr, TRUE);
     noecho();
     refresh();
 
-    // /* selected color */
-    init_pair(1, COLOR_WHITE, COLOR_BLACK); // default
-    init_pair(2, COLOR_GREEN, COLOR_BLACK); // running service
-    init_pair(3, COLOR_BLACK, COLOR_BLACK); // stopped service
-    init_pair(4, COLOR_BLACK, COLOR_CYAN); // selected service
-    init_pair(5, COLOR_CYAN, COLOR_BLACK); // status
-    init_pair(6, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(7, COLOR_BLACK, COLOR_WHITE);
-    init_pair(8, COLOR_RED, COLOR_BLACK);
 
     panel->setGui(this);
 
@@ -100,13 +92,13 @@ void PanelGui::gatherNotifications() {
         Notification n = notifications.at(i+start);
         switch(n.level){
             case NOTIFICATION_LEVEL_ERROR:
-                wattron(notificationWindow, COLOR_PAIR(8));
+                wattron(notificationWindow, C_NOTIFICATION_ERROR);
                 break;
             case NOTIFICATION_LEVEL_WARNING:
-                wattron(notificationWindow, COLOR_PAIR(6));
+                wattron(notificationWindow, C_NOTIFICATION_WARNING);
                 break;
             case NOTIFICATION_LEVEL_NOTICE:
-                wattron(notificationWindow, COLOR_PAIR(2));
+                wattron(notificationWindow, C_NOTIFICATION_NOTICE);
                 break;
         }
 
@@ -135,7 +127,7 @@ int PanelGui::kbhit() {
 }
 
 void PanelGui::displayHeader(){
-    wattron(mainWindow, COLOR_PAIR(1));
+    wattron(mainWindow, C_DEFAULT);
     mvwprintw(mainWindow, 0, 0, "Control Panel v%s. © 2013 verknowsys.com %d", APP_VERSION, time(NULL));
 }
 
@@ -214,9 +206,9 @@ void PanelGui::cleanup(){
 void PanelGui::helpDialog(){
     WINDOW *win = newwin(rows-4, cols-2, 2, 1);
 
-    wattron(win, COLOR_PAIR(6));
+    wattron(win, C_BORDER);
     box(win, '|', '-');
-    wattroff(win, COLOR_PAIR(6));
+    wattroff(win, C_BORDER);
 
     QList<QString> list;
     list << "Available key bindings:";
@@ -378,13 +370,13 @@ bool PanelGui::confirm(QString msg){
     WINDOW *win = newwin(5, c, (rows-5)/2, (cols-c)/2);
     keypad(win, TRUE);
 
-    wattron(win, COLOR_PAIR(8));
+    wattron(win, C_NOTIFICATION_ERROR);
     wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
 
     WINDOW *inner = derwin(win, 3, c-2, 1, 1);
 
     mvwprintw(inner, 0, 0, (msg + " (Y to confirm)").toUtf8().data());
-    wattron(inner, COLOR_PAIR(2));
+    wattron(inner, C_NOTIFICATION_NOTICE);
     wrefresh(win);
     int ch = wgetch(win);
 
