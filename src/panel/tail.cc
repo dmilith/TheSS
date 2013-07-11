@@ -54,7 +54,7 @@ void Tail::onDirectoryChanged(const QString& dir){
         eventsManager->unregisterFile(path);
         frontPos = backPos = 0;
         if(!buffer.isEmpty()){
-          if(buffer.last() != fileRemovedLine) buffer.push_back(fileRemovedLine);
+          buffer.push_back(fileRemovedLine);
         }
     }
 
@@ -78,7 +78,7 @@ void Tail::readLinesBack(int n){
     qint64 size = file.size();
     QTextStream stream(&file);
     QList<QString> buf;
-    qint64 block = 5;
+    qint64 block = 128;
     qint64 pos = -1;
 
     do {
@@ -251,6 +251,8 @@ void Tail::display(WINDOW * win, int rows, int cols){
       mvwprintw(win, i+1, 0, "| %s", line.toUtf8().data());
       wclrtoeol(win);
   }
+
+  i++;
 
   for(;i<=rows; i++){
       wmove(win, i, 2);
