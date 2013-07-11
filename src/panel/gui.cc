@@ -185,11 +185,6 @@ void PanelGui::displayFooter(){
 }
 
 void PanelGui::displayStatus(){
-    /* services count info */
-    // attron(COLOR_PAIR(5));
-    // mvprintw(0, 88, "Defined services count: " + QString::number(panel->services.length()).toUtf8());
-    // attroff(COLOR_PAIR(5));
-
     /* SS status info */
     if(panel->isSSOnline()){
         wattron(mainWindow, C_SS_STATUS_ON);
@@ -209,38 +204,10 @@ void PanelGui::displayStatus(){
 }
 
 
-// void PanelGui::displayFile(QString file){
-//     QString tpl = ":e %1 C-m";
-
-//     tmux("C-c");
-//     tmux(tpl.arg(file));
-
-//     if(QFile::exists(file)) tmux("F");
-// }
-
-// void PanelGui::displayLog(){
-//     const PanelService * service = servicesList->currentItem();
-//     if(TMUX && service != NULL && (loggedServicePath != service->dir.absolutePath())){
-//         loggedServicePath = service->dir.absolutePath();
-
-//         displayFile(loggedServicePath + DEFAULT_SERVICE_LOG_FILE);
-//     }
-// }
-
-
-
 void PanelGui::cleanup(){
     endwin();
 }
 
-// void PanelGui::searchLog(){
-//     tmux("C-c");
-//     tmux("/");
-//     QString cmd = " tmux select-pane -t 1\n";
-//     auto process = new SvdProcess("tail", getuid(), false);
-//     process->spawnProcess(cmd);
-//     process->waitForFinished();
-// }
 
 void PanelGui::helpDialog(){
     WINDOW *win = newwin(rows-4, cols-2, 2, 1);
@@ -624,12 +591,8 @@ void PanelGui::key(int ch){
             displayLog();
             break;
 
-//         case 10: /* TODO: implement details view */
-//             status = "Not implemented";
-//             break;
-
         case 'N':
-        case KEY_F(7): /* Launch new service */
+        case KEY_F(7): /* Initialize new service */
             newServiceDialog();
             break;
 
@@ -659,17 +622,6 @@ void PanelGui::tailUpdate(){
         if(tail == NULL) tail = service->log;
         tail->display(logWindow, rows, cols);
     }
-
-
-    // logDebug() << "service " << (long)service;
-    // if(service != NULL){
-    //     // tailUpdate();
-    // }
-        // logDebug() << "tailUpdate?";
-    // if(tail != NULL){
-    //     logDebug() << "tailUpdate!";
-    //     tail->display(logWindow, rows, cols);
-    // }
 
     wrefresh(logWindow);
 }
