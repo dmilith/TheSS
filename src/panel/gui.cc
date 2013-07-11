@@ -93,9 +93,8 @@ void PanelGui::gatherNotifications() {
     logTrace() << "s: " << s << " start: " << start << " stop: " << stop;
 
     wattron(notificationWindow, C_DEFAULT);
-    for(int k=0; k<cols/2; k++){
-        mvwprintw(notificationWindow, i, k, "-");
-    }
+    wmove(notificationWindow, 0, 0);
+    whline(notificationWindow, '-', cols/2);
 
     for(; i<stop; i++){
         Notification n = notifications.at(i+start);
