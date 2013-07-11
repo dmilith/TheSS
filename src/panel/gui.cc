@@ -233,18 +233,14 @@ void PanelGui::helpDialog(){
     list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
     list << "  E       - Show app env (service.env)";
-    list << "  L       - Refresh log pane (service.log)";
-    list << "";
-    list << "Log window actions:";
-    list << "  [, ', ;, \\ - Move in log window";
-    list << "  W       - Toggle line wrap";
+    list << "  L       - Show service log (service.log";
+    list << "  W       - Toggle line wrapping in log window";
     list << "";
     list << "Other actions:";
     list << "  F1-F4   - Set log level (trace, debug, info, error)";
     list << "  F5      - Refresh panel";
-    list << "  F6      - Display thess log";
     list << "  F7, N   - Add new service";
-    list << "  F9      - Shutdown TheSS (won't touch services)";
+    list << "  F9      - Shutdown TheSS (leave services working)";
 
     for(int i=0; i<list.length(); i++){
         mvwprintw(win, i+1, 2, "%s", list.at(i).toUtf8().data());
@@ -579,7 +575,7 @@ void PanelGui::key(int ch){
             tailToggleWrap();
             break;
 
-        case 'K':
+        case 'K': /* show service config file */
             displayConfig();
             break;
 
@@ -587,7 +583,7 @@ void PanelGui::key(int ch){
             displayEnv();
             break;
 
-        case 'L': // refresh log window
+        case 'L': /* refresh log window */
             displayLog();
             break;
 
@@ -597,7 +593,7 @@ void PanelGui::key(int ch){
             break;
 
         case 'X':
-        case KEY_F(8): /* Remove current service */
+        case KEY_F(8): /* Destroy current service configuration with data */
             removeCurrentService();
             break;
 
