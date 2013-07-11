@@ -488,10 +488,10 @@ void PanelGui::key(int ch){
 //             displayFile(panel->home.absoluteFilePath(".thess.log"));
 //             break;
 
-//         case KEY_F(9):
-//             panel->shutdown();
-//             status = "Terminating ServiceSpawner (services remain in background)";
-//             break;
+        case KEY_F(9):
+            panel->shutdown();
+            status = "Terminating ServiceSpawner (services remain in background)";
+            break;
 
         case '?':
             helpDialog();
