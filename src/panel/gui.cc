@@ -37,9 +37,7 @@ void PanelGui::init(){
 
     mainWindow = newwin(rows - 6, cols/2, 0, 0);
     logWindow = newwin(rows, cols/2, 0, cols/2);
-    notificationWindow = newwin(rows - 6, cols/2, rows - 6, 0);
-    box(notificationWindow, ' ', ' ');
-    wborder(notificationWindow, ' ', ' ', '-', '-', '-', '-', ' ', ' ');
+    notificationWindow = newwin(notificationRows + 1, cols/2, rows - notificationRows - 1, 0);
     wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - 6, mainWindow);
@@ -57,7 +55,7 @@ bool NotificationLessThan(const Notification &a, const Notification &b){
 
 
 void PanelGui::gatherNotifications() {
-    int i = 0, x = 0, notificationRows = 6;
+    int i = 0, x = 0;
     QString userSoftwarePrefix = QString(getenv("HOME")) + QString(SOFTWARE_DATA_DIR);
     auto userSoftwareList = QDir(userSoftwarePrefix).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -94,6 +92,11 @@ void PanelGui::gatherNotifications() {
 
     logTrace() << "s: " << s << " start: " << start << " stop: " << stop;
 
+    wattron(notificationWindow, C_DEFAULT);
+    for(int k=0; k<cols/2; k++){
+        mvwprintw(notificationWindow, i, k, "-");
+    }
+
     for(; i<stop; i++){
         Notification n = notifications.at(i+start);
         switch(n.level){
@@ -108,11 +111,11 @@ void PanelGui::gatherNotifications() {
                 break;
         }
 
-        mvwprintw(notificationWindow, i, x, n.content.toUtf8());
+        mvwprintw(notificationWindow, i+1, x, n.content.toUtf8());
         wclrtoeol(notificationWindow);
     }
     for(; i<rows;i++){
-        wmove(notificationWindow, i, x);
+        wmove(notificationWindow, i+1, x);
         wclrtoeol(notificationWindow);
     }
 
