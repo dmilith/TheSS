@@ -648,6 +648,7 @@ void PanelGui::displayConfig(){
     PanelService * service = servicesList->currentItem();
     if(service != NULL){
         tail = service->conf;
+        tail->reload();
         tailUpdate();
     }
 }
@@ -656,6 +657,7 @@ void PanelGui::displayEnv(){
     const PanelService * service = servicesList->currentItem();
     if(service != NULL){
         tail = service->env;
+        tail->reload();
         tailUpdate();
     }
 }

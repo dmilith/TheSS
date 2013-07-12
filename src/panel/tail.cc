@@ -33,6 +33,14 @@ Tail::Tail(PanelService * service, const QString& dirname, const QString& filena
 //     eventsManager = NULL;
 // }
 
+void Tail::reload(){
+  buffer.clear();
+  frontPos = 0;
+  backPos = 0;
+  lastSize = 0;
+  readLinesBack(100);
+}
+
 void Tail::onDirectoryChanged(const QString& dir){
     if(dir != dirname || eventsManager == NULL) return;
 
