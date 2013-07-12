@@ -152,7 +152,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         /* load service scheduler data */
         for (uint index = 0; index < (*root)["schedulerActions"].size(); ++index ) {
             try {
-                auto object = (*root)["schedulerActions"][index].get("cronEntry", "0 0/10 * * * ?");
+                auto object = (*root)["schedulerActions"][index].get("cronEntry", DEFAULT_CRON_ENTRY);
                 auto object2 = (*root)["schedulerActions"][index].get("commands", "true");
                 if (object.isString() and object2.isString()) {
                     schedulerActions.push_back(
