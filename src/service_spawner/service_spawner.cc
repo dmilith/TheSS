@@ -17,21 +17,6 @@
 #include "utils.h"
 
 
-// void spawnSSForEachUser() {
-//     /* spawn ss for each of uids in /Users */
-//     Q_FOREACH(int userUid, gatherUserUids()) {
-//         logDebug() << "Spawning user SS for:" << QString::number(userUid);
-
-//         /* creating lock file for given user */
-//         QString lockName = QString(USERS_HOME_DIR) + "/" + QString::number(userUid) + "/." + QString::number(userUid) + ".pid";
-//         writeToFile(lockName, QString::number(0), false); /* NOTE: if pid == 0 it means that SS is runned from SS maintainer */
-
-//         auto process = new SvdProcess("SS", userUid, false); // don't redirect output
-//         process->spawnProcess(DEFAULT_SS_COMMAND);
-//     }
-// }
-
-
 int main(int argc, char *argv[]) {
 
     QCoreApplication app(argc, argv);
@@ -98,11 +83,6 @@ int main(int argc, char *argv[]) {
         logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
         setPublicDirPriviledges(getOrCreateDir(DEFAULT_PUBLIC_DIR));
         setupDefaultVPNNetwork();
-
-        // TODO: auto coreginxWatcher = …
-
-        /* disabled cause completely no output from user ss, and cause of temporary unmagability */
-        // spawnSSForEachUser();
 
         /* Setting up root watchers */
         new SvdUserWatcher();
