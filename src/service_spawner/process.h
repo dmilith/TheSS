@@ -27,6 +27,7 @@ class SvdProcess: public QProcess {
         void spawnDefaultShell();
         void spawnProcess(const QString& command);
         QString outputFile;
+        QString expectFile;
 
     protected:
         void setupChildProcess();

@@ -11,6 +11,7 @@
 void SvdProcess::init(const QString& name, uid_t uid) {
     this->uid = uid;
     outputFile = getSoftwareDataDir(uid) + "/" + name + DEFAULT_SERVICE_OUTPUT_FILE;
+    expectFile = getSoftwareDataDir(uid) + "/" + name + DEFAULT_SERVICE_EXPECT_FILE;
     setProcessChannelMode(MergedChannels);
 
     // if (QFile::exists(outputFile)) {
