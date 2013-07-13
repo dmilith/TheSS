@@ -1,13 +1,17 @@
 #!/bin/sh
 
-thess_source_dir="$HOME/Apps/Thess"
-if [ "$(id -u)" = "0" ]; then
-    thess_source_dir="/Software/Thess"
-fi
-
 # case when launching it from source repository
+thess_source_dir="$(pwd)"
+
 if [ ! -d "$(pwd)/basesystem" ]; then
-    thess_source_dir="$(pwd)"
+    thess_source_dir="$HOME/Apps/Thess"
+    if [ ! -d "${thess_source_dir}/basesystem" ]; then
+        thess_source_dir="/Software/Thess"
+        if [ ! -d "${thess_source_dir}/basesystem" ]; then
+            printf "FATAL: Couldn't find igniters source directory!\n"
+            exit 1
+        fi
+    fi
 fi
 
 default_root_igniters_dir="/SystemUsers/Igniters/Services"
