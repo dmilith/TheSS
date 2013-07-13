@@ -404,6 +404,7 @@ uint registerFreeUdpPort(uint specificPort) {
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(port);
     if (bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr))) {
+        close(sockfd);
         return registerFreeUdpPort(10000 + rand);
     }
     close(sockfd);
