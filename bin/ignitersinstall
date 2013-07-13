@@ -1,5 +1,15 @@
 #!/bin/sh
 
+thess_source_dir="$HOME/Apps/Thess"
+if [ "$(id -u)" = "0" ]; then
+    thess_source_dir="/Software/Thess"
+fi
+
+# case when launching it from source repository
+if [ ! -d "$(pwd)/basesystem" ]; then
+    thess_source_dir="$(pwd)"
+fi
+
 default_root_igniters_dir="/SystemUsers/Igniters/Services"
 default_igniters_dir="/Common/Igniters/Services"
 test_igniters_dir="/Common/Igniters/TestServices"
@@ -17,13 +27,13 @@ else
 fi
 
 echo "Installing Service Igniters to ${default_igniters_dir}"
-cp -vr $(pwd)/basesystem/universal/Default* ${default_igniters_dir}/../
-cp -vr $(pwd)/basesystem/universal/Services/* ${default_igniters_dir}/
+cp -vr ${thess_source_dir}/basesystem/universal/Default* ${default_igniters_dir}/../
+cp -vr ${thess_source_dir}/basesystem/universal/Services/* ${default_igniters_dir}/
 
 echo "Installing Root Service Igniters to ${default_root_igniters_dir}"
-cp -vr $(pwd)/basesystem/universal/RootServices/* ${default_root_igniters_dir}/
+cp -vr ${thess_source_dir}/basesystem/universal/RootServices/* ${default_root_igniters_dir}/
 
 echo "Installing Root Test Service Igniters to ${default_igniters_dir}"
-cp -vr $(pwd)/basesystem/universal/TestServices/* ${default_igniters_dir}/
+cp -vr ${thess_source_dir}/basesystem/universal/TestServices/* ${default_igniters_dir}/
 
 echo "Done."
