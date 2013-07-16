@@ -103,10 +103,12 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     service->start(); /* start thread right after initialization */
 
     /* manage service autostart */
-    if (indicatorFiles->autostart->exists()) {
+    auto config = new SvdServiceConfig(name);
+    if (indicatorFiles->autostart->exists() or config->autoStart) {
         logInfo() << "Performing autostart of service:" << name;
         emit startService();
     }
+    delete config;
 
     if (indicatorFiles->running->exists()) {
         logInfo() << "Found already started service. Resuming background tasks for service:" << name;
