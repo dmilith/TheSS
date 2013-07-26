@@ -46,6 +46,8 @@
     "reportAllInfos": false,
     "reportAllDebugs": false,
 
+    "order": 0,
+
 /* a list of igniters required to launch this software */
     "dependencies": [],
 
