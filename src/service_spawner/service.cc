@@ -424,6 +424,28 @@ void SvdService::configureSlot() {
 }
 
 
+bool dependencyConfigureOrderLessThan(const QString &a, const QString &b) {
+    auto aConf = new SvdServiceConfig(a);
+    auto bConf = new SvdServiceConfig(b);
+    int aOrder = aConf->configureOrder;
+    int bOrder = bConf->configureOrder;
+    delete aConf;
+    delete bConf;
+    return aOrder < bOrder;
+}
+
+
+bool dependencyStartOrderLessThan(const QString &a, const QString &b) {
+    auto aConf = new SvdServiceConfig(a);
+    auto bConf = new SvdServiceConfig(b);
+    int aOrder = aConf->startOrder;
+    int bOrder = bConf->startOrder;
+    delete aConf;
+    delete bConf;
+    return aOrder < bOrder;
+}
+
+
 void SvdService::startSlot(bool withDeps) {
     logDebug() << "Invoked start slot for service:" << name;
     uptime.start();
@@ -464,6 +486,9 @@ void SvdService::startSlot(bool withDeps) {
 
         /* configure all dependencies before continue */
         if (not config->dependencies.isEmpty() && withDeps) {
+            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyConfigureOrderLessThan);
+            logDebug() << "Dependencies sorted for configure:" << config->dependencies;
+
             Q_FOREACH(auto dependency, config->dependencies) {
                 logInfo() << "Installing and configuring dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
@@ -482,6 +507,7 @@ void SvdService::startSlot(bool withDeps) {
         /* after successful installation of core app and configuring dependencies, we may proceed */
         if (not config->dependencies.isEmpty() && withDeps) {
             QFile::remove(indicator);
+            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyStartOrderLessThan);
             logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
 
             Q_FOREACH(auto dependency, config->dependencies) {
