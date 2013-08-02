@@ -14,10 +14,13 @@ SvdHookTriggerFiles::SvdHookTriggerFiles(const QString& path) {
     configure = new SvdHookTriggerFile(path + "/.configure");
     reConfigure = new SvdHookTriggerFile(path + "/.reconfigure");
     start     = new SvdHookTriggerFile(path + "/.start");
+    startWithoutDeps = new SvdHookTriggerFile(path + "/.startWithoutDeps");
     stop      = new SvdHookTriggerFile(path + "/.stop");
+    stopWithoutDeps  = new SvdHookTriggerFile(path + "/.stopWithoutDeps");
     afterStart= new SvdHookTriggerFile(path + "/.afterStart");
     afterStop = new SvdHookTriggerFile(path + "/.afterStop");
     restart   = new SvdHookTriggerFile(path + "/.restart");
+    restartWithoutDeps = new SvdHookTriggerFile(path + "/.restartWithoutDeps");
     reload    = new SvdHookTriggerFile(path + "/.reload");
     validate  = new SvdHookTriggerFile(path + "/.validate");
 }
@@ -28,10 +31,13 @@ SvdHookTriggerFiles::~SvdHookTriggerFiles() {
     delete configure;
     delete reConfigure;
     delete start;
+    delete startWithoutDeps;
     delete afterStart;
     delete stop;
+    delete stopWithoutDeps;
     delete afterStop;
     delete restart;
+    delete restartWithoutDeps;
     delete reload;
     delete validate;
 }
@@ -91,10 +97,13 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     connect(this, SIGNAL(reConfigureService()), service, SLOT(reConfigureSlot()));
     connect(this, SIGNAL(validateService()), service, SLOT(validateSlot()));
     connect(this, SIGNAL(startService()), service, SLOT(startSlot()));
+    connect(this, SIGNAL(startWithoutDepsService()), service, SLOT(startWithoutDepsSlot()));
     connect(this, SIGNAL(afterStartService()), service, SLOT(afterStartSlot()));
     connect(this, SIGNAL(stopService()), service, SLOT(stopSlot()));
+    connect(this, SIGNAL(stopWithoutDepsService()), service, SLOT(stopWithoutDepsSlot()));
     connect(this, SIGNAL(afterStopService()), service, SLOT(afterStopSlot()));
     connect(this, SIGNAL(restartService()), service, SLOT(restartSlot()));
+    connect(this, SIGNAL(restartWithoutDepsService()), service, SLOT(restartWithoutDepsSlot()));
     connect(this, SIGNAL(reloadService()), service, SLOT(reloadSlot()));
     connect(this, SIGNAL(destroyService()), service, SLOT(destroySlot()));
 
