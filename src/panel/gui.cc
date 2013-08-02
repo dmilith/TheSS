@@ -227,7 +227,7 @@ void PanelGui::helpDialog(){
     list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
     list << "  E       - Show app env (service.env)";
-    list << "  L       - Show service log (service.log";
+    list << "  L       - Show service log (service.log)";
     list << "  W       - Toggle line wrapping in log window";
     list << "";
     list << "Other actions:";
