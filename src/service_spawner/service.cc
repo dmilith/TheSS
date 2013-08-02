@@ -427,7 +427,11 @@ void SvdService::configureSlot() {
 bool dependencyOrderLessThan(const QString &a, const QString &b) {
     auto aConf = new SvdServiceConfig(a);
     auto bConf = new SvdServiceConfig(b);
-    return aConf->order < bConf->order;
+    int aOrder = aConf->order;
+    int bOrder = bConf->order;
+    delete aConf;
+    delete bConf;
+    return aOrder < bOrder;
 }
 
 
