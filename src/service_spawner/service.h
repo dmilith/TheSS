@@ -71,10 +71,13 @@ class SvdService: public QThread {
         void configureSlot();
         void reConfigureSlot();
         void startSlot();
+        void startSlot(bool withoutDeps);
         void afterStartSlot();
         void stopSlot();
+        void stopSlot(bool withoutDeps);
         void afterStopSlot();
         void restartSlot();
+        void restartSlot(bool withoutDeps);
         void reloadSlot();
         void validateSlot();
         void destroySlot();
