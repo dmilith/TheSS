@@ -46,6 +46,7 @@
     "reportAllInfos": false,
     "reportAllDebugs": false,
 
+    /* service with lower order value is higher on the dependency list */
     "order": 0,
 
 /* a list of igniters required to launch this software */
