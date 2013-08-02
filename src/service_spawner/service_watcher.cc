@@ -192,6 +192,18 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
         return;
     }
 
+    /* startWithoutDeps */
+    if (triggerFiles->startWithoutDeps->exists()) {
+        triggerFiles->startWithoutDeps->remove();
+        if (indicatorFiles->running->exists())
+            logWarn() << "Interrupted emission of startWithoutDepsService() signal. Service is already running.";
+        else {
+            logDebug() << "Emitting startWithoutDepsService() signal.";
+            emit startWithoutDepsService();
+        }
+        return;
+    }
+
     /* afterStart */
     if (triggerFiles->afterStart->exists()) {
         triggerFiles->afterStart->remove();
@@ -211,6 +223,17 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
         return;
     }
 
+    /* stopWithoutDeps */
+    if (triggerFiles->stopWithoutDeps->exists()) {
+        triggerFiles->stopWithoutDeps->remove();
+        if (indicatorFiles->running->exists()) {
+            logDebug() << "Emitting stopWithoutDepsService() signal.";
+            emit stopWithoutDepsService();
+        } else
+            logWarn() << "Interrupted emission of stopWithoutDepsService() signal. Service is not running.";
+        return;
+    }
+
     /* afterStop */
     if (triggerFiles->afterStop->exists()) {
         triggerFiles->afterStop->remove();
@@ -224,6 +247,14 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
         triggerFiles->restart->remove();
         logDebug() << "Emitting restartService() signal.";
         emit restartService();
+        return;
+    }
+
+    /* restart */
+    if (triggerFiles->restartWithoutDeps->exists()) {
+        triggerFiles->restartWithoutDeps->remove();
+        logDebug() << "Emitting restartWithoutDepsService() signal.";
+        emit restartWithoutDepsService();
         return;
     }
 

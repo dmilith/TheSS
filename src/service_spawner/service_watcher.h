@@ -82,7 +82,7 @@ class SvdServiceWatcher: public QObject {
         void startWithoutDepsService();
         void afterStartService();
         void stopService();
-        void stopWithoutService();
+        void stopWithoutDepsService();
         void afterStopService();
         void restartService();
         void restartWithoutDepsService();
