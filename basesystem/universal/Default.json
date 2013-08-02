@@ -40,7 +40,7 @@
     "watchUdpPort": false,
 
     /* autoStart with true will cause service to start automatically */
-    "autoStart": true,
+    "autoStart": false,
 
     "reportAllErrors": true,
     "reportAllInfos": false,
