@@ -424,6 +424,13 @@ void SvdService::configureSlot() {
 }
 
 
+bool dependencyOrderLessThan(const QString &a, const QString &b) {
+    auto aConf = new SvdServiceConfig(a);
+    auto bConf = new SvdServiceConfig(b);
+    return aConf->order < bConf->order;
+}
+
+
 void SvdService::startSlot() {
     logDebug() << "Invoked start slot for service:" << name;
     uptime.start();
@@ -460,6 +467,13 @@ void SvdService::startSlot() {
         if (not config->serviceConfigured()) {
             logInfo() << "Configuring service:" << name;
             emit configureSlot();
+        }
+
+        /* sort all dependencies based on the order property */
+        if (not config->dependencies.isEmpty()) {
+            logDebug() << "Sorting dependencies:" << config->dependencies;
+            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyOrderLessThan);
+            logDebug() << "Sorted dependencies:" << config->dependencies;
         }
 
         /* configure all dependencies before continue */
