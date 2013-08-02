@@ -250,7 +250,7 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
         return;
     }
 
-    /* restart */
+    /* restartWithoutDeps */
     if (triggerFiles->restartWithoutDeps->exists()) {
         triggerFiles->restartWithoutDeps->remove();
         logDebug() << "Emitting restartWithoutDepsService() signal.";
