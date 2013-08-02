@@ -772,15 +772,15 @@ void SvdService::afterStopSlot() {
 }
 
 
-void SvdService::restartSlot(bool withoutDeps) {
+void SvdService::restartSlot(bool withDeps) {
     if (QFile::exists(getHomeDir() + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
         logWarn() << "Ignoring restart slot of service:" << name << "cause shutdown hook was called.";
     } else {
         logDebug() << "Invoked restart slot for service:" << name;
         // usleep(DEFAULT_SERVICE_PAUSE_INTERVAL);
         logWarn() << "Restarting service:" << name;
-        emit stopSlot(withoutDeps);
-        emit startSlot(withoutDeps);
+        emit stopSlot(withDeps);
+        emit startSlot(withDeps);
         logInfo() << "Service restarted:" << name;
     }
 }
