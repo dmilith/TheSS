@@ -424,11 +424,22 @@ void SvdService::configureSlot() {
 }
 
 
-bool dependencyOrderLessThan(const QString &a, const QString &b) {
+bool dependencyConfigureOrderLessThan(const QString &a, const QString &b) {
     auto aConf = new SvdServiceConfig(a);
     auto bConf = new SvdServiceConfig(b);
-    int aOrder = aConf->order;
-    int bOrder = bConf->order;
+    int aOrder = aConf->configureOrder;
+    int bOrder = bConf->configureOrder;
+    delete aConf;
+    delete bConf;
+    return aOrder < bOrder;
+}
+
+
+bool dependencyStartOrderLessThan(const QString &a, const QString &b) {
+    auto aConf = new SvdServiceConfig(a);
+    auto bConf = new SvdServiceConfig(b);
+    int aOrder = aConf->startOrder;
+    int bOrder = bConf->startOrder;
     delete aConf;
     delete bConf;
     return aOrder < bOrder;
@@ -473,15 +484,11 @@ void SvdService::startSlot() {
             emit configureSlot();
         }
 
-        /* sort all dependencies based on the order property */
-        if (not config->dependencies.isEmpty()) {
-            logDebug() << "Sorting dependencies:" << config->dependencies;
-            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyOrderLessThan);
-            logDebug() << "Sorted dependencies:" << config->dependencies;
-        }
-
         /* configure all dependencies before continue */
         if (not config->dependencies.isEmpty()) {
+            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyConfigureOrderLessThan);
+            logDebug() << "Dependencies sorted for configure:" << config->dependencies;
+
             Q_FOREACH(auto dependency, config->dependencies) {
                 logInfo() << "Installing and configuring dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
@@ -500,6 +507,7 @@ void SvdService::startSlot() {
         /* after successful installation of core app and configuring dependencies, we may proceed */
         if (not config->dependencies.isEmpty()) {
             QFile::remove(indicator);
+            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyStartOrderLessThan);
             logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
 
             Q_FOREACH(auto dependency, config->dependencies) {

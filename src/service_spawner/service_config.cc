@@ -45,7 +45,8 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         portsPool = (*defaults)["portsPool"].asInt();
         repository = (*defaults)["repository"].asCString();
         parentService = (*defaults)["parentService"].asCString();
-        order = (*defaults)["order"].asInt();
+        configureOrder = (*defaults)["configureOrder"].asInt();
+        startOrder = (*defaults)["startOrder"].asInt();
 
         /* load default service dependencies */
         for (uint index = 0; index < (*defaults)["dependencies"].size(); ++index ) {
@@ -138,7 +139,8 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         domain = root->get("domain", (*defaults)["domain"]).asCString();
         repository = root->get("repository", (*defaults)["repository"]).asCString();
         parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
-        order = root->get("order", (*defaults)["order"]).asInt();
+        configureOrder = root->get("configureOrder", (*defaults)["configureOrder"]).asInt();
+        startOrder = root->get("startOrder", (*defaults)["startOrder"]).asInt();
 
         /* load service dependencies data */
         for (uint index = 0; index < (*root)["dependencies"].size(); ++index ) {
