@@ -424,7 +424,29 @@ void SvdService::configureSlot() {
 }
 
 
-void SvdService::startSlot() {
+bool dependencyConfigureOrderLessThan(const QString &a, const QString &b) {
+    auto aConf = new SvdServiceConfig(a);
+    auto bConf = new SvdServiceConfig(b);
+    int aOrder = aConf->configureOrder;
+    int bOrder = bConf->configureOrder;
+    delete aConf;
+    delete bConf;
+    return aOrder < bOrder;
+}
+
+
+bool dependencyStartOrderLessThan(const QString &a, const QString &b) {
+    auto aConf = new SvdServiceConfig(a);
+    auto bConf = new SvdServiceConfig(b);
+    int aOrder = aConf->startOrder;
+    int bOrder = bConf->startOrder;
+    delete aConf;
+    delete bConf;
+    return aOrder < bOrder;
+}
+
+
+void SvdService::startSlot(bool withDeps) {
     logDebug() << "Invoked start slot for service:" << name;
     uptime.start();
 
@@ -463,7 +485,10 @@ void SvdService::startSlot() {
         }
 
         /* configure all dependencies before continue */
-        if (not config->dependencies.isEmpty()) {
+        if (not config->dependencies.isEmpty() && withDeps) {
+            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyConfigureOrderLessThan);
+            logDebug() << "Dependencies sorted for configure:" << config->dependencies;
+
             Q_FOREACH(auto dependency, config->dependencies) {
                 logInfo() << "Installing and configuring dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
@@ -480,8 +505,9 @@ void SvdService::startSlot() {
         }
 
         /* after successful installation of core app and configuring dependencies, we may proceed */
-        if (not config->dependencies.isEmpty()) {
+        if (not config->dependencies.isEmpty() && withDeps) {
             QFile::remove(indicator);
+            qSort(config->dependencies.begin(), config->dependencies.end(), dependencyStartOrderLessThan);
             logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
 
             Q_FOREACH(auto dependency, config->dependencies) {
@@ -552,6 +578,16 @@ void SvdService::startSlot() {
     /* invoke after start slot */
     logTrace() << "After process start execution:" << name;
     emit afterStartSlot();
+}
+
+
+void SvdService::startSlot() {
+    startSlot(true);
+}
+
+
+void SvdService::startWithoutDepsSlot() {
+    startSlot(false);
 }
 
 
@@ -633,18 +669,20 @@ void SvdService::afterStartSlot() {
 }
 
 
-void SvdService::stopSlot() {
+void SvdService::stopSlot(bool withDeps) {
     logDebug() << "Invoked stop slot for service:" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     stopSitters();
 
     /* stop dependency services */
-    Q_FOREACH(SvdService *depService, this->dependencyServices) {
-        if (depService) {
-            logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
-            depService->stopSlot();
-            depService->exit();
+    if (withDeps) {
+        Q_FOREACH(SvdService *depService, this->dependencyServices) {
+            if (depService) {
+                logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
+                depService->stopSlot();
+                depService->exit();
+            }
         }
     }
 
@@ -698,6 +736,16 @@ void SvdService::stopSlot() {
 }
 
 
+void SvdService::stopSlot() {
+    stopSlot(true);
+}
+
+
+void SvdService::stopWithoutDepsSlot() {
+    stopSlot(false);
+}
+
+
 void SvdService::afterStopSlot() {
     logDebug() << "Invoked after stop slot for service:" << name;
     logTrace() << "Loading service igniter" << name;
@@ -724,17 +772,27 @@ void SvdService::afterStopSlot() {
 }
 
 
-void SvdService::restartSlot() {
+void SvdService::restartSlot(bool withoutDeps) {
     if (QFile::exists(getHomeDir() + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
         logWarn() << "Ignoring restart slot of service:" << name << "cause shutdown hook was called.";
     } else {
         logDebug() << "Invoked restart slot for service:" << name;
         // usleep(DEFAULT_SERVICE_PAUSE_INTERVAL);
         logWarn() << "Restarting service:" << name;
-        emit stopSlot();
-        emit startSlot();
+        emit stopSlot(withoutDeps);
+        emit startSlot(withoutDeps);
         logInfo() << "Service restarted:" << name;
     }
+}
+
+
+void SvdService::restartSlot() {
+    restartSlot(true);
+}
+
+
+void SvdService::restartWithoutDepsSlot() {
+    restartSlot(false);
 }
 
 

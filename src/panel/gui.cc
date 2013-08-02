@@ -215,9 +215,12 @@ void PanelGui::helpDialog(){
     list << "";
     list << "Current service actions:";
     list << "  S       - Start current service";
+    list << "  s       - Start current service without dependencies";
     list << "  D       - Change domain of current service";
     list << "  T       - Stop current service";
+    list << "  t       - Stop current service without dependencies";
     list << "  R       - Restart current service";
+    list << "  r       - Restart current service without dependencies";
     list << "  O       - Reload current service";
     list << "  I       - Install current service";
     list << "  C       - Configure current service";
@@ -227,7 +230,7 @@ void PanelGui::helpDialog(){
     list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
     list << "  E       - Show app env (service.env)";
-    list << "  L       - Show service log (service.log";
+    list << "  L       - Show service log (service.log)";
     list << "  W       - Toggle line wrapping in log window";
     list << "";
     list << "Other actions:";
@@ -472,12 +475,36 @@ void PanelGui::key(int ch){
             }
             break;
 
+        case 's': /* start without dependencies */
+            if (servicesList->currentItem() == NULL) {
+                    status = "Can't start non existant service";
+            } else {
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->startWithoutDeps();
+                    status = "Triggered start of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
+            }
+            break;
+
         case 'T': /* sTop */
             if (servicesList->currentItem() == NULL) {
                     status = "Can't stop non existant service";
             } else {
                 if (panel->isSSOnline()) {
                     servicesList->currentItem()->stop();
+                    status = "Triggered stop of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
+            }
+            break;
+
+        case 't': /* stop without dependencies */
+            if (servicesList->currentItem() == NULL) {
+                    status = "Can't stop non existant service";
+            } else {
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->stopWithoutDeps();
                     status = "Triggered stop of application: " + servicesList->currentItem()->name;
                 } else
                     status = "No Service Spawner running. Skipping task.";
@@ -538,6 +565,18 @@ void PanelGui::key(int ch){
             } else {
                 if (panel->isSSOnline()) {
                     servicesList->currentItem()->restart();
+                    status = "Triggered restart of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
+            }
+            break;
+
+        case 'r': /* restart without dependencies */
+            if (servicesList->currentItem() == NULL) {
+                    status = "Can't restart non existant service";
+            } else {
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->restartWithoutDeps();
                     status = "Triggered restart of application: " + servicesList->currentItem()->name;
                 } else
                     status = "No Service Spawner running. Skipping task.";
