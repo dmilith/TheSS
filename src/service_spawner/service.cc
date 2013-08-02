@@ -424,7 +424,7 @@ void SvdService::configureSlot() {
 }
 
 
-void SvdService::startSlot(bool withoutDeps) {
+void SvdService::startSlot(bool withDeps) {
     logDebug() << "Invoked start slot for service:" << name;
     uptime.start();
 
@@ -463,7 +463,7 @@ void SvdService::startSlot(bool withoutDeps) {
         }
 
         /* configure all dependencies before continue */
-        if (not config->dependencies.isEmpty() && not withoutDeps) {
+        if (not config->dependencies.isEmpty() && withDeps) {
             Q_FOREACH(auto dependency, config->dependencies) {
                 logInfo() << "Installing and configuring dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
@@ -480,7 +480,7 @@ void SvdService::startSlot(bool withoutDeps) {
         }
 
         /* after successful installation of core app and configuring dependencies, we may proceed */
-        if (not config->dependencies.isEmpty() && not withoutDeps) {
+        if (not config->dependencies.isEmpty() && withDeps) {
             QFile::remove(indicator);
             logInfo() << "Found additional igniter dependency(ies) for service:" << name << "list:" << config->dependencies;
 
@@ -556,6 +556,11 @@ void SvdService::startSlot(bool withoutDeps) {
 
 
 void SvdService::startSlot() {
+    startSlot(true);
+}
+
+
+void SvdService::startWithoutDepsSlot() {
     startSlot(false);
 }
 
@@ -638,14 +643,14 @@ void SvdService::afterStartSlot() {
 }
 
 
-void SvdService::stopSlot(bool withoutDeps) {
+void SvdService::stopSlot(bool withDeps) {
     logDebug() << "Invoked stop slot for service:" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     stopSitters();
 
     /* stop dependency services */
-    if (not withoutDeps) {
+    if (withDeps) {
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
             if (depService) {
                 logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
@@ -706,8 +711,14 @@ void SvdService::stopSlot(bool withoutDeps) {
 
 
 void SvdService::stopSlot() {
+    stopSlot(true);
+}
+
+
+void SvdService::stopWithoutDepsSlot() {
     stopSlot(false);
 }
+
 
 void SvdService::afterStopSlot() {
     logDebug() << "Invoked after stop slot for service:" << name;
@@ -750,6 +761,11 @@ void SvdService::restartSlot(bool withoutDeps) {
 
 
 void SvdService::restartSlot() {
+    restartSlot(true);
+}
+
+
+void SvdService::restartWithoutDepsSlot() {
     restartSlot(false);
 }
 
