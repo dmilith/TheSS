@@ -15,12 +15,15 @@ class PanelService {
 public:
     PanelService(Panel * panel, QFileInfo baseDir);
     void start();
+    void startWithoutDeps();
     void stop();
+    void stopWithoutDeps();
     void validate();
     void install();
     void configure();
     void reconfigure();
     void restart();
+    void restartWithoutDeps();
     void reload();
     void toggleAutostart();
     bool remove();
