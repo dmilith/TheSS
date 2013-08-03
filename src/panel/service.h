@@ -22,6 +22,7 @@ public:
     void install();
     void configure();
     void reconfigure();
+    void reconfigureWithoutDeps();
     void restart();
     void restartWithoutDeps();
     void reload();

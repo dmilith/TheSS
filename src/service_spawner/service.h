@@ -70,6 +70,8 @@ class SvdService: public QThread {
         void installSlot();
         void configureSlot();
         void reConfigureSlot();
+        void reConfigureSlot(bool withDeps);
+        void reConfigureWithoutDepsSlot();
         void startSlot();
         void startSlot(bool withDeps);
         void startWithoutDepsSlot();

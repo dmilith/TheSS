@@ -381,14 +381,24 @@ void SvdService::installSlot() {
 }
 
 
-void SvdService::reConfigureSlot() {
+void SvdService::reConfigureSlot(bool withDeps) {
     notification("Performing reconfiguration and restart of service: " + name, name, NOTIFY);
     auto config = new SvdServiceConfig(name);
     QString configuredIndicator = config->prefixDir() + "/.configured";
     QFile::remove(configuredIndicator);
     config->deleteLater();
     emit configureSlot();
-    emit restartSlot();
+    emit restartSlot(withDeps);
+}
+
+
+void SvdService::reConfigureSlot() {
+    reConfigureSlot(true);
+}
+
+
+void SvdService::reConfigureWithoutDepsSlot() {
+    reConfigureSlot(false);
 }
 
 

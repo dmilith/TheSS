@@ -10,19 +10,20 @@
 
 
 SvdHookTriggerFiles::SvdHookTriggerFiles(const QString& path) {
-    install   = new SvdHookTriggerFile(path + "/.install");
-    configure = new SvdHookTriggerFile(path + "/.configure");
-    reConfigure = new SvdHookTriggerFile(path + "/.reconfigure");
-    start     = new SvdHookTriggerFile(path + "/.start");
-    startWithoutDeps = new SvdHookTriggerFile(path + "/.startWithoutDeps");
-    stop      = new SvdHookTriggerFile(path + "/.stop");
-    stopWithoutDeps  = new SvdHookTriggerFile(path + "/.stopWithoutDeps");
-    afterStart= new SvdHookTriggerFile(path + "/.afterStart");
-    afterStop = new SvdHookTriggerFile(path + "/.afterStop");
-    restart   = new SvdHookTriggerFile(path + "/.restart");
-    restartWithoutDeps = new SvdHookTriggerFile(path + "/.restartWithoutDeps");
-    reload    = new SvdHookTriggerFile(path + "/.reload");
-    validate  = new SvdHookTriggerFile(path + "/.validate");
+    install                = new SvdHookTriggerFile(path + "/.install");
+    configure              = new SvdHookTriggerFile(path + "/.configure");
+    reConfigure            = new SvdHookTriggerFile(path + "/.reconfigure");
+    reConfigureWithoutDeps = new SvdHookTriggerFile(path + "/.reconfigureWithoutDeps");
+    start                  = new SvdHookTriggerFile(path + "/.start");
+    startWithoutDeps       = new SvdHookTriggerFile(path + "/.startWithoutDeps");
+    stop                   = new SvdHookTriggerFile(path + "/.stop");
+    stopWithoutDeps        = new SvdHookTriggerFile(path + "/.stopWithoutDeps");
+    afterStart             = new SvdHookTriggerFile(path + "/.afterStart");
+    afterStop              = new SvdHookTriggerFile(path + "/.afterStop");
+    restart                = new SvdHookTriggerFile(path + "/.restart");
+    restartWithoutDeps     = new SvdHookTriggerFile(path + "/.restartWithoutDeps");
+    reload                 = new SvdHookTriggerFile(path + "/.reload");
+    validate               = new SvdHookTriggerFile(path + "/.validate");
 }
 
 
@@ -95,6 +96,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     connect(this, SIGNAL(installService()), service, SLOT(installSlot()));
     connect(this, SIGNAL(configureService()), service, SLOT(configureSlot()));
     connect(this, SIGNAL(reConfigureService()), service, SLOT(reConfigureSlot()));
+    connect(this, SIGNAL(reConfigureWithoutDepsService()), service, SLOT(reConfigureWithoutDepsSlot()));
     connect(this, SIGNAL(validateService()), service, SLOT(validateSlot()));
     connect(this, SIGNAL(startService()), service, SLOT(startSlot()));
     connect(this, SIGNAL(startWithoutDepsService()), service, SLOT(startWithoutDepsSlot()));
@@ -149,6 +151,14 @@ void SvdServiceWatcher::dirChangedSlot(const QString& dir) {
         triggerFiles->reConfigure->remove();
         logDebug() << "Emitting reConfigureService() signal.";
         emit reConfigureService();
+        return;
+    }
+
+    /* reconfigure without dependencies*/
+    if (triggerFiles->reConfigureWithoutDeps->exists()) {
+        triggerFiles->reConfigureWithoutDeps->remove();
+        logDebug() << "Emitting reConfigureWithoutDepsService() signal.";
+        emit reConfigureWithoutDepsService();
         return;
     }
 

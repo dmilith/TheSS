@@ -225,6 +225,7 @@ void PanelGui::helpDialog(){
     list << "  I       - Install current service";
     list << "  C       - Configure current service";
     list << "  F       - Reconfigure current service";
+    list << "  f       - Reconfigure current service without dependencies";
     list << "  V       - Validate current service";
     list << "  A       - Toggle autostart";
     list << "  F8, X   - Delete current service";
@@ -553,6 +554,18 @@ void PanelGui::key(int ch){
             } else {
                 if (panel->isSSOnline()) {
                     servicesList->currentItem()->reconfigure();
+                    status = "Triggered reconfiguration of application: " + servicesList->currentItem()->name;
+                } else
+                    status = "No Service Spawner running. Skipping task.";
+            }
+            break;
+
+        case 'f': /* Reconfigure without dependencies */
+            if (servicesList->currentItem() == NULL) {
+                    status = "Can't reconfigure non existant service";
+            } else {
+                if (panel->isSSOnline()) {
+                    servicesList->currentItem()->reconfigureWithoutDeps();
                     status = "Triggered reconfiguration of application: " + servicesList->currentItem()->name;
                 } else
                     status = "No Service Spawner running. Skipping task.";

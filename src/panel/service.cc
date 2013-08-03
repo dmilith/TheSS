@@ -73,17 +73,18 @@ void PanelService::refresh(){
 }
 
 
-void PanelService::start() {               touch(dir.absoluteFilePath(".start"));               refresh();  }
-void PanelService::startWithoutDeps() {    touch(dir.absoluteFilePath(".startWithoutDeps"));    refresh();  }
-void PanelService::stop() {                touch(dir.absoluteFilePath(".stop"));                refresh();  }
-void PanelService::stopWithoutDeps() {     touch(dir.absoluteFilePath(".stopWithoutDeps"));     refresh();  }
-void PanelService::validate() {            touch(dir.absoluteFilePath(".validate"));            refresh();  }
-void PanelService::install() {             touch(dir.absoluteFilePath(".install"));             refresh();  }
-void PanelService::configure() {           touch(dir.absoluteFilePath(".configure"));           refresh();  }
-void PanelService::reconfigure() {         touch(dir.absoluteFilePath(".reconfigure"));         refresh();  }
-void PanelService::restart() {             touch(dir.absoluteFilePath(".restart"));             refresh();  }
-void PanelService::restartWithoutDeps() {  touch(dir.absoluteFilePath(".restartWithoutDeps"));  refresh();  }
-void PanelService::reload() {              touch(dir.absoluteFilePath(".reload"));              refresh();  }
+void PanelService::start() {                   touch(dir.absoluteFilePath(".start"));                   refresh();  }
+void PanelService::startWithoutDeps() {        touch(dir.absoluteFilePath(".startWithoutDeps"));        refresh();  }
+void PanelService::stop() {                    touch(dir.absoluteFilePath(".stop"));                    refresh();  }
+void PanelService::stopWithoutDeps() {         touch(dir.absoluteFilePath(".stopWithoutDeps"));         refresh();  }
+void PanelService::validate() {                touch(dir.absoluteFilePath(".validate"));                refresh();  }
+void PanelService::install() {                 touch(dir.absoluteFilePath(".install"));                 refresh();  }
+void PanelService::configure() {               touch(dir.absoluteFilePath(".configure"));               refresh();  }
+void PanelService::reconfigure() {             touch(dir.absoluteFilePath(".reconfigure"));             refresh();  }
+void PanelService::reconfigureWithoutDeps() {  touch(dir.absoluteFilePath(".reconfigureWithoutDeps"));  refresh();  }
+void PanelService::restart() {                 touch(dir.absoluteFilePath(".restart"));                 refresh();  }
+void PanelService::restartWithoutDeps() {      touch(dir.absoluteFilePath(".restartWithoutDeps"));      refresh();  }
+void PanelService::reload() {                  touch(dir.absoluteFilePath(".reload"));                  refresh();  }
 void PanelService::toggleAutostart() {
     QString file = dir.absoluteFilePath(".autostart");
     if (not QFile::exists(file)) touch(file);

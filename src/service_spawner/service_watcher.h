@@ -40,7 +40,7 @@ class SvdHookTriggerFiles {
         SvdHookTriggerFiles(const QString& path);
         ~SvdHookTriggerFiles();
 
-        SvdHookTriggerFile *install, *configure, *reConfigure, *start, *startWithoutDeps, *afterStart, *stop, *stopWithoutDeps, *afterStop, *restart, *restartWithoutDeps, *reload, *validate;
+        SvdHookTriggerFile *install, *configure, *reConfigure, *reConfigureWithoutDeps, *start, *startWithoutDeps, *afterStart, *stop, *stopWithoutDeps, *afterStop, *restart, *restartWithoutDeps, *reload, *validate;
 
 };
 
@@ -77,6 +77,7 @@ class SvdServiceWatcher: public QObject {
         void installService();
         void configureService();
         void reConfigureService();
+        void reConfigureWithoutDepsService();
         void validateService();
         void startService();
         void startWithoutDepsService();
