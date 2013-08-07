@@ -35,4 +35,4 @@ mac {
 } else {
       LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncursesw
 }
-TARGET    = ../../bin/panel
+TARGET    = ../../bin/svdpanel
