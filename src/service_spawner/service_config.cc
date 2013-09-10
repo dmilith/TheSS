@@ -217,6 +217,33 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
             replaceAllSpecialsIn((*root)["babySitter"].get("commands", (*defaults)["babySitter"]["commands"]).asCString()),
             replaceAllSpecialsIn((*root)["babySitter"].get("expectOutput", (*defaults)["babySitter"]["expectOutput"]).asCString()));
 
+
+        /* on this stage, we want to replace these igniter constants: */
+        QMap<QString, QString> injectHooks;
+        injectHooks["SERVICE_INSTALL_HOOK"] = install->commands;
+        injectHooks["SERVICE_START_HOOK"] = start->commands;
+        injectHooks["SERVICE_STOP_HOOK"] = stop->commands;
+        injectHooks["SERVICE_AFTERSTART_HOOK"] = afterStart->commands;
+        injectHooks["SERVICE_AFTERSTOP_HOOK"] = afterStop->commands;
+        injectHooks["SERVICE_CONFIGURE_HOOK"] = configure->commands;
+        injectHooks["SERVICE_BABYSITTER_HOOK"] = babySitter->commands;
+        injectHooks["SERVICE_VALIDATE_HOOK"] = validate->commands;
+
+        QList<SvdShellOperations*> operations;
+        operations << install << start << stop << afterStart << afterStop << configure << babySitter << validate;
+        Q_FOREACH(auto operation, operations) { /* for each operation, do hook injection */
+            Q_FOREACH(QString hook, injectHooks.keys()) {
+                QString old_commds = operation->commands;
+                operation->commands = operation->commands.replace(hook, injectHooks.value(hook));
+                if (operation->commands != old_commds) {
+                    logDebug() << "Performing igniter injections of hook:" << hook << "in service:" << name;
+                    logTrace() << hook << "- injecting content:" << injectHooks.value(hook) << " - COMMANDS: " << operation->commands;
+                    logDebug() << "OLD value:" << old_commds;
+                    logDebug() << "NEW value:" << operation->commands;
+                }
+            }
+        }
+
         delete defaults;
         delete root;
 

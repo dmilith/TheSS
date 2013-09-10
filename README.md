@@ -90,6 +90,16 @@ SERVICE_DOMAIN            # default host domain name. It's stored in ~/SoftwareD
 SERVICE_ADDRESS           # by default it's default host IP address (resolved from SERVICE_DOMAIN)
 SERVICE_ROOT              # by default: ~/Apps/AppName
 SERVICE_VERSION           # by default taken from Sofin's: ~/Apps/AppName/appname.version
+
+# You can also inject hook commands using igniter constants:
+SERVICE_INSTALL_HOOK
+SERVICE_START_HOOK
+SERVICE_STOP_HOOK
+SERVICE_AFTERSTART_HOOK
+SERVICE_AFTERSTOP_HOOK
+SERVICE_CONFIGURE_HOOK
+SERVICE_BABYSITTER_HOOK
+SERVICE_VALIDATE_HOOK
 ```
 
 * Supports cron-compliant scheduler built in (since v0.24.x). Commands defined in schedulers have full support for igniter constants (listed above) and each command is in Zsh-compatible script format.
