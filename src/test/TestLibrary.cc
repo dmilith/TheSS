@@ -499,3 +499,25 @@ void TestLibrary::testUdpPort() {
     QVERIFY(port == 12346);
 }
 
+
+void TestLibrary::testIgniterInjection() {
+    /*
+    SERVICE_INSTALL_HOOK
+    SERVICE_START_HOOK
+    SERVICE_STOP_HOOK
+    SERVICE_AFTERSTART_HOOK
+    SERVICE_AFTERSTOP_HOOK
+    SERVICE_CONFIGURE_HOOK
+    SERVICE_BABYSITTER_HOOK
+    SERVICE_VALIDATE_HOOK
+    */
+
+    QString name = "TestRedisInjected";
+    auto config = new SvdServiceConfig(name);
+    QVERIFY(not config->configure->commands.contains("SERVICE_START_HOOK"));
+    QVERIFY(not config->configure->commands.contains("SERVICE_AFTERSTART_HOOK"));
+    QVERIFY(not config->configure->commands.contains("SERVICE_STOP_HOOK"));
+    QVERIFY(not config->install->commands.contains("SERVICE_AFTERSTOP_HOOK"));
+    QVERIFY(config->install->commands.contains("kongo bongo"));
+    delete config;
+}

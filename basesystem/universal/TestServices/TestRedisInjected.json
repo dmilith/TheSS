@@ -1,0 +1,41 @@
+{
+    "softwareName": "Redis",
+    "alwaysOn": false,
+    "portsPool": 1,
+    "install": {
+        "commands": "SERVICE_AFTERSTOP_HOOK"
+    },
+    "configure": {
+        "commands": "SERVICE_START_HOOK
+SERVICE_AFTERSTART_HOOK
+SERVICE_STOP_HOOK
+"
+    },
+    "start": {
+        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
+SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
+    },
+    "afterStop": {
+        "commands": "kongo bongo"
+    },
+    "validate": {
+        "commands": "test ! -f SERVICE_PREFIX/service.conf && printf \"
+# Default Redis service configuration
+# bind SERVICE_DOMAIN
+bind SERVICE_ADDRESS
+port $(cat SERVICE_PREFIX/.ports/0)
+pidfile SERVICE_PREFIX/service.pid
+dir SERVICE_PREFIX/database
+dbfilename database.rdf
+daemonize yes
+rdbcompression yes
+save 900 1
+save 300 10
+save 60 10000
+appendonly no
+appendfsync everysec
+activerehashing yes
+loglevel notice
+logfile SERVICE_PREFIX/service.log\" > SERVICE_PREFIX/service.conf"
+    }
+}
