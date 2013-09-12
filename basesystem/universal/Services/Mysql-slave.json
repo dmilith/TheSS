@@ -27,7 +27,7 @@ socket = SERVICE_PREFIX/service.sock
 nice = 0
 
 [client]
-socket=SERVICE_PREFIX/mysql.sock
+socket=SERVICE_PREFIX/service.sock
 
 [mysqld]
 pid-file = SERVICE_PREFIX/service.pid
@@ -50,7 +50,7 @@ query_cache_size = 16M
 general-log-file = SERVICE_PREFIX/service.log
 expire_logs_days = 10
 max_binlog_size = 100M
-socket = SERVICE_PREFIX/mysql.sock
+socket = SERVICE_PREFIX/service.sock
 
 # replication setup:
 server-id=2
