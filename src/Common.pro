@@ -1,4 +1,4 @@
-# Syndir Common - © 2013 verknowsys.com
+# TheSS Common - © 2013 verknowsys.com
 #
 # author:
 #   Daniel (dmilith) Dettlaff

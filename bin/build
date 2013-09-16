@@ -9,41 +9,42 @@ fi
 
 build () {
     SYSTEM_NAME="$(uname)"
-    OPTS=""
+    QMAKE_OPTS=""
+    MAKE_OPTS="-j8"
     case "${SYSTEM_NAME}" in
         Darwin)
-            OPTS="-spec darwin-g++"
+            QMAKE_OPTS="-spec darwin-g++"
             ;;
     esac
 
-    (qmake ${OPTS} Notifications.pro) || exit 1
-    (make && printf "Successfully built notifications system\n") || exit 1
+    (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
+    (make ${MAKE_OPTS} && printf "Successfully built notifications system\n") || exit 1
 
     case "$1" in
         panel|svdpanel)
-            (qmake ${OPTS} Panel.pro) || exit 1
-            (make && printf "Successfully built svdpanel\n") || exit 1
+            (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built svdpanel\n") || exit 1
             ;;
 
         ss|svdss)
-            (qmake ${OPTS} TheSS.pro) || exit 1
-            (make && printf "Successfully built ss\n") || exit 1
+            (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built ss\n") || exit 1
             ;;
 
         tests|test)
-            (qmake ${OPTS} TestSS.pro) || exit 1
-            (make && printf "Successfully built tests\n") || exit 1
+            (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built tests\n") || exit 1
             ;;
 
         *)
-            (qmake ${OPTS} TheSS.pro) || exit 1
-            (make && printf "Successfully built ss\n") || exit 1
-            (qmake ${OPTS} Notifications.pro) || exit 1
-            (make && printf "Successfully built notifications system\n") || exit 1
-            (qmake ${OPTS} Panel.pro) || exit 1
-            (make && printf "Successfully built svdpanel\n") || exit 1
-            (qmake ${OPTS} TestSS.pro) || exit 1
-            (make && printf "Successfully built tests\n") || exit 1
+            (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built ss\n") || exit 1
+            (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built notifications system\n") || exit 1
+            (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built svdpanel\n") || exit 1
+            (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built tests\n") || exit 1
             ;;
     esac
 }
