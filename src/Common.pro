@@ -10,18 +10,23 @@ QT -= gui
 QMAKE_CXX = clang++
 QMAKE_CC = clang
 QMAKE_CPP = clang++ -E
-
-QMAKE_CXXFLAGS += -fcolor-diagnostics -Qunused-arguments -Wself-assign -fPIC -fPIE -O3 -wunused-variable
+OBJECTS_DIR = .obj
+MOC_DIR = .moc
 
 mac {
 
-  QMAKE_CXXFLAGS  += -std=c++11
+  # development opts:
+  QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -w -gline-tables-only
+  QMAKE_CXXFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -gline-tables-only -std=c++11
 
 } else {
 
-  QMAKE_CXXFLAGS  += -w
+  # production opts:
   CONFIG += link_pkgconfig
-  PKGCONFIG = QtCore
+  PKGCONFIG += QtCore
+
+  DEFINES += NDEBUG
+  QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -fPIE -Os -w
+  QMAKE_CXXFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -fPIE -Os -w
 
 }
-

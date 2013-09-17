@@ -17,13 +17,6 @@
 #include "../quazip/quazip.h"
 #include "../quazip/quazipfile.h"
 
-#define logTrace LOG_TRACE
-#define logDebug LOG_DEBUG
-#define logInfo  LOG_INFO
-#define logWarn  LOG_WARNING
-#define logError LOG_ERROR
-#define logFatal LOG_FATAL
-
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>

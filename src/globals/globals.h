@@ -1,8 +1,16 @@
 #ifndef __GLOBALS__
 #define __GLOBALS__
 
+    /* global logger definitions */
+    #define logTrace LOG_TRACE
+    #define logDebug LOG_DEBUG
+    #define logInfo  LOG_INFO
+    #define logWarn  LOG_WARNING
+    #define logError LOG_ERROR
+    #define logFatal LOG_FATAL
+
     /* global constants */
-    #define APP_VERSION "0.52.0"
+    #define APP_VERSION "0.52.1"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
