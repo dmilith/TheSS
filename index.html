@@ -1,0 +1,259 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Thess by VerKnowSys</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Thess</h1>
+        <p>The ServeD Service Spawner - trigger controlled, system agnostic utility, to spawn server software by touch of a magic wand.</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/VerKnowSys/TheSS" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/VerKnowSys/TheSS/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/VerKnowSys/TheSS/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h2>
+<a name="authors" class="anchor" href="#authors"><span class="octicon octicon-link"></span></a>Authors:</h2>
+
+<ul>
+<li>Daniel (dmilith) Dettlaff (dmilith [at] verknowsys.com). I'm also on #freebsd and #scala.pl @ freenode IRC.</li>
+</ul><h2>
+<a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors:</h2>
+
+<ul>
+<li>Tymon (teamon) Tobolski.</li>
+<li>Michał (tallica) Lipski.</li>
+</ul><h2>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies:</h2>
+
+<ul>
+<li>
+<a href="http://verknowsys.github.io/sofin">Sofin</a>. (all igniters by default will try to use Sofin to install software)</li>
+<li>
+<a href="http://qt-project.org/downloads">Qt4 4.8.x</a> (only QtCore part)</li>
+</ul><h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).</li>
+<li>Support software igniters written in JSON (+comments support) to generate predefined (user or system wide) software configurations on the fly.</li>
+<li>Support for software hooks. (More in <a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json">Defaults.json</a>). Hook example:</li>
+</ul><div class="highlight highlight-json"><pre><span class="p">{</span>
+    <span class="nt">"install"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"sofin install mysoft; install my software plugin"</span><span class="p">,</span>
+        <span class="nt">"expectOutput"</span><span class="p">:</span> <span class="s2">"Success happened, and this output is a confirmation"</span><span class="p">,</span>
+        <span class="nt">"expectOutputTimeout"</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<ul>
+<li>Ordered, synchronous execution of service hooks (exception: scheduler commmands are executed asynchronously)</li>
+<li>Service hooks have predefined execution order and some will call others. This is built in behavior and it's constant.</li>
+</ul><div class="highlight highlight-sh"><pre>
+startHook <span class="c"># will execute:</span>
+<span class="c"># ifNotInstalled(installHook) -&gt; ifNotConfigured(configureHook) -&gt; validateHook -&gt; startHook -&gt; afterStartHook</span>
+
+afterStartHook <span class="c"># will execute:</span>
+<span class="c"># afterStartHook</span>
+
+stopHook <span class="c"># will execute:</span>
+<span class="c"># stopHook -&gt; afterStopHook</span>
+
+afterStopHook <span class="c"># will execute:</span>
+<span class="c"># afterStopHook</span>
+
+restartHook <span class="c"># will execute:</span>
+<span class="c"># stopHook -&gt; afterStopHook -&gt; ifNotConfigured(configureHook) -&gt; validateHook -&gt; startHook -&gt; afterStartHook</span>
+
+validateHook <span class="c"># will execute:</span>
+<span class="c"># validateHook</span>
+
+reloadHook <span class="c"># will execute:</span>
+<span class="c"># reloadHook</span>
+
+installHook <span class="c"># will execute:</span>
+<span class="c"># installHook</span>
+
+configureHook <span class="c"># will execute:</span>
+<span class="c"># configureHook</span>
+
+reconfigureHook <span class="c"># will execute:</span>
+<span class="c"># configureHook -&gt; restartHook</span>
+
+</pre></div>
+
+<ul>
+<li>Using kernel file watchers (kqueue on OSX &amp; BSD, epoll on Linux) to watch software config/ data dirs.</li>
+<li>Supports "touch .hookname" method of manual launching of hooks. (for example: touch ~/SoftwareData/MyApp/.install will invoke install hook of MyApp igniter definition.)</li>
+<li>Supports basic hook dependency model. (for example: touch ~/SoftwareData/MyApp/.start will invoke: install hook, configure hook, validate hook and start hook of MyApp igniter definition)</li>
+<li>Supports software hook expectations with error reporting through built in Notification mechanism.</li>
+<li>Supports software "baby sitting". By default watches for software pid ("alwaysOn" option in <a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json">Defaults.json</a>)</li>
+<li>Supports TCP/ UDP port checking. ("watchPort" and "watchUdpPort" options in <a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json">Defaults.json</a>)</li>
+<li>Supports free port checking for TCP services, automatically generates random port for new services, (but also supports "staticPort" option in <a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json">Defaults.json</a>), to provide static port binding for software. (for example staticPort is 80 for Nginx). By default, service ports are stored in ~/SoftwareData/AppName/.ports and reused on next software start.</li>
+<li>Supports service autostarting. You need only to touch ~/SoftwareData/MyApp/.autostart file.</li>
+<li>Is designed to work with user privileges as a little user side daemon.</li>
+<li>Uses almost no memory: ~5 MiB RSS on 64bit system when working with several services.</li>
+<li>Supports super user mode, to support root services (ports: 1-1024). Just run svdss as root and that's it.</li>
+<li>Supports state files. For example if process is running the lock file is created: ~/SoftwareData/MyApp/.running</li>
+<li>Supports unified process configuration model. By default ~/SoftwareData/MyApp/service.pid and ~/SoftwareData/MyApp/service.log are created for each software. If service requires configuration, it's by default stored in ~/SoftwareData/MyApp/service.conf</li>
+<li>Supports dynamic, live log level change invoked by touch ~/.log-level, where "log-level" is one of: error, info, debug, trace. By default log level is info.</li>
+<li>Supports auto igniter reload support on hook level. You don't need to update, sync or reload igniters. After change, next hook invoke will use latest version of software igniter by default.</li>
+<li>Supports multiple directory sources for igniters. Default order of checking igniters existance for regular user is: ~/Igniters/Services, then /Common/Igniters/Services. For root it's: /Common/Igniters/Services, then /SystemUsers/Igniters.</li>
+<li>Supports igniter constants, auto filled before invoke of each hook. Currently there are:</li>
+</ul><div class="highlight highlight-sh"><pre>SERVICE_PREFIX            <span class="c"># by default: ~/SoftwareData/AppName</span>
+PARENT_SERVICE_PREFIX     <span class="c"># defines prefix of service parent</span>
+SERVICE_DOMAIN            <span class="c"># default host domain name. It's stored in ~/SoftwareData/AppName/.domain file by default.</span>
+SERVICE_ADDRESS           <span class="c"># by default it's default host IP address (resolved from SERVICE_DOMAIN)</span>
+SERVICE_ROOT              <span class="c"># by default: ~/Apps/AppName</span>
+SERVICE_VERSION           <span class="c"># by default taken from Sofin's: ~/Apps/AppName/appname.version</span>
+
+<span class="c"># You can also inject hook commands using igniter constants:</span>
+SERVICE_INSTALL_HOOK
+SERVICE_START_HOOK
+SERVICE_STOP_HOOK
+SERVICE_AFTERSTART_HOOK
+SERVICE_AFTERSTOP_HOOK
+SERVICE_CONFIGURE_HOOK
+SERVICE_BABYSITTER_HOOK
+SERVICE_VALIDATE_HOOK
+</pre></div>
+
+<ul>
+<li>Supports cron-compliant scheduler built in (since v0.24.x). Commands defined in schedulers have full support for igniter constants (listed above) and each command is in Zsh-compatible script format.
+Scheduler example based on Redis igniter:</li>
+</ul><div class="highlight highlight-json"><pre><span class="p">{</span>
+    <span class="nt">"schedulerActions"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">"cronEntry"</span><span class="p">:</span> <span class="s2">"*/25 10-15 1,3,5,7 * * ?"</span><span class="p">,</span>
+            <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"test -e SERVICE_PREFIX/database/database.rdf &amp;&amp; cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">"cronEntry"</span><span class="p">:</span> <span class="s2">"*/10 * * * * ?"</span><span class="p">,</span>
+            <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+<div class="highlight highlight-sh"><pre><span class="c"># Standard formatting for "cronEntry":</span>
+<span class="s2">"*/10 10,11,12 1-15 * * ?"</span>  <span class="c"># invoke each 10 minutes, exactly at 10am or 11am or 12am,</span>
+<span class="c"># only in first 15 days of month.</span>
+<span class="c"># The "?" sign is just a required symbolic placeholder which must be last character of each cron entry.</span>
+
+<span class="c"># Currently supported cron formats:</span>
+*       <span class="c"># WILDCARD: passes on each value</span>
+X       <span class="c"># NORMAL: passes when X has exact value as current value (X is a positive number)</span>
+*/X     <span class="c"># PERIODIC: passes when modulo of X and current value is 0 (X is a positive number)</span>
+X-Y     <span class="c"># RANGE: passes when value is in between X and Y (X, Y are positive numbers)</span>
+X,Y,Z   <span class="c"># SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are positive numbers)</span>
+
+</pre></div>
+
+<ul>
+<li>Support for live updates. Do <code>touch ~/.shutdown</code>. Maintainer will go down but all your software services will stay in background. Then just do an upgrade, rebuild, install and run maintainer again. It will just resume watch on live services. After a while (default babysitter pause time) it will automatically rebuild software dependency tree and continue to watch orphaned services.</li>
+<li>Support maintained, synchronous startup and shutdown of services. SIGINT (Ctrl - c in terminal) will shutdown TheSS gracefully including all running services. SIGTERM will just tell TheSS to shutdown leaving all services spawned in background (equivalent of <code>touch ~/.shutdown</code>).</li>
+<li>Supports basic UI - <code>svdpanel</code> - for easy service managment (based on ncurses library).</li>
+<li>Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set <code>touch SERVICE_PREFIX/.validationFailure</code> in hook commands.</li>
+</ul><h2>
+<a name="igniter-examples" class="anchor" href="#igniter-examples"><span class="octicon octicon-link"></span></a>Igniter examples:</h2>
+
+<ul>
+<li><a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Redis.json">Redis</a></li>
+<li><a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Mysql.json">Mysql</a></li>
+<li><a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/RootServices/Coreginx.json">Nginx</a></li>
+</ul><h2>
+<a name="wtf-how-to-run-it" class="anchor" href="#wtf-how-to-run-it"><span class="octicon octicon-link"></span></a>WTF? How to run it?</h2>
+
+<div class="highlight highlight-sh"><pre><span class="c"># to install run as root:</span>
+bin/systemdeploy
+
+<span class="c"># if you don't want to install it, but just try it,</span>
+<span class="c"># run as root:</span>
+bin/ignitersinstall <span class="c"># which installs default igniters to /Common</span>
+
+<span class="c"># to build and run tests:</span>
+bin/test
+
+<span class="c"># to only build TheSS executables:</span>
+bin/build
+
+<span class="c"># to install, run as root:</span>
+bin/systemdeploy
+
+<span class="c"># and now just:</span>
+bin/svdss <span class="c"># or svdss if used install process</span>
+<span class="c"># (it supports -d param for explicit debug output and -t for trace level output</span>
+<span class="c">#  which may be later changed using "log level change" feature)</span>
+
+<span class="c"># to actually spawn something, on second terminal, do:</span>
+mkdir ~/SoftwareData/Redis <span class="o">&amp;&amp;</span> touch ~/SoftwareData/Redis/.start
+<span class="c"># wait a while, software install process should work in background.</span>
+<span class="c"># This process should log output to file: ~/SoftwareData/Redis/service.log,</span>
+<span class="c"># then should pick random port, generate configuration for Redis</span>
+<span class="c"># service and just start it.</span>
+
+<span class="c"># you may also use built in panel:</span>
+bin/panel
+<span class="c"># Hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.</span>
+</pre></div>
+
+<h2>
+<a name="conflicts-problems-known-issues" class="anchor" href="#conflicts-problems-known-issues"><span class="octicon octicon-link"></span></a>Conflicts/ Problems/ Known issues:</h2>
+
+<ul>
+<li>Sofin build mechanism is known to be in conflict with other software managment solutions like: BSD Ports, HomeBrew, MacPorts, Fink. Keep that in mind before reporting problems.</li>
+<li>It's recommended to change shell by doing: <code>chsh -s /Software/Zsh/exports/zsh</code> for each user which will use TheSS. TheSS internally uses Shell from that path by default (currently Shell path is hardcoded due to lack of TheSS config in current version)</li>
+</ul><h2>
+<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
+
+<ul>
+<li>"It doesn't work at all. No services are starting" - First, make sure you have working "svdss" in background. Then make sure you have default shell installed for launched services (/Software/Zsh). If you still have problems, please report.</li>
+<li>"I've found a SIGSEGV in your crappy code. How to help you track it?" - First of all, disable optimizations in src/Common.pro. Replace "-O3" with "-O0 -g" in compiler flags setting. Rebuild project from scratch. Then just run your code with "lldb" or "gdb", and when you reproduce an error please send me output of "bt" command. Your contibution is never forgotten!</li>
+</ul><h2>
+<a name="used-3rd-party-software-and-licenses-info" class="anchor" href="#used-3rd-party-software-and-licenses-info"><span class="octicon octicon-link"></span></a>Used 3rd party software and licenses info:</h2>
+
+<ul>
+<li>CuteLogger MT logger implementation by Boris Moiseev (LGPL licensed)</li>
+<li>Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)</li>
+<li>JSON CPP implementation with JSON comments support by Baptiste Lepilleur (MIT licensed)</li>
+<li>QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)</li>
+<li>QT4 4.8.x implementation by Trolltech &amp; Nokia (LGPL licensed)</li>
+</ul>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/VerKnowSys">VerKnowSys</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
