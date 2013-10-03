@@ -457,6 +457,7 @@ bool dependencyStartOrderLessThan(const QString &a, const QString &b) {
 
 
 void SvdService::startSlot(bool withDeps) {
+    notification("Launching service: " + name, name, NOTIFY);
     logDebug() << "Invoked start slot for service:" << name;
     uptime.start();
 
@@ -551,8 +552,6 @@ void SvdService::startSlot(bool withDeps) {
             /* NOTE: don't try to retry. Notification is enough */
             return;
         }
-
-        notification("Launching service: " + name, name, NOTIFY);
 
         logTrace() << "Launching commands:" << config->start->commands;
         // touch(indicator);
@@ -680,11 +679,11 @@ void SvdService::afterStartSlot() {
 
 
 void SvdService::stopSlot(bool withDeps) {
+    notification("Terminating service: " + name, name, NOTIFY);
     logDebug() << "Invoked stop slot for service:" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     stopSitters();
-    notification("Terminating service: " + name, name, NOTIFY);
 
     /* stop dependency services */
     if (withDeps) {
