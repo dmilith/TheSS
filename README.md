@@ -172,7 +172,7 @@ mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
 # service and just start it.
 
 # you may also use built in panel:
-bin/panel
+bin/svdpanel
 # Hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.
 ```
 

@@ -1,20 +1,27 @@
 #!/bin/sh
 
-BINDIR="$(cd "$(dirname "$0")" && pwd)"
+printf "Loading Sofin environment\n"
+if [ "$(id -u)" = "0" ]; then
+    . /etc/profile_sofin
+else
+    . $HOME/.profile
+fi
 
 if [ "$(id -u)" != "0" ]; then
-    printf "This script must be run as root!\n"
+    printf "ERROR: This script must be run as root!\n"
     exit 1
 fi
 
-if [ ! -x "$BINDIR/svdss" ] || [ ! -x "$BINDIR/svddw" ] || [ ! -x "$BINDIR/svdpanel" ]; then
-    printf "You need to build TheSS first. Use bin/build, then retry deployment.\n"
+if [ ! -d "$(pwd)/bin" ]; then
+    printf "ERROR: This script must be run in TheSS root directory!\n"
     exit 1
 fi
 
-$BINDIR/ignitersinstall
-cp $BINDIR/svdss /bin/svdss
-cp $BINDIR/svddw /bin/svddw
-cp $BINDIR/svdnom /bin/svdnom
-cp $BINDIR/svdpanel /bin/svdpanel
-printf "Success\n"
+if [ ! -x "bin/svdss" ] || [ ! -x "bin/svddw" ] || [ ! -x "bin/svdpanel" ]; then
+    bin/build
+fi
+
+cp -fv bin/svdss /bin/svdss && printf "Successfully installed svdss\n"
+cp -fv bin/svddw /bin/svddw && printf "Successfully installed svddw\n"
+cp -fv bin/svdpanel /bin/svdpanel && printf "Successfully installed svdpanel\n"
+
