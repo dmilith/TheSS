@@ -2,6 +2,7 @@
 
 # case when launching it from source repository
 thess_source_dir="$(pwd)"
+user_id="$(id -u)"
 
 if [ ! -d "$(pwd)/basesystem" ]; then
     thess_source_dir="$HOME/Apps/Thess"
@@ -21,23 +22,33 @@ test_igniters_dir="/Common/Igniters/TestServices"
 if [ ! -d "${default_root_igniters_dir}" ]; then
     mkdir -p "${default_root_igniters_dir}"
 else
-    printf "Root Igniters directory exists."
+    printf "Root Igniters directory exists.\n"
 fi
 
 if [ ! -d "${default_igniters_dir}" ]; then
     mkdir -p "${default_igniters_dir}"
 else
-    printf "Igniters directory exists."
+    printf "Igniters directory exists.\n"
 fi
 
-echo "Installing Service Igniters to ${default_igniters_dir}"
-cp -vr ${thess_source_dir}/basesystem/universal/Default* ${default_igniters_dir}/../
-cp -vr ${thess_source_dir}/basesystem/universal/Services/* ${default_igniters_dir}/
+if [ "${user_id}" = "0" ]; then
 
-echo "Installing Root Service Igniters to ${default_root_igniters_dir}"
-cp -vr ${thess_source_dir}/basesystem/universal/RootServices/* ${default_root_igniters_dir}/
+    printf "Installing Service Igniters to ${default_igniters_dir}\n"
+    cp -vr ${thess_source_dir}/basesystem/universal/Default* ${default_igniters_dir}/../
+    cp -vr ${thess_source_dir}/basesystem/universal/Services/* ${default_igniters_dir}/
 
-echo "Installing Root Test Service Igniters to ${default_igniters_dir}"
-cp -vr ${thess_source_dir}/basesystem/universal/TestServices/* ${default_igniters_dir}/
+    printf "Installing Root Service Igniters to ${default_root_igniters_dir}\n"
+    cp -vr ${thess_source_dir}/basesystem/universal/RootServices/* ${default_root_igniters_dir}/
 
-echo "Done."
+    printf "Installing Root Test Service Igniters to ${default_igniters_dir}\n"
+    cp -vr ${thess_source_dir}/basesystem/universal/TestServices/* ${default_igniters_dir}/
+
+else # install all igniters (except root igniters) to user directory
+
+    export default_igniters_dir="${HOME}/Igniters/Services"
+    printf "Installing Service Igniters to ${default_igniters_dir}\n"
+    cp -vr ${thess_source_dir}/basesystem/universal/Default* ${default_igniters_dir}/../
+    cp -vr ${thess_source_dir}/basesystem/universal/Services/* ${default_igniters_dir}/
+
+fi
+printf "Done.\n"
