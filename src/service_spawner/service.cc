@@ -294,7 +294,7 @@ void SvdService::babySitterSlot() {
             deathWatch(babySit->pid());
             logDebug() << "Checking contents of file:" << babySit->outputFile;
             if (not expect(readFileContents(babySit->outputFile), config->babySitter->expectOutput)) {
-                QString msg = "Failed expectations of service: " + name + " with expected output of babySitter slot: " + config->babySitter->expectOutput;
+                QString msg = name + " failed in babySitter slot: " + config->babySitter->expectOutput;
                 notification(msg, name, ERROR);
                 emit restartSlot();
             } else {
@@ -362,7 +362,7 @@ void SvdService::installSlot() {
         deathWatch(process->pid());
         QFile::remove(indicator); // this indicates finish of installing process
         if (not expect(readFileContents(process->outputFile), config->install->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of install slot: " + config->babySitter->expectOutput;
+            QString msg = name + " failed in install slot: " + config->babySitter->expectOutput;
             notification(msg, name, ERROR);
         }
 
@@ -422,7 +422,7 @@ void SvdService::configureSlot() {
         QFile::remove(indicator);
         logDebug() << "Service configured:" << name;
         if (not expect(readFileContents(process->outputFile), config->configure->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of configure slot - No match for: '" + config->configure->expectOutput + "'";
+            QString msg = name + " failed in configure hook. exp: '" + config->configure->expectOutput + "'";
             notification(msg, name, ERROR);
         } else
             touch(config->prefixDir() + "/.configured");
@@ -562,10 +562,10 @@ void SvdService::startSlot(bool withDeps) {
         deathWatch(process->pid());
 
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of start slot - No match for: '" + config->start->expectOutput + "'";
+            QString msg = name + " failed in start hook. exp: '" + config->start->expectOutput + "'";
             notification(msg, name, ERROR);
         } else {
-            logInfo() << "Service expectations were successful. Launching cron and baby sitters for service:" << name;
+            logInfo() << "Launching cron and baby sitters for service:" << name;
 
             if (not babySitter.isActive()) {
                 logDebug() << "Calling babysitter with standard interval:" << QString::number(BABYSITTER_TIMEOUT_INTERVAL / 1000) << "miliseconds";
@@ -666,7 +666,7 @@ void SvdService::afterStartSlot() {
         process->waitForFinished(-1);
         deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile), config->afterStart->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of afterStart slot - No match for: '" + config->afterStart->expectOutput + "'";
+            QString msg = name + " failed in afterStart hook. exp: '" + config->afterStart->expectOutput + "'";
             notification(msg, name, ERROR);
 
         }
@@ -684,6 +684,7 @@ void SvdService::stopSlot(bool withDeps) {
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     stopSitters();
+    notification("Terminating service: " + name, name, NOTIFY);
 
     /* stop dependency services */
     if (withDeps) {
@@ -700,7 +701,7 @@ void SvdService::stopSlot(bool withDeps) {
         logInfo() << "No need to stop service" << name << "because it's already stopped.";
     } else {
         auto process = new SvdProcess(name);
-        logInfo() << "Stopping service" << name << "after" << toHMS(getUptime()) << "of uptime.";
+        logInfo() << "Terminating service" << name << "after" << toHMS(getUptime()) << "of uptime.";
         uptime.invalidate();
 
         logTrace() << "Loading service igniter" << name;
@@ -717,7 +718,7 @@ void SvdService::stopSlot(bool withDeps) {
         process->waitForFinished(-1);
         deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile), config->stop->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of stop slot - No match for: '" + config->stop->expectOutput + "'";
+            QString msg = name + " failed in stop hook. exp: '" + config->stop->expectOutput + "'";
             notification(msg, name, ERROR);
         }
 
@@ -772,7 +773,7 @@ void SvdService::afterStopSlot() {
         deathWatch(process->pid());
         QFile::remove(indicator);
         if (not expect(readFileContents(process->outputFile), config->afterStop->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of afterStop slot - No match for: '" + config->afterStop->expectOutput + "'";
+            QString msg = name + " failed in afterStop hook. exp: '" + config->afterStop->expectOutput + "'";
             notification(msg, name, ERROR);
         }
         logTrace() << "After process afterStop execution:" << name;
@@ -821,7 +822,7 @@ void SvdService::reloadSlot() {
         process->waitForFinished(-1);
         deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile), config->reload->expectOutput)) {
-            QString msg = "Failed expectations of service: " + name + " with expected output of reload slot - No match for: '" + config->reload->expectOutput + "'";
+            QString msg = name + " failed in reload hook. exp: '" + config->reload->expectOutput + "'";
             notification(msg, name, ERROR);
         }
 
@@ -855,7 +856,7 @@ void SvdService::validateSlot() {
 
             deathWatch(process->pid());
             if (not expect(readFileContents(process->outputFile), config->validate->expectOutput)) {
-                QString msg = "Failed expectations of service: " + name + " with expected output of validate slot - No match for: '" + config->validate->expectOutput + "'";
+                QString msg = name + " failed in validate hook. exp: '" + config->validate->expectOutput + "'";
                 notification(msg, name, ERROR);
             }
 

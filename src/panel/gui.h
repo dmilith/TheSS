@@ -68,7 +68,7 @@ private:
     Tail * tail = NULL;
     const PanelService * recentService = NULL;
 
-    int notificationRows = 10;
+    int notificationRows = 12;
 };
 
 
