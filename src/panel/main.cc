@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     // Logger setup - turn it off
     FileAppender *consoleAppender = new FileAppender(logFile);
     Logger::registerAppender(consoleAppender);
-    consoleAppender->setDetailsLevel(Logger::Debug);
+    consoleAppender->setDetailsLevel(Logger::Info);
 
     // Panel setup
     QString user = getenv("USER");
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
 
     QTimer *timer1 = new QTimer(&app);
     app.connect(timer1, SIGNAL(timeout()), panel, SLOT(refresh()));
-    timer1->start(100);
+    timer1->start(15);
 
     gui->init();
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     QTimer *timerNotification = new QTimer(&app);
     app.connect(timerNotification, SIGNAL(timeout()), gui, SLOT(gatherNotifications()));
-    timerNotification->start(100);
+    timerNotification->start(400);
 
     return app.exec();
 }

@@ -27,9 +27,9 @@ void PanelGui::init(){
 
     panel->setGui(this);
 
-    mainWindow = newwin(rows - 6, cols/2, 0, 0);
+    mainWindow = newwin(rows - notificationRows, cols/2, 0, 0);
     logWindow = newwin(rows, cols/2, 0, cols/2);
-    notificationWindow = newwin(notificationRows, cols/2, rows - notificationRows - 1, 0);
+    notificationWindow = newwin(notificationRows, cols/2, rows - notificationRows, 0);
     wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - 6, mainWindow);
@@ -141,7 +141,7 @@ void PanelGui::displayFooter(){
     functions << "F5" << "refresh" << "F7" << "new service";
     functions << "F8" << "destroy" << "F9" << "SS shutdown";
 
-    int x = 0, y = rows - 9;
+    int x = 0, y = rows - 13;
     char * str;
     int i;
 
