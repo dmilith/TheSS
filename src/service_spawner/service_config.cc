@@ -306,7 +306,24 @@ const QString SvdServiceConfig::prefixDir() {
 
 
 const QString SvdServiceConfig::defaultTemplateFile() {
-    return QString(DEFAULTSOFTWARETEMPLATE) + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    /* pick of two possible locations: /Commons/Igniters and ~/Igniters */
+
+    /* try user side defaults first */
+    QString userSideDefaultIgniter = QString(getenv("HOME")) + "/Igniters/Default" + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    if (QFile::exists(userSideDefaultIgniter)) {
+        logDebug() << "User side igniter Defaults found, and will be used:" << userSideDefaultIgniter;
+        return userSideDefaultIgniter;
+
+    } else {
+        /* then, try system wide defaults */
+        QString rootSideDefaultIgniter = QString(DEFAULTSOFTWARETEMPLATE) + QString(DEFAULTSOFTWARETEMPLATEEXT);
+        if (QFile::exists(rootSideDefaultIgniter)) {
+            return rootSideDefaultIgniter;
+        } else {
+            logFatal() << "Default igniter wasn't found. TheSS cannot continue.";
+            return "";
+        }
+    }
 }
 
 
