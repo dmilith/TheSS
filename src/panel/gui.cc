@@ -401,6 +401,19 @@ void PanelGui::key(int ch){
             displayLog();
             break;
 
+        case 10: { /* enter to the service prefix */
+            servicesList->key(ch);
+            endwin();
+            QString name = servicesList->currentItem()->name;
+            QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
+
+            system("clear");
+            system(QString("export DESTPATH='" + prefixPath + "' && svdshell").toUtf8().constData());
+
+            initscr();
+            status = "I've came back from the underground!";
+        } break;
+
         case 'D':
             if (servicesList->currentItem() == NULL) {
                 status = "Can't change domain for non existant service";
