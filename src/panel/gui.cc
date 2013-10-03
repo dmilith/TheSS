@@ -111,7 +111,7 @@ void PanelGui::gatherNotifications() {
     }
 
     wrefresh(notificationWindow);
-    // refresh(); 2013-10-03 16:44:54 - dmilith - might be one of causes of annoing flickering that sometimes happens on remote hosts.
+    refresh();
 }
 
 
