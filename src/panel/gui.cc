@@ -29,7 +29,7 @@ void PanelGui::init(){
 
     mainWindow = newwin(rows - 6, cols/2, 0, 0);
     logWindow = newwin(rows, cols/2, 0, cols/2);
-    notificationWindow = newwin(notificationRows + 1, cols/2, rows - notificationRows - 1, 0);
+    notificationWindow = newwin(notificationRows, cols/2, rows - notificationRows - 1, 0);
     wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - 6, mainWindow);
