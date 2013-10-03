@@ -50,5 +50,3 @@ build () {
 }
 
 build "$1"
-
-printf "NOTE: Please run as root: bin/ignitersinstall to install default igniters to /Common/Igniters. They're required for ss to run properly!\n"

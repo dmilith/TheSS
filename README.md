@@ -150,20 +150,13 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 ## WTF? How to run it?
 
 ```sh
-# to install run as root:
-bin/systemdeploy
-
-# if you don't want to install it, but just try it,
-# run as root:
-bin/ignitersinstall # which installs default igniters to /Common
+# to only build TheSS executables:
+bin/build
 
 # to build and run tests:
 bin/test
 
-# to only build TheSS executables:
-bin/build
-
-# to install, run as root:
+# to install system wide, run as root:
 bin/systemdeploy
 
 # and now just:
