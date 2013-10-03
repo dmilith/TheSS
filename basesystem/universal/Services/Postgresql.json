@@ -43,7 +43,7 @@ SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_PREFIX/service
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/pg_ctl --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_PREFIX/service.log 2>&1
 "
     },
     "babySitter": {
