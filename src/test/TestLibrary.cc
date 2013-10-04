@@ -26,10 +26,10 @@ TestLibrary::TestLibrary() {
     Logger::registerAppender(consoleAppender);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
 
-    if (not QDir().exists(DEFAULTSOFTWARETEMPLATESDIR)) {
-        cout << "Install igniters first before launching test!" << endl;
-        exit(1);
-    }
+    // if (not QDir().exists(DEFAULTSOFTWARETEMPLATESDIR)) {
+    //     cout << "Install igniters first before launching test!" << endl;
+    //     exit(1);
+    // }
     testDataDir = QDir::currentPath() + "/basesystem/universal/TestData";
     testDataDir2 = QDir::currentPath() + "/../basesystem/universal/TestData";
 }

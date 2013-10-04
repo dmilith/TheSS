@@ -51,5 +51,8 @@ else # install all igniters (except root igniters) to user directory
     cp -vr ${thess_source_dir}/basesystem/universal/Default* ${default_igniters_dir}/../
     cp -vr ${thess_source_dir}/basesystem/universal/Services/* ${default_igniters_dir}/
 
+    printf "Installing Test Service Igniters to ${default_igniters_dir}\n"
+    cp -vr ${thess_source_dir}/basesystem/universal/TestServices/* ${default_igniters_dir}/
+
 fi
 printf "Done.\n"
