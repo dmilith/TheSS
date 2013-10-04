@@ -68,7 +68,7 @@ private:
     Tail * tail = NULL;
     const PanelService * recentService = NULL;
 
-    int notificationRows = 12;
+    int notificationRows = NOTIFICATIONS_LAST_SHOWN + NOTIFICATIONS_OPTIONS_BAR_HEIGHT;
 };
 
 

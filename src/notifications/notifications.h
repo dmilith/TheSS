@@ -28,16 +28,13 @@
 struct Notification {
     int level;
     QString content;
-    QDateTime time;
+    qint64 time;
 };
 
 enum NotificationLevels {NOTIFY, WARNING, ERROR, FATAL};
 
 
-static QMap<QString, int> history = QMap<QString, int>(); /* content, amount */
-
-
-void notification(const QString& notificationMessage, const QString& serviceName = "", NotificationLevels level = ERROR);
+void notification(const QString& notificationMessage, NotificationLevels level = ERROR);
 
 
 #endif

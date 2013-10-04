@@ -67,17 +67,17 @@ int main(int argc, char *argv[]) {
 
     QTimer *timer1 = new QTimer(&app);
     app.connect(timer1, SIGNAL(timeout()), panel, SLOT(refresh()));
-    timer1->start(15);
+    timer1->start(35);
 
     gui->init();
 
     QTimer *timer2 = new QTimer(&app);
     app.connect(timer2, SIGNAL(timeout()), gui, SLOT(readInput()));
-    timer2->start(10);
+    timer2->start(25);
 
     QTimer *timerNotification = new QTimer(&app);
     app.connect(timerNotification, SIGNAL(timeout()), gui, SLOT(gatherNotifications()));
-    timerNotification->start(400);
+    timerNotification->start(350);
 
     return app.exec();
 }

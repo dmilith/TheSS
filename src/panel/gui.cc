@@ -24,15 +24,14 @@ void PanelGui::init(){
     noecho();
     refresh();
 
-
     panel->setGui(this);
 
-    mainWindow = newwin(rows - notificationRows - 1, cols/2, 0, 0);
+    mainWindow = newwin(rows - notificationRows, cols/2, 0, 0);
     logWindow = newwin(rows, cols/2, 0, cols/2);
-    notificationWindow = newwin(notificationRows - 1, cols/2, rows - notificationRows, 0);
+    notificationWindow = newwin(notificationRows, cols/2, rows - notificationRows, 0);
     wrefresh(notificationWindow);
 
-    servicesList = new ServicesList(rows - 6, mainWindow);
+    servicesList = new ServicesList(rows - notificationRows, mainWindow);
     servicesList->setItems(&panel->services);
 
     if(panel->services.length() == 0){
@@ -55,7 +54,7 @@ void PanelGui::gatherNotifications() {
 
     /* iterate through user software to find software notifications */
     Q_FOREACH(QString service, userSoftwareList) {
-        QString notificationsPrefix = userSoftwarePrefix + "/" + service + NOTIFICATIONS_DATA_DIR;
+        QString notificationsPrefix = userSoftwarePrefix + NOTIFICATIONS_DATA_DIR;
         if (QDir().exists(notificationsPrefix)) {
             auto files = QDir(notificationsPrefix).entryInfoList(QDir::Files, QDir::Time);
 
@@ -68,8 +67,15 @@ void PanelGui::gatherNotifications() {
                 else if(ext == "notice")    n.level = NOTIFICATION_LEVEL_NOTICE;
 
                 n.content = readFileContents(file.absoluteFilePath()).trimmed();
-                n.time = file.created();
-                notifications.append(n);
+                n.time = file.created().toMSecsSinceEpoch();
+
+                bool allow = true;
+                Q_FOREACH(Notification an, notifications) {
+                    if (an.content.trimmed() == n.content.trimmed())
+                        allow = false;
+                }
+                if (allow)
+                    notifications.append(n);
             }
         }
     }

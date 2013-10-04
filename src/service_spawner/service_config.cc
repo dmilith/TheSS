@@ -28,7 +28,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         auto defaults = loadDefaultIgniter();
         if (not defaults) {
             QString msg = "Igniters defaults must be always valid. Cannot continue.";
-            notification(msg, "", FATAL);
+            notification(msg, FATAL);
         }
         softwareName = (*defaults)["softwareName"].asCString();
         autoStart = (*defaults)["autoStart"].asBool();
@@ -103,7 +103,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
 
     } catch (std::exception &e) {
         QString msg = QString("Thrown Exception: ") + e.what() + " in Default service.";
-        notification(msg, "", FATAL);
+        notification(msg, FATAL);
         exit(JSON_FORMAT_EXCEPTION_ERROR);
     }
 }
@@ -117,11 +117,11 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         auto root = loadIgniter(); // NOTE: the question is.. how will this behave ;]
         if (not defaults) {
             QString msg = "Igniters defaults must be always valid. Cannot continue.";
-            notification(msg, "", FATAL);
+            notification(msg, FATAL);
         }
         if (not root) {
             QString msg = "Error loading igniter for service: " + serviceName + "! Loading default igniter instead.";
-            notification(msg, "", ERROR);
+            notification(msg, ERROR);
             root = loadDefaultIgniter();
         }
         softwareName = root->get("softwareName", (*defaults)["softwareName"]).asCString();
@@ -148,7 +148,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
                 dependencies.push_back((*root)["dependencies"][index].asCString());
             } catch (std::exception &e) {
                 QString msg = "Exception while parsing dependencies of service: " + name;
-                notification(msg, "", ERROR);
+                notification(msg, ERROR);
             }
         }
         logTrace() << "Defined dependencies for igniter of:" << name << "list:" << dependencies;
@@ -166,15 +166,15 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
                 } else {
                     if (not object2.isString()) {
                         QString msg = "JSON Type: Array - Failed parsing scheduler actions in igniter: " + name + " field: commands";
-                        notification(msg, "", ERROR);
+                        notification(msg, ERROR);
                     } else {
                         QString msg = "JSON Type: Array - Failed parsing scheduler actions in igniter:" + name + " field: cronEntry";
-                        notification(msg, "", ERROR);
+                        notification(msg, ERROR);
                     }
                 }
             } catch (std::exception &e) {
                 QString msg = QString("Exception while parsing scheduler actions of service: ") + name + " - " + e.what();
-                notification(msg, "", ERROR);
+                notification(msg, ERROR);
             }
         }
 
@@ -249,7 +249,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
 
     } catch (std::exception &e) {
         QString msg = QString("Thrown Exception: ") + e.what() + " in " + serviceName + " service.";
-        notification(msg, "", ERROR);
+        notification(msg, ERROR);
     }
 }
 
