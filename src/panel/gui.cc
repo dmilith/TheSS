@@ -24,15 +24,14 @@ void PanelGui::init(){
     noecho();
     refresh();
 
-
     panel->setGui(this);
 
-    mainWindow = newwin(rows - notificationRows - 1, cols/2, 0, 0);
+    mainWindow = newwin(rows - notificationRows, cols/2, 0, 0);
     logWindow = newwin(rows, cols/2, 0, cols/2);
-    notificationWindow = newwin(notificationRows - 1, cols/2, rows - notificationRows, 0);
+    notificationWindow = newwin(notificationRows, cols/2, rows - notificationRows, 0);
     wrefresh(notificationWindow);
 
-    servicesList = new ServicesList(rows - notificationRows, mainWindow); // XXXXXX
+    servicesList = new ServicesList(rows - notificationRows, mainWindow);
     servicesList->setItems(&panel->services);
 
     if(panel->services.length() == 0){

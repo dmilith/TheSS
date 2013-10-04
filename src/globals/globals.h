@@ -26,7 +26,8 @@
     #define DEFAULT_STRING_CODEC "utf8"
     #define LOCALE "en_GB.UTF-8"
 
-    #define NOTIFICATIONS_LAST_SHOWN 7 /* amount of notification before moving to history */
+    #define NOTIFICATIONS_OPTIONS_BAR_HEIGHT 2
+    #define NOTIFICATIONS_LAST_SHOWN 11 /* amount of notification before moving to history */
     #define NOTIFICATIONS_HISTORY_KEEP_UPTO 100 /* how many files to keep in history */
 
     #ifdef __APPLE__
@@ -82,9 +83,6 @@
     #define NOTIFICATION_MANAGER_LOG_FILE "/.notifications-manager.log"
     #define CONTROL_PANEL_LOG_FILE "/.control-panel.log"
     #define DEFAULT_CRON_ENTRY "0 0/30 * * * ?"
-
-    #define DEFAULT_PANEL_SCROLL_SIZE 256 /* panel log viewer scroll value in bytes */
-    #define DEFAULT_PANEL_REFRESH_INTERVAL 250000
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
     #define DEFAULT_CRON_CHECK_DELAY 10000000 // 10s
