@@ -75,39 +75,18 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
 
     }
 
-    if (history[message] > 0) {
-        history[message]++;
-    } else {
+    QString historyRoot = notificationRoot + NOTIFICATIONS_HISTORY_DATA_DIR;
+    notificationRoot += NOTIFICATIONS_DATA_DIR;
+    getOrCreateDir(notificationRoot); /* create it only for common notifications - unrelated to services*/
+    getOrCreateDir(historyRoot);
 
-        if (serviceName.isEmpty()) {
-            QString historyRoot = notificationRoot + NOTIFICATIONS_HISTORY_DATA_DIR;
-            notificationRoot += NOTIFICATIONS_DATA_DIR;
-            getOrCreateDir(notificationRoot); /* create it only for common notifications - unrelated to services*/
-            getOrCreateDir(historyRoot);
+    auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+    QString content = message;
+    hash->addData(content.toUtf8(), content.length());
+    QString notificationFileName = hash->result().toHex() + postfix;
+    delete hash;
+    logInfo() << "Notification generated with message: " << message << " written to:" << notificationRoot + "/" + QString::number(now) + "_" + notificationFileName;
+    writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
 
-            auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
-            QString content = message;
-            hash->addData(content.toUtf8(), content.length());
-            QString notificationFileName = hash->result().toHex() + postfix;
-            delete hash;
-            writeToFile(notificationRoot + "/" + notificationFileName, message);
-
-            moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
-
-        } else { /* it's service side notification! */
-            notificationRoot += "/" + serviceName + NOTIFICATIONS_DATA_DIR;
-            QString historyRoot = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + NOTIFICATIONS_HISTORY_DATA_DIR;
-            getOrCreateDir(notificationRoot); /* create it only for common notifications - unrelated to services*/
-            getOrCreateDir(historyRoot);
-
-            auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
-            QString content = message;
-            hash->addData(content.toUtf8(), content.length());
-            QString notificationFileName = hash->result().toHex() + postfix;
-            delete hash;
-            writeToFile(notificationRoot + "/" + notificationFileName, message);
-
-            moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
-        }
-    }
+    moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
 }
