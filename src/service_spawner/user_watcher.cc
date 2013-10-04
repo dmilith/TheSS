@@ -152,7 +152,7 @@ void SvdUserWatcher::shutdownSlot() {
 void SvdUserWatcher::checkUserControlTriggers() {
     if (QFile::exists(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
         QString msg = "Invoked shutdown trigger. Sending SS down.";
-        notification(msg, "", NOTIFY);
+        notification(msg, NOTIFY);
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         QFile::remove(homeDir + "/." + getenv("USER") + ".pid");

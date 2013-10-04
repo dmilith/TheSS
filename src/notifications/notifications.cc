@@ -42,16 +42,13 @@ void moveOldNotificationsToHistoryAndCleanHistory(const QString& notificationRoo
 }
 
 
-void notification(const QString& notificationMessage, const QString& serviceName, NotificationLevels level) {
+void notification(const QString& notificationMessage, NotificationLevels level) {
 
     QString message;
 
     /* make sure that every notification begins with proper data and time */
-    const QDateTime now = QDateTime::currentDateTime();
-    if (not notificationMessage.startsWith(now.toString("dd-hh:mm"))) { // XXX: hardcoded
-        message = now.toString("dd-hh:mm:ss - ") + notificationMessage;
-    } else
-        message = notificationMessage;
+    const qint64 now = QDateTime::currentMSecsSinceEpoch();
+    message = QString::number(now) + ": " + notificationMessage;
 
     QString notificationRoot = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
     QString postfix;
@@ -72,7 +69,7 @@ void notification(const QString& notificationMessage, const QString& serviceName
             break;
 
         case FATAL:
-            logFatal() << notificationMessage;
+            logError() << notificationMessage;
             postfix = ".fatal";
             break;
 
