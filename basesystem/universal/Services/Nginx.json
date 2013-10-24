@@ -28,7 +28,7 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop && printf 'Ngi
         "commands": "
 printf \"
 worker_processes 2;
-pid SERVICE_PREFIX/service.pid;
+# pid SERVICE_PREFIX/service.pid;
 events {
     worker_connections 1024;
 }
