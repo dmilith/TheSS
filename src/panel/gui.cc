@@ -145,7 +145,7 @@ void PanelGui::displayFooter(){
     functions << "F1" << "trace" << "F2" << "debug";
     functions << "F3" << "info" << "F4" << "error";
     functions << "F5" << "refresh" << "F7" << "new service";
-    functions << "F8" << "destroy" << "F9" << "SS shutdown";
+    functions << "F8" << "destroy" << "F9" << "SS launch/shutdown";
 
     int x = 0, y = rows - 15;
     char * str;
@@ -244,7 +244,8 @@ void PanelGui::helpDialog(){
     list << "  F1-F4   - Set log level (trace, debug, info, error)";
     list << "  F5      - Refresh panel";
     list << "  F7, N   - Add new service";
-    list << "  F9      - Shutdown TheSS (leave services working)";
+    list << "  F9      - Launch TheSS if not running, or";
+    list << "            Shutdown TheSS if running (leave services working)";
 
     for(int i=0; i<list.length(); i++){
         mvwprintw(win, i+1, 2, "%s", list.at(i).toUtf8().data());
@@ -465,8 +466,16 @@ void PanelGui::key(int ch){
             break;
 
         case KEY_F(9):
-            panel->shutdown();
-            status = "Terminating ServiceSpawner (services remain in background)";
+            if (panel->isSSOnline()) {
+                status = "Terminating ServiceSpawner (services remain in background)";
+                panel->shutdown();
+            } else {
+                status = "Launching ServiceSpawner in tmux, with session name: svdss";
+                auto prc = new SvdProcess("SS", getuid(), false);
+                prc->spawnProcess("sofin get tmux ; tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
+                prc->waitForFinished(1);
+                notification("Launching ServiceSpawner in tmux session: svdss", NOTIFY);
+            }
             break;
 
         case '?':
