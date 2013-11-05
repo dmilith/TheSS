@@ -20,5 +20,23 @@ rm -rf ${base_name}
 cd ..
 
 printf "Pushing package to remote server\n"
-scp releases/thess-${version}.tar.bz2 sofin@v:/opt/software/source/
-ssh sofin@v "sha1sum /opt/software/source/thess-${version}.tar.bz2"
+
+# XXX: NON DRY: Sofin utility fragment:
+readonly default_port="60022"
+readonly user_name="sofin"
+readonly default_source_path="/Mirror/software/source"
+readonly default_host="software.verknowsys.com"
+
+if [ "$(uname)" = "Linux" ]; then
+    for mirror in $(host ${default_host} | awk '{print $3}'); do
+        printf "Synchronizing releases/${archive_name} with ${mirror}\n"
+        scp -P ${default_port} "releases/${archive_name}" "${user_name}@${mirror}:${default_source_path}"
+    done
+else
+    for mirror in $(host ${default_host} | awk '{print $4}'); do
+        printf "Synchronizing releases/${archive_name} with ${mirror}\n"
+        scp -P ${default_port} "releases/${archive_name}" "${user_name}@${mirror}:${default_source_path}"
+    done
+fi
+
+ssh sofin@v "sha1sum ${default_source_path}/thess-${version}.tar.bz2"
