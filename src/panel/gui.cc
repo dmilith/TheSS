@@ -243,6 +243,7 @@ void PanelGui::helpDialog(){
     list << "Other actions:";
     list << "  F1-F4   - Set log level (trace, debug, info, error)";
     list << "  F5      - Refresh panel";
+    list << "  F6      - Rename service (also creates duplicate of current igniter)";
     list << "  F7, N   - Add new service";
     list << "  F9      - Launch TheSS if not running, or";
     list << "            Shutdown TheSS if running (leave services working)";
@@ -303,11 +304,11 @@ void PanelGui::newServiceDialog(){
 }
 
 
-QString PanelGui::newDomain() {
+QString PanelGui::newEntry(QString defaultEntry = "Domain name") {
     int r = min(rows-6, 23);
     WINDOW *win = newwin(r, 46, 2, 5);
     QList<QString> *aList = new QList<QString>();
-    AvailableServicesList list(aList, r - 3, win, "   Domain name: ");
+    AvailableServicesList list(aList, r - 3, win, "  " + defaultEntry + ": ");
     QString name = "";
     int ch = 0;
 
@@ -400,6 +401,24 @@ bool PanelGui::confirm(QString msg){
     return ch == 'Y';
 }
 
+
+void copyPath(QString src, QString dst) {
+    QDir dir(src);
+    if (!dir.exists())
+        return;
+
+    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        QString dst_path = dst + QDir::separator() + d;
+        dir.mkpath(dst_path);
+        copyPath(src + QDir::separator() + d, dst_path);
+    }
+
+    foreach (QString f, dir.entryList(QDir::Files)) {
+        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
+    }
+}
+
+
 void PanelGui::key(int ch){
     switch(ch){
         case KEY_UP:
@@ -431,7 +450,7 @@ void PanelGui::key(int ch){
                     prefixPath = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + name;
                 }
                 QString domainFilePath = prefixPath + QString(DEFAULT_SERVICE_DOMAIN_FILE);
-                QString domain = newDomain();
+                QString domain = newEntry();
                 status = "Changing domain for service: " + name + " to: " + domain;
                 if (not domain.trimmed().isEmpty())
                     writeToFile(domainFilePath, domain);
@@ -464,6 +483,54 @@ void PanelGui::key(int ch){
             getmaxyx(stdscr, r, c);
             reload(r, c);
             break;
+
+        case KEY_F(6): /* rename service */
+            if (servicesList->currentItem() == NULL) {
+                status = "Can't change name of non existing service!";
+            } else {
+                QString name = servicesList->currentItem()->name;
+                QString basePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
+                QString prefixPath = basePath + "/" + name;
+                if (getuid() == 0) {
+                    basePath = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR;
+                    prefixPath = basePath + "/" + name;
+                }
+
+                /* NOTE: stop service (without deps), rename directory, replace old abs paths in service.conf, start again if stopped */
+                bool stpd = false;
+                auto item = servicesList->currentItem();
+                if (item->isRunning) {
+                    item->stopWithoutDeps();
+                    stpd = true;
+                }
+                QString sname = newEntry("Service name");
+                QString destPath = basePath + "/" + sname;
+                if (sname.trimmed() == "") break;
+
+                /* replace paths in service.conf */
+                QString fileName = prefixPath + "/service.conf";
+                if (QFile::exists(fileName)) {
+                    QString svcConf = readFileContents(fileName);
+                    svcConf.replace(prefixPath, destPath);
+                    writeToFile(fileName, svcConf);
+                }
+
+                /* add copy of igniter! */
+                QString igniterBaseDir = basePath + "/.." + DEFAULT_USER_IGNITERS_DIR;
+                QString igniter = igniterBaseDir + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+                if (QFile::exists(igniter)) {
+                    QFile::copy(igniter, igniterBaseDir + "/" + sname + DEFAULT_SOFTWARE_TEMPLATE_EXT);
+                }
+
+                copyPath(prefixPath, destPath);
+                removeDir(prefixPath);
+
+                if (stpd) { /* if service was stopped, start it again after rename */
+                    touch(destPath + "/.startWithoutDeps");
+                }
+            }
+            break;
+
 
         case KEY_F(9):
             if (panel->isSSOnline()) {

@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <ncurses.h>
 
+#include "../globals/globals.h"
 #include "../notifications/notifications.h"
 #include "panel.h"
 
@@ -21,7 +22,7 @@ public:
     void removeCurrentService();
     bool confirm(QString msg);
     void init();
-    QString newDomain();
+    QString newEntry(QString defaultEntry);
 
 public slots:
     void run();
