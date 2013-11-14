@@ -234,17 +234,16 @@ void PanelGui::helpDialog(){
     list << "  f       - Reconfigure current service without dependencies";
     list << "  V       - Validate current service";
     list << "  A       - Toggle autostart";
-    list << "  F8, X   - Delete current service";
     list << "  K       - Show app config (service.conf)";
     list << "  E       - Show app env (service.env)";
     list << "  L       - Show service log (service.log)";
     list << "  W       - Toggle line wrapping in log window";
-    list << "";
     list << "Other actions:";
     list << "  F1-F4   - Set log level (trace, debug, info, error)";
     list << "  F5      - Refresh panel";
     list << "  F6      - Rename service (also creates duplicate of current igniter)";
     list << "  F7, N   - Add new service";
+    list << "  F8, X   - Delete current service";
     list << "  F9      - Launch TheSS if not running, or";
     list << "            Shutdown TheSS if running (leave services working)";
 
