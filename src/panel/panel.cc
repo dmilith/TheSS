@@ -79,11 +79,11 @@ void Panel::refreshServicesList() {
 }
 
 QStringList * Panel::availableServices() {
-    auto userEntries = QDir(home.absolutePath() + QString(DEFAULTUSERIGNITERSDIR)).entryList(QDir::Files);
-    auto standardEntries = QDir(QString(DEFAULTSOFTWARETEMPLATESDIR)).entryList(QDir::Files);
+    auto userEntries = QDir(home.absolutePath() + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
+    auto standardEntries = QDir(QString(DEFAULT_SOFTWARE_TEMPLATES_DIR)).entryList(QDir::Files);
     auto rootEntries = QStringList();
     if (getuid() == 0) {
-            rootEntries << QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULTUSERIGNITERSDIR)).entryList(QDir::Files);
+            rootEntries << QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
     }
 
     available.clear();

@@ -309,14 +309,14 @@ const QString SvdServiceConfig::defaultTemplateFile() {
     /* pick of two possible locations: /Commons/Igniters and ~/Igniters */
 
     /* try user side defaults first */
-    QString userSideDefaultIgniter = QString(getenv("HOME")) + "/Igniters/Default" + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    QString userSideDefaultIgniter = QString(getenv("HOME")) + "/Igniters/Default" + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
     if (QFile::exists(userSideDefaultIgniter)) {
         logDebug() << "User side igniter Defaults found, and will be used:" << userSideDefaultIgniter;
         return userSideDefaultIgniter;
 
     } else {
         /* then, try system wide defaults */
-        QString rootSideDefaultIgniter = QString(DEFAULTSOFTWARETEMPLATE) + QString(DEFAULTSOFTWARETEMPLATEEXT);
+        QString rootSideDefaultIgniter = QString(DEFAULT_SOFTWARE_TEMPLATE) + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
         if (QFile::exists(rootSideDefaultIgniter)) {
             return rootSideDefaultIgniter;
         } else {
@@ -328,17 +328,17 @@ const QString SvdServiceConfig::defaultTemplateFile() {
 
 
 const QString SvdServiceConfig::rootIgniter() {
-    return QString(SYSTEM_USERS_DIR) + QString(DEFAULTUSERIGNITERSDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR) + "/" + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
 }
 
 
 const QString SvdServiceConfig::userIgniter() {
-    return getenv("HOME") + QString(DEFAULTUSERIGNITERSDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return getenv("HOME") + QString(DEFAULT_USER_IGNITERS_DIR) + "/" + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
 }
 
 
 const QString SvdServiceConfig::standardUserIgniter() {
-    return QString(DEFAULTSOFTWARETEMPLATESDIR) + "/" + name + QString(DEFAULTSOFTWARETEMPLATEEXT);
+    return QString(DEFAULT_SOFTWARE_TEMPLATES_DIR) + "/" + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
 }
 
 
