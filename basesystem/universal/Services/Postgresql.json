@@ -12,6 +12,7 @@
     },
     "validate": {
         "commands": "
+chmod 700 SERVICE_PREFIX/database # security reasons
 test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf
 test ! -f SERVICE_PREFIX/database/pg_hba.conf && printf '
 # Default Postgresql service configuration
