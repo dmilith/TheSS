@@ -337,11 +337,6 @@ const QString SvdServiceConfig::userIgniter() {
 }
 
 
-const QString SvdServiceConfig::standardUserIgniter() {
-    return QString(DEFAULT_SOFTWARE_TEMPLATES_DIR) + "/" + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
-}
-
-
 /* XXX: TODO: OPTIMIZE, define cache for values explictly read from files for each service hook for each service */
 const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
     QString ccont = content;
@@ -523,7 +518,6 @@ Json::Value* SvdServiceConfig::loadDefaultIgniter() {
 Json::Value* SvdServiceConfig::loadIgniter() {
     // auto result = new Json::Value();
     QFile fileUser(userIgniter()); /* try loading user igniter as first */
-    QFile fileStandardUser(standardUserIgniter()); /* try loading standard igniter as second */
     QFile fileRoot(rootIgniter()); /* try loading root igniter as third */
 
     if(!fileUser.open(QIODevice::ReadOnly)) { /* check file access */
@@ -533,15 +527,6 @@ Json::Value* SvdServiceConfig::loadIgniter() {
         return parseJSON(userIgniter());
     }
     fileUser.close();
-
-    /* also check standard location for igniters */
-    if(!fileStandardUser.open(QIODevice::ReadOnly)) { /* check file access */
-        logTrace() << "No file: " << standardUserIgniter();
-    } else {
-        fileStandardUser.close();
-        return parseJSON(standardUserIgniter());
-    }
-    fileStandardUser.close();
 
     if(!fileRoot.open(QIODevice::ReadOnly)) {
         logTrace() << "No file: " << rootIgniter();
