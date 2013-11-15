@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.58.2"
+    #define APP_VERSION "0.58.3"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -40,7 +40,7 @@
     #define DEFAULT_USER_UID 501
     #define AMOUNT_OF_LOG_FILES_TO_KEEP 125
 
-    #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0 && ifconfig tap0 10.11.0.1 netmask 255.255.0.0 && echo 'success'"
+    #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0 && ifconfig tap1 10.11.0.1 netmask 255.255.0.0 && echo 'success'"
     #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND_LINUX "openvpn --mktun --dev tap0 && openvpn --mktun --dev tap1 && ifconfig tap0 10.20.0.1 netmask 255.255.0.0 && ifconfig tap1 10.21.0.1 netmask 255.255.0.0 && echo 'success'"
     #define DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND "ifconfig tap0 destroy"
 
