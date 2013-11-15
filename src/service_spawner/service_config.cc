@@ -306,7 +306,7 @@ const QString SvdServiceConfig::prefixDir() {
 
 
 const QString SvdServiceConfig::defaultTemplateFile() {
-    /* pick of two possible locations: /Commons/Igniters and ~/Igniters */
+    /* pick of two possible locations: /SystemUsers/Igniters and ~/Igniters */
 
     /* try user side defaults first */
     QString userSideDefaultIgniter = QString(getenv("HOME")) + "/Igniters/Default" + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);

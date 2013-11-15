@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.58.1"
+    #define APP_VERSION "0.58.2"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -52,8 +52,8 @@
     #define SOFTWARE_DATA_DIR "/SoftwareData"
     #define SYSTEM_USERS_DIR "/SystemUsers"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
-    #define DEFAULT_SOFTWARE_TEMPLATE "/Common/Igniters/Default"
-    #define DEFAULT_SOFTWARE_TEMPLATES_DIR "/Common/Igniters/Services"
+    #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "/Igniters/Default")
+    #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "/Igniters/Services")
     #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services"
     #define DEFAULT_SYSTEM_ADDRESS "127.0.0.1"
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"

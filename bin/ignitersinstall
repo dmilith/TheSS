@@ -16,8 +16,8 @@ if [ ! -d "$(pwd)/basesystem" ]; then
 fi
 
 default_root_igniters_dir="/SystemUsers/Igniters/Services"
-default_igniters_dir="/Common/Igniters/Services"
-test_igniters_dir="/Common/Igniters/TestServices"
+default_igniters_dir="/SystemUsers/Igniters/Services"
+test_igniters_dir="/SystemUsers/Igniters/TestServices"
 
 if [ "${user_id}" = "0" ]; then
 
