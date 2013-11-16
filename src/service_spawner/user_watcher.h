@@ -26,7 +26,7 @@ class SvdUserHookTriggerFiles {
         SvdUserHookTriggerFiles(const QString& path);
         ~SvdUserHookTriggerFiles();
 
-        SvdHookTriggerFile *shutdown;
+        SvdHookTriggerFile *shutdown, *graceShutdown;
 
 };
 

@@ -105,15 +105,19 @@ bool Panel::isSSOnline(){
     return (ok && pidIsAlive(pid));
 }
 
-void Panel::setLogLevel(QString level){
+void Panel::setLogLevel(QString level) {
     touch(home.absoluteFilePath("." + level));
 }
 
-void Panel::shutdown(){
+void Panel::gracefullyTerminate() {
+    touch(home.absoluteFilePath(".shutdownGracefully"));
+}
+
+void Panel::shutdown() {
     touch(home.absoluteFilePath(".shutdown"));
 }
 
-QString Panel::addService(QString name){
+QString Panel::addService(QString name) {
     QString status;
     QDir dir(home.absolutePath() + "/" + QString(SOFTWARE_DATA_DIR) + "/" + name);
 

@@ -12,11 +12,13 @@
 
 SvdUserHookTriggerFiles::SvdUserHookTriggerFiles(const QString& path) {
     shutdown = new SvdHookTriggerFile(path + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
+    graceShutdown = new SvdHookTriggerFile(path + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE);
 }
 
 
 SvdUserHookTriggerFiles::~SvdUserHookTriggerFiles() {
     delete shutdown;
+    delete graceShutdown;
 }
 
 
@@ -145,11 +147,20 @@ void SvdUserWatcher::shutdownSlot() {
     logDebug() << "Removing lock file:" << lockName;
     QFile::remove(lockName);
     QFile::remove(getHomeDir() + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
+    QFile::remove(getHomeDir() + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE);
     logInfo() << "Shutdown completed.";
 }
 
 
 void SvdUserWatcher::checkUserControlTriggers() {
+    if (QFile::exists(homeDir + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE)) {
+        QString msg = "Invoked graceful shutdown trigger. Sending SS down with services.";
+        notification(msg, NOTIFY);
+        QFile::remove(homeDir + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE);
+        /* and remove pid file */
+        QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
+        raise(SIGINT);
+    }
     if (QFile::exists(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
         QString msg = "Invoked shutdown trigger. Sending SS down.";
         notification(msg, NOTIFY);

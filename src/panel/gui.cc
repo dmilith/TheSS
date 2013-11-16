@@ -148,7 +148,7 @@ void PanelGui::displayFooter(){
     functions << "F1" << "trace" << "F2" << "debug";
     functions << "F3" << "info" << "F4" << "error";
     functions << "F5" << "refresh" << "F7" << "new service";
-    functions << "F8" << "destroy" << "F9" << "SS launch/shutdown";
+    functions << "F8" << "destroy" << "F9" << "SS launch/shutdown" << "F10" << "grfly shtdn";
 
     int x = 0, y = rows - 15;
     char * str;
@@ -247,8 +247,9 @@ void PanelGui::helpDialog(){
     list << "  F6      - Rename service (also creates duplicate of current igniter)";
     list << "  F7, N   - Add new service";
     list << "  F8, X   - Delete current service";
-    list << "  F9      - Launch TheSS if not running, or";
-    list << "            Shutdown TheSS if running (leave services working)";
+    list << "  F9      - Launch TheSS, or shutdown TheSS if running (services stay)";
+    list << "  F10     - Launch TheSS, or gracefully shutdown TheSS if running";
+    list << "  ` ~ \\  - Show TheSS log";
 
     for(int i=0; i<list.length(); i++){
         mvwprintw(win, i+1, 2, "%s", list.at(i).toUtf8().data());
@@ -421,6 +422,16 @@ void copyPath(QString src, QString dst) {
 }
 
 
+QString launchSS() {
+    uInt uid = getuid();
+    auto prc = new SvdProcess("SS", uid, false);
+    prc->spawnProcess("sofin get thess && svdss &"); /* NOTE: it uses Sofin environment automatically */
+    prc->waitForFinished(1);
+    notification("Launching ServiceSpawner", NOTIFY);
+    return "Launching ServiceSpawner for " + QString(uid == 0 ? "SuperUser" : "NormalUser"); /* status msg */
+}
+
+
 void PanelGui::key(int ch){
     switch(ch){
         case KEY_UP:
@@ -558,17 +569,25 @@ void PanelGui::key(int ch){
                 status = "Terminating ServiceSpawner (services remain in background)";
                 panel->shutdown();
             } else {
-                status = "Launching ServiceSpawner in tmux, with session name: svdss";
-                auto prc = new SvdProcess("SS", getuid(), false);
-                prc->spawnProcess("sofin get thess && svdss &"); /* NOTE: it uses Sofin environment automatically */
-                prc->waitForFinished(1);
-                notification("Launching ServiceSpawner in tmux session: svdss", NOTIFY);
+                status = launchSS();
             }
             break;
 
 
-        case KEY_F(10): /* Show SS log */
+        case '\\':
+        case '~':
+        case '`': /* Show SS log */
             displaySSLog();
+            break;
+
+
+        case KEY_F(10):
+            if (panel->isSSOnline()) {
+                status = "Gracefully shutting down ServiceSpawner";
+                panel->gracefullyTerminate();
+            } else {
+                status = launchSS();
+            }
             break;
 
 
