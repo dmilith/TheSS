@@ -110,11 +110,11 @@ void Panel::setLogLevel(QString level) {
 }
 
 void Panel::gracefullyTerminate() {
-    touch(home.absoluteFilePath(".shutdownGracefully"));
+    touch(home.absoluteFilePath(DEFAULT_SS_GRACEFUL_SHUTDOWN_FILE));
 }
 
 void Panel::shutdown() {
-    touch(home.absoluteFilePath(".shutdown"));
+    touch(home.absoluteFilePath(DEFAULT_SS_SHUTDOWN_FILE));
 }
 
 QString Panel::addService(QString name) {
