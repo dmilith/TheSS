@@ -21,7 +21,7 @@ if [ ! -x "bin/svdss" ] || [ ! -x "bin/svddw" ] || [ ! -x "bin/svdpanel" ]; then
     bin/build
 fi
 
-cp -fv bin/svdss /bin/svdss && printf "Successfully installed svdss\n"
+# cp -fv bin/svdss /bin/svdss && printf "Successfully installed svdss\n"
 cp -fv bin/svddw /bin/svddw && printf "Successfully installed svddw\n"
-cp -fv bin/svdpanel /bin/svdpanel && printf "Successfully installed svdpanel\n"
+# cp -fv bin/svdpanel /bin/svdpanel && printf "Successfully installed svdpanel\n"
 
