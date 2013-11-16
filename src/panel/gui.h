@@ -31,6 +31,7 @@ public slots:
     void displayLog();
     void displayConfig();
     void displayEnv();
+    void displaySSLog();
     void tailUpdate();
     void gatherNotifications();
 

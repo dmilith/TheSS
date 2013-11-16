@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.58.4"
+    #define APP_VERSION "0.58.5"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -78,6 +78,7 @@
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
     #define NOTIFICATION_MANAGER_LOG_FILE "/.notifications-manager.log"
+    #define DEFAULT_SS_LOG_FILE "/.ss.log"
     #define CONTROL_PANEL_LOG_FILE "/.control-panel.log"
     #define DEFAULT_CRON_ENTRY "0 0/30 * * * ?"
 

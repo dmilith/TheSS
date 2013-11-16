@@ -8,6 +8,9 @@
 #include "gui.h"
 #include <time.h>
 
+static Tail * ssLog = NULL;
+
+
 void PanelGui::init(){
     // remove ESC key delay
     if (getenv ("ESCDELAY") == NULL)
@@ -558,13 +561,19 @@ void PanelGui::key(int ch){
                 status = "Launching ServiceSpawner in tmux, with session name: svdss";
                 auto prc = new SvdProcess("SS", getuid(), false);
                 if (getuid() == 0) {
-                    prc->spawnProcess("sofin get tmux thess ; tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
+                    prc->spawnProcess("sofin get tmux thess && tmux new -d -s svdss-root svdss"); /* NOTE: it uses Sofin environment automatically */
                 } else
-                    prc->spawnProcess("sofin get tmux ; tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
+                    prc->spawnProcess("sofin get tmux thess && tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
                 prc->waitForFinished(1);
                 notification("Launching ServiceSpawner in tmux session: svdss", NOTIFY);
             }
             break;
+
+
+        case KEY_F(10): /* Show SS log */
+            displaySSLog();
+            break;
+
 
         case '?':
             helpDialog();
@@ -777,7 +786,7 @@ void PanelGui::display(){
 void PanelGui::tailUpdate(){
     const PanelService * service = servicesList->currentItem();
 
-    if(service != NULL){
+    if (service != NULL){
 
         if(service != recentService) {
             recentService = service;
@@ -792,21 +801,21 @@ void PanelGui::tailUpdate(){
 }
 
 void PanelGui::tailToggleWrap(){
-    if(tail != NULL){
+    if (tail != NULL){
         tail->toggleWrap();
         tailUpdate();
     }
 }
 
 void PanelGui::tailReset(){
-    if(tail != NULL){
+    if (tail != NULL){
         tail->resetScroll();
         tailUpdate();
     }
 }
 
 void PanelGui::tailScroll(int n){
-    if(tail != NULL){
+    if (tail != NULL){
         tail->scrollLog(n, rows);
         tailUpdate();
     }
@@ -814,10 +823,22 @@ void PanelGui::tailScroll(int n){
 
 void PanelGui::displayConfig(){
     PanelService * service = servicesList->currentItem();
-    if(service != NULL){
+    if (service != NULL){
         tail = service->conf;
         tailUpdate();
     }
+}
+
+void PanelGui::displaySSLog(){
+    PanelService * service = servicesList->currentItem();
+    if (ssLog == NULL) {
+        if (getuid() == 0)
+            ssLog = new Tail(service, QString(SYSTEM_USERS_DIR), DEFAULT_SS_LOG_FILE);
+        else
+            ssLog = new Tail(service, QString(getenv("HOME")), DEFAULT_SS_LOG_FILE);
+    }
+    tail = ssLog;
+    tailUpdate();
 }
 
 void PanelGui::displayEnv(){
