@@ -430,9 +430,11 @@ void PanelGui::key(int ch){
             servicesList->key(ch);
             endwin();
             QString name = servicesList->currentItem()->name;
-            QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
 
-            system(QString("svdshell -- vim " + QString(getenv("HOME")) + "/" + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
+            if (getuid() == 0)
+                system(QString("svdshell -- vim " + QString(SYSTEM_USERS_DIR) + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
+            else
+                system(QString("svdshell -- vim " + QString(getenv("HOME")) + "/" + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
 
             initscr();
             status = "I've came back from the underground!";
@@ -555,7 +557,10 @@ void PanelGui::key(int ch){
             } else {
                 status = "Launching ServiceSpawner in tmux, with session name: svdss";
                 auto prc = new SvdProcess("SS", getuid(), false);
-                prc->spawnProcess("sofin get tmux ; tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
+                if (getuid() == 0) {
+                    prc->spawnProcess("sofin get tmux thess ; tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
+                } else
+                    prc->spawnProcess("sofin get tmux ; tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
                 prc->waitForFinished(1);
                 notification("Launching ServiceSpawner in tmux session: svdss", NOTIFY);
             }
