@@ -159,6 +159,8 @@ void SvdUserWatcher::checkUserControlTriggers() {
         QFile::remove(homeDir + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
+        if (getuid() == 0)
+            shutdownDefaultVPNNetwork();
         raise(SIGINT);
     }
     if (QFile::exists(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
@@ -167,6 +169,8 @@ void SvdUserWatcher::checkUserControlTriggers() {
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
+        if (getuid() == 0)
+            shutdownDefaultVPNNetwork();
         raise(SIGTERM);
     }
 }

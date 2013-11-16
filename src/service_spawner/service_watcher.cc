@@ -131,6 +131,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
 void SvdServiceWatcher::shutdownSlot() {
     qDebug() << "Invoked shutdown slot.";
     qDebug() << "Emitting stopService signal.";
+    shutdownDefaultVPNNetwork();
     emit stopService();
 }
 
