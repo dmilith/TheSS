@@ -211,7 +211,7 @@ void Tail::display(WINDOW * win, int rows, int cols){
 
   rows--;
 
-  int s = buffer.size() - scrollOffset;
+  int s = buffer.length() - scrollOffset;
   int off = max(s-rows, 0);
   int m = min(s, rows);
   int i=0;
@@ -229,9 +229,9 @@ void Tail::display(WINDOW * win, int rows, int cols){
       QString line = buffer.at(i+off);
       if(wrap){
         do {
-            if(line.size() > w){
-                buf.push_back(line.left(w-2) + " ⏎");
-                line.replace(0, w-2, "");
+            if(line.length() > w){
+                buf.push_back(line.left(w) + " ⏎"); /* count as 3 chars, it's unicode */
+                line.replace(0, w, "");
             } else {
                 buf.push_back(line.left(w));
                 line.replace(0, w, "");
