@@ -19,19 +19,9 @@ Tail::Tail(PanelService * service, const QString& dirname, const QString& filena
     connect(eventsManager, SIGNAL(directoryChanged(QString)), this, SLOT(onDirectoryChanged(QString)));
     connect(eventsManager, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
-    // QTimer *timer = new QTimer(this);
-    // connect(timer, SIGNAL(timeout()), this, SLOT(readMoreLines()));
-    // timer->start(100);
-
-    // QTimer::singleShot(100, this, SLOT(readMoreLines()));
-
     connect(this, SIGNAL(updated()), service->panel->gui, SLOT(tailUpdate()));
 }
 
-// Tail::~Tail(){
-//     delete eventsManager;
-//     eventsManager = NULL;
-// }
 
 void Tail::onDirectoryChanged(const QString& dir){
     if(dir != dirname || eventsManager == NULL) return;
