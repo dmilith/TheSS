@@ -85,7 +85,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     hash->addData(content.toUtf8(), content.length());
     QString notificationFileName = hash->result().toHex() + postfix;
     delete hash;
-    logInfo() << "Notification generated with message: " << message << " written to:" << notificationRoot + "/" + QString::number(now) + "_" + notificationFileName;
+    logDebug() << "Notification msg: " << message << " written to:" << QString::number(now) + "_" + notificationFileName;
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
 
     moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
