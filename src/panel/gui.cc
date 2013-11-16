@@ -222,18 +222,14 @@ void PanelGui::helpDialog(){
     QList<QString> list;
     list << "Available key bindings:";
     list << "Current service actions:";
-    list << "  S       - Start current service";
-    list << "  s       - Start current service without dependencies";
+    list << "  S / s   - Start current service / Start current service without dependencies";
+    list << "  T / t   - Stop current service / Stop current service without dependencies";
+    list << "  F / f   - Reconfigure current service / Reconfigure current service without dependencies";
+    list << "  R / r   - Restart current service / Restart current service without dependencies";
     list << "  D       - Change domain of current service";
-    list << "  T       - Stop current service";
-    list << "  t       - Stop current service without dependencies";
-    list << "  R       - Restart current service";
-    list << "  r       - Restart current service without dependencies";
     list << "  O       - Reload current service";
     list << "  I       - Install current service";
     list << "  C       - Configure current service";
-    list << "  F       - Reconfigure current service";
-    list << "  f       - Reconfigure current service without dependencies";
     list << "  V       - Validate current service";
     list << "  A       - Toggle autostart";
     list << "  K       - Show app config (service.conf)";
@@ -249,7 +245,7 @@ void PanelGui::helpDialog(){
     list << "  F8, X   - Delete current service";
     list << "  F9      - Launch TheSS, or shutdown TheSS if running (services stay)";
     list << "  F10     - Launch TheSS, or gracefully shutdown TheSS if running";
-    list << "  ` ~ \\  - Show TheSS log";
+    list << "  ` ~ \\   - Show TheSS log";
 
     for(int i=0; i<list.length(); i++){
         mvwprintw(win, i+1, 2, "%s", list.at(i).toUtf8().data());
@@ -879,11 +875,6 @@ void PanelGui::displayLog(){
 
 void PanelGui::run(){
     init();
-
-    // connect(this, SIGNAL(getInput()), this, SLOT(readInput())); // this will prevent blocking
-
-    // emit display();
-    // emit getInput();
 }
 
 void PanelGui::readInput(){
