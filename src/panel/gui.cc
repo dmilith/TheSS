@@ -208,7 +208,6 @@ void PanelGui::displayStatus(){
 
 
 void PanelGui::cleanup(){
-    endwin();
 }
 
 
@@ -883,22 +882,16 @@ void PanelGui::run(){
 }
 
 void PanelGui::readInput(){
-    // logDebug() << "readInput";
     if(kbhit()){
         int ch = getch();
-        if(ch == 'q'){
-            logDebug() << "cleanup";
-            cleanup();
-            qApp->quit();
-            return;
+        if (ch == 'q'){
+            endwin();
+            exit(0);
         } else {
             key(ch);
-            // emit display();
         }
     } else {
-        // usleep(DEFAULT_PANEL_REFRESH_INTERVAL / 3);
+        usleep(10000 * 5);
     }
-
-    // emit getInput();
 }
 
