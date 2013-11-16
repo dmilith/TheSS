@@ -17,9 +17,9 @@ test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
 SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf
 "
     },
-    "validate": {
+    "configure": {
         "commands": "
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+printf \"
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
