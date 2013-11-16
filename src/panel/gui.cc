@@ -218,7 +218,6 @@ void PanelGui::helpDialog(){
 
     QList<QString> list;
     list << "Available key bindings:";
-    list << "";
     list << "Current service actions:";
     list << "  S       - Start current service";
     list << "  s       - Start current service without dependencies";
@@ -238,6 +237,7 @@ void PanelGui::helpDialog(){
     list << "  E       - Show app env (service.env)";
     list << "  L       - Show service log (service.log)";
     list << "  W       - Toggle line wrapping in log window";
+    list << "  ↵       - Edit service igniter in vim editor";
     list << "Other actions:";
     list << "  F1-F4   - Set log level (trace, debug, info, error)";
     list << "  F5      - Refresh panel";
@@ -432,8 +432,7 @@ void PanelGui::key(int ch){
             QString name = servicesList->currentItem()->name;
             QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
 
-            system("clear");
-            system(QString("export DESTPATH='" + prefixPath + "' && svdshell").toUtf8().constData());
+            system(QString("svdshell -- vim " + QString(getenv("HOME")) + "/" + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
 
             initscr();
             status = "I've came back from the underground!";

@@ -10,14 +10,11 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.58.3"
+    #define APP_VERSION "0.58.4"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
     #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh" // "/bin/svdshell" //
-
-    #define DEFAULT_SS_COMMAND "/bin/svdss"
-
     #define SYSTEMUSERS_HOME_DIR "/SystemUsers"
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
