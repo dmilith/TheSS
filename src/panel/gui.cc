@@ -424,7 +424,7 @@ void copyPath(QString src, QString dst) {
 QString launchSS() {
     uInt uid = getuid();
     auto prc = new SvdProcess("SS", uid, false);
-    prc->spawnProcess("sofin get thess && svdss &"); /* NOTE: it uses Sofin environment automatically */
+    prc->spawnProcess("svdss &"); /* NOTE: it uses Sofin environment automatically */
     prc->waitForFinished(1);
     notification("Launching ServiceSpawner", NOTIFY);
     return "Launching ServiceSpawner for " + QString(uid == 0 ? "SuperUser" : "NormalUser"); /* status msg */
