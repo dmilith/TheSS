@@ -18,7 +18,7 @@ test ! -e SERVICE_PREFIX/service.conf && printf \"
 port $(cat SERVICE_PREFIX/.ports/0)
 \" > SERVICE_PREFIX/service.conf && printf '
 daemon
-
+bind SERVICE_ADDRESS
 proto udp
 dev tap
 
