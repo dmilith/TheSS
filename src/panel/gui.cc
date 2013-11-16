@@ -9,6 +9,7 @@
 #include <time.h>
 
 static Tail * ssLog = NULL;
+static bool firstRun = true;
 
 
 void PanelGui::init(){
@@ -796,6 +797,10 @@ void PanelGui::display(){
     displayFooter();
     wrefresh(mainWindow);
     standend();
+    if (firstRun) {
+        displaySSLog();
+        firstRun = false;
+    }
 }
 
 void PanelGui::tailUpdate(){
