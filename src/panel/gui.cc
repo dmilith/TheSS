@@ -560,10 +560,7 @@ void PanelGui::key(int ch){
             } else {
                 status = "Launching ServiceSpawner in tmux, with session name: svdss";
                 auto prc = new SvdProcess("SS", getuid(), false);
-                if (getuid() == 0) {
-                    prc->spawnProcess("sofin get tmux thess && tmux new -d -s svdss-root svdss"); /* NOTE: it uses Sofin environment automatically */
-                } else
-                    prc->spawnProcess("sofin get tmux thess && tmux new -d -s svdss svdss"); /* NOTE: it uses Sofin environment automatically */
+                prc->spawnProcess("sofin get thess && svdss &"); /* NOTE: it uses Sofin environment automatically */
                 prc->waitForFinished(1);
                 notification("Launching ServiceSpawner in tmux session: svdss", NOTIFY);
             }

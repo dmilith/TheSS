@@ -12,18 +12,34 @@
 #include "utils.h"
 
 
-class LoggerTimer: QObject {
+class ConsoleLoggerTimer: QObject {
     Q_OBJECT
 
     private:
         ConsoleAppender *logger;
 
     public:
-        LoggerTimer(ConsoleAppender *appender);
+        ConsoleLoggerTimer(ConsoleAppender *appender);
 
     public slots:
         void invokeTrigger();
 
 };
+
+
+class FileLoggerTimer: QObject {
+    Q_OBJECT
+
+    private:
+        FileAppender *logger;
+
+    public:
+        FileLoggerTimer(FileAppender *appender);
+
+    public slots:
+        void invokeTrigger();
+
+};
+
 
 #endif

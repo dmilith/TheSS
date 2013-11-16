@@ -22,6 +22,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
     QStringList args = app.arguments();
+    bool background = true; /* by default launch svdss as daemon */
+    QRegExp rxEnableForeground("-f"); /* run in foreground */
     QRegExp rxEnableDebug("-d");
     QRegExp rxEnableTrace("-t");
     QRegExp rxPrintVersion("-v");
@@ -31,6 +33,9 @@ int main(int argc, char *argv[]) {
     for (int i = 1; i < args.size(); ++i) {
         if (rxEnableDebug.indexIn(args.at(i)) != -1 ) {
             debug = true;
+        }
+        if (rxEnableForeground.indexIn(args.at(i)) != -1 ) {
+            background = false;
         }
         if (rxEnableTrace.indexIn(args.at(i)) != -1 ) {
             debug = true;
@@ -43,16 +48,38 @@ int main(int argc, char *argv[]) {
     }
 
     /* Logger setup */
-    ConsoleAppender *consoleAppender = new ConsoleAppender();
-    Logger::registerAppender(consoleAppender);
-    consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
-    if (trace && debug)
-        consoleAppender->setDetailsLevel(Logger::Trace);
-    else if (debug && !trace)
-        consoleAppender->setDetailsLevel(Logger::Debug);
-    else {
-        consoleAppender->setDetailsLevel(Logger::Info);
-        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+    if (not background) {
+        ConsoleAppender *consoleAppender = new ConsoleAppender();
+        Logger::registerAppender(consoleAppender);
+        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
+        if (trace && debug)
+            consoleAppender->setDetailsLevel(Logger::Trace);
+        else if (debug && !trace)
+            consoleAppender->setDetailsLevel(Logger::Debug);
+        else {
+            consoleAppender->setDetailsLevel(Logger::Info);
+            consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+        }
+        new ConsoleLoggerTimer(consoleAppender);
+
+    } else {
+        FileAppender *fileAppender;
+        if (getuid() == 0)
+            fileAppender = new FileAppender(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_LOG_FILE);
+        else
+            fileAppender = new FileAppender(QString(getenv("HOME")) + DEFAULT_SS_LOG_FILE);
+
+        Logger::registerAppender(fileAppender);
+        fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
+        if (trace && debug)
+            fileAppender->setDetailsLevel(Logger::Trace);
+        else if (debug && !trace)
+            fileAppender->setDetailsLevel(Logger::Debug);
+        else {
+            fileAppender->setDetailsLevel(Logger::Info);
+            fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+        }
+        new FileLoggerTimer(fileAppender);
     }
 
     /* file lock setup */
@@ -97,8 +124,6 @@ int main(int argc, char *argv[]) {
         /* Setting up user watchers */
         new SvdUserWatcher();
     }
-
-    new LoggerTimer(consoleAppender);
 
     return app.exec();
 }
