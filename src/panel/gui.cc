@@ -889,7 +889,7 @@ void PanelGui::readInput(){
         if(ch == 'q'){
             logDebug() << "cleanup";
             cleanup();
-            emit quit();
+            qApp->quit();
             return;
         } else {
             key(ch);
