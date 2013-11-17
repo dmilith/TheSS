@@ -1,49 +1,46 @@
 <!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Thess by VerKnowSys</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  </head>
-  <body>
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
 
-      <header>
-        <h1>Thess</h1>
-        <p>The ServeD Service Spawner - trigger controlled, system agnostic utility, to spawn server software by touch of a magic wand.</p>
-      </header>
+  <title>Thess</title>
+  <meta name="description" content="The ServeD Service Spawner - trigger controlled, system agnostic utility, to spawn server software by touch of a magic wand.">
 
-      <div id="banner">
-        <span id="logo"></span>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        <a href="https://github.com/VerKnowSys/TheSS" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/VerKnowSys/TheSS/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/VerKnowSys/TheSS/tarball/master" class="button">TAR</a></li>
-          </ul>
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Thess</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">The ServeD Service Spawner - trigger controlled, system agnostic utility, to spawn server software by touch of a magic wand.</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/VerKnowSys/TheSS/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/VerKnowSys/TheSS/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/VerKnowSys/TheSS" class="code">View Thess on GitHub</a>
         </div>
-      </div><!-- end banner -->
-
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
-        <h2>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h2>
 <a name="authors" class="anchor" href="#authors"><span class="octicon octicon-link"></span></a>Authors:</h2>
 
 <ul>
-<li>Daniel (dmilith) Dettlaff (dmilith [at] verknowsys.com). I'm also on #freebsd and #scala.pl @ freenode IRC.</li>
+<li>Daniel (dmilith) Dettlaff (dmilith [at] verknowsys.com). I'm also on #verknowsys @ freenode IRC.</li>
 </ul><h2>
 <a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors:</h2>
 
@@ -65,14 +62,14 @@
 <li>Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).</li>
 <li>Support software igniters written in JSON (+comments support) to generate predefined (user or system wide) software configurations on the fly.</li>
 <li>Support for software hooks. (More in <a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json">Defaults.json</a>). Hook example:</li>
-</ul><div class="highlight highlight-json"><pre><span class="p">{</span>
-    <span class="nt">"install"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"sofin install mysoft; install my software plugin"</span><span class="p">,</span>
-        <span class="nt">"expectOutput"</span><span class="p">:</span> <span class="s2">"Success happened, and this output is a confirmation"</span><span class="p">,</span>
-        <span class="nt">"expectOutputTimeout"</span><span class="p">:</span> <span class="mi">0</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
+</ul><pre><code>{
+    "install": {
+        "commands": "sofin install mysoft; install my software plugin",
+        "expectOutput": "Success happened, and this output is a confirmation",
+        "expectOutputTimeout": 0
+    }
+}
+</code></pre>
 
 <ul>
 <li>Ordered, synchronous execution of service hooks (exception: scheduler commmands are executed asynchronously)</li>
@@ -126,7 +123,7 @@ reconfigureHook <span class="c"># will execute:</span>
 <li>Supports unified process configuration model. By default ~/SoftwareData/MyApp/service.pid and ~/SoftwareData/MyApp/service.log are created for each software. If service requires configuration, it's by default stored in ~/SoftwareData/MyApp/service.conf</li>
 <li>Supports dynamic, live log level change invoked by touch ~/.log-level, where "log-level" is one of: error, info, debug, trace. By default log level is info.</li>
 <li>Supports auto igniter reload support on hook level. You don't need to update, sync or reload igniters. After change, next hook invoke will use latest version of software igniter by default.</li>
-<li>Supports multiple directory sources for igniters. Default order of checking igniters existance for regular user is: ~/Igniters/Services, then /Common/Igniters/Services. For root it's: /Common/Igniters/Services, then /SystemUsers/Igniters.</li>
+<li>Supports multiple directory sources for igniters. Default order of checking igniters existance for regular user is: ~/Igniters/Services, then /SystemUsers/Igniters/Services. For root it's: /SystemUsers/Igniters/Services.</li>
 <li>Supports igniter constants, auto filled before invoke of each hook. Currently there are:</li>
 </ul><div class="highlight highlight-sh"><pre>SERVICE_PREFIX            <span class="c"># by default: ~/SoftwareData/AppName</span>
 PARENT_SERVICE_PREFIX     <span class="c"># defines prefix of service parent</span>
@@ -149,19 +146,19 @@ SERVICE_VALIDATE_HOOK
 <ul>
 <li>Supports cron-compliant scheduler built in (since v0.24.x). Commands defined in schedulers have full support for igniter constants (listed above) and each command is in Zsh-compatible script format.
 Scheduler example based on Redis igniter:</li>
-</ul><div class="highlight highlight-json"><pre><span class="p">{</span>
-    <span class="nt">"schedulerActions"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">"cronEntry"</span><span class="p">:</span> <span class="s2">"*/25 10-15 1,3,5,7 * * ?"</span><span class="p">,</span>
-            <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"test -e SERVICE_PREFIX/database/database.rdf &amp;&amp; cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-            <span class="nt">"cronEntry"</span><span class="p">:</span> <span class="s2">"*/10 * * * * ?"</span><span class="p">,</span>
-            <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
+</ul><pre><code>{
+    "schedulerActions": [
+        {
+            "cronEntry": "*/25 10-15 1,3,5,7 * * ?",
+            "commands": "test -e SERVICE_PREFIX/database/database.rdf &amp;&amp; cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
+        },
+        {
+            "cronEntry": "*/10 * * * * ?",
+            "commands": "for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"
+        }
+    ]
+}
+</code></pre>
 
 <div class="highlight highlight-sh"><pre><span class="c"># Standard formatting for "cronEntry":</span>
 <span class="s2">"*/10 10,11,12 1-15 * * ?"</span>  <span class="c"># invoke each 10 minutes, exactly at 10am or 11am or 12am,</span>
@@ -192,20 +189,13 @@ X,Y,Z   <span class="c"># SEQUENCE: passes when value is exactly one of X or Y o
 </ul><h2>
 <a name="wtf-how-to-run-it" class="anchor" href="#wtf-how-to-run-it"><span class="octicon octicon-link"></span></a>WTF? How to run it?</h2>
 
-<div class="highlight highlight-sh"><pre><span class="c"># to install run as root:</span>
-bin/systemdeploy
-
-<span class="c"># if you don't want to install it, but just try it,</span>
-<span class="c"># run as root:</span>
-bin/ignitersinstall <span class="c"># which installs default igniters to /Common</span>
+<div class="highlight highlight-sh"><pre><span class="c"># to only build TheSS executables:</span>
+bin/build
 
 <span class="c"># to build and run tests:</span>
 bin/test
 
-<span class="c"># to only build TheSS executables:</span>
-bin/build
-
-<span class="c"># to install, run as root:</span>
+<span class="c"># to install system wide, run as root:</span>
 bin/systemdeploy
 
 <span class="c"># and now just:</span>
@@ -221,7 +211,7 @@ mkdir ~/SoftwareData/Redis <span class="o">&amp;&amp;</span> touch ~/SoftwareDat
 <span class="c"># service and just start it.</span>
 
 <span class="c"># you may also use built in panel:</span>
-bin/panel
+bin/svdpanel
 <span class="c"># Hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.</span>
 </pre></div>
 
@@ -229,6 +219,7 @@ bin/panel
 <a name="conflicts-problems-known-issues" class="anchor" href="#conflicts-problems-known-issues"><span class="octicon octicon-link"></span></a>Conflicts/ Problems/ Known issues:</h2>
 
 <ul>
+<li>On OSX hosts, there's a very low default limit of maximum opened files (256). If user defined more than 10 services with such default, svdpanel may become unstable. It's recommended to increase this value to 2048 by <code>ulimit -n 2048</code>.</li>
 <li>Sofin build mechanism is known to be in conflict with other software managment solutions like: BSD Ports, HomeBrew, MacPorts, Fink. Keep that in mind before reporting problems.</li>
 <li>It's recommended to change shell by doing: <code>chsh -s /Software/Zsh/exports/zsh</code> for each user which will use TheSS. TheSS internally uses Shell from that path by default (currently Shell path is hardcoded due to lack of TheSS config in current version)</li>
 </ul><h2>
@@ -247,13 +238,26 @@ bin/panel
 <li>QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)</li>
 <li>QT4 4.8.x implementation by Trolltech &amp; Nokia (LGPL licensed)</li>
 </ul>
-      </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/VerKnowSys">VerKnowSys</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
-      </footer>
+        </article>
+      </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
-  </body>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/VerKnowSys" class="avatar"><img src="https://0.gravatar.com/avatar/774171fdf63b4d80ceff8fb307ca12aa?d=https%3A%2F%2Fidenticons.github.com%2F0d76cc239133e4a62762ede05e0ca7b1.png&amp;r=x&amp;s=60" width="48" height="48"/></a> <a href="https://github.com/VerKnowSys">VerKnowSys</a> maintains <a href="https://github.com/VerKnowSys/TheSS">Thess</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/VerKnowSys/TheSS/tarball/master" class="tar">tar</a><a href="https://github.com/VerKnowSys/TheSS/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
 </html>
