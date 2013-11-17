@@ -682,18 +682,7 @@ void SvdService::stopSlot(bool withDeps) {
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     stopSitters();
 
-    /* stop dependency services */
-    if (withDeps) {
-        Q_FOREACH(SvdService *depService, this->dependencyServices) {
-            if (depService) {
-                notification("Terminating " + depService->name + " - dependency of service: " + name, NOTIFY);
-                logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
-                depService->stopSlot();
-                depService->exit();
-            }
-        }
-    }
-
+    /* stop main application first, dependencies after it */
     if (not QFile::exists(indicator)) {
         logInfo() << "No need to stop service" << name << "because it's already stopped.";
     } else {
@@ -734,6 +723,18 @@ void SvdService::stopSlot(bool withDeps) {
 
         logTrace() << "After process stop execution:" << name;
         process->deleteLater();
+    }
+
+    /* stop dependencies of service after main app */
+    if (withDeps) {
+        Q_FOREACH(SvdService *depService, this->dependencyServices) {
+            if (depService) {
+                notification("Terminating " + depService->name + " - dependency of service: " + name, NOTIFY);
+                logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
+                depService->stopSlot();
+                depService->exit();
+            }
+        }
     }
 
     logDebug() << "Stopping internal baby sitter timer for process:" << name;
