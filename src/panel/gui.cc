@@ -138,7 +138,7 @@ int PanelGui::kbhit() {
 
 void PanelGui::displayHeader(){
     wattron(mainWindow, C_DEFAULT);
-    mvwprintw(mainWindow, 0, 0, "Control Panel v%s. © 2013 verknowsys.com %d", APP_VERSION, time(NULL));
+    mvwprintw(mainWindow, 0, 0, "Control Panel v%s. © 2013 verknowsys.com", APP_VERSION);
 }
 
 void PanelGui::displayFooter(){
@@ -192,11 +192,11 @@ void PanelGui::displayStatus(){
     /* SS status info */
     if(panel->isSSOnline()){
         wattron(mainWindow, C_SS_STATUS_ON);
-        mvwprintw(mainWindow, 0, 45, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvwprintw(mainWindow, 0, 52, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
         wattroff(mainWindow, C_SS_STATUS_ON);
     } else {
         wattron(mainWindow, C_SS_STATUS_OFF);
-        mvwprintw(mainWindow, 0, 45, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvwprintw(mainWindow, 0, 52, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
         wattroff(mainWindow, C_SS_STATUS_OFF);
     }
 
