@@ -420,7 +420,7 @@ void copyPath(QString src, QString dst) {
 
 QString launchSS() {
     uInt uid = getuid();
-    auto prc = new SvdProcess("Thess", uid, true);
+    auto prc = new SvdProcess("Thess", uid, false);
     #ifdef __FreeBSD__
         prc->spawnProcess("daemon svdss"); /* NOTE: it uses Sofin environment automatically */
     #else
