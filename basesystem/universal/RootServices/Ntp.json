@@ -1,0 +1,16 @@
+{
+    "softwareName": "Ntp",
+    "watchPort": false,
+    "resolveDomain": false,
+    "alwaysOn": false,
+
+    "schedulerActions": [
+    {
+        "cronEntry": "*/59 * * * * ?",
+        "commands": "
+printf 'Syncing time\n' >> SERVICE_PREFIX/service.log 2>&1
+ntpdate ntp.nask.pl >> SERVICE_PREFIX/service.log 2>&1
+"
+    }
+    ]
+}
