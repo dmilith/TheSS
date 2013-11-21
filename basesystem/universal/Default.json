@@ -54,7 +54,8 @@
     "startOrder": 0,
 
 /* a list of igniters required to launch this software */
-    "dependencies": [],
+    "dependencies": [
+    ],
 
 /* default schedulerActions format:             */
 /*   "schedulerActions": [                      */
@@ -64,34 +65,41 @@
 /*     },                                       */
 /*     …                                        */
 /* ],                                           */
+
     "schedulerActions": [
     ],
+
     "install": {
         "commands": "",
         "expectOutput": "",
         "expectOutputTimeout": 0
     },
+
     "configure":  {
         "commands": "",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
+
     "start":  {
         "commands": "",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
+
     "afterStart":  {
         "commands": "
 touch SERVICE_PREFIX/.running",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
+
     "stop":  {
         "commands": "",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
+
     "afterStop":  {
         "commands": "
 test -f SERVICE_PREFIX/service.pid && svddw $(cat SERVICE_PREFIX/service.pid) && rm SERVICE_PREFIX/service.pid
@@ -99,16 +107,19 @@ test -f SERVICE_PREFIX/.running && rm SERVICE_PREFIX/.running",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
+
     "reload":  {
         "commands": "",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
+
     "validate": {
         "commands": "",
         "expectOutput": "",
         "expectOutputTimeout": 60
     },
+
     "babySitter": {
         "commands": "",
         "expectOutput": "",
