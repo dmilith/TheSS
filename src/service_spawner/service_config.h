@@ -69,7 +69,7 @@ class SvdServiceConfig : public QObject {
         QString name, softwareName, repository, parentService, domain;
         bool autoStart, reportAllErrors, reportAllInfos, reportAllDebugs, watchPort, watchUdpPort, alwaysOn, resolveDomain;
         int staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder;
-        QStringList dependencies;
+        QStringList dependencies, watchHttpAddresses;
         QList<SvdSchedulerAction*> schedulerActions;
         SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;
 

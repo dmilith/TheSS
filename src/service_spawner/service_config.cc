@@ -48,6 +48,19 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         configureOrder = (*defaults)["configureOrder"].asInt();
         startOrder = (*defaults)["startOrder"].asInt();
 
+        /* load http addresses to check */
+        for (uint index = 0; index < (*defaults)["watchHttp"].size(); ++index ) {
+            try {
+                auto element = (*defaults)["watchHttp"][index];
+                if (element.isString())
+                    watchHttpAddresses.push_back(element.asCString());
+                else
+                    logError() << "Invalid JSON Type for watchHttpAddresses list. They all should be http url strings";
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing default watchHttpAddresses of" << name;
+            }
+        }
+
         /* load default service dependencies */
         for (uint index = 0; index < (*defaults)["dependencies"].size(); ++index ) {
             try {
@@ -141,6 +154,19 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
         configureOrder = root->get("configureOrder", (*defaults)["configureOrder"]).asInt();
         startOrder = root->get("startOrder", (*defaults)["startOrder"]).asInt();
+
+        /* load http addresses to check */
+        for (uint index = 0; index < (*root)["watchHttp"].size(); ++index ) {
+            try {
+                auto element = (*root)["watchHttp"][index];
+                if (element.isString())
+                    watchHttpAddresses.push_back(element.asCString());
+                else
+                    logError() << "Invalid JSON Type for watchHttpAddresses list. They all should be http url strings";
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing default watchHttpAddresses of" << name;
+            }
+        }
 
         /* load service dependencies data */
         for (uint index = 0; index < (*root)["dependencies"].size(); ++index ) {

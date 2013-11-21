@@ -2,7 +2,7 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.18.0",
+    "formatVersion": "0.62",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
@@ -26,6 +26,9 @@
 
 /* reqad only access to git repository for web applications */
     "repository": "",
+
+/* http url addresses to watch */
+    "watchHttp": [],
 
 /* by default assign dynamic port for service   */
     "staticPort": -1,
