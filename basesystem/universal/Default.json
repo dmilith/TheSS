@@ -10,7 +10,7 @@
     "domain": "",
 
 /* when set to false, domain won't be resolved for spcified igniter */
-    "resolveDomain": true,
+    "resolveDomain": false,
 
 /* defines pool of ports used by service */
     "portsPool": 1,
