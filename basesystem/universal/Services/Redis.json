@@ -6,6 +6,7 @@
             "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
         }
     ],
+    "watchHttp": ["http://redis.io/"],
     "install": {
         "commands": "sofin get redis",
         "expectOutput": "All done"

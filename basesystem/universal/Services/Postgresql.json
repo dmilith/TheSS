@@ -10,6 +10,7 @@
         "commands": "sofin get postgresql",
         "expectOutput": "All done"
     },
+    "watchHttp": ["https://postgresql.org/"],
     "validate": {
         "commands": "
 chmod 700 SERVICE_PREFIX/database # security reasons
