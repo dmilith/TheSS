@@ -15,8 +15,8 @@
 
 ## Features
 * Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).
-* Support software igniters written in JSON (+comments support) to generate predefined (user or system wide) software configurations on the fly.
-* Support for software hooks. (More in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)). Hook example:
+* Supports software igniters written in JSON (+comments support) to generate predefined software configurations on the fly.
+* Supports software hooks. (More in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)). Hook example:
 
 ```json
 {
@@ -28,8 +28,8 @@
 }
 ```
 
-* Ordered, synchronous execution of service hooks (exception: scheduler commmands are executed asynchronously)
-* Service hooks have predefined execution order and some will call others. This is built in behavior and it's constant.
+* Supports ordered, synchronous execution of service hooks (exception: scheduler commmands and http checks are executed asynchronously)
+* Service hooks have predefined execution order and some will call others. This is built in behavior and it's constant:
 
 ```sh
 
@@ -135,45 +135,53 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 
 ```
 
-* Support for live updates. Do `touch ~/.shutdown`. Maintainer will go down but all your software services will stay in background. Then just do an upgrade, rebuild, install and run maintainer again. It will just resume watch on live services. After a while (default babysitter pause time) it will automatically rebuild software dependency tree and continue to watch orphaned services.
+* Supports live updates. Do `touch ~/.shutdown`. Maintainer will go down but all your software services will stay in background. Then just do an upgrade, rebuild, install and run svdss again. It will just resume watch on live services. After a while (default babysitter pause time) it will automatically rebuild software dependency tree and continue to watch orphaned services.
 * Support maintained, synchronous startup and shutdown of services. SIGINT (Ctrl - c in terminal) will shutdown TheSS gracefully including all running services. SIGTERM will just tell TheSS to shutdown leaving all services spawned in background (equivalent of `touch ~/.shutdown`).
 * Supports basic UI - `svdpanel` - for easy service managment (based on ncurses library).
 * Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set `touch SERVICE_PREFIX/.validationFailure` in hook commands.
+* Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).
 
 
 ## Igniter examples:
 * [Redis](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Redis.json)
 * [Mysql](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Mysql.json)
+* [Postgresql](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Postgresql.json)
 * [Nginx](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/RootServices/Coreginx.json)
 
 
-## WTF? How to run it?
+## But how to run it?
 
 ```sh
-# to only build TheSS executables:
+sofin install thess
+# to install it for your user.
+
+svdpanel
+# to launch svdss in background by pressing F10 (if it's not already running)
+
+
+# or
+
+# Do everything manually:
 bin/build
 
 # to build and run tests:
 bin/test
 
-# to install system wide, run as root:
-bin/systemdeploy
+# and now just run it in foreground:
+bin/svdss -f
 
-# and now just:
-bin/svdss # or svdss if used install process
-# (it supports -d param for explicit debug output and -t for trace level output
-#  which may be later changed using "log level change" feature)
+# to actually spawn something with running thess in background, on second terminal, do:
+mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start # (this is an example of how to spawn Redis without using panel)
 
-# to actually spawn something, on second terminal, do:
-mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start
-# wait a while, software install process should work in background.
-# This process should log output to file: ~/SoftwareData/Redis/service.log,
-# then should pick random port, generate configuration for Redis
-# service and just start it.
+# wait a while, software installation process should work in background.
+# This process should pick random port, generate configuration for Redis,
+# and log output to file: ~/SoftwareData/Redis/service.log.
+# Service starts it in background after that.
 
 # you may also use built in panel:
 bin/svdpanel
-# Hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.
+# then launch svdss in background by pressing F10 (if it's not already running)
+# in panel, hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.
 ```
 
 
@@ -184,6 +192,7 @@ bin/svdpanel
 
 
 ## FAQ
+* "I don't want to use Sofin to install my software" - Thess is by definition designed to make use of Sofin software. If you want to use thess with some other utility - not Sofin - you're on your own. I'm not interested in developing any additional package managment support ever. It's that simple.
 * "It doesn't work at all. No services are starting" - First, make sure you have working "svdss" in background. Then make sure you have default shell installed for launched services (/Software/Zsh). If you still have problems, please report.
 * "I've found a SIGSEGV in your crappy code. How to help you track it?" - First of all, disable optimizations in src/Common.pro. Replace "-O3" with "-O0 -g" in compiler flags setting. Rebuild project from scratch. Then just run your code with "lldb" or "gdb", and when you reproduce an error please send me output of "bt" command. Your contibution is never forgotten!
 
