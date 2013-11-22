@@ -45,9 +45,9 @@
 #include <QObject>
 #include <QElapsedTimer>
 #include <QUrl>
-#include <QTNetwork/QNetworkAccessManager>
-#include <QTNetwork/QNetworkRequest>
-#include <QTNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
 
 
 class SvdService: public QThread {
