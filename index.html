@@ -60,20 +60,20 @@
 
 <ul>
 <li>Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).</li>
-<li>Support software igniters written in JSON (+comments support) to generate predefined (user or system wide) software configurations on the fly.</li>
-<li>Support for software hooks. (More in <a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json">Defaults.json</a>). Hook example:</li>
-</ul><pre><code>{
-    "install": {
-        "commands": "sofin install mysoft; install my software plugin",
-        "expectOutput": "Success happened, and this output is a confirmation",
-        "expectOutputTimeout": 0
-    }
-}
-</code></pre>
+<li>Supports software igniters written in JSON (+comments support) to generate predefined software configurations on the fly.</li>
+<li>Supports software hooks. (More in <a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json">Defaults.json</a>). Hook example:</li>
+</ul><div class="highlight highlight-json"><pre><span class="p">{</span>
+    <span class="nt">"install"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"sofin install mysoft; install my software plugin"</span><span class="p">,</span>
+        <span class="nt">"expectOutput"</span><span class="p">:</span> <span class="s2">"Success happened, and this output is a confirmation"</span><span class="p">,</span>
+        <span class="nt">"expectOutputTimeout"</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 
 <ul>
-<li>Ordered, synchronous execution of service hooks (exception: scheduler commmands are executed asynchronously)</li>
-<li>Service hooks have predefined execution order and some will call others. This is built in behavior and it's constant.</li>
+<li>Supports ordered, synchronous execution of service hooks (exception: scheduler commmands and http checks are executed asynchronously)</li>
+<li>Service hooks have predefined execution order and some will call others. This is built in behavior and it's constant:</li>
 </ul><div class="highlight highlight-sh"><pre>
 startHook <span class="c"># will execute:</span>
 <span class="c"># ifNotInstalled(installHook) -&gt; ifNotConfigured(configureHook) -&gt; validateHook -&gt; startHook -&gt; afterStartHook</span>
@@ -146,19 +146,19 @@ SERVICE_VALIDATE_HOOK
 <ul>
 <li>Supports cron-compliant scheduler built in (since v0.24.x). Commands defined in schedulers have full support for igniter constants (listed above) and each command is in Zsh-compatible script format.
 Scheduler example based on Redis igniter:</li>
-</ul><pre><code>{
-    "schedulerActions": [
-        {
-            "cronEntry": "*/25 10-15 1,3,5,7 * * ?",
-            "commands": "test -e SERVICE_PREFIX/database/database.rdf &amp;&amp; cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
-        },
-        {
-            "cronEntry": "*/10 * * * * ?",
-            "commands": "for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"
-        }
-    ]
-}
-</code></pre>
+</ul><div class="highlight highlight-json"><pre><span class="p">{</span>
+    <span class="nt">"schedulerActions"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">"cronEntry"</span><span class="p">:</span> <span class="s2">"*/25 10-15 1,3,5,7 * * ?"</span><span class="p">,</span>
+            <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"test -e SERVICE_PREFIX/database/database.rdf &amp;&amp; cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="nt">"cronEntry"</span><span class="p">:</span> <span class="s2">"*/10 * * * * ?"</span><span class="p">,</span>
+            <span class="nt">"commands"</span><span class="p">:</span> <span class="s2">"for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
 
 <div class="highlight highlight-sh"><pre><span class="c"># Standard formatting for "cronEntry":</span>
 <span class="s2">"*/10 10,11,12 1-15 * * ?"</span>  <span class="c"># invoke each 10 minutes, exactly at 10am or 11am or 12am,</span>
@@ -175,44 +175,52 @@ X,Y,Z   <span class="c"># SEQUENCE: passes when value is exactly one of X or Y o
 </pre></div>
 
 <ul>
-<li>Support for live updates. Do <code>touch ~/.shutdown</code>. Maintainer will go down but all your software services will stay in background. Then just do an upgrade, rebuild, install and run maintainer again. It will just resume watch on live services. After a while (default babysitter pause time) it will automatically rebuild software dependency tree and continue to watch orphaned services.</li>
+<li>Supports live updates. Do <code>touch ~/.shutdown</code>. Maintainer will go down but all your software services will stay in background. Then just do an upgrade, rebuild, install and run svdss again. It will just resume watch on live services. After a while (default babysitter pause time) it will automatically rebuild software dependency tree and continue to watch orphaned services.</li>
 <li>Support maintained, synchronous startup and shutdown of services. SIGINT (Ctrl - c in terminal) will shutdown TheSS gracefully including all running services. SIGTERM will just tell TheSS to shutdown leaving all services spawned in background (equivalent of <code>touch ~/.shutdown</code>).</li>
 <li>Supports basic UI - <code>svdpanel</code> - for easy service managment (based on ncurses library).</li>
 <li>Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set <code>touch SERVICE_PREFIX/.validationFailure</code> in hook commands.</li>
+<li>Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).</li>
 </ul><h2>
 <a name="igniter-examples" class="anchor" href="#igniter-examples"><span class="octicon octicon-link"></span></a>Igniter examples:</h2>
 
 <ul>
 <li><a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Redis.json">Redis</a></li>
 <li><a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Mysql.json">Mysql</a></li>
+<li><a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Postgresql.json">Postgresql</a></li>
 <li><a href="https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/RootServices/Coreginx.json">Nginx</a></li>
 </ul><h2>
-<a name="wtf-how-to-run-it" class="anchor" href="#wtf-how-to-run-it"><span class="octicon octicon-link"></span></a>WTF? How to run it?</h2>
+<a name="but-how-to-run-it" class="anchor" href="#but-how-to-run-it"><span class="octicon octicon-link"></span></a>But how to run it?</h2>
 
-<div class="highlight highlight-sh"><pre><span class="c"># to only build TheSS executables:</span>
+<div class="highlight highlight-sh"><pre>sofin install thess
+<span class="c"># to install it for your user.</span>
+
+svdpanel
+<span class="c"># to launch svdss in background by pressing F10 (if it's not already running)</span>
+
+
+<span class="c"># or</span>
+
+<span class="c"># Do everything manually:</span>
 bin/build
 
 <span class="c"># to build and run tests:</span>
 bin/test
 
-<span class="c"># to install system wide, run as root:</span>
-bin/systemdeploy
+<span class="c"># and now just run it in foreground:</span>
+bin/svdss -f
 
-<span class="c"># and now just:</span>
-bin/svdss <span class="c"># or svdss if used install process</span>
-<span class="c"># (it supports -d param for explicit debug output and -t for trace level output</span>
-<span class="c">#  which may be later changed using "log level change" feature)</span>
+<span class="c"># to actually spawn something with running thess in background, on second terminal, do:</span>
+mkdir ~/SoftwareData/Redis <span class="o">&amp;&amp;</span> touch ~/SoftwareData/Redis/.start <span class="c"># (this is an example of how to spawn Redis without using panel)</span>
 
-<span class="c"># to actually spawn something, on second terminal, do:</span>
-mkdir ~/SoftwareData/Redis <span class="o">&amp;&amp;</span> touch ~/SoftwareData/Redis/.start
-<span class="c"># wait a while, software install process should work in background.</span>
-<span class="c"># This process should log output to file: ~/SoftwareData/Redis/service.log,</span>
-<span class="c"># then should pick random port, generate configuration for Redis</span>
-<span class="c"># service and just start it.</span>
+<span class="c"># wait a while, software installation process should work in background.</span>
+<span class="c"># This process should pick random port, generate configuration for Redis,</span>
+<span class="c"># and log output to file: ~/SoftwareData/Redis/service.log.</span>
+<span class="c"># Service starts it in background after that.</span>
 
 <span class="c"># you may also use built in panel:</span>
 bin/svdpanel
-<span class="c"># Hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.</span>
+<span class="c"># then launch svdss in background by pressing F10 (if it's not already running)</span>
+<span class="c"># in panel, hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.</span>
 </pre></div>
 
 <h2>
@@ -226,6 +234,7 @@ bin/svdpanel
 <a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
 
 <ul>
+<li>"I don't want to use Sofin to install my software" - Thess is by definition designed to make use of Sofin software. If you want to use thess with some other utility - not Sofin - you're on your own. I'm not interested in developing any additional package managment support ever. It's that simple.</li>
 <li>"It doesn't work at all. No services are starting" - First, make sure you have working "svdss" in background. Then make sure you have default shell installed for launched services (/Software/Zsh). If you still have problems, please report.</li>
 <li>"I've found a SIGSEGV in your crappy code. How to help you track it?" - First of all, disable optimizations in src/Common.pro. Replace "-O3" with "-O0 -g" in compiler flags setting. Rebuild project from scratch. Then just run your code with "lldb" or "gdb", and when you reproduce an error please send me output of "bt" command. Your contibution is never forgotten!</li>
 </ul><h2>
@@ -243,12 +252,12 @@ bin/svdpanel
     </div>
     <footer>
       <div class="owner">
-      <p><a href="https://github.com/VerKnowSys" class="avatar"><img src="https://0.gravatar.com/avatar/774171fdf63b4d80ceff8fb307ca12aa?d=https%3A%2F%2Fidenticons.github.com%2F0d76cc239133e4a62762ede05e0ca7b1.png&amp;r=x&amp;s=60" width="48" height="48"/></a> <a href="https://github.com/VerKnowSys">VerKnowSys</a> maintains <a href="https://github.com/VerKnowSys/TheSS">Thess</a></p>
+      <p><a href="https://github.com/VerKnowSys" class="avatar"><img src="https://2.gravatar.com/avatar/774171fdf63b4d80ceff8fb307ca12aa?d=https%3A%2F%2Fidenticons.github.com%2F0d76cc239133e4a62762ede05e0ca7b1.png&amp;r=x&amp;s=60" width="48" height="48"/></a> <a href="https://github.com/VerKnowSys">VerKnowSys</a> maintains <a href="https://github.com/VerKnowSys/TheSS">Thess</a></p>
 
 
       </div>
       <div class="creds">
-        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+        <small>This page generated using <a href="http://pages.github.com/">GitHub Pages</a><br/>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
       </div>
     </footer>
   </div>
