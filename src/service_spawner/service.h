@@ -44,6 +44,10 @@
 #include <signal.h>
 #include <QObject>
 #include <QElapsedTimer>
+#include <QUrl>
+#include <QTNetwork/QNetworkAccessManager>
+#include <QTNetwork/QNetworkRequest>
+#include <QTNetwork/QNetworkReply>
 
 
 class SvdService: public QThread {
@@ -63,6 +67,7 @@ class SvdService: public QThread {
         QElapsedTimer uptime;
         QTimer babySitter, cronSitter;
         QList<SvdService*> dependencyServices;
+        QNetworkAccessManager* networkManager = NULL;
 
     public slots:
         void cronSitterSlot();
@@ -86,6 +91,7 @@ class SvdService: public QThread {
         void reloadSlot();
         void validateSlot();
         void destroySlot();
+        void finishedSlot(QNetworkReply* reply); /* network check slot */
 };
 
 

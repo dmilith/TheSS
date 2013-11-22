@@ -15,6 +15,7 @@ SvdService::SvdService(const QString& name) {
     this->name = name;
     this->dependencyServices = QList<SvdService*>();
     this->uptime.invalidate();
+    this->networkManager = new QNetworkAccessManager(this);
 }
 
 
@@ -28,6 +29,9 @@ void SvdService::run() {
     /* setup cron sitter */
     cronSitter.setInterval(DEFAULT_CRON_CHECK_DELAY / 1000);
     connect(&cronSitter, SIGNAL(timeout()), this, SLOT(cronSitterSlot()));
+
+    /* setup http watches */
+    connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedSlot(QNetworkReply*)));
 
     logTrace() << "Creating SvdService with name" << this->name;
     exec();
@@ -144,6 +148,18 @@ bool SvdService::checkProcessStatus(pid_t pid) {
 }
 
 
+void SvdService::finishedSlot(QNetworkReply* aReply) { /* network check slot */
+    if (aReply->error() == QNetworkReply::NoError) {
+        logDebug() << "Http check passed for url:" << aReply->url();
+    } else {
+        logError() << "Failed to contact one of http url:" << aReply->url() << "! Error:" << aReply->errorString();
+        notification("Http url of service: " + name + ", failed to respond: " + aReply->url().toString() + ". Service will be restarted.", ERROR);
+        emit restartSlot();
+    }
+    aReply->deleteLater();
+}
+
+
 /* baby sitting slot is used to watch service pid */
 void SvdService::babySitterSlot() {
     auto config = new SvdServiceConfig(name);
@@ -175,6 +191,18 @@ void SvdService::babySitterSlot() {
     } else
         logDebug() << "Babysitter invoked for:" << name;
     QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
+
+    /* support separated http url check: */
+    if (config->watchHttpAddresses.isEmpty()) {
+        logDebug() << "No urls to watch for service" << name;
+    } else {
+        Q_FOREACH(QString anUrl, config->watchHttpAddresses) {
+            logDebug() << "Performing http check of http url:" << anUrl << "for service:" << name;
+            QUrl url(anUrl);
+            networkManager->get(QNetworkRequest(url));
+        }
+    }
+
 
     if (config->alwaysOn) {
 
@@ -887,13 +915,11 @@ void SvdService::destroySlot() {
             if (el != NULL) {
                 logTrace() << "Deleting dependencyService for service:" << name;
                 el->exit();
-                // el->deleteLater();
             }
         }
     }
-
+    this->networkManager->deleteLater();
     this->exit();
-    // this->deleteLater();
 }
 
 
