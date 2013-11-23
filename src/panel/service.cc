@@ -67,13 +67,14 @@ void PanelService::refresh(){
         status = SERVICE_STATUS_CONFIGURING;
     } else if(isRunning) {
         if(pid.isEmpty()) {
-            // uint __port = registerFreeTcpPort(port.toUInt());
-            // if (port.toUInt() == __port) {
-            //     status = SERVICE_STATUS_WORKING;
-            // } else {
-            // }
+            uint __port = registerFreeTcpPort(port.toUInt());
+            if (port.toUInt() == __port) {
+                // status = SERVICE_STATUS_WORKING;
+                pid = "SCHED"; /* scheduler mode, means it's running and doing own jobs but isn't working in foreground all the time */
+            } else {
+                pid = " AUTO"; /* pid managment on service side */
+            }
             status = SERVICE_STATUS_RUNNING;
-            pid = "SCHED"; /* scheduler mode, means it's running and doing own jobs but isn't working in foreground all the time */
         } else {
             status = SERVICE_STATUS_RUNNING;
         }
