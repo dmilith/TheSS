@@ -7,11 +7,31 @@
 
 #include "service.h"
 
+
+void PanelService::panelAssert(bool predicate, const char* where, const char* message) {
+    if (predicate) return;
+    else {
+        endwin();
+        cout << "FATAL: Predicate assertion failed with message: " << message << " in: " << where << endl;
+        Q_ASSERT_X(predicate, where, message);
+    }
+}
+
+
 PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     this->panel = panel;
     this->baseDir = baseDir;
     name = baseDir.baseName();
     basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
+
+    /* security assertions */
+    panelAssert(basePath != "/", "PanelService", "basePath can't be '/'");
+    panelAssert(not basePath.contains(" "), "PanelService", "basePath can't contain spaces!");
+    if (getuid() == 0) {
+        panelAssert(basePath.startsWith("/SystemUsers/"), "PanelService", "basePath must be located in: '/SystemUsers/'");
+    } else {
+        panelAssert(basePath.startsWith(QString(getenv("HOME"))), "PanelService", "basePath must be located in user home directory!");
+    }
     this->dir = QDir(basePath);
 
     this->log = new Tail(this, basePath, "service.log");

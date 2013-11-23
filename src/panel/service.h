@@ -14,6 +14,7 @@ class PanelService {
 
 public:
     PanelService(Panel * panel, QFileInfo baseDir);
+    void panelAssert(bool predicate, const char* where, const char* message);
     void start();
     void startWithoutDeps();
     void stop();
