@@ -9,6 +9,25 @@
 #include "utils.h"
 
 
+void copyPath(QString src, QString dst) {
+    QDir dir(src);
+    if (!dir.exists()) {
+        logWarn() << "Copy path don't exists:" << src << "Skipping.";
+        return;
+    }
+
+    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        QString dst_path = dst + QDir::separator() + d;
+        dir.mkpath(dst_path);
+        copyPath(src + QDir::separator() + d, dst_path);
+    }
+
+    foreach (QString f, dir.entryList(QDir::Files)) {
+        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
+    }
+}
+
+
 QString tail(const QString& absoluteFileName, int lines, int positionModifier) {
     QFile file(absoluteFileName);
     if (not file.exists())

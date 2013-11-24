@@ -57,7 +57,7 @@ QString readFileContents(const QString& fileName);
 
 bool expect(const QString& inputFileContent, const QString& expectedString);
 bool removeDir(const QString& dirName);
-// bool cpDir(const QString &srcPath, const QString &dstPath);
+void copyPath(QString src, QString dst);
 bool setPublicDirPriviledges(const QString& path);
 bool setUserDirPriviledges(const QString& path);
 bool pidIsAlive(uint pid);
