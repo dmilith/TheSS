@@ -30,9 +30,10 @@ void PanelGui::init(){
 
     panel->setGui(this);
 
-    mainWindow = newwin(rows - notificationRows, cols/2, 0, 0);
-    logWindow = newwin(rows, cols/2, 0, cols/2);
-    notificationWindow = newwin(notificationRows, cols/2, rows - notificationRows, 0);
+    const int modifier = 25;
+    mainWindow = newwin(rows - notificationRows, cols/2 - modifier, 0, 0);
+    logWindow = newwin(rows, cols/2 + modifier, 0, cols/2 - modifier);
+    notificationWindow = newwin(notificationRows, cols/2 - modifier, rows - notificationRows, 0);
     wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - notificationRows, mainWindow);
@@ -144,12 +145,13 @@ void PanelGui::displayHeader(){
 void PanelGui::displayFooter(){
     QList<QString> actions, functions;
 
-    actions << "Autostart" << "Start" << "sTop" << "Restart";
-    actions << "Validate" << "Install" << "Configure" << "New" << "eXplode";
-    functions << "F1" << "trace" << "F2" << "debug";
-    functions << "F3" << "info" << "F4" << "error";
-    functions << "F5" << "refresh" << "F7" << "new service";
-    functions << "F8" << "destroy" << "F9" << "SS launch/shutdown" << "F10" << "grfly shtdn";
+    actions << "Autostart" << "Start" << "sTop" << "Restart"
+            << "Validate" << "Install" << "Configure" << "New" << "eXplode";
+
+    functions << "F1" << "trc" << "F2" << "dbg"
+              << "F3" << "inf" << "F4" << "err"
+              << "F5" << "rfsh" << "F6" << "rnm" << "F7" << "new"
+              << "F8" << "dstr" << "F9" << "forced ss on/off" << "F10" << "ss on/off";
 
     int x = 0, y = rows - 15;
     char * str;
@@ -192,11 +194,11 @@ void PanelGui::displayStatus(){
     /* SS status info */
     if(panel->isSSOnline()){
         wattron(mainWindow, C_SS_STATUS_ON);
-        mvwprintw(mainWindow, 0, 52, ("ServiceSpawner: ONLINE  (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvwprintw(mainWindow, 0, 54, ("ServiceSpawner:  ONLINE (" + QHostInfo::localHostName() + ")").toUtf8());
         wattroff(mainWindow, C_SS_STATUS_ON);
     } else {
         wattron(mainWindow, C_SS_STATUS_OFF);
-        mvwprintw(mainWindow, 0, 52, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvwprintw(mainWindow, 0, 54, ("ServiceSpawner: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
         wattroff(mainWindow, C_SS_STATUS_OFF);
     }
 
@@ -398,23 +400,6 @@ bool PanelGui::confirm(QString msg){
     delwin(inner);
     delwin(win);
     return ch == 'Y';
-}
-
-
-void copyPath(QString src, QString dst) {
-    QDir dir(src);
-    if (!dir.exists())
-        return;
-
-    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        QString dst_path = dst + QDir::separator() + d;
-        dir.mkpath(dst_path);
-        copyPath(src + QDir::separator() + d, dst_path);
-    }
-
-    foreach (QString f, dir.entryList(QDir::Files)) {
-        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
-    }
 }
 
 
