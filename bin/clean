@@ -19,6 +19,8 @@ else
     make distclean
     qmake TheSS.pro
     make distclean
+    qmake IRCNotify.pro
+    make distclean
 fi
 
 rm -fv src/*.a
