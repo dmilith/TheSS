@@ -5,12 +5,6 @@
         "commands": "sofin get mongodb",
         "expectOutput": "All done"
     },
-    "schedulerActions": [
-        {
-            "cronEntry": "0 0/1 * * * ?",
-            "commands": "echo 'Mongo pom pom'"
-        }
-    ],
     "validate": {
         "commands": "
 test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database

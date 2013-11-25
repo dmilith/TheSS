@@ -7,8 +7,8 @@
     },
     "schedulerActions": [
         {
-            "cronEntry": "0 8,20 * * * ?",
-            "commands": "mongodump --host SERVICE_DOMAIN --port $(cat SERVICE_PREFIX/.ports/0) --out $HOME/Mongo-dumps/$(date +'%Y-%m-%d--%H%M')"
+            "cronEntry": "* * 1 * * ?",
+            "commands": "echo It's first day of the month, so it's time for data dump! ; mkdir -p $HOME/Mongo-dumps ; export work_date=$(date +'%Y-%m-%d--%H%M') && mongodump --host SERVICE_DOMAIN --port $(cat SERVICE_PREFIX/.ports/0) --out $HOME/Mongo-dumps/${work_date} && cd $HOME/Mongo-dumps/ && tar cf ${work_date}.tar.gz ${work_date}/ && rm -rf ${work_date}"
         }
     ],
     "configure": {
