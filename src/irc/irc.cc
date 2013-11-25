@@ -73,6 +73,9 @@ void IrcNotification::start() {
 
 			case 4: {
 				QString notificationsDir = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + NOTIFICATIONS_DATA_DIR + "/";
+				if (getuid() == 0) {
+			        notificationsDir = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + NOTIFICATIONS_DATA_DIR + "/";
+			    }
 			    logInfo() << "Looking for ERROR notifications inside" << notificationsDir;
 
 			    QStringList notifications = QDir(notificationsDir).entryList(QDir::Files | QDir::NoDotAndDotDot, QDir::Time);

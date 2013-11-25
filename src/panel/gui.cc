@@ -53,6 +53,9 @@ bool NotificationLessThan(const Notification &a, const Notification &b){
 void PanelGui::gatherNotifications() {
     int i = 0, x = 0;
     QString userSoftwarePrefix = QString(getenv("HOME")) + QString(SOFTWARE_DATA_DIR);
+    if (getuid() == 0) {
+        userSoftwarePrefix = QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR);
+    }
     auto userSoftwareList = QDir(userSoftwarePrefix).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
     QList<Notification> notifications;
