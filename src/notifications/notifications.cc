@@ -88,5 +88,16 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     logDebug() << "Notification msg: " << message << " written to:" << QString::number(now) + "_" + notificationFileName;
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
 
+    if (level > WARNING) { /* irc notification only for errors */
+        logInfo() << "Launching IRC notification in background";
+        SvdProcess *proc = new SvdProcess("IRCNotify", getuid(), false);
+        #ifdef __FreeBSD__
+            proc->spawnProcess("daemon svdirc_notify");
+        #else
+            proc->spawnProcess("svdirc_notify &");
+        #endif
+        proc->waitForFinished(1);
+    }
+
     moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
 }
