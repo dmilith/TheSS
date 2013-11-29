@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 
     } else {
         FileAppender *fileAppender;
-        if (getuid() == 0)
+        if (uid == 0)
             fileAppender = new FileAppender(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_LOG_FILE);
         else
             fileAppender = new FileAppender(QString(getenv("HOME")) + DEFAULT_SS_LOG_FILE);
