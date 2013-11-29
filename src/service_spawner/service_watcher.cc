@@ -10,20 +10,20 @@
 
 
 SvdHookTriggerFiles::SvdHookTriggerFiles(const QString& path) {
-    install                = new SvdHookTriggerFile(path + "/.install");
-    configure              = new SvdHookTriggerFile(path + "/.configure");
-    reConfigure            = new SvdHookTriggerFile(path + "/.reconfigure");
-    reConfigureWithoutDeps = new SvdHookTriggerFile(path + "/.reconfigureWithoutDeps");
-    start                  = new SvdHookTriggerFile(path + "/.start");
-    startWithoutDeps       = new SvdHookTriggerFile(path + "/.startWithoutDeps");
-    stop                   = new SvdHookTriggerFile(path + "/.stop");
-    stopWithoutDeps        = new SvdHookTriggerFile(path + "/.stopWithoutDeps");
-    afterStart             = new SvdHookTriggerFile(path + "/.afterStart");
-    afterStop              = new SvdHookTriggerFile(path + "/.afterStop");
-    restart                = new SvdHookTriggerFile(path + "/.restart");
-    restartWithoutDeps     = new SvdHookTriggerFile(path + "/.restartWithoutDeps");
-    reload                 = new SvdHookTriggerFile(path + "/.reload");
-    validate               = new SvdHookTriggerFile(path + "/.validate");
+    install                = new SvdHookTriggerFile(path + INSTALL_TRIGGER_FILE);
+    configure              = new SvdHookTriggerFile(path + CONFIGURE_TRIGGER_FILE);
+    reConfigure            = new SvdHookTriggerFile(path + RECONFIGURE_TRIGGER_FILE);
+    reConfigureWithoutDeps = new SvdHookTriggerFile(path + RECONFIGURE_WITHOUT_DEPS_TRIGGER_FILE);
+    start                  = new SvdHookTriggerFile(path + START_TRIGGER_FILE);
+    startWithoutDeps       = new SvdHookTriggerFile(path + START_WITHOUT_DEPS_TRIGGER_FILE);
+    stop                   = new SvdHookTriggerFile(path + STOP_TRIGGER_FILE);
+    stopWithoutDeps        = new SvdHookTriggerFile(path + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+    afterStart             = new SvdHookTriggerFile(path + AFTERSTART_TRIGGER_FILE);
+    afterStop              = new SvdHookTriggerFile(path + AFTERSTOP_TRIGGER_FILE);
+    restart                = new SvdHookTriggerFile(path + RESTART_TRIGGER_FILE);
+    restartWithoutDeps     = new SvdHookTriggerFile(path + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+    reload                 = new SvdHookTriggerFile(path + RELOAD_TRIGGER_FILE);
+    validate               = new SvdHookTriggerFile(path + VALIDATE_TRIGGER_FILE);
 }
 
 
@@ -45,7 +45,7 @@ SvdHookTriggerFiles::~SvdHookTriggerFiles() {
 
 
 SvdHookIndicatorFiles::SvdHookIndicatorFiles(const QString& path) {
-    autostart       = new SvdHookIndicatorFile(path + DEFAULT_SERVICE_AUTOSTART_FILE);
+    autostart       = new SvdHookIndicatorFile(path + AUTOSTART_TRIGGER_FILE);
     afterStarting   = new SvdHookIndicatorFile(path + DEFAULT_SERVICE_AFTERSTARTING_FILE);
     afterStopping   = new SvdHookIndicatorFile(path + DEFAULT_SERVICE_AFTERSTOPPING_FILE);
     running         = new SvdHookIndicatorFile(path + DEFAULT_SERVICE_RUNNING_FILE);

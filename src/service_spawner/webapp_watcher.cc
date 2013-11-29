@@ -26,7 +26,7 @@ SvdWebAppHookTriggerFiles::~SvdWebAppHookTriggerFiles() {
 
 
 SvdWebAppHookIndicatorFiles::SvdWebAppHookIndicatorFiles(const QString& path) {
-    autostart   = new SvdHookIndicatorFile(path + DEFAULT_SERVICE_AUTOSTART_FILE);
+    autostart   = new SvdHookIndicatorFile(path + AUTOSTART_TRIGGER_FILE);
     running     = new SvdHookIndicatorFile(path + DEFAULT_SERVICE_RUNNING_FILE);
 }
 
