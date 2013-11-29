@@ -1,6 +1,10 @@
 #!/bin/sh
 
-bin/clean
+if [ "${OUT}" = "" ]; then
+    export OUT="/dev/null" # be quiet by default
+fi
+
+bin/clean > ${OUT} 2>&1
 mkdir -p releases
 
 version="$(grep -R 'APP_VERSION' src/globals/globals.h | awk '{ gsub("\"", "", $4); print $4}')"
@@ -8,7 +12,7 @@ base_name="thess-${version}"
 archive_name="${base_name}.tar.bz2"
 printf "Preparing package: ${archive_name} with version: ${version}\n"
 
-tar --disable-copyfile --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/${archive_name} ./
+tar --disable-copyfile --exclude='.' --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/${archive_name} ./
 mkdir -p releases/${base_name}
 mv releases/${archive_name} releases/${base_name}/
 cd releases/${base_name}
@@ -39,4 +43,8 @@ else
     done
 fi
 
-ssh sofin@v "sha1sum ${default_source_path}/thess-${version}.tar.bz2"
+printf "Building TheSS:\n"
+bin/build > ${OUT} 2>&1 && (
+    printf "SHA sum of file:\n"
+    shasum releases/thess-${version}.tar.bz2 # XXX: warning: it's shasum on OSX, sha1sum on linux and sha1 on bsd
+    )
