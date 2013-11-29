@@ -250,6 +250,8 @@ void PanelGui::helpDialog(){
     list << "  F8, X   - Delete current service";
     list << "  F9      - Launch TheSS, or shutdown TheSS if running (services stay)";
     list << "  F10     - Launch TheSS, or gracefully shutdown TheSS if running";
+    list << "  F11     - Forced TheSS shutdown (make it dead, no matter what)";
+    list << "  F12     - Reset service state & trigger files (useful for igniter debugging)";
     list << "  ` ~ \\   - Show TheSS log";
 
     for(int i=0; i<list.length(); i++){
@@ -575,6 +577,57 @@ void PanelGui::key(int ch){
                 panel->gracefullyTerminate();
             } else {
                 status = launchSS();
+            }
+            break;
+
+
+        case KEY_F(11):
+            if (panel->isSSOnline()) {
+                status = "Force ServiceSpawner shutdown";
+                endwin();
+                system("svddw $(cat $HOME/.$USER.pid)");
+                initscr();
+                refresh();
+            }
+            break;
+
+
+        case KEY_F(12): {
+                QString name = servicesList->currentItem()->name;
+                status = "Stopping and resetting trigger and state files for service: " + name;
+
+                auto config = new SvdServiceConfig(name);
+
+                /* triggers */
+                QFile::remove(config->prefixDir() + INSTALL_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + CONFIGURE_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + RECONFIGURE_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + RECONFIGURE_WITHOUT_DEPS_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + START_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + START_WITHOUT_DEPS_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + STOP_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + AFTERSTART_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + AFTERSTOP_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + RESTART_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + RELOAD_TRIGGER_FILE);
+                QFile::remove(config->prefixDir() + VALIDATE_TRIGGER_FILE);
+
+                /* states */
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_PID_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE);
+
+                delete config;
             }
             break;
 

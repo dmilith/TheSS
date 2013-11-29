@@ -7,6 +7,7 @@
 #include "../globals/globals.h"
 #include "../notifications/notifications.h"
 #include "../service_spawner/utils.h"
+#include "../service_spawner/service_config.h"
 #include "panel.h"
 
 class PanelGui : public QObject {
