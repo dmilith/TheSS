@@ -139,7 +139,7 @@ bool IrcNotification::charSearch(QString toSearch, QString searchFor) {
 				return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
 
