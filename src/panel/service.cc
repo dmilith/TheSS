@@ -94,20 +94,20 @@ void PanelService::refresh(){
 }
 
 
-void PanelService::start() {                   touch(dir.absoluteFilePath(START_TRIGGER_FILE));                   refresh();  }
-void PanelService::startWithoutDeps() {        touch(dir.absoluteFilePath(START_WITHOUT_DEPS_TRIGGER_FILE));        refresh();  }
-void PanelService::stop() {                    touch(dir.absoluteFilePath(STOP_TRIGGER_FILE));                    refresh();  }
-void PanelService::stopWithoutDeps() {         touch(dir.absoluteFilePath(STOP_WITHOUT_DEPS_TRIGGER_FILE));         refresh();  }
-void PanelService::validate() {                touch(dir.absoluteFilePath(VALIDATE_TRIGGER_FILE));                refresh();  }
-void PanelService::install() {                 touch(dir.absoluteFilePath(INSTALL_TRIGGER_FILE));                 refresh();  }
-void PanelService::configure() {               touch(dir.absoluteFilePath(CONFIGURE_TRIGGER_FILE));               refresh();  }
-void PanelService::reconfigure() {             touch(dir.absoluteFilePath(RECONFIGURE_TRIGGER_FILE));             refresh();  }
-void PanelService::reconfigureWithoutDeps() {  touch(dir.absoluteFilePath(RECONFIGURE_WITHOUT_DEPS_TRIGGER_FILE));  refresh();  }
-void PanelService::restart() {                 touch(dir.absoluteFilePath(RESTART_TRIGGER_FILE));                 refresh();  }
-void PanelService::restartWithoutDeps() {      touch(dir.absoluteFilePath(RESTART_WITHOUT_DEPS_TRIGGER_FILE));      refresh();  }
-void PanelService::reload() {                  touch(dir.absoluteFilePath(RELOAD_TRIGGER_FILE));                  refresh();  }
+void PanelService::start() {                   touch(basePath + START_TRIGGER_FILE);                   refresh();  }
+void PanelService::startWithoutDeps() {        touch(basePath + START_WITHOUT_DEPS_TRIGGER_FILE);        refresh();  }
+void PanelService::stop() {                    touch(basePath + STOP_TRIGGER_FILE);                    refresh();  }
+void PanelService::stopWithoutDeps() {         touch(basePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);         refresh();  }
+void PanelService::validate() {                touch(basePath + VALIDATE_TRIGGER_FILE);                refresh();  }
+void PanelService::install() {                 touch(basePath + INSTALL_TRIGGER_FILE);                 refresh();  }
+void PanelService::configure() {               touch(basePath + CONFIGURE_TRIGGER_FILE);               refresh();  }
+void PanelService::reconfigure() {             touch(basePath + RECONFIGURE_TRIGGER_FILE);             refresh();  }
+void PanelService::reconfigureWithoutDeps() {  touch(basePath + RECONFIGURE_WITHOUT_DEPS_TRIGGER_FILE);  refresh();  }
+void PanelService::restart() {                 touch(basePath + RESTART_TRIGGER_FILE);                 refresh();  }
+void PanelService::restartWithoutDeps() {      touch(basePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);      refresh();  }
+void PanelService::reload() {                  touch(basePath + RELOAD_TRIGGER_FILE);                  refresh();  }
 void PanelService::toggleAutostart() {
-    QString file = dir.absoluteFilePath(AUTOSTART_TRIGGER_FILE);
+    QString file = basePath + AUTOSTART_TRIGGER_FILE;
     if (not QFile::exists(file)) touch(file);
     else QFile::remove(file);
     refresh();
