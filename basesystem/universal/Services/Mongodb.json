@@ -11,10 +11,8 @@
             "commands": "echo It's first day of the month, so it's time for data dump! ; mkdir -p $HOME/Mongo-dumps ; export work_date=$(date +'%Y-%m-%d--%H%M') && mongodump --host SERVICE_DOMAIN --port $(cat SERVICE_PREFIX/.ports/0) --out $HOME/Mongo-dumps/${work_date} && cd $HOME/Mongo-dumps/ && tar cf ${work_date}.tar.gz ${work_date}/ && rm -rf ${work_date}"
         }
     ],
-    "validate": {
-        "commands": "
-test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+    "configure": {
+        "commands": "printf \"
 bind_ip = SERVICE_ADDRESS
 port = $(cat SERVICE_PREFIX/.ports/0)
 dbpath = SERVICE_PREFIX/database
@@ -24,6 +22,11 @@ pidfilepath = SERVICE_PREFIX/service.pid
 unixSocketPrefix = SERVICE_PREFIX
 fork = true
 \" > SERVICE_PREFIX/service.conf
+"
+    },
+    "validate": {
+        "commands": "
+test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
 "
     },
     "start": {

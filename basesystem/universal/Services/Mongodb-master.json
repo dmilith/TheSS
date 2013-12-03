@@ -5,10 +5,9 @@
         "commands": "sofin get mongodb",
         "expectOutput": "All done"
     },
-    "validate": {
+    "configure": {
         "commands": "
-test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+printf \"
 bind_ip = SERVICE_ADDRESS
 port = $(cat SERVICE_PREFIX/.ports/0)
 dbpath = SERVICE_PREFIX/database
@@ -20,6 +19,11 @@ fork = true
 master = true
 replSet = replica
 \" > SERVICE_PREFIX/service.conf
+"
+    },
+    "validate": {
+        "commands": "
+test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
 "
     },
     "start": {

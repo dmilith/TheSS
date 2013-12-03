@@ -2,7 +2,7 @@
     "softwareName": "Redis",
     "schedulerActions": [
         {
-            "cronEntry": "*/50 * * * * ?",
+            "cronEntry": "* * 1 * * ?",
             "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
         }
     ],
@@ -37,7 +37,8 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log\" > SERVICE_PREFIX/service.conf
+logfile SERVICE_PREFIX/service.log
+\" > SERVICE_PREFIX/service.conf
 "
     }
 }
