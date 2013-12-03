@@ -51,6 +51,9 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     message = QString::number(now) + ": " + notificationMessage;
 
     QString notificationRoot = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
+    if (getuid() == 0) {
+        notificationRoot = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR;
+    }
     QString postfix;
     switch (level) {
         case NOTIFY:
