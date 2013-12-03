@@ -1,7 +1,6 @@
 {
     "softwareName": "Bind",
     "watchPort": false,
-    "resolveDomain": false,
 
     "install": {
         "commands": "sofin get bind",

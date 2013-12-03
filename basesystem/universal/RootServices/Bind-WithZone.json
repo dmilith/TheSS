@@ -3,7 +3,6 @@
     "watchPort": false,
     "watchUdpPort": true,
     "staticPort": 53,
-    "resolveDomain": false,
     "domain": "dmilith.dev",
 
     "install": {

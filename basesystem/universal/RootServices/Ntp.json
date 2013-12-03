@@ -1,7 +1,6 @@
 {
     "softwareName": "Ntp",
     "watchPort": false,
-    "resolveDomain": false,
     "alwaysOn": false,
 
     "schedulerActions": [
