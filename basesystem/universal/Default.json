@@ -5,6 +5,7 @@
     "formatVersion": "0.62",
 
 /* defines name of entry in ~/SoftwareData/ */
+/* use special Sofin definition "Builtin" to install no-op package */
     "name": "No-Name",
 
     "domain": "",
