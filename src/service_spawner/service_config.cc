@@ -424,7 +424,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         }
 
         /* Replace SERVICE_ADDRESS */
-        QString address = QString(DEFAULT_SYSTEM_ADDRESS);
+        QString address = QString(DEFAULT_LOCAL_ADDRESS);
         QString userAddress = "";
         QHostInfo info;
         if (!userDomain.isEmpty()) {
@@ -436,7 +436,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     Q_FOREACH(QHostAddress value, list) {
                         logDebug() << "Processing an address:" << value.toString();
                         userAddress = value.toString();
-                        if (userAddress == DEFAULT_SYSTEM_ADDRESS) {
+                        if (userAddress == DEFAULT_LOCAL_ADDRESS) {
                             logDebug() << "Ignoring localhost address for domain resolve.";
                         } else if (userAddress.contains(":")) {
                             logDebug() << "Ignoring IPV6 address:" << userAddress;
@@ -447,15 +447,15 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     }
                     /* replace address */
                     if (replaceWith.isEmpty()) {
-                        logDebug() << "Fallback to wildcard address for domain:" << userDomain;
-                        ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS);
+                        logDebug() << "Fallback to local address for domain:" << userDomain;
+                        ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
                     } else {
                         logDebug() << "Final result of domain resolve is:" << replaceWith;
                         ccont = ccont.replace("SERVICE_ADDRESS", replaceWith); /* replace with user address content */
                     }
                 } else {
-                    logDebug() << "Empty domain resolve of: " << userDomain << "for service:" << name << "Setting wildcard address: " << DEFAULT_WILDCARD_ADDRESS;
-                    ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS);
+                    logDebug() << "Empty domain resolve of: " << userDomain << "for service:" << name << "Setting local address: " << DEFAULT_LOCAL_ADDRESS;
+                    ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
                 }
 
             } else { /* don't resolve domain, just take first address available.. */
@@ -467,25 +467,26 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     if (userAddress == "127.0.0.1") {
                         logDebug() << "Ignoring localhost address.";
                     } else if (userAddress.contains(":")) {
-                        logDebug() << "Ignoring IPV6 address:" << userAddress;
+                        logDebug() << "Ignoring IPV6 address:" << userAddress << "Doing fallback to local v4 address.";
+                        resultAddress = DEFAULT_LOCAL_ADDRESS;
                     } else {
-                        logTrace() << "Bound to address:" << userAddress;
+                        logInfo() << "Service:" << name << "bound to address:" << userAddress;
                         resultAddress = userAddress;
                     }
                 }
 
-                if (resultAddress.isEmpty()) {
-                    logDebug() << "No reliable address found, fallback to localhost";
-                    ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_SYSTEM_ADDRESS);
+                if (resultAddress.trimmed().isEmpty()) {
+                    logDebug() << "No address. Doing fallback to local host address for improved security.";
+                    ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
                 } else {
                     ccont = ccont.replace("SERVICE_ADDRESS", resultAddress); /* replace with user address content */
                 }
 
-                logDebug() << "Set address of domain " << userDomain << " as wildcard address: " << DEFAULT_WILDCARD_ADDRESS;
-                ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS); /* replace with user address content */
+                // logDebug() << "Set address of domain " << userDomain << " as wildcard address: " << DEFAULT_WILDCARD_ADDRESS;
+                // ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS); /* replace with user address content */
             }
         } else {
-            logDebug() << "Filling address with igniter value:" << address;
+            logInfo() << "Setting igniter address:" << address;
             ccont = ccont.replace("SERVICE_ADDRESS", address);
         }
 
