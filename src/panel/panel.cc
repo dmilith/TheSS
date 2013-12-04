@@ -14,7 +14,10 @@ Panel::Panel(QString user, QDir home, QDir ignitersDir):
     getOrCreateDir(ignitersDir.path());
 
     eventsManager = new SvdFileEventsManager();
-    eventsManager->registerFile(home.path() + SOFTWARE_DATA_DIR);
+    if (getuid() == 0)
+        eventsManager->registerFile(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR);
+    else
+        eventsManager->registerFile(home.path() + SOFTWARE_DATA_DIR);
 
     connect(eventsManager, SIGNAL(directoryChanged(QString)), this, SLOT(onDirectoryChanged(QString)));
     // connect(eventsManager, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
@@ -41,6 +44,8 @@ void Panel::refresh(){
 
 void Panel::refreshServicesList() {
     QDir dir(home.absolutePath() + "/" + QString(SOFTWARE_DATA_DIR));
+    if (getuid() == 0)
+        dir = QDir(QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR));
     QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoDot);
 
     Q_FOREACH(auto f, list){
@@ -117,12 +122,17 @@ void Panel::gracefullyTerminate() {
 }
 
 void Panel::shutdown() {
-    touch(home.absoluteFilePath(DEFAULT_SS_SHUTDOWN_FILE));
+    if (getuid() == 0)
+        touch(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
+    else
+        touch(home.absoluteFilePath(DEFAULT_SS_SHUTDOWN_FILE));
 }
 
 QString Panel::addService(QString name) {
     QString status;
-    QDir dir(home.absolutePath() + "/" + QString(SOFTWARE_DATA_DIR) + "/" + name);
+    QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + "/" + name);
+    if (getuid() == 0)
+        dir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/" + name);
 
     if(!dir.exists()){ // service isn't already initialized
             auto all = availableServices();

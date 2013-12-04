@@ -451,7 +451,7 @@ void PanelGui::key(int ch){
                 QString name = servicesList->currentItem()->name;
                 QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
                 if (getuid() == 0) {
-                    prefixPath = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + name;
+                    prefixPath = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/" + name;
                 }
                 QString domainFilePath = prefixPath + QString(DEFAULT_SERVICE_DOMAIN_FILE);
                 QString domain = newEntry();
@@ -496,7 +496,7 @@ void PanelGui::key(int ch){
                 QString basePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
                 QString prefixPath = basePath + "/" + name;
                 if (getuid() == 0) {
-                    basePath = QString(SYSTEMUSERS_HOME_DIR) + SOFTWARE_DATA_DIR;
+                    basePath = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR;
                     prefixPath = basePath + "/" + name;
                 }
 

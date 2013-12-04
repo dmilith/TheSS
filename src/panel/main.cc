@@ -46,8 +46,8 @@ int main(int argc, char *argv[]) {
     QString ignitersPrefix = "/Igniters/Services";
     QDir ignitersDir(home + ignitersPrefix);
     if (getuid() == 0) { /* case when super user is running panel */
-        homeDir = QDir(QString(SYSTEMUSERS_HOME_DIR));
-        ignitersDir = QDir(SYSTEMUSERS_HOME_DIR + ignitersPrefix);
+        homeDir = QDir(QString(SYSTEM_USERS_DIR));
+        ignitersDir = QDir(SYSTEM_USERS_DIR + ignitersPrefix);
     }
 
 
