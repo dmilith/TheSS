@@ -2,10 +2,9 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.62",
+    "formatVersion": "0.64",
 
 /* defines name of entry in ~/SoftwareData/ */
-/* use special Sofin definition "Builtin" to install no-op package */
     "name": "No-Name",
 
     "domain": "",
@@ -19,8 +18,8 @@
 /* defines disk space check. By default user has to have at least 1 GiB free disk space */
     "minimumRequiredDiskSpace": 0,
 
-/* defines name of software available in Sofin definitions */
-    "softwareName": "No-Name",
+/* defines name of software available in Sofin definitions. Default - Builtin is a way of defining igniters for software already installed, or available outside of Sofin */
+    "softwareName": "Builtin",
 
 /* defines name of service that's parent to current service (dependency model helper) */
     "parentService": "",
