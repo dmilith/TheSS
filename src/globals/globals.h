@@ -30,7 +30,7 @@
         #define CLOCK_REALTIME REALTIME_CLOCK
         #define DEFAULT_DEATH_WATCHER_PAUSE 500000 /* .5 seconds by default for developer machine */
     #else
-        #define DEFAULT_DEATH_WATCHER_PAUSE 4500000 /* 4.5 seconds by default for production */
+        #define DEFAULT_DEATH_WATCHER_PAUSE 9000000 /* 9 seconds by default for production */
     #endif
 
     #define DEFAULT_USER_UID 501
