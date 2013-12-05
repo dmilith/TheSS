@@ -366,28 +366,28 @@ void TestLibrary::testWebAppDetection() {
 }
 
 
-void TestLibrary::testWebAppDeployer() {
+// void TestLibrary::testWebAppDeployer() {
 
-    QString testDomain = "test.my.local.domain";
-    QDir().mkdir(getWebAppsDir() + "/" + testDomain);
-    touch(getWebAppsDir() + "/" + testDomain + "/package.json");
+//     QString testDomain = "test.my.local.domain";
+//     QDir().mkdir(getWebAppsDir() + "/" + testDomain);
+//     touch(getWebAppsDir() + "/" + testDomain + "/package.json");
 
-    auto deployer = new SvdWebAppDeployer(testDomain);
-    QVERIFY(deployer->getType() == NodeSite);
-    QVERIFY(deployer->getTypeName() == "Node");
-    delete deployer;
+//     auto deployer = new SvdWebAppDeployer(testDomain);
+//     QVERIFY(deployer->getType() == NodeSite);
+//     QVERIFY(deployer->getTypeName() == "Node");
+//     delete deployer;
 
-    testDomain = "test.żółw.pl";
-    QDir().mkdir(getWebAppsDir() + "/" + testDomain);
-    touch(getWebAppsDir() + "/" + testDomain + "/index.html");
+//     testDomain = "test.żółw.pl";
+//     QDir().mkdir(getWebAppsDir() + "/" + testDomain);
+//     touch(getWebAppsDir() + "/" + testDomain + "/index.html");
 
-    QVERIFY(QDir().exists(getWebAppsDir() + "/test.żółw.pl"));
-    deployer = new SvdWebAppDeployer(testDomain);
-    QVERIFY(deployer->getType() == StaticSite);
-    QVERIFY(deployer->getTypeName() == "Static");
-    delete deployer;
+//     QVERIFY(QDir().exists(getWebAppsDir() + "/test.żółw.pl"));
+//     deployer = new SvdWebAppDeployer(testDomain);
+//     QVERIFY(deployer->getType() == StaticSite);
+//     QVERIFY(deployer->getTypeName() == "Static");
+//     delete deployer;
 
-}
+// }
 
 
 void TestLibrary::testCrontabEntry() {

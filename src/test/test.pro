@@ -31,7 +31,6 @@ SOURCES += ../service_spawner/service_config.cc \
            ../service_spawner/service.cc \
            ../death_watch/death_watch.cc \
            ../service_spawner/cron_entry.cc \
-           ../deployer/webapp_deployer.cc \
            ../deployer/webapp_types.cc \
            TestLibrary.cc
 

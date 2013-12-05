@@ -24,9 +24,7 @@ HEADERS   += ../service_spawner/service.h \
              ../service_spawner/cron_entry.h \
              ../service_spawner/logger.h \
              ../notifications/notifications.h \
-             webapp_deployer.h \
              webapp_types.h \
-             webapp_watcher.h \
              deployer.h
 SOURCES   += ../service_spawner/service.cc \
              ../service_spawner/data_collector.cc \
@@ -40,9 +38,7 @@ SOURCES   += ../service_spawner/service.cc \
              ../service_spawner/cron_entry.cc \
              ../service_spawner/logger.cc \
              ../notifications/notifications.cc \
-             webapp_deployer.cc \
              webapp_types.cc \
-             webapp_watcher.cc \
              deployer.cc
 LIBS      += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a ../libquazip.a -lz
 TARGET    = ../../bin/svddeployer
