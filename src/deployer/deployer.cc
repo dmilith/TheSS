@@ -73,28 +73,48 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     logDebug() << "Current release:" << latestRelease;
-    auto appDetector = new WebAppTypeDetector(servicePath + "/releases/" + latestRelease);
+    auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
+    auto appDetector = new WebAppTypeDetector(latestReleaseDir);
     auto appType = appDetector->getType();
     auto typeName = appDetector->typeName;
     logDebug() << "Detected application type:" << typeName;
     delete appDetector;
 
     /* do app type specific action */
+    SvdProcess *clne = new SvdProcess("create_environment", getuid(), false);
     QString envEntriesString = "";
     switch (appType) {
-        case StaticSite: {} break;
+        case StaticSite: {
+            clne->spawnProcess("touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+
+        } break;
+
 
         case UnicornRailsSite: {
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
+            logInfo() << "Installing bundle for Unicorn Rails Site";
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+
         } break;
+
 
         case RailsSite: {
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
+            logInfo() << "Installing bundle for Rails Site";
+            clne->spawnProcess("cd " + latestReleaseDir + " && bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            logInfo() << "Building assets";
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+
         } break;
 
-        case NodeSite: {} break;
+
+        case NodeSite: {
+            logInfo() << "Installing npm modules for Nodejs Site";
+            clne->spawnProcess("cd " + latestReleaseDir + " && npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+        } break;
+
 
         case NoType: {
             logError() << "No web application detected in service directory:" << servicePath;
@@ -102,10 +122,35 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         } break;
     }
+    clne->waitForFinished(-1);
+
+    logInfo() << "Invoking bin/build of project";
+    clne->spawnProcess("cd " + latestReleaseDir + " && bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
 
     /* write to service env file */
     QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
     writeToFile(envFilePath, envEntriesString);
+
+    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
+    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
+    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
+    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
+    getOrCreateDir(latestReleaseDir + "/public");
+    logInfo() << "Purging app release dir";
+    removeDir(latestReleaseDir + "/log");
+    removeDir(latestReleaseDir + "/tmp");
+
+    logInfo() << "Symlinking shared directory in current release";
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/config config >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->deleteLater();
 }
 
 
@@ -265,6 +310,7 @@ int main(int argc, char *argv[]) {
     //     /* Setting up user watchers */
     //     new SvdUserWatcher();
     // }
+
     logInfo() << "Deploy successful.";
     return EXIT_SUCCESS;
     // return app.exec();
