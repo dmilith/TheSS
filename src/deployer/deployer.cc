@@ -52,7 +52,7 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 }
 
 
-void installDependencies(QString& serviceName, QString& domain) {
+void installDependencies(QString& serviceName) {
     /* setting up service domain */
     SvdProcess *clne = new SvdProcess("install_dependencies", getuid(), false);
     QString servicePath = getServiceDataDir(serviceName);
@@ -95,7 +95,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
 
         case NodeSite: {} break;
-        case NoType: {} break;
+
+        case NoType: {
+            logError() << "No web application detected in service directory:" << servicePath;
+            raise(SIGTERM);
+
+        } break;
     }
 
     /* write to service env file */
@@ -250,7 +255,7 @@ int main(int argc, char *argv[]) {
     QString repositoryPath = repositoryRootPath + serviceName + ".git";
 
     cloneRepository(repositoryPath, serviceName, branch);
-    installDependencies(serviceName, domain);
+    installDependencies(serviceName);
     createEnvironmentFiles(serviceName, domain, stage);
 
     logInfo() << "Deploying app" << serviceName << "from repository:" << repositoryPath;
