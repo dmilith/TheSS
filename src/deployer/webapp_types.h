@@ -9,7 +9,7 @@
 #define __WEBAPP_TYPES__
 
 
-#include "utils.h"
+#include "../service_spawner/utils.h"
 
 
 enum WebAppTypes {
