@@ -12,6 +12,8 @@ if [ "$(uname)" = "Darwin" ]; then
     make distclean
     qmake -spec darwin-g++ IRCNotify.pro
     make distclean
+    qmake -spec darwin-g++ WAD.pro
+    make distclean
 else
     qmake Notifications.pro
     make distclean
@@ -22,6 +24,8 @@ else
     qmake TheSS.pro
     make distclean
     qmake IRCNotify.pro
+    make distclean
+    qmake WAD.pro
     make distclean
 fi
 

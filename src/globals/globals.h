@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.64.6"
+    #define APP_VERSION "0.66.0"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -47,6 +47,8 @@
     #define DEFAULT_WEBAPPS_DIR "/WebApps"
     #define SOFTWARE_DATA_DIR "/SoftwareData"
     #define SYSTEM_USERS_DIR "/SystemUsers"
+    #define DEFAULT_GIT_REPOSITORY_DIR "/.cache/repositories/"
+    #define DEPLOY_LATEST_RELEASE_FILE "/latest.release"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
     #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "/Igniters/Default")
     #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "/Igniters/Services")
