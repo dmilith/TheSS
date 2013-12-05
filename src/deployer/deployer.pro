@@ -26,7 +26,8 @@ HEADERS   += ../service_spawner/service.h \
              ../notifications/notifications.h \
              webapp_deployer.h \
              webapp_types.h \
-             webapp_watcher.h
+             webapp_watcher.h \
+             deployer.h
 SOURCES   += ../service_spawner/service.cc \
              ../service_spawner/data_collector.cc \
              ../service_spawner/process.cc \

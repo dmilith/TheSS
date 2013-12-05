@@ -48,7 +48,6 @@
     #define SOFTWARE_DATA_DIR "/SoftwareData"
     #define SYSTEM_USERS_DIR "/SystemUsers"
     #define DEFAULT_GIT_REPOSITORY_DIR "/.cache/repositories/"
-    #define DEPLOY_LATEST_RELEASE_FILE "/latest.release"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
     #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "/Igniters/Default")
     #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "/Igniters/Services")
@@ -57,6 +56,7 @@
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
     #define DEFAULT_SYSTEM_DOMAIN "localhost"
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
+    #define DEFAULT_SERVICE_ENV_FILE "/service.env"
     #define DEFAULT_SERVICE_LOG_FILE "/service.log"
 
     /* triggers */
@@ -88,6 +88,8 @@
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
+    #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/service.latest.release"
+    #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous.release"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
 
     /* global definitions */

@@ -15,9 +15,10 @@
 #include "../service_spawner/service_config.h"
 #include "../service_spawner/service_watcher.h"
 #include "../service_spawner/user_watcher.h"
+#include "deployer.h"
 
 
-void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& stage) {
+void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch) {
     if (not QDir().exists(sourceRepositoryPath)) {
         logError() << "No source git repository found:" << sourceRepositoryPath;
         raise(SIGTERM);
@@ -37,7 +38,8 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
         "&& cd " + servicePath + "/releases/${DATE} " + " 2>&1 " +
         "&& git checkout -b " + branch + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + /* branch might already exists */
         "; git pull origin " + branch + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
-        "&& printf \"${DATE}\" > " + servicePath + DEPLOY_LATEST_RELEASE_FILE +
+        "; cat " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE + " > " + servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE +
+        "; printf \"${DATE}\" > " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE +
         "&& printf \"Repository update successful in release ${DATE}\" >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ";
     logDebug() << "COMMAND:" << command;
 
@@ -46,6 +48,59 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
     linkFile->close();
     linkFile->deleteLater();
     logInfo() << "Web app:" << serviceName << "cloned on branch:" << branch;
+    clne->deleteLater();
+}
+
+
+void installDependencies(QString& serviceName, QString& domain) {
+    /* setting up service domain */
+    SvdProcess *clne = new SvdProcess("install_dependencies", getuid(), false);
+    QString servicePath = getServiceDataDir(serviceName);
+    logInfo() << "Installing service dependencies";
+    clne->spawnProcess("cd " + servicePath + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->deleteLater();
+}
+
+
+void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage) {
+    logInfo() << "Creating app environment";
+
+    QString servicePath = getServiceDataDir(serviceName);
+    QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAIN_FILE;
+    logDebug() << "Writing domain:" << domain << "to file:" << domainFilePath;
+    writeToFile(domainFilePath, domain);
+
+    auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
+    logDebug() << "Current release:" << latestRelease;
+    auto appDetector = new WebAppTypeDetector(servicePath + "/releases/" + latestRelease);
+    auto appType = appDetector->getType();
+    auto typeName = appDetector->typeName;
+    logDebug() << "Detected application type:" << typeName;
+    delete appDetector;
+
+    /* do app type specific action */
+    QString envEntriesString = "";
+    switch (appType) {
+        case StaticSite: {} break;
+
+        case UnicornRailsSite: {
+            envEntriesString += "RAILS_ENV=" + stage + "\n";
+            envEntriesString += "RAKE_ENV=" + stage + "\n";
+        } break;
+
+        case RailsSite: {
+            envEntriesString += "RAILS_ENV=" + stage + "\n";
+            envEntriesString += "RAKE_ENV=" + stage + "\n";
+        } break;
+
+        case NodeSite: {} break;
+        case NoType: {} break;
+    }
+
+    /* write to service env file */
+    QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+    writeToFile(envFilePath, envEntriesString);
 }
 
 
@@ -193,7 +248,11 @@ int main(int argc, char *argv[]) {
     QString repositoryRootPath = QString(getenv("HOME")) + DEFAULT_GIT_REPOSITORY_DIR;
     getOrCreateDir(repositoryRootPath);
     QString repositoryPath = repositoryRootPath + serviceName + ".git";
-    cloneRepository(repositoryPath, serviceName, branch, stage);
+
+    cloneRepository(repositoryPath, serviceName, branch);
+    installDependencies(serviceName, domain);
+    createEnvironmentFiles(serviceName, domain, stage);
+
     logInfo() << "Deploying app" << serviceName << "from repository:" << repositoryPath;
     //     logDebug() << "Checking user directory priviledges";
     //     setUserDirPriviledges(getHomeDir());
@@ -201,6 +260,7 @@ int main(int argc, char *argv[]) {
     //     /* Setting up user watchers */
     //     new SvdUserWatcher();
     // }
-
-    return app.exec();
+    logInfo() << "Deploy successful.";
+    return EXIT_SUCCESS;
+    // return app.exec();
 }
