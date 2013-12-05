@@ -6,8 +6,8 @@
 #include "../service_spawner/utils.h"
 #include "../service_spawner/service.h"
 #include "../service_spawner/process.h"
-#include "../service_spawner/webapp_types.h"
-#include "../service_spawner/webapp_deployer.h"
+#include "../deployer/webapp_types.h"
+#include "../deployer/webapp_deployer.h"
 
 #include <QObject>
 #include <QtTest/QtTest>

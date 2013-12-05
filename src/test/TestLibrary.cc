@@ -88,7 +88,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(config->schedulerActions.length() == 0);
     QVERIFY(config->watchPort == true);
     QVERIFY(config->alwaysOn == true);
-    QVERIFY(config->resolveDomain == true);
+    QVERIFY(config->resolveDomain == false);
     delete config;
 
     config = new SvdServiceConfig("Redis");
@@ -98,7 +98,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(config->install->commands == "sofin get redis");
     QVERIFY(config->watchPort == true);
     QVERIFY(config->alwaysOn == true);
-    QVERIFY(config->resolveDomain == true);
+    QVERIFY(config->resolveDomain == false);
     delete config;
 
     config = new SvdServiceConfig("Mosh");
@@ -107,7 +107,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(config->install->commands == "sofin get mosh");
     QVERIFY(config->watchPort == false);
     QVERIFY(config->alwaysOn == false);
-    QVERIFY(config->resolveDomain == true);
+    QVERIFY(config->resolveDomain == false);
     delete config;
 }
 
