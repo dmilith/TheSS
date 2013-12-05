@@ -21,9 +21,6 @@ HEADERS   += service.h \
              ../cutelogger/Logger.h \
              ../cutelogger/ConsoleAppender.h \
              ../cutelogger/FileAppender.h \
-             webapp_deployer.h \
-             webapp_types.h \
-             webapp_watcher.h \
              cron_entry.h \
              logger.h \
              ../notifications/notifications.h
@@ -35,9 +32,6 @@ SOURCES   += service.cc \
              service_watcher.cc \
              user_watcher.cc \
              file_events_manager.cc \
-             webapp_deployer.cc \
-             webapp_types.cc \
-             webapp_watcher.cc \
              ../death_watch/death_watch.cc \
              service_spawner.cc \
              cron_entry.cc \
