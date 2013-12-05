@@ -410,7 +410,7 @@ void SvdService::installSlot() {
 void SvdService::reConfigureSlot(bool withDeps) {
     notification("Performing reconfiguration and restart of service: " + name, NOTIFY);
     auto config = new SvdServiceConfig(name);
-    QString configuredIndicator = config->prefixDir() + "/.configured";
+    QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE;
     QFile::remove(configuredIndicator);
     config->deleteLater();
     emit configureSlot();
@@ -432,7 +432,7 @@ void SvdService::configureSlot() {
     logDebug() << "Invoked configure slot for service:" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE;
-    QString configuredIndicator = config->prefixDir() + "/.configured";
+    QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
     } else if (QFile::exists(configuredIndicator)) {
@@ -451,7 +451,7 @@ void SvdService::configureSlot() {
             QString msg = name + " failed in configure hook. exp: '" + config->configure->expectOutput + "'";
             notification(msg, ERROR);
         } else
-            touch(config->prefixDir() + "/.configured");
+            touch(config->prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE);
 
         logTrace() << "After process configure execution:" << name;
         process->deleteLater();
