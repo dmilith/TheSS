@@ -416,5 +416,6 @@ int main(int argc, char *argv[]) {
 
     logInfo() << "Deploy successful. Cleaning deploying state";
     QFile::remove(getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE);
+    QFile::remove(lockName);
     return EXIT_SUCCESS;
 }
