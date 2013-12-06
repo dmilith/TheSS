@@ -84,6 +84,7 @@
     #define DEFAULT_SERVICE_CONFIGURING_FILE "/.configuring"
     #define DEFAULT_SERVICE_RELOADING_FILE "/.reloading"
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
+    #define DEFAULT_SERVICE_DEPLOYING_FILE "/.deploying"
     #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
     #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
