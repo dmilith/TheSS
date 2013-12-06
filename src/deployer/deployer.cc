@@ -126,8 +126,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString databaseName = serviceName + "-" + stage;
             QString database;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
+            QString deps = "";
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
-                QString deps = readFileContents(depsFile).trimmed();
+                deps = readFileContents(depsFile).trimmed();
 
                 if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
                     logInfo() << "Detected Postgresql dependency in file:" << depsFile;
@@ -164,8 +165,26 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            logInfo() << "Generating igniter"; // TODO: generate igniter from basic data available, which is enough to do so
+            QStringList appDependencies = deps.split("\n");
+            logDebug() << "Gathering dependencies:" << appDependencies;
+            QString jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, \"dependencies\": [\"";
+            for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
+                QString dep = appDependencies.at(indx);
+                dep[0] = dep.at(0).toUpper();
+                jsonResult += dep + "\", \"";
+            }
+            QString last = appDependencies.at(appDependencies.size() - 1);
+            last[0] = last.at(0).toUpper();
+            jsonResult += last + "\"]}";
+            logDebug() << "Generated Igniter JSON:" << jsonResult;
 
+            /* write igniter to user igniters */
+            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+            logInfo() << "Generating igniter:" << igniterFile;
+            writeToFile(igniterFile, jsonResult);
+
+            logInfo() << "Setting up autostart of service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
             logInfo() << "Launching service";
             touch(servicePath + START_TRIGGER_FILE); // XXX: igniter itself should do nothing here
