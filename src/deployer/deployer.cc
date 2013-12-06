@@ -183,7 +183,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     clne->waitForFinished(-1);
 
     /* write to service env file */
-    envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE;
+    envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
     envEntriesString += "RAILS_ENV=" + stage + "\n";
     envEntriesString += "RAKE_ENV=" + stage + "\n";
     QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
