@@ -38,18 +38,18 @@ WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
             case StaticSite:
                 this->typeName = "Static";
                 filesThatShouldExist << "/index.html";
-                filesThatShouldNotExist << "/package.json" << "/Gemfile";
+                filesThatShouldNotExist << "/package.json" << "/Gemfile" << "/Rakefile" << "/Procfile";
                 break;
 
-            case UnicornRailsSite:
-                this->typeName = "RailsUnicorn";
-                filesThatShouldExist << "/config/unicorn.rb" << "/Gemfile" << "/Rakefile";
-                filesThatShouldNotExist << "/index.html";
-                break;
+            // case UnicornRubySite:
+            //     this->typeName = "RailsUnicorn";
+            //     filesThatShouldExist << "/config/unicorn.rb" << "/Gemfile" << "/Rakefile";
+            //     filesThatShouldNotExist << "/index.html";
+            //     break;
 
-            case RailsSite:
-                this->typeName = "Rails";
-                filesThatShouldExist << "/config/boot.rb" << "/Gemfile" << "/Rakefile";
+            case RubySite:
+                this->typeName = "Ruby";
+                filesThatShouldExist << "/Gemfile" << "/Rakefile"; // << "/config/boot.rb"
                 filesThatShouldNotExist << "/index.html";
                 break;
 
