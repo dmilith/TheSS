@@ -213,7 +213,8 @@ int main(int argc, char *argv[]) {
     uint uid = getuid();
 
     /* web app name is simultanously a git repository name: */
-    QString serviceName = "", stage = "staging", branch = "master", domain = "local.dev"; // appName.local.dev domain always points to 127.0.0.1, but will be almost valid TLD for services resolving domains.
+    QString serviceName = "", stage = "staging", branch = "master", domain = QString(getenv("USER")) + ".dev"; // appName.env[USER].dev domain always points to 127.0.0.1, but will be almost valid TLD for services resolving domains.
+
 
     bool debug = true, trace = false;
     for (int i = 1; i < args.size(); ++i) {
