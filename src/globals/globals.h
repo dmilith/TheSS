@@ -93,6 +93,9 @@
     #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous.release"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
 
+    #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
+    #define DEFAULT_SSL_CA_FILE "/cacert.pem"
+
     /* global definitions */
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"
     #define NOTIFICATIONS_DATA_DIR "/.notifications/"
