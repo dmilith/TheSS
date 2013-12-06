@@ -90,13 +90,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
 
 
-        case UnicornRailsSite: {
-            envEntriesString += "RAILS_ENV=" + stage + "\n";
-            envEntriesString += "RAKE_ENV=" + stage + "\n";
-            logInfo() << "Installing bundle for Unicorn Rails Site";
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
-
-        } break;
+        case RubySite: {
 
 
         case RailsSite: {
