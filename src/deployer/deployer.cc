@@ -123,7 +123,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->waitForFinished(-1);
 
             /* generate database.yml for Ruby app */
-            QString depsFile = latestReleaseDir + "/.dependencies";
+            QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
                 QString deps = readFileContents(depsFile).trimmed();
 
