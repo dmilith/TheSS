@@ -96,17 +96,67 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case RubySite: {
+            logInfo() << "Preparing service to start";
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
+            getOrCreateDir(latestReleaseDir + "/public");
+            logInfo() << "Purging app release dir";
+            removeDir(latestReleaseDir + "/log");
+            removeDir(latestReleaseDir + "/tmp");
 
+            logInfo() << "Symlinking and copying shared directory in current release";
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
+                cd ../../shared/" + stage + "/config/ \n\
+                for i in *; do \n\
+                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
+                done \n\
+            ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-        case RailsSite: {
-            envEntriesString += "RAILS_ENV=" + stage + "\n";
-            envEntriesString += "RAKE_ENV=" + stage + "\n";
+            /* generate database.yml for Ruby app */
+            QString depsFile = latestReleaseDir + "/.dependencies";
+            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
+                QString deps = readFileContents(depsFile).trimmed();
+
+                if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
+                    logInfo() << "Detected Postgresql dependency in file:" << depsFile;
+                    QString content = stage + ": \n\
+  adapter: postgresql \n\
+  encoding: unicode \n\
+  database: " + serviceName + "-" + stage + " \n\
+  username: " + serviceName + "-" + stage + " \n\
+  pool: 5 \n\
+  port: <%= File.read(ENV['HOME'] + \"/SoftwareData/Postgresql/.ports/0\") %> \n\
+  host: <%= ENV['HOME'] + \"/SoftwareData/Postgresql/\" %> \n\
+";
+                    writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
+                }
+                if (deps.trimmed().toLower().contains("mysql")) {
+                    logInfo() << "Detected Mysql dependency in file:" << depsFile;
+                    writeToFile(depsFile, stage + ":"); // XXX: unfinished
+                }
+            }
+
+            QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
+            logInfo() << "Gathering SSL CA certs from:" << cacertLocation;
+            clne->spawnProcess("cd " + servicePath + " && curl -C - -L -O " + cacertLocation + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1");
+            clne->waitForFinished(-1);
+
             logInfo() << "Installing bundle for Rails Site";
-            clne->spawnProcess("cd " + latestReleaseDir + " && bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            getOrCreateDir(servicePath + "/bundle");
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " bundle install --path " + servicePath + "/bundle --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
             clne->waitForFinished(-1);
+
             logInfo() << "Building assets";
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
             clne->waitForFinished(-1);
 
         } break;
@@ -127,32 +177,17 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
     }
 
-    logInfo() << "Invoking bin/build of project";
-    clne->spawnProcess("cd " + latestReleaseDir + " && bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    logInfo() << "Invoking bin/build of project (if exists)";
+    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
 
     /* write to service env file */
+    envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE;
+    envEntriesString += "RAILS_ENV=" + stage + "\n";
+    envEntriesString += "RAKE_ENV=" + stage + "\n";
     QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
     writeToFile(envFilePath, envEntriesString);
 
-    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
-    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
-    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
-    getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
-    getOrCreateDir(latestReleaseDir + "/public");
-    logInfo() << "Purging app release dir";
-    removeDir(latestReleaseDir + "/log");
-    removeDir(latestReleaseDir + "/tmp");
-
-    logInfo() << "Symlinking shared directory in current release";
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-    clne->waitForFinished(-1);
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/config config >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-    clne->waitForFinished(-1);
-    clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-    clne->waitForFinished(-1);
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-    clne->waitForFinished(-1);
     clne->deleteLater();
 }
 
