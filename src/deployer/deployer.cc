@@ -57,7 +57,10 @@ void installDependencies(QString& serviceName) {
     SvdProcess *clne = new SvdProcess("install_dependencies", getuid(), false);
     QString servicePath = getServiceDataDir(serviceName);
     logInfo() << "Installing service dependencies";
-    clne->spawnProcess("cd " + servicePath + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
+    auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
+
+    clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
     clne->deleteLater();
 }
@@ -74,6 +77,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     logDebug() << "Current release:" << latestRelease;
     auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
+    logDebug() << "Release path:" << latestReleaseDir;
     auto appDetector = new WebAppTypeDetector(latestReleaseDir);
     auto appType = appDetector->getType();
     auto typeName = appDetector->typeName;
