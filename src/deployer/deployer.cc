@@ -124,12 +124,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
+            QString database;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
                 QString deps = readFileContents(depsFile).trimmed();
 
                 if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
                     logInfo() << "Detected Postgresql dependency in file:" << depsFile;
+                    database = "Postgresql";
                     QString content = stage + ": \n\
   adapter: postgresql \n\
   encoding: unicode \n\
@@ -143,6 +145,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 }
                 if (deps.trimmed().toLower().contains("mysql")) {
                     logInfo() << "Detected Mysql dependency in file:" << depsFile;
+                    database = "Mysql";
                     writeToFile(depsFile, stage + ":"); // XXX: unfinished
                 }
             }
@@ -161,6 +164,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
+            logInfo() << "Generating igniter"; // TODO: generate igniter from basic data available, which is enough to do so
+
+
+            logInfo() << "Launching service";
+            touch(servicePath + START_TRIGGER_FILE); // XXX: igniter itself should do nothing here
+
             logInfo() << "Running database setup";
             clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
@@ -168,7 +177,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->waitForFinished(-1);
 
             logInfo() << "Running database migrations";
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake db:migrate db:seed >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake db:migrate db:seed >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_PID_FILE)) {
+                logWarn() << "Found already running app. Terminating."; // XXX: consider to use second port here in this case
+                deathWatch(readFileContents(servicePath + DEFAULT_SERVICE_PID_FILE).trimmed().toInt()); // XXX: unchecked
+            }
+
+            logInfo() << "Launching web worker";
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P " + servicePath + DEFAULT_SERVICE_PID_FILE + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &");
             clne->waitForFinished(-1);
 
         } break;
