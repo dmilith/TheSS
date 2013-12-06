@@ -30,12 +30,11 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
         getOrCreateDir(servicePath);
     }
 
-    QString linkFilePath = getOrCreateDir(servicePath + "/releases/");
-    QFile *linkFile = new QFile(linkFilePath + "/current");
     /* create "deploying" state */
     touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
     logInfo() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << " for service:" << serviceName;
 
+    getOrCreateDir(servicePath + "/releases/");
     QString command = QString("export DATE=\"app-$(date +%d%m%Y-%H%M%S)\"") +
         "&& cd " + servicePath + " > " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
         "&& git clone " + sourceRepositoryPath + " releases/${DATE}" + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
@@ -49,8 +48,6 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
     clne->spawnProcess(command);
     clne->waitForFinished(-1);
-    linkFile->close();
-    linkFile->deleteLater();
     logInfo() << "Web app:" << serviceName << "cloned on branch:" << branch;
     clne->deleteLater();
 }
