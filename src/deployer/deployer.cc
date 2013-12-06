@@ -90,20 +90,24 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     switch (appType) {
         case StaticSite: {
             clne->spawnProcess("touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            clne->waitForFinished(-1);
 
         } break;
 
 
         case RubySite: {
 
+            clne->waitForFinished(-1);
 
         case RailsSite: {
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
             logInfo() << "Installing bundle for Rails Site";
             clne->spawnProcess("cd " + latestReleaseDir + " && bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
             logInfo() << "Building assets";
             clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " bundle install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            clne->waitForFinished(-1);
 
         } break;
 
@@ -111,6 +115,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case NodeSite: {
             logInfo() << "Installing npm modules for Nodejs Site";
             clne->spawnProcess("cd " + latestReleaseDir + " && npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            clne->waitForFinished(-1);
+
         } break;
 
 
@@ -120,7 +126,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         } break;
     }
-    clne->waitForFinished(-1);
 
     logInfo() << "Invoking bin/build of project";
     clne->spawnProcess("cd " + latestReleaseDir + " && bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
