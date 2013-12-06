@@ -32,6 +32,10 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
     QString linkFilePath = getOrCreateDir(servicePath + "/releases/");
     QFile *linkFile = new QFile(linkFilePath + "/current");
+    /* create "deploying" state */
+    touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
+    logInfo() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << " for service:" << serviceName;
+
     QString command = QString("export DATE=\"app-$(date +%d%m%Y-%H%M%S)\"") +
         "&& cd " + servicePath + " > " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
         "&& git clone " + sourceRepositoryPath + " releases/${DATE}" + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
@@ -136,7 +140,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
   pool: 5 \n\
   port: <%= File.read(ENV['HOME'] + \"/SoftwareData/Postgresql/.ports/0\") %> \n\
   host: <%= ENV['HOME'] + \"/SoftwareData/Postgresql/\" %> \n\
-";
+"; // XXX: should contains latestRelease cause of potential database failure that might happen after db:migrate
                     writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
                 }
                 if (deps.trimmed().toLower().contains("mysql")) {
@@ -150,7 +154,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + servicePath + " && curl -C - -L -O " + cacertLocation + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1");
             clne->waitForFinished(-1);
 
-            logInfo() << "Installing bundle for Rails Site";
+            logInfo() << "Installing bundle for stage:" << stage << "of Rails Site"; // XXX: bundler should have own prefix for each stage
             getOrCreateDir(servicePath + "/bundle");
             clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " bundle install --path " + servicePath + "/bundle --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
             clne->waitForFinished(-1);
@@ -295,22 +299,10 @@ int main(int argc, char *argv[]) {
     logInfo() << "Deploying app: " << serviceName << "for stage:" << stage << "branch:" << branch << "at domain:" << domain;
 
     /* file lock setup */
-    QString lockName = getHomeDir() + "/." + serviceName + ".deploying.pid";
+    QString lockName = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE;
     if (QFile::exists(lockName)) {
-        bool ok;
-        QString aPid = readFileContents(lockName).trimmed();
-        uint pid = aPid.toInt(&ok, 10);
-        if (ok) {
-            if (pidIsAlive(pid) or pid == 0) { /* NOTE: if pid == 0 it means that SS is runned from SS root maintainer */
-                logError() << "WAD is already running.";
-                return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
-            } else
-                logDebug() << "No alive WAD pid found";
-
-        } else {
-            logWarn() << "Pid file is damaged or doesn't contains valid pid. File will be removed";
-            QFile::remove(lockName);
-        }
+        logError() << "WAD is already running.";
+        return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
     }
     logDebug() << "Lock name:" << lockName;
     writeToFile(lockName, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
@@ -341,7 +333,7 @@ int main(int argc, char *argv[]) {
     installDependencies(serviceName);
     createEnvironmentFiles(serviceName, domain, stage);
 
-    logInfo() << "Deploying app" << serviceName << "from repository:" << repositoryPath;
+    // logInfo() << "Deploying app" << serviceName << "from repository:" << repositoryPath;
     //     logDebug() << "Checking user directory priviledges";
     //     setUserDirPriviledges(getHomeDir());
 
@@ -349,7 +341,7 @@ int main(int argc, char *argv[]) {
     //     new SvdUserWatcher();
     // }
 
-    logInfo() << "Deploy successful.";
+    logInfo() << "Deploy successful. Cleaning deploying state";
+    QFile::remove(getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE);
     return EXIT_SUCCESS;
-    // return app.exec();
 }
