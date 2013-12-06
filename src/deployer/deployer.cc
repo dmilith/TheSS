@@ -215,6 +215,7 @@ int main(int argc, char *argv[]) {
     /* web app name is simultanously a git repository name: */
     QString serviceName = "", stage = "staging", branch = "master", domain = QString(getenv("USER")) + ".dev"; // appName.env[USER].dev domain always points to 127.0.0.1, but will be almost valid TLD for services resolving domains.
 
+    QStringList errors, warnings;
 
     bool debug = true, trace = false;
     for (int i = 1; i < args.size(); ++i) {
@@ -225,7 +226,15 @@ int main(int argc, char *argv[]) {
         }
         if (rxWebDomain.indexIn(args.at(i)) != -1 ) {
             if (i+1 < args.size()) {
-                domain = args.at(i+1);
+                if (args.at(i+1).length() >= 4) { // NOTE: a.io - minimal FQDN length is 4, but also check domain allowed characters
+                    QHostInfo info = QHostInfo::fromName(args.at(i+1)); /* XXX: NOTE: it's blocking and relies on DNS service available */
+                    if (info.error() == QHostInfo::NoError)
+                        domain = args.at(i+1);
+                    else
+                        errors << "Domain resolve failed for: " + args.at(i+1) + ". Cannot continue";
+
+                } else
+                    warnings << "Given domain name: " + args.at(i+1) + " seems to not be valid. Using standard one: " + domain;
             }
         }
         if (rxWebStage.indexIn(args.at(i)) != -1 ) {
@@ -235,7 +244,11 @@ int main(int argc, char *argv[]) {
         }
         if (rxWebAppName.indexIn(args.at(i)) != -1 ) {
             if (i+1 < args.size()) {
-                serviceName = args.at(i+1);
+                if (args.at(i+1).length() > 0)
+                    serviceName = args.at(i+1);
+                else
+                    errors << "Your service name is empty. Cannot continue";
+
             }
         }
         if (rxEnableDebug.indexIn(args.at(i)) != -1 ) {
@@ -287,6 +300,20 @@ int main(int argc, char *argv[]) {
             fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
         }
         new FileLoggerTimer(fileAppender);
+    }
+
+    /* print warnings and errors */
+    if (not warnings.isEmpty()) {
+        Q_FOREACH(QString warning, warnings) {
+            logWarn() << warning;
+        }
+    }
+
+    if (not errors.isEmpty()) {
+        Q_FOREACH(QString error, errors) {
+            logError() << error;
+        }
+        raise(SIGTERM);
     }
 
     if (serviceName.trimmed().isEmpty()) {
