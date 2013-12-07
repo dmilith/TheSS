@@ -20,19 +20,19 @@ inline QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString do
     switch (type) {
         case StaticSite:
             return "\n\
-    server { \n\
-        listen 80; \n\
-        server_name " + domain + "; \n\
-        root " + latestReleaseDir + "; \n\
-        access_log off; \n\
-        location / { \n\
-            index index.html index.htm; \n\
-            expires 30d; \n\
-        } \n\
-    }\n";
+server { \n\
+    listen 80; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "; \n\
+    access_log off; \n\
+    location / { \n\
+        index index.html index.htm; \n\
+        expires 30d; \n\
+    } \n\
+}\n";
 
         case RubySite:
-            return " \n\
+            return "\n\
 upstream " + serviceName + "-" + stage + " { \n\
     server 127.0.0.1:" + port + "; \n\
 } \n\
