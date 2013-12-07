@@ -32,7 +32,7 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
     /* create "deploying" state */
     touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
-    logInfo() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << " for service:" << serviceName;
+    logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << " for service:" << serviceName;
 
     getOrCreateDir(servicePath + "/releases/");
     QString command = QString("export DATE=\"app-$(date +%d%m%Y-%H%M%S)\"") +
@@ -127,6 +127,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString database;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             QString deps = "";
+            QStringList forbiddenSpawnDeps;
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
                 deps = readFileContents(depsFile).trimmed();
 
@@ -155,7 +156,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QStringList appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"dependencies\": [\"";
-            QStringList forbiddenSpawnDeps;
             forbiddenSpawnDeps << "ruby" << "node" << "python" << "python-legacy"; // XXX: hardcoded
 
             for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
@@ -164,7 +164,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     dep[0] = dep.at(0).toUpper();
                     jsonResult += dep + "\", \"";
                 } else {
-                    logWarn() << "Forbidden dependency:" << dep;
+                    logDebug() << "Forbidden dependency:" << dep;
                 }
             }
             QString last = appDependencies.at(appDependencies.size() - 1);
@@ -172,7 +172,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 last[0] = last.at(0).toUpper();
                 jsonResult += last + "\"],";
             } else {
-                logWarn() << "Forbidden dependency:" << last;
+                logDebug() << "Forbidden dependency:" << last;
                 jsonResult[jsonResult.length() - 1] = ' ';
                 jsonResult[jsonResult.length() - 2] = ' ';
                 jsonResult[jsonResult.length() - 3] = ' '; /* XXX: quick and dirty way */
@@ -211,8 +211,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + database + START_TRIGGER_FILE);
             }
             logInfo() << "Running database setup";
+            logDebug() << "Creating user:" << databaseName;
             clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
+            logDebug() << "Creating database:" << databaseName;
             clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
@@ -240,6 +242,7 @@ server { \n\
         } \n\
     } \n\
 } \n";
+            logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
             logInfo() << "Re-Launching service using newly generated igniter.";
@@ -296,14 +299,12 @@ int main(int argc, char *argv[]) {
     QRegExp rxWebStage("-s");
     QRegExp rxWebBranch("-b");
 
-    uint uid = getuid();
-
     /* web app name is simultanously a git repository name: */
     QString serviceName = "", stage = "staging", branch = "master", domain = QString(getenv("USER")) + ".dev"; // appName.env[USER].dev domain always points to 127.0.0.1, but will be almost valid TLD for services resolving domains.
 
     QStringList errors, warnings;
 
-    bool debug = true, trace = false;
+    bool debug = false, trace = false;
     for (int i = 1; i < args.size(); ++i) {
         if (rxWebBranch.indexIn(args.at(i)) != -1 ) {
             if (i+1 < args.size()) {
@@ -407,7 +408,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    logInfo() << "Deploying app: " << serviceName << "for stage:" << stage << "branch:" << branch << "at domain:" << domain;
+    logInfo() << "Deploying app:" << serviceName << "for stage:" << stage << "branch:" << branch << "at domain:" << domain;
 
     /* file lock setup */
     QString lockName = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE;
@@ -416,23 +417,14 @@ int main(int argc, char *argv[]) {
         return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
     }
     logDebug() << "Lock name:" << lockName;
-    writeToFile(lockName, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
+    writeToFile(lockName, QString::number(getpid()));
 
     signal(SIGINT, unixSignalHandler);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
-    if (uid == 0) {
+    if (getuid() == 0) {
         logError() << "Web deployments as root are not allowed a.t.m.";
     }
-    //     logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
-    //     setPublicDirPriviledges(getOrCreateDir(DEFAULT_PUBLIC_DIR));
-    //     setupDefaultVPNNetwork();
-
-    //     /* Setting up root watchers */
-    //     new SvdUserWatcher();
-
-    // } else {
-
 
     logInfo("Web App Deployer (WAD) v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
 
@@ -444,15 +436,7 @@ int main(int argc, char *argv[]) {
     installDependencies(serviceName);
     createEnvironmentFiles(serviceName, domain, stage, branch);
 
-    // logInfo() << "Deploying app" << serviceName << "from repository:" << repositoryPath;
-    //     logDebug() << "Checking user directory priviledges";
-    //     setUserDirPriviledges(getHomeDir());
-
-    //     /* Setting up user watchers */
-    //     new SvdUserWatcher();
-    // }
-
-    logInfo() << "Deploy successful. Cleaning deploying state";
+    logInfo() << "Deploy successful. Cleaning deploying state and locks";
     QFile::remove(getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE);
     QFile::remove(lockName);
     return EXIT_SUCCESS;
