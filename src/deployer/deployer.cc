@@ -129,8 +129,39 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QString envEntriesString = "";
     switch (appType) {
         case StaticSite: {
-            clne->spawnProcess("touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
-            clne->waitForFinished(-1);
+
+            QString jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, ";
+            jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
+
+            jsonResult += QString("\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+            /* write igniter to user igniters */
+            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+            logInfo() << "Generating igniter:" << igniterFile;
+            writeToFile(igniterFile, jsonResult);
+
+            logInfo() << "Setting up autostart of service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
+
+            logInfo() << "Generating http proxy configuration";
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString contents = " \n\
+server { \n\
+    listen 80; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "; \n\
+    access_log off; \n\
+    location / { \n\
+        index index.html index.htm; \n\
+        expires 30d; \n\
+    } \n\
+} \n";
+            logDebug() << "Generated proxy contents:" << contents;
+            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+
+            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+
+            logInfo() << "Re-Launching service using newly generated igniter.";
+            touch(servicePath + RESTART_TRIGGER_FILE);
 
         } break;
 
