@@ -68,8 +68,8 @@ void installDependencies(QString& serviceName) {
 
 
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
-    QStringList forbiddenSpawnDeps; /* dependencies forbidden to spawn */
-    forbiddenSpawnDeps << "ruby" << "node" << "python" << "python-legacy" << "imagemagick" << "graphicsmagick"; // XXX: hardcoded
+    QStringList allowedToSpawnDeps; /* dependencies allowed to spawn as independenc service */
+    allowedToSpawnDeps << "postgresql" << "mysql" << "redis" << "nginx" << "passenger"; // XXX: hardcoded
 
     QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
     QString deps = readFileContents(depsFile).trimmed();
@@ -82,7 +82,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
     /* filter forbiddens */
     for (int i = 0; i < appDependencies.size(); i++) {
         QString d1 = appDependencies.at(i);
-        if (forbiddenSpawnDeps.contains(d1))
+        if (not allowedToSpawnDeps.contains(d1))
             appDependencies[i] = "";
     }
     appDependencies.removeAll("");
