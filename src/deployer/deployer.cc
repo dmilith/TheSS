@@ -318,7 +318,7 @@ server { \n\
     }
 
     logInfo() << "Invoking bin/build of project (if exists)";
-    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
 
     /* write to service env file */
