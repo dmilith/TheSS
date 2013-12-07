@@ -120,14 +120,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logDebug() << "Release path:" << latestReleaseDir;
     auto appDetector = new WebAppTypeDetector(latestReleaseDir);
     auto appType = appDetector->getType();
-    auto typeName = appDetector->typeName;
-    logDebug() << "Detected application type:" << typeName;
+    QString envEntriesString = "";
+    logDebug() << "Detected application type:" << appDetector->typeName;
     delete appDetector;
 
     /* do app type specific action */
     SvdProcess *clne = new SvdProcess("create_environment", getuid(), false);
-    QString envEntriesString = "";
+
     switch (appType) {
+
         case StaticSite: {
 
             QString jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, ";
@@ -197,7 +198,7 @@ server { \n\
             QString database;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             QString deps = "";
-            QStringList forbiddenSpawnDeps;
+
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
                 deps = readFileContents(depsFile).trimmed();
 
@@ -225,30 +226,9 @@ server { \n\
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             QStringList appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
-            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"dependencies\": [\"";
-            forbiddenSpawnDeps << "ruby" << "node" << "python" << "python-legacy"; // XXX: hardcoded
+            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
+            jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
 
-            for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
-                QString dep = appDependencies.at(indx);
-                if (not forbiddenSpawnDeps.contains(dep)) {
-                    dep[0] = dep.at(0).toUpper();
-                    jsonResult += dep + "\", \"";
-                } else {
-                    logDebug() << "Forbidden dependency:" << dep;
-                }
-            }
-            QString last = appDependencies.at(appDependencies.size() - 1);
-            if (not forbiddenSpawnDeps.contains(last)) {
-                last[0] = last.at(0).toUpper();
-                jsonResult += last + "\"],";
-            } else {
-                logDebug() << "Forbidden dependency:" << last;
-                jsonResult[jsonResult.length() - 1] = ' ';
-                jsonResult[jsonResult.length() - 2] = ' ';
-                jsonResult[jsonResult.length() - 3] = ' '; /* XXX: quick and dirty way */
-                jsonResult += "],";
-            }
-            jsonResult += QString(" \"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
             jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=SERVICE_PREFIX" + DEFAULT_SSL_CA_FILE + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
 
             logDebug() << "Generated Igniter JSON:" << jsonResult;
@@ -293,7 +273,7 @@ server { \n\
             clne->waitForFinished(-1);
 
             logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/0").trimmed();
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = " \n\
 upstream " + serviceName + "-" + stage + " { \n\
     server 127.0.0.1:" + port + "; \n\
