@@ -30,7 +30,8 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PRE
         "commands": "
 printf \"
 worker_processes 8;
-# pid SERVICE_PREFIX/service.pid;
+pid SERVICE_PREFIX/service.pid;
+error_log SERVICE_PREFIX/service.log;
 events {
     worker_connections 1024;
 }
@@ -49,8 +50,9 @@ http {
     gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
 
     keepalive_timeout 270;
-    error_log SERVICE_PREFIX/service.log;
     server_names_hash_bucket_size 64;
+    access_log off;
+
     server {
         listen $(cat SERVICE_PREFIX/.ports/0);
         server_name SERVICE_DOMAIN;
@@ -60,8 +62,8 @@ http {
         }
     }
 
-    include /home/*/Public/*.conf;
-    include /Users/*/Public/*.conf;
+    include /home/*/SoftwareData/*/proxy.conf;
+    include /Users/*/SoftwareData/*/proxy.conf;
 }
 \" > SERVICE_PREFIX/service.conf
 "
@@ -69,31 +71,7 @@ http {
     "validate": {
         "commands": "
 test ! -d SERVICE_PREFIX/html && mkdir -p SERVICE_PREFIX/html && echo '<html>Hello I am Nginx and I am not configured yet!</html>' > SERVICE_PREFIX/html/index.html
-test ! -f SERVICE_PREFIX/service.conf && printf \"
-worker_processes 2;
-pid SERVICE_PREFIX/service.pid;
-events {
-    worker_connections 1024;
-}
-
-http {
-    include SERVICE_ROOT/conf/mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 270;
-    error_log SERVICE_PREFIX/service.log;
-    server {
-        listen $(cat SERVICE_PREFIX/.ports/0);
-        server_name SERVICE_DOMAIN;
-        location / {
-            root SERVICE_PREFIX/html;
-            index index.html index.htm;
-        }
-    }
-}
-\" > SERVICE_PREFIX/service.conf
-
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload
 ",
         "expectOutput": "test is successful"
     },
