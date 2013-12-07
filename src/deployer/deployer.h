@@ -68,6 +68,38 @@ inline QString nginxEntry(WebAppTypes type, QString latestReleaseDir) {
 }
 
 
+inline QString databaseYmlEntry(WebDatabase db, QString stage, QString databaseName) {
+    switch (db) {
+
+        case Postgresql:
+            return stage + ": \n\
+  adapter: postgresql \n\
+  encoding: unicode \n\
+  database: " + databaseName + " \n\
+  username: " + databaseName + " \n\
+  pool: 5 \n\
+  port: <%= File.read(ENV['HOME'] + \"/SoftwareData/Postgresql/.ports/0\") %> \n\
+  host: <%= ENV['HOME'] + \"/SoftwareData/Postgresql/\" %> \n\
+"; // XXX: should contains latestRelease cause of potential database failure that might happen after db:migrate
+
+        case Mysql:
+            return ""; // NOTE: NYI
+
+        case NoDB:
+            return "";
+
+    }
+}
+
+
+QString getDbName(WebDatabase db) {
+    switch (db) {
+        case Postgresql: return "Postgresql";
+        case Mysql: return "Mysql";
+        case NoDB: return "NoDB";
+    }
+}
+
 void installDependencies();
 void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& stage);
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);

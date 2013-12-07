@@ -186,7 +186,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
-            QString database;
+            WebDatabase database = NoDB;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             QString deps = "";
 
@@ -195,22 +195,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
                 if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
                     logInfo() << "Detected Postgresql dependency in file:" << depsFile;
-                    database = "Postgresql";
-                    QString content = stage + ": \n\
-  adapter: postgresql \n\
-  encoding: unicode \n\
-  database: " + databaseName + " \n\
-  username: " + databaseName + " \n\
-  pool: 5 \n\
-  port: <%= File.read(ENV['HOME'] + \"/SoftwareData/Postgresql/.ports/0\") %> \n\
-  host: <%= ENV['HOME'] + \"/SoftwareData/Postgresql/\" %> \n\
-"; // XXX: should contains latestRelease cause of potential database failure that might happen after db:migrate
+                    database = Postgresql;
+                    QString content = databaseYmlEntry(database, stage, databaseName);
                     writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
                 }
                 if (deps.trimmed().toLower().contains("mysql")) {
                     logInfo() << "Detected Mysql dependency in file:" << depsFile;
-                    database = "Mysql";
-                    writeToFile(depsFile, stage + ":"); // XXX: unfinished
+                    database = Mysql;
+                    QString content = databaseYmlEntry(database, stage, databaseName);
+                    writeToFile(depsFile, content);
                 }
             }
 
@@ -247,9 +240,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
-            if (database != "") { /* empty database means no database dependencies in web app */
-                logInfo() << "Launching database service:" << database;
-                touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + database + START_TRIGGER_FILE);
+            if (database != NoDB) { /* NoDB means no database dependencies in web app */
+                logInfo() << "Launching database service:" << getDbName(database);
+                touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database) + START_TRIGGER_FILE);
             }
             logInfo() << "Running database setup";
             logDebug() << "Creating user:" << databaseName;
