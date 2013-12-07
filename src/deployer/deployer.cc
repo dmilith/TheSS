@@ -220,6 +220,28 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake db:migrate db:seed >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
+            logInfo() << "Generating http proxy configuration";
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/0").trimmed();
+            QString contents = " \n\
+upstream " + serviceName + "-" + stage + " { \n\
+    server 127.0.0.1:" + port + "; \n\
+} \n\
+server { \n\
+    listen 80; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "/public; \n\
+    location / { \n\
+        proxy_set_header X-Real-IP $remote_addr; \n\
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
+        proxy_set_header Host $http_host; \n\
+        proxy_redirect off; \n\
+        if (!-f $request_filename) { \n\
+            proxy_pass http://" + serviceName + "-" + stage + "; \n\
+        } \n\
+    } \n\
+} \n";
+            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+
             logInfo() << "Re-Launching service using newly generated igniter.";
             touch(servicePath + RESTART_TRIGGER_FILE);
 

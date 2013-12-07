@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.66.3"
+    #define APP_VERSION "0.66.4"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -42,6 +42,7 @@
 
     #define SOFTWARE_DIR "/Software"
     #define LOGS_DIR "/Logs"
+    #define DEFAULT_PROXY_FILE "/proxy.conf"
     #define DEFAULT_PUBLIC_DIR "/Public"
     #define DEFAULT_USER_APPS_DIR "/Apps"
     #define DEFAULT_WEBAPPS_DIR "/WebApps"
