@@ -28,6 +28,6 @@
 
 void installDependencies();
 void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& stage);
-void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage);
+void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);
 
 #endif

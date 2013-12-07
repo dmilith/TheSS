@@ -67,7 +67,7 @@ void installDependencies(QString& serviceName) {
 }
 
 
-void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage) {
+void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
     logInfo() << "Creating app environment";
 
     QString servicePath = getServiceDataDir(serviceName);
@@ -151,44 +151,65 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 }
             }
 
-            QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
-            logInfo() << "Gathering SSL CA certs from:" << cacertLocation;
-            clne->spawnProcess("cd " + servicePath + " && curl -C - -L -O " + cacertLocation + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1");
-            clne->waitForFinished(-1);
-
-            logInfo() << "Installing bundle for stage:" << stage << "of Rails Site"; // XXX: bundler should have own prefix for each stage
-            getOrCreateDir(servicePath + "/bundle");
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " bundle install --path " + servicePath + "/bundle --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-
-            logInfo() << "Building assets";
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-
+            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             QStringList appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
-            QString jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, \"dependencies\": [\"";
+            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"dependencies\": [\"";
+            QStringList forbiddenSpawnDeps;
+            forbiddenSpawnDeps << "ruby" << "node" << "python" << "python-legacy"; // XXX: hardcoded
+
             for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
                 QString dep = appDependencies.at(indx);
-                dep[0] = dep.at(0).toUpper();
-                jsonResult += dep + "\", \"";
+                if (not forbiddenSpawnDeps.contains(dep)) {
+                    dep[0] = dep.at(0).toUpper();
+                    jsonResult += dep + "\", \"";
+                } else {
+                    logWarn() << "Forbidden dependency:" << dep;
+                }
             }
             QString last = appDependencies.at(appDependencies.size() - 1);
-            last[0] = last.at(0).toUpper();
-            jsonResult += last + "\"]}";
+            if (not forbiddenSpawnDeps.contains(last)) {
+                last[0] = last.at(0).toUpper();
+                jsonResult += last + "\"],";
+            } else {
+                logWarn() << "Forbidden dependency:" << last;
+                jsonResult[jsonResult.length() - 1] = ' ';
+                jsonResult[jsonResult.length() - 2] = ' ';
+                jsonResult[jsonResult.length() - 3] = ' '; /* XXX: quick and dirty way */
+                jsonResult += "],";
+            }
+            jsonResult += QString(" \"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
+            jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=SERVICE_PREFIX" + DEFAULT_SSL_CA_FILE + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
+            /* end of igniter creation code */
+
+            QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
+            logInfo() << "Gathering SSL CA certs from:" << cacertLocation << "if necessary.";
+            clne->spawnProcess("cd " + servicePath + " && test ! -f " + DEFAULT_SSL_CA_FILE + " && curl -C - -L -O " + cacertLocation + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1");
+            clne->waitForFinished(-1);
+
+            logInfo() << "Installing bundle for stage:" << stage << "of Rails Site";
+            getOrCreateDir(servicePath + "/bundle-" + stage);
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
+            logInfo() << "Building assets";
+            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
-            logInfo() << "Launching service";
-            touch(servicePath + START_TRIGGER_FILE); // XXX: igniter itself should do nothing here
-
+            if (database != "") { /* empty database means no database dependencies in web app */
+                logInfo() << "Launching database service:" << database;
+                touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + database + START_TRIGGER_FILE);
+            }
             logInfo() << "Running database setup";
             clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
@@ -199,14 +220,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake db:migrate db:seed >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_PID_FILE)) {
-                logWarn() << "Found already running app. Terminating."; // XXX: consider to use second port here in this case
-                deathWatch(readFileContents(servicePath + DEFAULT_SERVICE_PID_FILE).trimmed().toInt()); // XXX: unchecked
-            }
+            logInfo() << "Re-Launching service using newly generated igniter.";
+            touch(servicePath + RESTART_TRIGGER_FILE);
 
-            logInfo() << "Launching web worker";
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P " + servicePath + DEFAULT_SERVICE_PID_FILE + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &");
-            clne->waitForFinished(-1);
 
         } break;
 
@@ -404,7 +420,7 @@ int main(int argc, char *argv[]) {
 
     cloneRepository(repositoryPath, serviceName, branch);
     installDependencies(serviceName);
-    createEnvironmentFiles(serviceName, domain, stage);
+    createEnvironmentFiles(serviceName, domain, stage, branch);
 
     // logInfo() << "Deploying app" << serviceName << "from repository:" << repositoryPath;
     //     logDebug() << "Checking user directory priviledges";
