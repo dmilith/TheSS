@@ -295,6 +295,11 @@ server { \n\
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
+            logDebug() << "Appending ENV settings";
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "RAILS_ENV=" + stage + "\n";
+            envEntriesString += "RAKE_ENV=" + stage + "\n";
+
             logInfo() << "Re-Launching service using newly generated igniter.";
             touch(servicePath + RESTART_TRIGGER_FILE);
 
@@ -322,11 +327,10 @@ server { \n\
     clne->waitForFinished(-1);
 
     /* write to service env file */
-    envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
-    envEntriesString += "RAILS_ENV=" + stage + "\n";
-    envEntriesString += "RAKE_ENV=" + stage + "\n";
-    QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
-    writeToFile(envFilePath, envEntriesString);
+    if (not envEntriesString.isEmpty()) {
+        QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+        writeToFile(envFilePath, envEntriesString);
+    }
 
     clne->deleteLater();
 }
