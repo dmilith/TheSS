@@ -145,17 +145,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-            QString contents = " \n\
-server { \n\
-    listen 80; \n\
-    server_name " + domain + "; \n\
-    root " + latestReleaseDir + "; \n\
-    access_log off; \n\
-    location / { \n\
-        index index.html index.htm; \n\
-        expires 30d; \n\
-    } \n\
-} \n";
+            QString contents = nginxEntry(appType, latestReleaseDir);
+
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
@@ -274,24 +265,7 @@ server { \n\
 
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-            QString contents = " \n\
-upstream " + serviceName + "-" + stage + " { \n\
-    server 127.0.0.1:" + port + "; \n\
-} \n\
-server { \n\
-    listen 80; \n\
-    server_name " + domain + "; \n\
-    root " + latestReleaseDir + "/public; \n\
-    location / { \n\
-        proxy_set_header X-Real-IP $remote_addr; \n\
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
-        proxy_set_header Host $http_host; \n\
-        proxy_redirect off; \n\
-        if (!-f $request_filename) { \n\
-            proxy_pass http://" + serviceName + "-" + stage + "; \n\
-        } \n\
-    } \n\
-} \n";
+            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
