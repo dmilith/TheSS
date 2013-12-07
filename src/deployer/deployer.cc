@@ -67,9 +67,48 @@ void installDependencies(QString& serviceName) {
 }
 
 
-void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
-    logInfo() << "Creating app environment";
+QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
+    QStringList forbiddenSpawnDeps; /* dependencies forbidden to spawn */
+    forbiddenSpawnDeps << "ruby" << "node" << "python" << "python-legacy" << "imagemagick" << "graphicsmagick"; // XXX: hardcoded
 
+    QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
+    QString deps = readFileContents(depsFile).trimmed();
+
+    /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
+    QStringList appDependencies = deps.split("\n");
+    logDebug() << "Gathered dependencies:" << appDependencies << "of size:" << appDependencies.size();
+    QString jsonResult = "\"dependencies\": [";
+
+    /* filter forbiddens */
+    for (int i = 0; i < appDependencies.size(); i++) {
+        QString d1 = appDependencies.at(i);
+        if (forbiddenSpawnDeps.contains(d1))
+            appDependencies[i] = "";
+    }
+    appDependencies.removeAll("");
+
+    if (appDependencies.size() == 0) {
+        logInfo() << "Empty list of dependencies software, that acts, like some kind of a server.";
+        return jsonResult + "], "; /* return empty list */
+    }
+
+    for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
+        QString dep = "\"" + appDependencies.at(indx);
+        dep[0] = dep.at(0).toUpper();
+        jsonResult += dep + "\", ";
+    }
+
+    QString last = "\"" + appDependencies.at(appDependencies.size() - 1);
+    last[0] = last.at(0).toUpper();
+    jsonResult += last + "\"], ";
+    jsonResult += QString(" \"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
+    return jsonResult;
+}
+
+
+void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
+
+    logInfo() << "Creating app environment";
     QString servicePath = getServiceDataDir(serviceName);
     QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAIN_FILE;
     logDebug() << "Writing domain:" << domain << "to file:" << domainFilePath;
