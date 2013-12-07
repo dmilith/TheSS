@@ -20,6 +20,12 @@ enum WebAppTypes {
     NoType              = 0x05 /* NOTE: this one *must* be always last type */
 };
 
+enum WebDatabase {
+    Postgresql          = 0x01,
+    Mysql               = 0x02,
+
+    NoDB                = 0x05
+};
 
 class WebAppTypeDetector {
 
