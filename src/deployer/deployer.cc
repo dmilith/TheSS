@@ -424,6 +424,7 @@ int main(int argc, char *argv[]) {
 
     if (getuid() == 0) {
         logError() << "Web deployments as root are not allowed a.t.m.";
+        raise(SIGTERM);
     }
 
     logInfo("Web App Deployer (WAD) v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
