@@ -24,7 +24,7 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
         raise(SIGTERM);
     }
     auto clne = new SvdProcess("clone_repository", getuid(), false);
-    QString servicePath = getServiceDataDir(serviceName); // QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName;
+    QString servicePath = getServiceDataDir(serviceName);
     if (not QDir().exists(servicePath)) {
         logInfo() << "No Web Service dir found:" << servicePath << "Will be created";
         getOrCreateDir(servicePath);
@@ -32,9 +32,27 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
     /* create "deploying" state */
     touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
-    logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << " for service:" << serviceName;
+    logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << "for service:" << serviceName;
 
     getOrCreateDir(servicePath + "/releases/");
+
+    logInfo() << "Cleaning old deploys (over" << QString::number(MAX_DEPLOYS_TO_KEEP) << ")";
+    QStringList gatheredReleases = QDir(servicePath + "/releases/").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
+    QStringList releases;
+    if (gatheredReleases.size() > MAX_DEPLOYS_TO_KEEP) {
+        for (int i = 0; i < MAX_DEPLOYS_TO_KEEP; i++) {
+            releases << gatheredReleases.at(i);
+        }
+        logDebug() << "Releases left:" << releases;
+        Q_FOREACH(QString release, gatheredReleases) {
+            if (not releases.contains(release)) {
+                logDebug() << "Removing old release:" << servicePath + "/releases/" + release;
+                clne->spawnProcess("rm -rf " + servicePath + "/releases/" + release);
+                clne->waitForFinished(-1);
+            }
+        }
+    }
+
     QString command = QString("export DATE=\"app-$(date +%d%m%Y-%H%M%S)\"") +
         "&& cd " + servicePath + " > " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
         "&& git clone " + sourceRepositoryPath + " releases/${DATE}" + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
