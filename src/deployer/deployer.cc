@@ -69,7 +69,8 @@ void installDependencies(QString& serviceName) {
 
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
     QStringList allowedToSpawnDeps; /* dependencies allowed to spawn as independenc service */
-    allowedToSpawnDeps << "postgresql" << "mysql" << "redis" << "nginx" << "passenger"; // XXX: hardcoded
+    allowedToSpawnDeps << "postgresql" << "mysql" << "redis" << "nginx" << "passenger" << "sphinx" << "php" << "memcached" << "elasticsearch"; // XXX: hardcoded
+    // TODO: define Sphinx igniter
 
     QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
     QString deps = readFileContents(depsFile).trimmed();

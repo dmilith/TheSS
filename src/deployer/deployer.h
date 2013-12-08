@@ -85,6 +85,18 @@ inline QString databaseYmlEntry(WebDatabase db, QString stage, QString databaseN
         case Mysql:
             return ""; // NOTE: NYI
 
+        case Mongo:
+            return ""; // NOTE: NYI
+
+        case Redis:
+            return ""; // NOTE: NYI
+
+        case ElasticSearch:
+            return ""; // NOTE: NYI
+
+        case Sphinx:
+            return ""; // NOTE: NYI
+
         case NoDB:
             return "";
 
@@ -96,6 +108,10 @@ QString getDbName(WebDatabase db) {
     switch (db) {
         case Postgresql: return "Postgresql";
         case Mysql: return "Mysql";
+        case Mongo: return "Mongo";
+        case Redis: return "Redis";
+        case ElasticSearch: return "ElasticSearch";
+        case Sphinx: return "Sphinx";
         case NoDB: return "NoDB";
     }
 }

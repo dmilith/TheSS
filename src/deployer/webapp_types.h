@@ -23,8 +23,12 @@ enum WebAppTypes {
 enum WebDatabase {
     Postgresql          = 0x01,
     Mysql               = 0x02,
+    Mongo               = 0x03,
+    Redis               = 0x04,
+    ElasticSearch       = 0x05,
+    Sphinx              = 0x06,
 
-    NoDB                = 0x05
+    NoDB                = 0x07
 };
 
 class WebAppTypeDetector {
