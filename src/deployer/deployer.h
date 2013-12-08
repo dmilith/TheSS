@@ -56,6 +56,10 @@ server { \n\
             return ""; // NOTE: NYI
 
 
+        case PhpSite:
+            return ""; // NOTE: NYI
+
+
         case NoType:
             return "";
 

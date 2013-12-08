@@ -283,6 +283,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
 
 
+        case PhpSite: {
+            logInfo() << "NYI";
+
+        } break;
+
+
         case NoType: {
             logError() << "No web application detected in service directory:" << servicePath;
             raise(SIGTERM);

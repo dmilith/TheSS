@@ -59,6 +59,12 @@ WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
                 filesThatShouldNotExist << "/index.html";
                 break;
 
+            case PhpSite:
+                this->typeName = "Php";
+                filesThatShouldExist << "/index.php";
+                filesThatShouldNotExist << "/Gemfile";
+                break;
+
             default:
                 this->typeName = "NoType";
                 break;
