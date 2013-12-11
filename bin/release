@@ -1,7 +1,14 @@
 #!/bin/sh
 
-. /etc/sofin.conf.sh
-
+CONF_FILE="/etc/sofin.conf.sh"
+if [ -e "${CONF_FILE}" ]; then
+    . "${CONF_FILE}"
+    note "Validating environment"
+    validate_env
+else
+    echo "FATAL: No configuration file found: ${CONF_FILE}"
+    exit 1
+fi
 
 if [ "${OUT}" = "" ]; then
     export OUT="/dev/null" # be quiet by default
