@@ -1,0 +1,67 @@
+#!/bin/sh
+
+CONF_FILE="/etc/sofin.conf.sh"
+if [ -e "${CONF_FILE}" ]; then
+    . "${CONF_FILE}"
+    note "Validating environment"
+    validate_env
+else
+    echo "FATAL: No configuration file found: ${CONF_FILE}"
+    exit 1
+fi
+
+
+readonly APP_NAME="$1"
+readonly APP_DOMAIN="$2"
+readonly APP_BRANCH="$(git name-rev --name-only HEAD)"
+readonly APP_REPOSITORY="$(pwd)"
+readonly APP_TARBALL="${APP_NAME}.tar.gz"
+
+if [ "${APP_USER}" = "" ]; then
+    APP_USER="$USER"
+    note "Using user: ${APP_USER}"
+fi
+
+if [ ! -f "${APP_REPOSITORY}/.git/config" ]; then
+    error "svddply must be run in git repository"
+fi
+
+NAME_ERROR="Missing application name!"
+REPO_ERROR="Missing repository path/address!"
+DOMAIN_ERROR="Missing destination domain!"
+
+if [ "${APP_NAME}" = "" ]; then
+    error "${NAME_ERROR}"
+fi
+
+if [ "${APP_DOMAIN}" = "" ]; then
+    if [ -f "${APP_REPOSITORY}/.domain" ]; then
+        APP_DOMAIN="$(cat ${APP_REPOSITORY}/.domain)"
+    else
+        error "Domain isn't specified anywhere"
+    fi
+fi
+
+if [ "${MODE}" = "setup" ]; then
+    cwd="$(pwd)"
+    cd ..
+    note "Creating bare repository from current directory"
+    # TODO: consider support for directories without git repository in it
+    git clone --bare ${cwd} ${APP_NAME}.git
+    tar cf ${APP_TARBALL} ./${APP_NAME}.git
+    ssh "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
+    scp ./${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}"
+    rm -rf ./${APP_NAME}.git
+    ssh "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
+    cd "${cwd}"
+    note "Done pushing repo to origin /Repos remote!"
+    exit 0
+fi
+
+note "Trying push to remote: svd, branch: ${APP_BRANCH}"
+git remote add svd "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
+git push svd ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || error "You need to push to the default repo in origin remote on branch: ${APP_BRANCH}!"
+
+note "Deploying application"
+ssh "${APP_USER}@${APP_DOMAIN}" "test ! $(which svddeployer) && exit 1 || svdddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -d" || error "Deploy isn't possible without installed deployer on remote host!\nConsider doing 'sofin get thess'" # -d is temporary
+
