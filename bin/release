@@ -1,5 +1,8 @@
 #!/bin/sh
 
+. /etc/sofin.conf.sh
+
+
 if [ "${OUT}" = "" ]; then
     export OUT="/dev/null" # be quiet by default
 fi
@@ -10,41 +13,34 @@ mkdir -p releases
 version="$(grep -R 'APP_VERSION' src/globals/globals.h | awk '{ gsub("\"", "", $4); print $4}')"
 base_name="thess-${version}"
 archive_name="${base_name}.tar.bz2"
-printf "Preparing package: ${archive_name} with version: ${version}\n"
+note "Preparing package: ${archive_name} with version: ${version}"
 
-tar --disable-copyfile --exclude='.' --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/${archive_name} ./
-mkdir -p releases/${base_name}
+tar --disable-copyfile --exclude='.' --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/${archive_name} ./ > ${OUT} 2>&1
+mkdir -p releases/${base_name} > ${OUT} 2>&1
 mv releases/${archive_name} releases/${base_name}/
-cd releases/${base_name}
-tar xf ${archive_name}
+cd releases/${base_name} > ${OUT} 2>&1
+tar xf ${archive_name} > ${OUT} 2>&1
 rm -f ${archive_name}
-cd ..
-tar -cjf ${archive_name} ./${base_name}
+cd .. > ${OUT} 2>&1
+tar -cjf ${archive_name} ./${base_name} > ${OUT} 2>&1
 rm -rf ${base_name}
-cd ..
+cd .. > ${OUT} 2>&1
 
-printf "Pushing package to remote server\n"
-
-# XXX: NON DRY: Sofin utility fragment:
-readonly default_port="60022"
-readonly user_name="sofin"
-readonly default_source_path="/Mirror/software/source"
-readonly default_host="software.verknowsys.com"
-
-if [ "$(uname)" = "Linux" ]; then
-    for mirror in $(host ${default_host} | awk '{print $3}'); do
-        printf "Synchronizing releases/${archive_name} with ${mirror}\n"
-        scp -P ${default_port} "releases/${archive_name}" "${user_name}@${mirror}:${default_source_path}"
-    done
-else
-    for mirror in $(host ${default_host} | awk '{print $4}'); do
-        printf "Synchronizing releases/${archive_name} with ${mirror}\n"
-        scp -P ${default_port} "releases/${archive_name}" "${user_name}@${mirror}:${default_source_path}"
-    done
-fi
-
-printf "Building TheSS:\n"
+note "Building TheSS:"
 bin/build > ${OUT} 2>&1 && (
-    printf "SHA sum of file:\n"
-    shasum releases/thess-${version}.tar.bz2 # XXX: warning: it's shasum on OSX, sha1sum on linux and sha1 on bsd
+    if [ "${USER}" = "dmilith" ]; then
+        note "Pushing package to remote server"
+        definit="thess"
+        name="${definit}-${version}.tar.bz2"
+        scp releases/${name} v:/home/dmilith/Web/Public/Sofin-releases > ${OUT} 2>&1 && \
+        ssh sofin@v "source ~/.functions.sh && gather-source http://dmilith.verknowsys.com/Public/Sofin-releases/${name}" > ${OUT} 2>&1 && \
+        asha1=$(shasum releases/${name} | awk '{print $1;}')
+        note "${name}: publish is now complete. File sha1 checksum is: ${asha1}"
+        if [ -f ~/Projects/Sofin-definitions/definitions/${definit}.def ]; then
+            note "Appending new sha1 to definition: ${definit}.def"
+            sed -ie "s/^APP_SHA=.*/APP_SHA=\"${asha1}\"/" ~/Projects/Sofin-definitions/definitions/${definit}.def
+            sed -ie "s/^APP_VERSION=.*/APP_VERSION=\"${version}\"/" ~/Projects/Sofin-definitions/definitions/${definit}.def
+        fi
+    fi
     )
+
