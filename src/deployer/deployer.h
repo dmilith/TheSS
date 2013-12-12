@@ -70,11 +70,6 @@ server { \n\
 }
 
 
-inline QString nginxEntry(WebAppTypes type, QString latestReleaseDir) {
-    return nginxEntry(type, latestReleaseDir, "domain", "serviceName", "stage", "port"); // NOTE: irrelevant for static apps
-}
-
-
 inline QString databaseYmlEntry(WebDatabase db, QString stage, QString databaseName) {
     switch (db) {
 

@@ -164,7 +164,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-            QString contents = nginxEntry(appType, latestReleaseDir);
+            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
 
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
