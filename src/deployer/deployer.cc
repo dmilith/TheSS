@@ -126,6 +126,34 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 }
 
 
+QString buildEnv(QString& serviceName, QStringList deps) {
+    logDebug() << "DEBUG DEPS:" << deps;
+
+    QString serviceEnvFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENV_FILE;
+    QString result = " ";
+
+    Q_FOREACH(QString fragment, deps) {
+        QString serviceDepsFile = getServiceDataDir(fragment) + DEFAULT_SERVICE_ENV_FILE;
+        if (QFile::exists(serviceDepsFile)) {
+            QStringList innerContents = readFileContents(serviceDepsFile).trimmed().split('\n');
+            logDebug() << "innerCont:" << innerContents;
+            Q_FOREACH(QString part, innerContents) {
+                result += part + " ";
+            }
+        }
+    }
+
+    if (QFile::exists(serviceEnvFile)) {
+        QStringList contents = readFileContents(serviceEnvFile).trimmed().split('\n');
+        Q_FOREACH(QString part, contents) {
+            result += part + " ";
+        }
+        logDebug() << "Built env string:" << result;
+    }
+    return result;
+}
+
+
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
 
     logInfo() << "Creating app environment";
@@ -146,6 +174,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* do app type specific action */
     SvdProcess *clne = new SvdProcess("create_environment", getuid(), false);
+    QStringList appDependencies;
 
     switch (appType) {
 
@@ -229,14 +258,21 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             content = databaseYmlEntry(database, stage, databaseName);
             writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
 
+            logDebug() << "Appending ENV settings";
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "RAILS_ENV=" + stage + "\n";
+            envEntriesString += "RAKE_ENV=" + stage + "\n";
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
-            QStringList appDependencies = deps.split("\n");
+            appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
+            QString environment = buildEnv(serviceName, appDependencies);
+            logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
 
-            jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=SERVICE_PREFIX" + DEFAULT_SSL_CA_FILE + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+
+            jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
 
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -253,11 +289,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Installing bundle for stage:" << stage << "of Rails Site";
             getOrCreateDir(servicePath + "/bundle-" + stage);
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             logInfo() << "Building assets";
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            // stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE +
+            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
@@ -291,7 +328,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
 
             logInfo() << "Running database migrations";
-            clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake db:migrate db:seed >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " rake db:migrate db:seed >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             logInfo() << "Generating http proxy configuration";
@@ -300,21 +337,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
-            logDebug() << "Appending ENV settings";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
-            envEntriesString += "RAILS_ENV=" + stage + "\n";
-            envEntriesString += "RAKE_ENV=" + stage + "\n";
-
             logInfo() << "Re-Launching service using newly generated igniter.";
             touch(servicePath + RESTART_TRIGGER_FILE);
-
 
         } break;
 
 
         case NodeSite: {
             logInfo() << "Installing npm modules for Nodejs Site";
-            clne->spawnProcess("cd " + latestReleaseDir + " && npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
             clne->waitForFinished(-1);
 
         } break;
@@ -363,7 +394,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
 
     logInfo() << "Invoking bin/build of project (if exists)";
-    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
 
     /* write to service env file */
