@@ -113,14 +113,15 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 
     for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
         QString dep = "\"" + appDependencies.at(indx);
-        dep[0] = dep.at(0).toUpper();
+        dep[1] = dep.at(1).toUpper();
         jsonResult += dep + "\", ";
     }
 
     QString last = "\"" + appDependencies.at(appDependencies.size() - 1);
-    last[0] = last.at(0).toUpper();
+    last[1] = last.at(1).toUpper();
     jsonResult += last + "\"], ";
     jsonResult += QString(" \"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
+    logDebug() << "DEBUG: jsonResult:" << jsonResult;
     return jsonResult;
 }
 
