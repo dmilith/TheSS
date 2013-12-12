@@ -332,8 +332,13 @@ inline QString databaseYmlEntry(WebDatabase db, QString stage, QString databaseN
         case Sphinx:
             return ""; // NOTE: NYI
 
-        case NoDB:
-            return "";
+        case NoDB: /* NoDB means we might want to use SQLite3 driver */
+            return "\n\
+development: \n\
+  adapter: sqlite3 \n\
+  database: db/db_" + databaseName + "_" + stage + ".sqlite3 \n\
+  timeout: 5000 \n\
+";
 
     }
 }
