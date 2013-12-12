@@ -48,7 +48,7 @@ void PanelService::refresh(){
 
     isRunning = QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE);
     bool sv = QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE);
-    bool sc = QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE);
+    bool sc = QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE) || QFile::exists(basePath + DEFAULT_SERVICE_DEPLOYING_FILE);
     bool si = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE);
     bool se = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE); // XXX: FIXME: no more .errors file!!
     autostart = QFile::exists(basePath + AUTOSTART_TRIGGER_FILE);
