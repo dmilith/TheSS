@@ -39,6 +39,9 @@ activerehashing yes
 loglevel notice
 logfile SERVICE_PREFIX/service.log
 \" > SERVICE_PREFIX/service.conf
+printf \"
+REDIS_URL=redis://SERVICE_ADDRESS:$(cat SERVICE_PREFIX/.ports/0)
+\" > SERVICE_PREFIX/service.env
 "
     }
 }
