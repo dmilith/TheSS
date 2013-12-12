@@ -265,9 +265,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             if (database != NoDB) { /* NoDB means no database dependencies in web app */
                 logInfo() << "Launching database service:" << getDbName(database);
-                touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database) + START_TRIGGER_FILE);
+                QString db = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database);
+                touch(db + START_TRIGGER_FILE);
+                logInfo() << "Waiting for database:" << getDbName(database);
+                while (not QFile::exists(db + "/" + DEFAULT_SERVICE_RUNNING_FILE)) {
+                    logDebug() << "Still waiting for database:" << getDbName(database);
+                    sleep(1);
+                }
             }
-
 
             logInfo() << "Running database setup for database:" << getDbName(database);
             switch (database) {
