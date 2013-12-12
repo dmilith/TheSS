@@ -208,7 +208,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString databaseName = serviceName + "-" + stage;
             WebDatabase database = NoDB;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
-            QString deps = "";
+            QString deps = "", content = "";
 
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
                 deps = readFileContents(depsFile).trimmed();
@@ -216,16 +216,19 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
                     logInfo() << "Detected Postgresql dependency in file:" << depsFile;
                     database = Postgresql;
-                    QString content = databaseYmlEntry(database, stage, databaseName);
-                    writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
                 }
                 if (deps.trimmed().toLower().contains("mysql")) {
                     logInfo() << "Detected Mysql dependency in file:" << depsFile;
                     database = Mysql;
-                    QString content = databaseYmlEntry(database, stage, databaseName);
-                    writeToFile(depsFile, content);
                 }
             }
+
+            if (database == NoDB) {
+                logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
+            }
+            content = databaseYmlEntry(database, stage, databaseName);
+            writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
+
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             QStringList appDependencies = deps.split("\n");
@@ -264,13 +267,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 logInfo() << "Launching database service:" << getDbName(database);
                 touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database) + START_TRIGGER_FILE);
             }
-            logInfo() << "Running database setup";
-            logDebug() << "Creating user:" << databaseName;
-            clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            logDebug() << "Creating database:" << databaseName;
-            clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
+
+
+            logInfo() << "Running database setup for database:" << getDbName(database);
+            switch (database) {
+                case Postgresql: {
+                    logDebug() << "Creating user:" << databaseName;
+                    clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                    clne->waitForFinished(-1);
+                    logDebug() << "Creating database:" << databaseName;
+                    clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                    clne->waitForFinished(-1);
+
+                } break;
+
+                default: break;
+
+            }
 
             logInfo() << "Running database migrations";
             clne->spawnProcess("cd " + latestReleaseDir + " && RAKE_ENV=" + stage + " RAILS_ENV=" + stage + " SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + " rake db:migrate db:seed >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
