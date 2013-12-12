@@ -23,3 +23,5 @@ TheSS.xcodeproj/
 releases/
 /bin/panel
 /bin/svdirc_notify
+
+/bin/svddeployer

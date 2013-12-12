@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.64.7"
+    #define APP_VERSION "0.66.6"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -42,11 +42,13 @@
 
     #define SOFTWARE_DIR "/Software"
     #define LOGS_DIR "/Logs"
+    #define DEFAULT_PROXY_FILE "/proxy.conf"
     #define DEFAULT_PUBLIC_DIR "/Public"
     #define DEFAULT_USER_APPS_DIR "/Apps"
     #define DEFAULT_WEBAPPS_DIR "/WebApps"
     #define SOFTWARE_DATA_DIR "/SoftwareData"
     #define SYSTEM_USERS_DIR "/SystemUsers"
+    #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
     #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "/Igniters/Default")
     #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "/Igniters/Services")
@@ -55,7 +57,9 @@
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
     #define DEFAULT_SYSTEM_DOMAIN "localhost"
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
+    #define DEFAULT_SERVICE_ENV_FILE "/service.env"
     #define DEFAULT_SERVICE_LOG_FILE "/service.log"
+    #define SOFIN_DEPENDENCIES_FILE "/.dependencies"
 
     /* triggers */
     #define INSTALL_TRIGGER_FILE "/.install"
@@ -82,11 +86,18 @@
     #define DEFAULT_SERVICE_CONFIGURING_FILE "/.configuring"
     #define DEFAULT_SERVICE_RELOADING_FILE "/.reloading"
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
+    #define DEFAULT_SERVICE_DEPLOYING_FILE "/.deploying"
     #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
+    #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
+    #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/service.latest.release"
+    #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous.release"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
+
+    #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
+    #define DEFAULT_SSL_CA_FILE "/cacert.pem"
 
     /* global definitions */
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"

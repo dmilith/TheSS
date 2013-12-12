@@ -9,18 +9,28 @@
 #define __WEBAPP_TYPES__
 
 
-#include "utils.h"
+#include "../service_spawner/utils.h"
 
 
 enum WebAppTypes {
     StaticSite          = 0x01,
-    UnicornRailsSite    = 0x02,
-    RailsSite           = 0x03,
-    NodeSite            = 0x04,
+    RubySite            = 0x02,
+    NodeSite            = 0x03,
+    PhpSite             = 0x04,
 
     NoType              = 0x05 /* NOTE: this one *must* be always last type */
 };
 
+enum WebDatabase {
+    Postgresql          = 0x01,
+    Mysql               = 0x02,
+    Mongo               = 0x03,
+    Redis               = 0x04,
+    ElasticSearch       = 0x05,
+    Sphinx              = 0x06,
+
+    NoDB                = 0x07
+};
 
 class WebAppTypeDetector {
 
