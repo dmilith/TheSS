@@ -47,21 +47,20 @@ if [ "${MODE}" = "setup" ]; then
     cd ..
     note "Creating bare repository from current directory"
     # TODO: consider support for directories without git repository in it
-    git clone --bare ${cwd} ${APP_NAME}.git
+    git clone --bare ${cwd} ${APP_NAME}.git > /dev/null 2>&1
     tar cf ${APP_TARBALL} ./${APP_NAME}.git
     ssh "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
-    scp ./${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}"
+    scp ./${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}" > /dev/null 2>&1
     rm -rf ./${APP_NAME}.git
     ssh "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
     cd "${cwd}"
     note "Done pushing repo to origin /Repos remote!"
-    exit 0
 fi
 
 note "Trying push to remote: svd, branch: ${APP_BRANCH}"
 git remote add svd "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
 git push svd ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || error "You need to push to the default repo in origin remote on branch: ${APP_BRANCH}!"
 
-note "Deploying application"
-ssh "${APP_USER}@${APP_DOMAIN}" "test ! $(which svddeployer) && exit 1 || svdddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -d" || error "Deploy isn't possible without installed deployer on remote host!\nConsider doing 'sofin get thess'" # -d is temporary
+note "Deploying application ${APP_NAME}"
+ssh "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN}" || error "Deploy isn't possible without installed deployer on remote host!\nConsider doing 'sofin get thess'" # -d is temporary
 
