@@ -302,7 +302,36 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case PhpSite: {
-            logInfo() << "NYI";
+            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
+            jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
+            #ifdef __APPLE__
+                logError() << "Apple PHP deployments aren't supported yet!";
+                raise(SIGTERM);
+            #endif
+            jsonResult += QString("\"start\": {\"commands\": \"SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D && echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"} }";
+
+            /* write igniter to user igniters */
+            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+            logInfo() << "Generating igniter:" << igniterFile;
+            writeToFile(igniterFile, jsonResult);
+
+            logInfo() << "Starting server application";
+            touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
+
+            logInfo() << "Setting up autostart of service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
+
+            logInfo() << "Generating http proxy configuration";
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
+
+            logDebug() << "Generated proxy contents:" << contents;
+            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+
+            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+
+            logInfo() << "Re-Launching service using newly generated igniter.";
+            touch(servicePath + RESTART_TRIGGER_FILE);
 
         } break;
 
