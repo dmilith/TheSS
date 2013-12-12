@@ -258,10 +258,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             content = databaseYmlEntry(database, stage, databaseName);
             writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
 
-            logDebug() << "Appending ENV settings";
+            /* write to service env file */
+            logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
+            if (not envEntriesString.isEmpty()) {
+                QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+                writeToFile(envFilePath, envEntriesString);
+            }
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
@@ -395,13 +400,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Invoking bin/build of project (if exists)";
     clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
-
-    /* write to service env file */
-    if (not envEntriesString.isEmpty()) {
-        QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
-        writeToFile(envFilePath, envEntriesString);
-    }
-
     clne->deleteLater();
 }
 
