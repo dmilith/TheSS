@@ -197,14 +197,13 @@ void PanelGui::displayStatus(){
     /* SS status info */
     if(panel->isSSOnline()){
         wattron(mainWindow, C_SS_STATUS_ON);
-        mvwprintw(mainWindow, 0, 48, ("svdss:  ONLINE (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvwprintw(mainWindow, 0, 48, (" svdss:  ONLINE (" + QHostInfo::localHostName() + ")").toUtf8());
         wattroff(mainWindow, C_SS_STATUS_ON);
     } else {
         wattron(mainWindow, C_SS_STATUS_OFF);
-        mvwprintw(mainWindow, 0, 48, ("svdss: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
+        mvwprintw(mainWindow, 0, 48, (" svdss: OFFLINE (" + QHostInfo::localHostName() + ")").toUtf8());
         wattroff(mainWindow, C_SS_STATUS_OFF);
     }
-
     wattron(mainWindow, C_STATUS);
     mvwprintw(mainWindow, 1, 0, "status: %-130s", status.toUtf8().data()); // XXX: hardcoded max length of status content
     wattroff(mainWindow, C_STATUS);
