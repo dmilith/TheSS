@@ -140,7 +140,31 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 * Supports basic UI - `svdpanel` - for easy service managment (based on ncurses library).
 * Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set `touch SERVICE_PREFIX/.validationFailure` in hook commands.
 * Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).
+* Supports Web Application deploying (since 0.66.x). Example deployer invoke:
 
+```sh
+ svdply myapp.mydomain.com
+#|      |     |
+#|      |      \____ "domain" part, used by:
+#|      |            - locating host server address
+#|       \           - remote ssh connection
+#|        \
+#|         \________ "name" part, used as:
+#|                   - generated igniter name (~/Igniters/myapp.json)
+# \                  - git repository push address (by dafault: myapp.mydomain.com:Repos/myapp.git)
+#  \                 - git repository name (on remote)
+#   \
+#    \______________ will do the following:
+#                    - a ssh connection will be created with myapp.mydomain.com server
+#                    - if "svd" remote doesn't exists on remote host, will be created
+#                    - current branch of git repository (from current directory) will be pushed to "svd" remote
+#                    - svddeployer will be launched on remote machine and it will deploy ServeD Web App automatically.
+#
+
+curl http://myapp.mydomain.com
+# and if Web App was properly configured it will just happily reply on request :)
+#
+```
 
 ## Igniter examples:
 * [Redis](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Redis.json)
