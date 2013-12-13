@@ -892,14 +892,14 @@ void PanelGui::displayConfig(){
 
 void PanelGui::displaySSLog(){
     PanelService * service = servicesList->currentItem();
-    if (ssLog != NULL) {
+    if (service != NULL) {
         if (getuid() == 0)
             ssLog = new Tail(service, QString(SYSTEM_USERS_DIR), DEFAULT_SS_LOG_FILE);
         else
             ssLog = new Tail(service, QString(getenv("HOME")), DEFAULT_SS_LOG_FILE);
+        tail = ssLog;
+        tailUpdate();
     }
-    tail = ssLog;
-    tailUpdate();
 }
 
 void PanelGui::displayEnv(){
