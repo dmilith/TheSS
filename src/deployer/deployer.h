@@ -57,7 +57,24 @@ server { \n\
 
 
         case NodeSite:
-            return ""; // NOTE: NYI
+            return "\n\
+upstream " + serviceName + "-" + stage + " { \n\
+    server 127.0.0.1:" + port + "; \n\
+} \n\
+server { \n\
+    listen 80; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "/public; \n\
+    location / { \n\
+        proxy_set_header X-Real-IP $remote_addr; \n\
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
+        proxy_set_header Host $http_host; \n\
+        proxy_redirect off; \n\
+        if (!-f $request_filename) { \n\
+            proxy_pass http://" + serviceName + "-" + stage + "; \n\
+        } \n\
+    } \n\
+} \n";
 
 
         case PhpSite: {

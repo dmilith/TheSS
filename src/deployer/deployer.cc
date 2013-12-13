@@ -336,9 +336,79 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case NodeSite: {
-            logInfo() << "Installing npm modules for Nodejs Site";
-            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            // logInfo() << "Installing npm modules for Nodejs Site";
+            // clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
+            // clne->waitForFinished(-1);
+
+
+            logInfo() << "Preparing service to start";
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
+            getOrCreateDir(latestReleaseDir + "/public");
+            logInfo() << "Purging app release dir";
+            removeDir(latestReleaseDir + "/log");
+            removeDir(latestReleaseDir + "/tmp");
+
+            logInfo() << "Symlinking and copying shared directory in current release";
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
+                cd ../../shared/" + stage + "/config/ \n\
+                for i in *; do \n\
+                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
+                done \n\
+            ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
+            QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
+            QString deps = "", content = "";
+
+            /* write to service env file */
+            logInfo() << "Building environment for stage:" << stage;
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "NODE_ENV=" + stage + "\n";
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            writeToFile(envFilePath, envEntriesString);
+
+            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
+            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
+                deps = readFileContents(depsFile).trimmed();
+            }
+            appDependencies = deps.split("\n");
+            logDebug() << "Gathering dependencies:" << appDependencies;
+            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
+            QString environment = buildEnv(serviceName, appDependencies);
+            logDebug() << "Generateed Service Environment:" << environment;
+            jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
+            jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + "bin/app " + stage + " 2>&1 &" + "\"} }";
+            logDebug() << "Generated Igniter JSON:" << jsonResult;
+
+            /* write igniter to user igniters */
+            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+            logInfo() << "Generating igniter:" << igniterFile;
+            writeToFile(igniterFile, jsonResult);
+
+            logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
+            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
+            logInfo() << "Setting up autostart of service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
+
+            logInfo() << "Generating http proxy configuration";
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
+            logDebug() << "Generated proxy contents:" << contents;
+            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+
+            logInfo() << "Re-Launching service using newly generated igniter.";
+            touch(servicePath + RESTART_TRIGGER_FILE);
 
         } break;
 
