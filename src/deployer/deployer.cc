@@ -336,11 +336,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case NodeSite: {
-            // logInfo() << "Installing npm modules for Nodejs Site";
-            // clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + " && touch " + servicePath + "/" + DEFAULT_SERVICE_CONFIGURED_FILE);
-            // clne->waitForFinished(-1);
-
-
             logInfo() << "Preparing service to start";
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
