@@ -564,6 +564,29 @@ int main(int argc, char *argv[]) {
         new FileLoggerTimer(fileAppender);
     }
 
+    /* NOTE: make sure TheSS is running for user, and launch it if it's not: */
+    bool ok = false, fail = false;
+    QString ssPidFile = getHomeDir() + "/." + getenv("USER") + ".pid";
+    QString aPid = readFileContents(ssPidFile).trimmed();
+    uint pid = aPid.toInt(&ok, 10);
+    if (ok) {
+        if (not pidIsAlive(pid)) {
+            logWarn() << "No alive pid of Service Spawner found. It will be started for user:" << getenv("USER");
+            fail = true;
+        }
+    } else {
+        logWarn() << "Pid file is damaged or doesn't contains valid pid. File will be removed, and ss restarted.";
+        QFile::remove(ssPidFile);
+        fail = true;
+    }
+    if (not fail) {
+        SvdProcess *clne = new SvdProcess("start_served_for_user", getuid(), false);
+        QString servicePath = getServiceDataDir(serviceName);
+        clne->spawnProcess("svdss -f >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 0>/dev/null &");
+        clne->waitForFinished(-1);
+        clne->deleteLater();
+    }
+
     /* print warnings and errors */
     if (not warnings.isEmpty()) {
         Q_FOREACH(QString warning, warnings) {
