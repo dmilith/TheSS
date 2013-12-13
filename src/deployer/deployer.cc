@@ -182,26 +182,20 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             QString jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-
             jsonResult += QString("\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
-
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
-
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
-
+            logInfo() << "Re-Launching service:" << serviceName;
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
-
-            logInfo() << "Re-Launching service using newly generated igniter.";
             touch(servicePath + RESTART_TRIGGER_FILE);
 
         } break;
@@ -263,10 +257,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
-            if (not envEntriesString.isEmpty()) {
-                QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
-                writeToFile(envFilePath, envEntriesString);
-            }
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            writeToFile(envFilePath, envEntriesString);
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
@@ -275,17 +267,13 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-
-
             jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
-
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
-            /* end of igniter creation code */
 
             QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
             logInfo() << "Gathering SSL CA certs from:" << cacertLocation << "if necessary.";
