@@ -409,16 +409,9 @@ bool PanelGui::confirm(QString msg){
 
 
 QString launchSS() {
-    uInt uid = getuid();
-    auto prc = new SvdProcess("Thess", uid, false);
-    #ifdef __FreeBSD__
-        prc->spawnProcess("daemon svdss"); /* NOTE: it uses Sofin environment automatically */
-    #else
-        prc->spawnProcess("svdss &"); /* NOTE: it uses Sofin environment automatically */
-    #endif
-    prc->waitForFinished(1);
-    notification("Launching ServiceSpawner", NOTIFY);
-    return "Launching ServiceSpawner for " + QString(uid == 0 ? "SuperUser" : "NormalUser"); /* status msg */
+    QString res = launchServiceSpawner();
+    notification(res, NOTIFY);
+    return res;
 }
 
 

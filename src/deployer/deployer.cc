@@ -579,12 +579,8 @@ int main(int argc, char *argv[]) {
         QFile::remove(ssPidFile);
         fail = true;
     }
-    if (not fail) {
-        SvdProcess *clne = new SvdProcess("start_served_for_user", getuid(), false);
-        QString servicePath = getServiceDataDir(serviceName);
-        clne->spawnProcess("svdss -f >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 0>/dev/null &");
-        clne->waitForFinished(-1);
-        clne->deleteLater();
+    if (fail) {
+        launchServiceSpawner();
     }
 
     /* print warnings and errors */
