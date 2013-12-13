@@ -10,12 +10,16 @@ else
     exit 1
 fi
 
-readonly APP_NAME="$1"
-readonly APP_DOMAIN="$2"
+readonly APP_DOMAIN="${1}"
+readonly APP_NAME="$(echo "${1}" | awk -F '[.]' '{print $1}')"
 readonly APP_BRANCH="$(git name-rev --name-only HEAD)"
 readonly APP_REPOSITORY="$(pwd)"
 readonly APP_TARBALL="${APP_NAME}.tar.gz"
 readonly DEFAULT_REMOTE="svd"
+
+if [ "${APP_STAGE}" = "" ]; then
+    APP_STAGE="staging" # default stage anyway
+fi
 
 if [ "${APP_USER}" = "" ]; then
     APP_USER="$USER"
@@ -29,13 +33,10 @@ if [ "${APP_NAME}" = "" ]; then
     error "Missing application name!"
 fi
 
-if [ "${APP_DOMAIN}" = "" ]; then
-    if [ -f "${APP_REPOSITORY}/.domain" ]; then
-        APP_DOMAIN="$(cat ${APP_REPOSITORY}/.domain)"
-    else
-        error "Domain isn't specified anywhere"
-    fi
-fi
+note "App name: ${APP_NAME}"
+note "App domain: ${APP_DOMAIN}"
+note "App branch: ${APP_BRANCH}"
+note "App stage: ${APP_STAGE}"
 
 
 first_deploy () {
@@ -60,5 +61,5 @@ git remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.gi
 git push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy
 
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
-ssh "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -d" || error "Deploy isn't possible without installed deployer on remote host!\nConsider doing 'sofin get thess'" # -d is temporary
+ssh "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} -d" || error "Deploy isn't possible without installed deployer on remote host!\nConsider doing 'sofin get thess'" # -d is temporary
 
