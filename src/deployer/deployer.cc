@@ -249,7 +249,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (database == NoDB) {
                 logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
             }
-            content = databaseEntryFor(database, stage, databaseName);
+            content = databaseYmlEntry(database, stage, databaseName);
             writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
 
             /* write to service env file */
@@ -303,7 +303,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 }
             }
 
-            logInfo() << "Running setup for database:" << getDbName(database);
+            logInfo() << "Running database setup for database:" << getDbName(database);
             switch (database) {
                 case Postgresql: {
                     logDebug() << "Creating user:" << databaseName;
@@ -371,30 +371,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
-            /* generate database.json for Node app */
-            QString databaseName = serviceName + "-" + stage;
-            WebDatabase database = NoDB;
-
+            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
                 deps = readFileContents(depsFile).trimmed();
-
-                if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
-                    logInfo() << "Detected Postgresql dependency in file:" << depsFile;
-                    database = Postgresql;
-                }
-                if (deps.trimmed().toLower().contains("mysql")) {
-                    logInfo() << "Detected Mysql dependency in file:" << depsFile;
-                    database = Mysql;
-                }
             }
-
-            if (database == NoDB) {
-                logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
-            }
-            content = databaseEntryFor(database, stage, databaseName);
-            writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
-
-            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
@@ -415,33 +395,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
-            if (database != NoDB) { /* NoDB means no database dependencies in web app */
-                logInfo() << "Launching database service:" << getDbName(database);
-                QString db = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database);
-                touch(db + START_TRIGGER_FILE);
-                logInfo() << "Waiting for database:" << getDbName(database);
-                while (not QFile::exists(db + "/" + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    logDebug() << "Still waiting for database:" << getDbName(database);
-                    sleep(1);
-                }
-            }
-
-            logInfo() << "Running setup for database:" << getDbName(database);
-            switch (database) {
-                case Postgresql: {
-                    logDebug() << "Creating user:" << databaseName;
-                    clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                    clne->waitForFinished(-1);
-                    logDebug() << "Creating database:" << databaseName;
-                    clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                    clne->waitForFinished(-1);
-
-                } break;
-
-                default: break;
-
-            }
 
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();

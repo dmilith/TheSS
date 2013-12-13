@@ -320,7 +320,7 @@ server { \n\
 }
 
 
-inline QString databaseEntryFor(WebDatabase db, QString stage, QString databaseName) {
+inline QString databaseYmlEntry(WebDatabase db, QString stage, QString databaseName) {
     switch (db) {
 
         case Postgresql:
