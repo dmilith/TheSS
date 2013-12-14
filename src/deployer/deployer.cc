@@ -111,16 +111,42 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
         return jsonResult + "], "; /* return empty list */
     }
 
-    for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
-        QString dep = "\"" + appDependencies.at(indx);
-        dep[1] = dep.at(1).toUpper();
-        jsonResult += dep + "\", ";
+
+    Q_FOREACH(auto val, appDependencies) {
+        logInfo() << "Launching required service:" << val;
+        val[0] = val.at(0).toUpper();
+        QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
+        getOrCreateDir(location);
+        QFile::remove(location + START_TRIGGER_FILE);
+        touch(location + START_TRIGGER_FILE);
+
+        while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
+            logDebug() << "Still waiting for service:" << val;
+            sleep(1);
+        }
     }
 
-    QString last = "\"" + appDependencies.at(appDependencies.size() - 1);
-    last[1] = last.at(1).toUpper();
-    jsonResult += last + "\"], ";
+    for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
+        QString elm = appDependencies.at(indx);
+        elm[0] = elm.at(0).toUpper();
+        logInfo() << "Spawning depdendency:" << elm;
+        QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + elm;
+        getOrCreateDir(location);
+        QFile::remove(location + START_TRIGGER_FILE);
+        touch(location + START_TRIGGER_FILE);
+        jsonResult += "\"" + elm + "\", ";
+    }
+
+    QString elmLast = appDependencies.at(appDependencies.size() - 1);
+    elmLast[0] = elmLast.at(0).toUpper();
+    jsonResult += "\"" + elmLast + "\"], ";
     jsonResult += QString(" \"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
+
+    logInfo() << "Spawning depdendency:" << elmLast;
+    QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + elmLast;
+    getOrCreateDir(location);
+    QFile::remove(location + START_TRIGGER_FILE);
+    touch(location + START_TRIGGER_FILE);
     logDebug() << "DEBUG: jsonResult:" << jsonResult;
     return jsonResult;
 }
@@ -287,19 +313,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            Q_FOREACH(auto val, appDependencies) {
-                logInfo() << "Launching required service:" << val;
-                val[0] = val.at(0).toUpper();
-                QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
-                getOrCreateDir(location);
-                QFile::remove(location + START_TRIGGER_FILE);
-                touch(location + START_TRIGGER_FILE);
 
-                while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    logDebug() << "Still waiting for service:" << val;
-                    sleep(1);
-                }
-            }
 
             logInfo() << "Building assets";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
@@ -342,19 +356,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case NodeSite: {
-            Q_FOREACH(auto val, appDependencies) {
-                logInfo() << "Launching required service:" << val;
-                val[0] = val.at(0).toUpper();
-                QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
-                getOrCreateDir(location);
-                QFile::remove(location + START_TRIGGER_FILE);
-                touch(location + START_TRIGGER_FILE);
 
-                while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    logDebug() << "Still waiting for service:" << val;
-                    sleep(1);
-                }
-            }
 
             logInfo() << "Preparing service to start";
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
@@ -430,19 +432,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case PhpSite: {
-            Q_FOREACH(auto val, appDependencies) {
-                logInfo() << "Launching required service:" << val;
-                val[0] = val.at(0).toUpper();
-                QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
-                getOrCreateDir(location);
-                QFile::remove(location + START_TRIGGER_FILE);
-                touch(location + START_TRIGGER_FILE);
 
-                while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    logDebug() << "Still waiting for service:" << val;
-                    sleep(1);
-                }
-            }
 
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
