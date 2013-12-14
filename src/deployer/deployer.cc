@@ -231,16 +231,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case RubySite: {
-            auto diskMap = getDiskFree(getenv("HOME"));
-            Q_FOREACH(auto map, diskMap.keys()) {
-                auto value = diskMap.take(map);
-                if (value < MINIMUM_DISK_SPACE_IN_MEGS) {
-                    logError() << "Insufficient disk space (less than " << QString::number(MINIMUM_DISK_SPACE_IN_MEGS) << "MiB) detected on remote destination machine. Deploy aborted!";
-                    raise(SIGTERM);
-
-                } else
-                    logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << "MiB)";
-            }
 
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
@@ -745,6 +735,16 @@ int main(int argc, char *argv[]) {
     }
 
     logInfo("Web App Deployer (WAD) v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
+    auto diskMap = getDiskFree(getenv("HOME"));
+    Q_FOREACH(auto map, diskMap.keys()) {
+        auto value = diskMap.take(map);
+        if (value < MINIMUM_DISK_SPACE_IN_MEGS) {
+            logError() << "Insufficient disk space (less than " << QString::number(MINIMUM_DISK_SPACE_IN_MEGS) << "MiB) detected on remote destination machine. Deploy aborted!";
+            raise(SIGTERM);
+
+        } else
+            logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << "MiB)";
+    }
 
     QString repositoryRootPath = QString(getenv("HOME")) + DEFAULT_GIT_REPOSITORY_DIR;
     getOrCreateDir(repositoryRootPath);
