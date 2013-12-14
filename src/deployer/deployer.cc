@@ -267,6 +267,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             /* write to service env file */
             logInfo() << "Building environment for stage:" << stage;
+            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
@@ -398,6 +399,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             /* write to service env file */
             logInfo() << "Building environment for stage:" << stage;
+            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "NODE_ENV=" + stage + "\n";
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
