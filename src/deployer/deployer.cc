@@ -152,8 +152,6 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 
 
 QString buildEnv(QString& serviceName, QStringList deps) {
-    logDebug() << "DEBUG DEPS:" << deps;
-
     QString serviceEnvFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENV_FILE;
     QString result = " ";
 
