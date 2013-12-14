@@ -712,6 +712,9 @@ int main(int argc, char *argv[]) {
         raise(SIGTERM);
     }
 
+    serviceName[0] = serviceName.at(0).toUpper();
+    logDebug() << "Capitaled service name:" << serviceName;
+
     if (serviceName.trimmed().isEmpty()) {
         logError() << "Name not given! Try 'svddeploy -n your-git-repo-name -o domain.name -b branch -s stage'";
         return EXIT_FAILURE;
