@@ -202,30 +202,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case RubySite: {
-            logInfo() << "Preparing service to start";
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
-            getOrCreateDir(latestReleaseDir + "/public");
-            logInfo() << "Purging app release dir";
-            removeDir(latestReleaseDir + "/log");
-            removeDir(latestReleaseDir + "/tmp");
-
-            logInfo() << "Symlinking and copying shared directory in current release";
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
-                cd ../../shared/" + stage + "/config/ \n\
-                for i in *; do \n\
-                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
-                done \n\
-            ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
 
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
@@ -329,6 +305,31 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+
+            logInfo() << "Preparing service to start";
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
+            getOrCreateDir(latestReleaseDir + "/public");
+            logInfo() << "Purging app release dir";
+            removeDir(latestReleaseDir + "/log");
+            removeDir(latestReleaseDir + "/tmp");
+
+            logInfo() << "Symlinking and copying shared directory in current release";
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
+                cd ../../shared/" + stage + "/config/ \n\
+                for i in *; do \n\
+                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
+                done \n\
+            ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
 
             logInfo() << "Re-Launching service using newly generated igniter.";
             touch(servicePath + RESTART_TRIGGER_FILE);
