@@ -239,7 +239,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     raise(SIGTERM);
 
                 } else
-                    logInfo() << "Sufficient disk space detected for:" << map << "(" + QString::number(value) + " MiB)";
+                    logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << "MiB)";
             }
 
             /* generate database.yml for Ruby app */
