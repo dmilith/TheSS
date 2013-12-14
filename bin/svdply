@@ -55,6 +55,8 @@ first_deploy () {
 }
 
 
+note "Deploying to: $(ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "uname -a" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}")"
+
 note "Pushing current repository state to remote: ${DEFAULT_REMOTE}, on branch: ${APP_BRANCH}"
 git remote rm ${DEFAULT_REMOTE}
 git remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
