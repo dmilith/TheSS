@@ -228,10 +228,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             content = databaseYmlEntry(database, stage, databaseName);
 
             logInfo() << "Preparing service to start";
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
+            getOrCreateDir(servicePath + "/shared/" + stage + "/public/shared"); /* /public usually exists */
+            getOrCreateDir(servicePath + "/shared/" + stage + "/log");
+            getOrCreateDir(servicePath + "/shared/" + stage + "/tmp");
+            getOrCreateDir(servicePath + "/shared/" + stage + "/config");
             getOrCreateDir(latestReleaseDir + "/public");
             logInfo() << "Purging app release dir";
             removeDir(latestReleaseDir + "/log");
