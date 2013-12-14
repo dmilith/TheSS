@@ -220,7 +220,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
-            logInfo() << "Re-Launching service:" << serviceName;
+            logInfo() << "Launching service:" << serviceName;
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
             QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
             touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
@@ -254,7 +254,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
             content = databaseYmlEntry(database, stage, databaseName);
 
-            logInfo() << "Preparing service to start";
+            logInfo() << "Preparing shared dir for service start";
             getOrCreateDir(servicePath + "/shared/" + stage + "/public/shared"); /* /public usually exists */
             getOrCreateDir(servicePath + "/shared/" + stage + "/log");
             getOrCreateDir(servicePath + "/shared/" + stage + "/tmp");
@@ -356,6 +356,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
+            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+
             logInfo() << "Launching service using newly generated igniter.";
             QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
             touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
@@ -366,7 +368,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case NodeSite: {
 
 
-            logInfo() << "Preparing service to start";
+            logInfo() << "Preparing shared dir for service start";
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
