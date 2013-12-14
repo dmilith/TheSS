@@ -196,6 +196,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
             logInfo() << "Re-Launching service:" << serviceName;
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
@@ -333,6 +334,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
             logInfo() << "Re-Launching service using newly generated igniter.";
+            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
@@ -406,6 +408,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
             logInfo() << "Re-Launching service using newly generated igniter.";
+            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
@@ -441,6 +444,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Re-Launching service using newly generated igniter.";
+            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
