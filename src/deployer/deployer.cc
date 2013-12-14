@@ -273,6 +273,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
+            /* generate default port for service */
+            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
+            getOrCreateDir(portsDir);
+            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+            if (not QFile::exists(portFilePath)) {
+                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+                logDebug() << "Generated port:" << QString::number(port);
+                writeToFile(portFilePath, QString::number(port));
+            }
+
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
@@ -312,16 +322,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->waitForFinished(-1);
             clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
-
-            /* generate default port for service */
-            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
-            getOrCreateDir(portsDir);
-            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
-            if (not QFile::exists(portFilePath)) {
-                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-                logDebug() << "Generated port:" << QString::number(port);
-                writeToFile(portFilePath, QString::number(port));
-            }
 
             logInfo() << "Building assets";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
