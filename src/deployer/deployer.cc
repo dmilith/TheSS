@@ -312,7 +312,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         QString procPidFile = procfileHead + ".pid";
 
                         serviceWorkers.insert( /* (start commands, stop commands) : */
-                            "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -P " + procPidFile + " -L " + servicePath + DEFAULT_SERVICE_LOG_FILE + "-" + procfileHead + " -d ", /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
+                            "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -P " + procPidFile + " -L " + servicePath + DEFAULT_SERVICE_LOG_FILE + "-" + procfileHead + " -d ",
+                            /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
                             "kill -TERM $(cat " + procPidFile + ")");
                     }
                 }
@@ -399,7 +400,21 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     workerA->waitForFinished(-1);
                     workerA->deleteLater();
                 }
+
+                /* generating overriden stop hook including workers */
+                jsonResult[jsonResult.length() - 1] = ' '; /* hacky but we need to take last "}" from igniter */
+                Q_FOREACH(QString acmd, serviceWorkers.keys()) {
+                    QString cmd = serviceWorkers.take(acmd);
+                    logDebug() << "Entry:" << acmd << " - to be terminated with command:" << cmd;
+
+                    jsonResult += QString(" \"stop\": {\"commands\": \"") + "kill -TERM $(cat " + servicePath + DEFAULT_SERVICE_PID_FILE + ") ; ";
+                    jsonResult += cmd + " ";
+                }
+                jsonResult += "}";
+                logInfo() << "Updating igniter with data:" << jsonResult;
+                writeToFile(igniterFile, jsonResult);
             }
+
 
             logInfo() << "Launching service using newly generated igniter.";
             QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
