@@ -407,7 +407,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     QString cmd = serviceWorkers.take(acmd);
                     logDebug() << "Entry:" << acmd << " - to be terminated with command:" << cmd;
 
-                    jsonResult += QString(", \"stop\": {\"commands\": \"") + "kill -TERM $(cat " + servicePath + DEFAULT_SERVICE_PID_FILE + "); ";
+                    jsonResult += QString(", \"stop\": {\"commands\": \"");
                     jsonResult += cmd + " ";
                 }
                 jsonResult += "\"} }";
