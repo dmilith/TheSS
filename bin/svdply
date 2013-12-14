@@ -63,3 +63,4 @@ git push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote reposi
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
 ssh "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} -d" || error "Deploy isn't possible without installed deployer on remote host!\nConsider doing 'sofin get thess'" # -d is temporary
 
+note "Deploy complete. It might take up to a minute before Coreginx reloads changes."
