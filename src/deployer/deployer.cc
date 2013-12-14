@@ -287,25 +287,25 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
+            Q_FOREACH(auto val, appDependencies) {
+                logInfo() << "Launching required service:" << val;
+                QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
+                getOrCreateDir(location);
+                QFile::remove(location + START_TRIGGER_FILE);
+                touch(location + START_TRIGGER_FILE);
+
+                while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
+                    logDebug() << "Still waiting for service:" << val;
+                    sleep(1);
+                }
+            }
+
             logInfo() << "Building assets";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
-            if (database != NoDB) { /* NoDB means no database dependencies in web app */
-                logInfo() << "Launching database service:" << getDbName(database);
-                QString db = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database);
-                getOrCreateDir(db);
-                QFile::remove(db + START_TRIGGER_FILE);
-                touch(db + START_TRIGGER_FILE);
-                logInfo() << "Waiting for database:" << getDbName(database);
-                while (not QFile::exists(db + "/" + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    logDebug() << "Still waiting for database:" << getDbName(database);
-                    sleep(1);
-                }
-            }
 
             logInfo() << "Running database setup for database:" << getDbName(database);
             switch (database) {
@@ -341,6 +341,19 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case NodeSite: {
+            Q_FOREACH(auto val, appDependencies) {
+                logInfo() << "Launching required service:" << val;
+                QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
+                getOrCreateDir(location);
+                QFile::remove(location + START_TRIGGER_FILE);
+                touch(location + START_TRIGGER_FILE);
+
+                while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
+                    logDebug() << "Still waiting for service:" << val;
+                    sleep(1);
+                }
+            }
+
             logInfo() << "Preparing service to start";
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
             getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
@@ -415,6 +428,19 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case PhpSite: {
+            Q_FOREACH(auto val, appDependencies) {
+                logInfo() << "Launching required service:" << val;
+                QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
+                getOrCreateDir(location);
+                QFile::remove(location + START_TRIGGER_FILE);
+                touch(location + START_TRIGGER_FILE);
+
+                while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
+                    logDebug() << "Still waiting for service:" << val;
+                    sleep(1);
+                }
+            }
+
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             #ifdef __APPLE__
