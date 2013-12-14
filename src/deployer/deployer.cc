@@ -230,10 +230,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case RubySite: {
 
-            logDebug() << "Checking service installed state";
-            getOrCreateDir(QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + serviceName);
-            touch(QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + serviceName + "/" + serviceName.toLower() + ".installed");
-
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
             WebDatabase database = NoDB;

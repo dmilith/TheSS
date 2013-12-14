@@ -393,12 +393,12 @@ void SvdService::installSlot() {
         }
 
         /* inform output about some kind of a problem */
-        if (config->serviceInstalled()) {
-            logDebug() << "Found installed file indicator of software:" << config->softwareName << ", which is base for service:" << name;
-        } else { /* software wasn't installed, generate error */
-            QString msg = "Installation failed for service: " + name;
-            notification(msg, ERROR);
-        }
+        // if (config->serviceInstalled()) {
+        //     logDebug() << "Found installed file indicator of software:" << config->softwareName << ", which is base for service:" << name;
+        // } else { /* software wasn't installed, generate error */
+        //     QString msg = "Installation failed for service: " + name;
+        //     notification(msg, ERROR);
+        // }
 
         logTrace() << "After proc install execution:" << name;
         process->deleteLater();
