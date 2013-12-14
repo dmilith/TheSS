@@ -226,6 +226,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
             }
             content = databaseYmlEntry(database, stage, databaseName);
+
+            logInfo() << "Preparing service to start";
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
+            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
+            getOrCreateDir(latestReleaseDir + "/public");
+            logInfo() << "Purging app release dir";
+            removeDir(latestReleaseDir + "/log");
+            removeDir(latestReleaseDir + "/tmp");
             writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
 
             /* write to service env file */
@@ -305,16 +315,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
-
-            logInfo() << "Preparing service to start";
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
-            getOrCreateDir(latestReleaseDir + "/public");
-            logInfo() << "Purging app release dir";
-            removeDir(latestReleaseDir + "/log");
-            removeDir(latestReleaseDir + "/tmp");
 
             logInfo() << "Symlinking and copying shared directory in current release";
             clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
