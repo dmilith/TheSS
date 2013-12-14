@@ -224,9 +224,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             else
-                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -426,9 +426,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Relaunching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             else
-                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -505,9 +505,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Relaunching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             else
-                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -545,9 +545,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Launching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             else
-                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
