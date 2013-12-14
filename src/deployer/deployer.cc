@@ -271,8 +271,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
+            logInfo() << "Symlinking and copying shared directory in current release";
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
+                cd ../../shared/" + stage + "/config/ \n\
+                for i in *; do \n\
+                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
+                done \n\
+            ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
             logInfo() << "Building assets";
-            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
@@ -316,21 +331,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
-
-            logInfo() << "Symlinking and copying shared directory in current release";
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
-                cd ../../shared/" + stage + "/config/ \n\
-                for i in *; do \n\
-                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
-                done \n\
-            ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
 
             logInfo() << "Re-Launching service using newly generated igniter.";
             touch(servicePath + RESTART_TRIGGER_FILE);
