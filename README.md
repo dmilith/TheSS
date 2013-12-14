@@ -166,6 +166,9 @@ curl http://myapp.mydomain.com
 #
 ```
 
+* Added Procfile (Heroku-compatible) process list support for Ruby deployer. If no Procfile detected in deployed app, default will be used.
+
+
 ## Igniter examples:
 * [Redis](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Redis.json)
 * [Mysql](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Services/Mysql.json)
