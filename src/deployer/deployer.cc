@@ -222,8 +222,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
             logInfo() << "Launching service:" << serviceName;
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
-            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            else
+                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -421,9 +424,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
 
 
-            logInfo() << "Launching service using newly generated igniter.";
-            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+            logInfo() << "Relaunching service using newly generated igniter.";
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            else
+                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -498,15 +503,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
-            logInfo() << "Launching service using newly generated igniter.";
-            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+            logInfo() << "Relaunching service using newly generated igniter.";
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            else
+                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
 
         case PhpSite: {
-
 
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
@@ -522,6 +528,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(igniterFile, jsonResult);
 
             logInfo() << "Starting server application";
+            QFile::remove(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
             touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
@@ -537,8 +544,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Launching service using newly generated igniter.";
-            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            else
+                QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
