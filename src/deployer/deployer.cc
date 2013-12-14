@@ -233,6 +233,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case RubySite: {
 
+            logWarn() << getDiskFree(getenv("HOME"));
+
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
             WebDatabase database = NoDB;
