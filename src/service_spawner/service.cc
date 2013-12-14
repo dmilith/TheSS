@@ -666,7 +666,7 @@ void SvdService::cronSitterSlot() {
             connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), process, SLOT(deleteLater(void)));
 
         } else {
-            QFile::remove(indicator);
+            QFile::remove(indicator); /* XXX: FIXME: TODO: there's a bug here, when crontab is set to respond on each minute each hour and each day. Case: 0/1 * * * * ? will cause cron to invoke once and once only */
         }
 
         delete crontabEntry;
