@@ -233,10 +233,13 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case RubySite: {
             auto diskMap = getDiskFree(getenv("HOME"));
             Q_FOREACH(auto map, diskMap.keys()) {
-                if ((diskMap.take(map)) < 1024)
-                    logWarn() << "Detected very small amount of disk space on remote machine. Consider making cleanup.";
-                else
-                    logDebug() << "Sufficient disk space detected for:" << map;
+                auto value = diskMap.take(map);
+                if (value < MINIMUM_DISK_SPACE_IN_MEGS) {
+                    logError() << "Insufficient disk space (less than " << QString::number(MINIMUM_DISK_SPACE_IN_MEGS) << "MiB) detected on remote destination machine. Deploy aborted!";
+                    raise(SIGTERM);
+
+                } else
+                    logInfo() << "Sufficient disk space detected for:" << map << "(" + QString::number(value) + " MiB)";
             }
 
             /* generate database.yml for Ruby app */

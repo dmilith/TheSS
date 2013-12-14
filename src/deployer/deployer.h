@@ -18,6 +18,7 @@
 
 
 #define MAX_DEPLOYS_TO_KEEP 5 /* keep 5 deploys in releases */
+#define MINIMUM_DISK_SPACE_IN_MEGS 512
 
 
 inline QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port) {
