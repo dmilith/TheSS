@@ -292,6 +292,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
 
+            QMap<QString, QString> serviceWorkers; /* additional workers of service: (startCommands, stopCommands) */
             QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
             if (QFile::exists(procFile)) {
                 QStringList entries = readFileContents(procFile).trimmed().split("\n");
@@ -305,10 +306,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
                         logDebug() << "Worker entry:" << procfileTail << "on port:" << servPort;
-                        jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+                        jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
                     } else {
-                        logInfo() << "Found entry:" << procfileHead;
+                        logInfo() << "Found an entry:" << procfileHead;
+                        QString procPidFile = procfileHead + ".pid";
 
+                        serviceWorkers.insert( /* (start commands, stop commands) : */
+                            "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -P " + procPidFile + " -L " + servicePath + DEFAULT_SERVICE_LOG_FILE + "-" + procfileHead + " -d ", /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
+                            "kill -TERM $(cat " + procPidFile + ")");
                     }
                 }
 
@@ -318,6 +323,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
+            logDebug() << "And workers:" << serviceWorkers;
 
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
@@ -383,6 +389,17 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+
+            if (serviceWorkers.size() > 0) {
+                logInfo() << "Launching service workers";
+                Q_FOREACH(QString cmd, serviceWorkers.keys()) {
+                    logDebug() << "Launching:" << cmd;
+                    SvdProcess *workerA = new SvdProcess(cmd, getuid(), false);
+                    workerA->spawnProcess(cmd);
+                    workerA->waitForFinished(-1);
+                    workerA->deleteLater();
+                }
+            }
 
             logInfo() << "Launching service using newly generated igniter.";
             QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
