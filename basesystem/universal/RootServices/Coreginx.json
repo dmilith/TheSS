@@ -3,7 +3,7 @@
     "staticPort": 80,
     "schedulerActions": [
         {
-            "cronEntry": "0/1 * * * * ?",
+            "cronEntry": "*/2 * * * * ?",
             "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1"
 
         }
