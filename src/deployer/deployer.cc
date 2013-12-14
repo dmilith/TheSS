@@ -222,8 +222,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
             logInfo() << "Re-Launching service:" << serviceName;
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
-            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -312,6 +312,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->waitForFinished(-1);
             clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
+
             /* generate default port for service */
             QString portFilePath = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR) + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
             if (not QFile::exists(portFilePath)) {
@@ -319,7 +320,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 logDebug() << "Generated port:" << QString::number(port);
                 writeToFile(portFilePath, QString::number(port));
             }
-
 
             logInfo() << "Building assets";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
@@ -354,9 +354,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
-            logInfo() << "Re-Launching service using newly generated igniter.";
-            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            logInfo() << "Launching service using newly generated igniter.";
+            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -430,9 +430,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
-            logInfo() << "Re-Launching service using newly generated igniter.";
-            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            logInfo() << "Launching service using newly generated igniter.";
+            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
@@ -468,9 +468,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
-            logInfo() << "Re-Launching service using newly generated igniter.";
-            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            logInfo() << "Launching service using newly generated igniter.";
+            QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+            touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
         } break;
 
