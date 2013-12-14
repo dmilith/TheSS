@@ -113,7 +113,6 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 
 
     Q_FOREACH(auto val, appDependencies) {
-        logInfo() << "Launching required service:" << val;
         val[0] = val.at(0).toUpper();
         QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
         getOrCreateDir(location);
@@ -232,8 +231,13 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
         case RubySite: {
-
-            logWarn() << getDiskFree(getenv("HOME"));
+            auto diskMap = getDiskFree(getenv("HOME"));
+            Q_FOREACH(auto map, diskMap.keys()) {
+                if ((diskMap.take(map)) < 1024)
+                    logWarn() << "Detected very small amount of disk space on remote machine. Consider making cleanup.";
+                else
+                    logDebug() << "Sufficient disk space detected for:" << map;
+            }
 
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
