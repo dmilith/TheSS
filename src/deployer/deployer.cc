@@ -289,6 +289,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             Q_FOREACH(auto val, appDependencies) {
                 logInfo() << "Launching required service:" << val;
+                val[0] = val.at(0).toUpper();
                 QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
                 getOrCreateDir(location);
                 QFile::remove(location + START_TRIGGER_FILE);
@@ -343,6 +344,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case NodeSite: {
             Q_FOREACH(auto val, appDependencies) {
                 logInfo() << "Launching required service:" << val;
+                val[0] = val.at(0).toUpper();
                 QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
                 getOrCreateDir(location);
                 QFile::remove(location + START_TRIGGER_FILE);
@@ -430,6 +432,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case PhpSite: {
             Q_FOREACH(auto val, appDependencies) {
                 logInfo() << "Launching required service:" << val;
+                val[0] = val.at(0).toUpper();
                 QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
                 getOrCreateDir(location);
                 QFile::remove(location + START_TRIGGER_FILE);
