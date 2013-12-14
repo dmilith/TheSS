@@ -419,7 +419,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     jsonResult += cmd + " ";
                 }
                 jsonResult += "\"} }";
-                logInfo() << "Updating igniter with data:" << jsonResult;
+                logDebug() << "Updating igniter with data:" << jsonResult;
                 writeToFile(igniterFile, jsonResult);
             }
 
