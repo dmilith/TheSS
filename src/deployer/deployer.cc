@@ -232,7 +232,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logDebug() << "Checking service installed state";
             getOrCreateDir(QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + serviceName);
-            touch(QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + serviceName + "/" + serviceName + ".installed");
+            touch(QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + serviceName + "/" + serviceName.toLower() + ".installed");
 
             /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
@@ -711,9 +711,6 @@ int main(int argc, char *argv[]) {
         }
         raise(SIGTERM);
     }
-
-    serviceName[0] = serviceName.at(0).toUpper();
-    logDebug() << "Capitaled service name:" << serviceName;
 
     if (serviceName.trimmed().isEmpty()) {
         logError() << "Name not given! Try 'svddeploy -n your-git-repo-name -o domain.name -b branch -s stage'";

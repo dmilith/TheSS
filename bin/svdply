@@ -11,7 +11,10 @@ else
 fi
 
 readonly APP_DOMAIN="${1}"
-readonly APP_NAME="$(echo "${1}" | awk -F '[.]' '{print $1}')"
+
+
+APP_NAME="$(echo "${1}" | awk -F '[.]' '{print $1}')"
+readonly APP_NAME="$(${PRINTF_BIN} "${APP_NAME}" | ${CUT_BIN} -c1 | ${TR_BIN} '[a-z]' '[A-Z]')$(${PRINTF_BIN} "${APP_NAME}" | ${SED_BIN} 's/^[a-zA-Z]//')"
 readonly APP_BRANCH="$(git name-rev --name-only HEAD)"
 readonly APP_REPOSITORY="$(pwd)"
 readonly APP_TARBALL="${APP_NAME}.tar.gz"
