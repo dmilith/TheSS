@@ -180,6 +180,32 @@ X,Y,Z   <span class="c"># SEQUENCE: passes when value is exactly one of X or Y o
 <li>Supports basic UI - <code>svdpanel</code> - for easy service managment (based on ncurses library).</li>
 <li>Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set <code>touch SERVICE_PREFIX/.validationFailure</code> in hook commands.</li>
 <li>Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).</li>
+<li>Supports Web Application deploying (since 0.66.x). Example deployer invoke:</li>
+</ul><div class="highlight highlight-sh"><pre> svdply myapp.mydomain.com
+<span class="c">#|      |     |</span>
+<span class="c">#|      |      \____ "domain" part, used by:</span>
+<span class="c">#|      |            - locating host server address</span>
+<span class="c">#|       \           - remote ssh connection</span>
+<span class="c">#|        \</span>
+<span class="c">#|         \________ "name" part, used as:</span>
+<span class="c">#|                   - generated igniter name (~/Igniters/myapp.json)</span>
+<span class="c"># \                  - git repository push address (by dafault: myapp.mydomain.com:Repos/myapp.git)</span>
+<span class="c">#  \                 - git repository name (on remote)</span>
+<span class="c">#   \</span>
+<span class="c">#    \______________ will do the following:</span>
+<span class="c">#                    - a ssh connection will be created with myapp.mydomain.com server</span>
+<span class="c">#                    - if "svd" remote doesn't exists on remote host, will be created</span>
+<span class="c">#                    - current branch of git repository (from current directory) will be pushed to "svd" remote</span>
+<span class="c">#                    - svddeployer will be launched on remote machine and it will deploy ServeD Web App automatically.</span>
+<span class="c">#</span>
+
+curl http://myapp.mydomain.com
+<span class="c"># and if Web App was properly configured it will just happily reply on request :)</span>
+<span class="c">#</span>
+</pre></div>
+
+<ul>
+<li>Added Procfile (Heroku-compatible) process list support for Ruby deployer. If no Procfile detected in deployed app, default will be used.</li>
 </ul><h2>
 <a name="igniter-examples" class="anchor" href="#igniter-examples"><span class="octicon octicon-link"></span></a>Igniter examples:</h2>
 
@@ -230,6 +256,7 @@ bin/svdpanel
 <li>On OSX hosts, there's a very low default limit of maximum opened files (256). If user defined more than 10 services with such default, svdpanel may become unstable. It's recommended to increase this value to 2048 by <code>ulimit -n 2048</code>.</li>
 <li>Sofin build mechanism is known to be in conflict with other software managment solutions like: BSD Ports, HomeBrew, MacPorts, Fink. Keep that in mind before reporting problems.</li>
 <li>It's recommended to change shell by doing: <code>chsh -s /Software/Zsh/exports/zsh</code> for each user which will use TheSS. TheSS internally uses Shell from that path by default (currently Shell path is hardcoded due to lack of TheSS config in current version)</li>
+<li>Internal cron implementation will execute scheduler task only ONCE, for cron entries that passes each check (f.e. */1 * * * * ?).</li>
 </ul><h2>
 <a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
 
@@ -252,7 +279,7 @@ bin/svdpanel
     </div>
     <footer>
       <div class="owner">
-      <p><a href="https://github.com/VerKnowSys" class="avatar"><img src="https://2.gravatar.com/avatar/774171fdf63b4d80ceff8fb307ca12aa?d=https%3A%2F%2Fidenticons.github.com%2F0d76cc239133e4a62762ede05e0ca7b1.png&amp;r=x&amp;s=60" width="48" height="48"/></a> <a href="https://github.com/VerKnowSys">VerKnowSys</a> maintains <a href="https://github.com/VerKnowSys/TheSS">Thess</a></p>
+      <p><a href="https://github.com/VerKnowSys" class="avatar"><img src="https://1.gravatar.com/avatar/774171fdf63b4d80ceff8fb307ca12aa?d=https%3A%2F%2Fidenticons.github.com%2F0d76cc239133e4a62762ede05e0ca7b1.png&amp;r=x&amp;s=60" width="48" height="48"/></a> <a href="https://github.com/VerKnowSys">VerKnowSys</a> maintains <a href="https://github.com/VerKnowSys/TheSS">Thess</a></p>
 
 
       </div>
