@@ -10,7 +10,6 @@
         "commands": "sofin get postgresql",
         "expectOutput": "All done"
     },
-    "watchHttp": ["https://postgresql.org/"],
     "configure": {
         "commands": "
 test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf
