@@ -314,7 +314,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->waitForFinished(-1);
 
             /* generate default port for service */
-            QString portFilePath = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR) + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
+            getOrCreateDir(portsDir);
+            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
             if (not QFile::exists(portFilePath)) {
                 int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
                 logDebug() << "Generated port:" << QString::number(port);
