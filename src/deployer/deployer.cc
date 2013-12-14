@@ -291,7 +291,31 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+
+            QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
+            if (QFile::exists(procFile)) {
+                QStringList entries = readFileContents(procFile).trimmed().split("\n");
+                logInfo() << "Proceeding with Procfile entries:" << entries;
+                Q_FOREACH(QString entry, entries) {
+                    QString procfileHead = entry.split(":").at(0);
+                    QString procfileTail = entry.split(":").at(1);
+                    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+                    procfileTail = procfileTail.replace("$PORT", servPort); /* replace $PORT value of Procfile if exists */
+
+                    if (procfileHead == "web") { /* web worker is defined here */
+                        logInfo() << "Found web worker:" << procfileHead;
+                        logDebug() << "Worker entry:" << procfileTail << "on port:" << servPort;
+                        jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+                    } else {
+                        logInfo() << "Found entry:" << procfileHead;
+                    }
+                }
+
+            } else { /* generate standard igniter entry */
+
+                logInfo() << "Generating default entry (no Procfile used)";
+                jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+            }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             /* write igniter to user igniters */
