@@ -500,6 +500,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
 
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
+                logInfo() << "Older service already running. Invoking stop for:" << serviceName;
+                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+            }
+
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
@@ -515,10 +520,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
                 logDebug() << "Generated port:" << QString::number(port);
                 writeToFile(portFilePath, QString::number(port));
-            }
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-                logInfo() << "Older service already running. Invoking stop for:" << serviceName;
-                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
             }
 
             logInfo() << "Generating http proxy configuration";
