@@ -467,10 +467,18 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = "", content = "";
 
             /* write to service env file */
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "NODE_ENV=" + stage + "\n";
+            envEntriesString += "NODE_PORT=" + servPort + "\n";
+            envEntriesString += "NODE_DOMAIN=" + domain + "\n";
+            envEntriesString += "NODE_CLUSTER_MONITOR_PORT=" + QString::number(12345) + "\n"; // XXX: hack
+            envEntriesString += "NODE_DATASTORE_SERVICE_NAME=Redis-usock\n"; // XXX hardcode
+            envEntriesString += "NODE_WEBSOCKET_PORT=12344\n"; // XXX hardcode
+            envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
