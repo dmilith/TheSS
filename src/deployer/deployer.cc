@@ -507,6 +507,20 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
+            /* generate default port for service */
+            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
+            getOrCreateDir(portsDir);
+            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+            if (not QFile::exists(portFilePath)) {
+                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+                logDebug() << "Generated port:" << QString::number(port);
+                writeToFile(portFilePath, QString::number(port));
+            }
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
+                logInfo() << "Older service already running. Invoking stop for:" << serviceName;
+                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+            }
+
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
