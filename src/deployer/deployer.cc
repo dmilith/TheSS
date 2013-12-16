@@ -289,6 +289,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
             }
 
+            logInfo() << "Invoking bin/build of project (if exists)";
+            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
@@ -493,6 +497,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
+            logInfo() << "Invoking bin/build of project (if exists)";
+            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             QString deps = "", content = "";
 
@@ -588,9 +596,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
     }
 
-    logInfo() << "Invoking bin/build of project (if exists)";
-    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-    clne->waitForFinished(-1);
     clne->deleteLater();
 }
 
