@@ -463,24 +463,38 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
-            QString deps = "", content = "";
+            /* generate default port for service */
+            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
+            getOrCreateDir(portsDir);
+            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+            QString backupPortFilePath = portsDir + QString("1"); /* websockets/ backup port */
+            if (not QFile::exists(portFilePath)) {
+                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+                logDebug() << "Generated main port:" << QString::number(port);
+                writeToFile(portFilePath, QString::number(port));
+            }
+            if (not QFile::exists(backupPortFilePath)) {
+                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+                logDebug() << "Generated backup port:" << QString::number(port);
+                writeToFile(backupPortFilePath, QString::number(port));
+            }
 
-            /* write to service env file */
+            /* generate env and write it to service.env file */
             QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "NODE_ENV=" + stage + "\n";
             envEntriesString += "NODE_PORT=" + servPort + "\n";
             envEntriesString += "NODE_DOMAIN=" + domain + "\n";
-            envEntriesString += "NODE_CLUSTER_MONITOR_PORT=" + QString::number(12345) + "\n"; // XXX: hack
-            envEntriesString += "NODE_DATASTORE_SERVICE_NAME=Redis-usock\n"; // XXX hardcode
-            envEntriesString += "NODE_WEBSOCKET_PORT=12344\n"; // XXX hardcode
+            envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
             envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
+
+            QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
+            QString deps = "", content = "";
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
@@ -488,7 +502,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
             appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
-            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
+            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"portsPool\": 2, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
@@ -511,16 +525,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
-            /* generate default port for service */
-            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
-            getOrCreateDir(portsDir);
-            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
-            if (not QFile::exists(portFilePath)) {
-                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-                logDebug() << "Generated port:" << QString::number(port);
-                writeToFile(portFilePath, QString::number(port));
-            }
 
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
