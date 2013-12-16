@@ -218,7 +218,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
             logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
@@ -310,7 +310,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 Q_FOREACH(QString entry, entries) {
                     QString procfileHead = entry.split(":").at(0);
                     QString procfileTail = entry.split(":").at(1);
-                    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+                    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
                     procfileTail = procfileTail.replace("$PORT", servPort); /* replace $PORT value of Procfile if exists */
 
                     if (procfileHead == "web") { /* web worker is defined here */
@@ -403,7 +403,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->waitForFinished(-1);
 
             logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
@@ -489,7 +489,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
 
             /* generate env and write it to service.env file */
-            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
@@ -540,7 +540,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
             logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
             logDebug() << "Generated proxy contents:" << contents;
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
@@ -581,7 +581,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->waitForFinished(-1);
 
             logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
 
             logDebug() << "Generated proxy contents:" << contents;
