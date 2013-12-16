@@ -141,7 +141,7 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 * Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set `touch SERVICE_PREFIX/.validationFailure` in hook commands.
 * Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).
 * Supports Web Applications deployment - more about it below (since 0.66.x).
-* Supports Procfile (Heroku-compatible) process list support for RubySite deployment. If no Procfile detected in deployed app, default will be used.
+* Supports Procfile (Heroku-compatible) process list for RubySite deployment. If no Procfile detected in deployed app, default will be used.
 
 
 ## Igniter examples:
@@ -207,14 +207,18 @@ directory to: ~/Repos/myapp.git, hence current directory, must be a git reposito
 #|        \
 #|         \________ "name" part, used in:
 #|                   - igniter name (~/Igniters/myapp.json)
-# \                  - git repository push address (by dafault: myapp.mydomain.com:Repos/myapp.git)
+# \                  - git repository push address
+#  \                   (by dafault: myapp.mydomain.com:Repos/myapp.git)
 #  \                 - git repository name (on remote)
 #   \
 #    \______________ will:
 #                    - do ssh connection to $USER@myapp.mydomain.com host
-#                    - if "svd" remote in current git repository doesn't exists, will be created both on local and remote hosts
-#                    - current branch of git repository (from current directory) will be pushed to "svd" remote
-#                    - svddeployer will be launched on remote machine, and do the rest of web-app deploy
+#                    - if "svd" remote in current git repository doesn't
+#                      exists, will be created both on local and remote hosts
+#                    - current branch of git repository (from current
+#                      directory) will be pushed to "svd" remote
+#                    - svddeployer will be launched on remote machine, and
+#                      do the rest of web-app deploy
 #
 
 curl http://myapp.mydomain.com
@@ -229,7 +233,8 @@ Here're some assummptions for certain kinds of web-applications:
 * Following shell environment values are passed for each web-app:
 
 ```sh
-LANG                        # UTF8 value of main locale that app should have. By default it's "en_GB.UTF-8"
+LANG                        # UTF8 value of main locale that app should use.
+                            # By default it's "en_GB.UTF-8"
 ```
 
 ### For Nodejs web-apps:
@@ -238,11 +243,14 @@ LANG                        # UTF8 value of main locale that app should have. By
 
 ```sh
 NODE_ROOT                   # absolute path to root directory of web-app
-NODE_PORT                   # value contains generated port on which web-app main worker should listen on
+NODE_PORT                   # value contains generated port on which web-app
+                            # main worker should listen on
 NODE_ENV                    # value of environment stage
-NODE_DOMAIN                 # value of domain name - what user did specify by "svdply domain.name"
-NODE_WEBSOCKET_PORT         # value of additional port frequently used for websockets
-                            # (this env might dissapear in future, cause it might be done automagically)
+NODE_DOMAIN                 # value of domain name - what user did specify
+                            # by doing "svdply domain.name"
+NODE_WEBSOCKET_PORT         # value of additional port frequently used for
+                            # websockets (this env might dissapear in future,
+                            # cause it might be done automagically)
 NODE_WEBSOCKET_CHANNEL_NAME # value of channel name of websockets root
 
 # all of these values are accessible through process.env.VALUE_NAME on web-app side
@@ -253,8 +261,9 @@ NODE_WEBSOCKET_CHANNEL_NAME # value of channel name of websockets root
 * Following shell environment values are passed to web-app:
 
 ```sh
-SSL_CERT_FILE               # absolute path to cacerts file - it's generated and handled automatically by
-                            # process of web-app deployment
+SSL_CERT_FILE               # absolute path to cacerts file - generated
+                            # and handled automatically by web-app
+                            # deployment process
 RAILS_ENV                   # value of environment stage of Rails
 RAKE_ENV                    # value of environment stage of Rake
 ```
