@@ -140,33 +140,8 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 * Supports basic UI - `svdpanel` - for easy service managment (based on ncurses library).
 * Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set `touch SERVICE_PREFIX/.validationFailure` in hook commands.
 * Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).
-* Supports Web Application deploying (since 0.66.x). Example deployer invoke:
-
-```sh
- svdply myapp.mydomain.com
-#|      |     |
-#|      |      \____ "domain" part, used by:
-#|      |            - locating host server address
-#|       \           - remote ssh connection
-#|        \
-#|         \________ "name" part, used as:
-#|                   - generated igniter name (~/Igniters/myapp.json)
-# \                  - git repository push address (by dafault: myapp.mydomain.com:Repos/myapp.git)
-#  \                 - git repository name (on remote)
-#   \
-#    \______________ will do the following:
-#                    - a ssh connection will be created with myapp.mydomain.com server
-#                    - if "svd" remote doesn't exists on remote host, will be created
-#                    - current branch of git repository (from current directory) will be pushed to "svd" remote
-#                    - svddeployer will be launched on remote machine and it will deploy ServeD Web App automatically.
-#
-
-curl http://myapp.mydomain.com
-# and if Web App was properly configured it will just happily reply on request :)
-#
-```
-
-* Added Procfile (Heroku-compatible) process list support for Ruby deployer. If no Procfile detected in deployed app, default will be used.
+* Supports Web Applications deployment - more about it below (since 0.66.x).
+* Supports Procfile (Heroku-compatible) process list support for RubySite deployment. If no Procfile detected in deployed app, default will be used.
 
 
 ## Igniter examples:
@@ -209,6 +184,79 @@ mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start # (this is an ex
 bin/svdpanel
 # then launch svdss in background by pressing F10 (if it's not already running)
 # in panel, hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.
+```
+
+
+
+## Web deployer, and assumptions
+TheSS provides script called `svdply`. It's designed to be launched on developer machine from local git repository.
+It automatically performs deploy of supported web application from current directory, to machine (accessible
+through ssh) on specified domain. First part of subdomain will be app name shown by `svdpanel` on remote side.
+On first deploy `svdply` will create bare repository from current directory, and send it to remote
+directory to: ~/Repos/myapp.git, hence current directory, must be a git repository (no other SCMs supported for now).
+
+
+# Example deployer invocation:
+
+```sh
+ svdply myapp.mydomain.com
+#|      |     |
+#|      |      \____ "domain" part, used to:
+#|      |            - locate host server address
+#|       \           - do remote ssh connection
+#|        \
+#|         \________ "name" part, used in:
+#|                   - igniter name (~/Igniters/myapp.json)
+# \                  - git repository push address (by dafault: myapp.mydomain.com:Repos/myapp.git)
+#  \                 - git repository name (on remote)
+#   \
+#    \______________ will:
+#                    - do ssh connection to $USER@myapp.mydomain.com host
+#                    - if "svd" remote in current git repository doesn't exists, will be created both on local and remote hosts
+#                    - current branch of git repository (from current directory) will be pushed to "svd" remote
+#                    - svddeployer will be launched on remote machine, and do the rest of web-app deploy
+#
+
+curl http://myapp.mydomain.com
+# and if Web App was properly configured it will just happily reply on request :)
+```
+
+Please note that, you may use svdpanel to monitor your app with your dependencies on remote side to watch deployment progress.
+Here're some assummptions for certain kinds of web-applications:
+
+# For All web-apps:
+* By default deploy process invokes `sofin dependencies` command which takes `.dependencies` file from repository root dir to determine all required software for web app (to be built properly). If file isn't detected, nothing wrong happens. For instance if you like to deploy a static web application, you may don't have `.dependencies` file at all.
+* Following shell environment values are passed for each web-app:
+
+```sh
+LANG                        # UTF8 value of main locale that app should have. By default it's "en_GB.UTF-8"
+```
+
+# For Nodejs web-apps:
+* By default you might want to have `node` entry in your `.dependencies` file.
+* Following shell environment values are passed to web-app:
+
+```sh
+NODE_ROOT                   # absolute path to root directory of web-app
+NODE_PORT                   # value contains generated port on which web-app main worker should listen on
+NODE_ENV                    # value of environment stage
+NODE_DOMAIN                 # value of domain name - what user did specify by "svdply domain.name"
+NODE_WEBSOCKET_PORT         # value of additional port frequently used for websockets
+                            # (this env might dissapear in future, cause it might be done automagically)
+NODE_WEBSOCKET_CHANNEL_NAME # value of channel name of websockets root
+
+# all of these values are accessible through process.env.VALUE_NAME on web-app side
+```
+
+# Rails
+* By default you might want to have at least `ruby` and `node` entries in your `.dependencies` file.
+* Following shell environment values are passed to web-app:
+
+```sh
+SSL_CERT_FILE               # absolute path to cacerts file - it's generated and handled automatically by
+                            # process of web-app deployment
+RAILS_ENV                   # value of environment stage of Rails
+RAKE_ENV                    # value of environment stage of Rake
 ```
 
 
