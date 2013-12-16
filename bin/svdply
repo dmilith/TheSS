@@ -54,11 +54,12 @@ first_deploy () {
     rm -rf ./${APP_NAME}.git
     ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
     cd "${cwd}"
-    note "Done pushing repo to ${DEFAULT_REMOTE} /Repos remote!"
+    note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
 
-
-note "Deploying to: $(ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "uname -a" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}")"
+conn_check=$(ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "uname -a")
+test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}"
+note "Deploying to: ${conn_check}"
 
 note "Pushing current repository state to remote: ${DEFAULT_REMOTE}, on branch: ${APP_BRANCH}"
 git remote rm ${DEFAULT_REMOTE}
