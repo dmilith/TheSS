@@ -210,6 +210,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
+
+            logInfo() << "Invoking bin/build of project (if exists)";
+            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
             logInfo() << "Generating http proxy configuration";
@@ -288,10 +293,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 logInfo() << "Older service already running. Invoking stop for:" << serviceName;
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
             }
-
-            logInfo() << "Invoking bin/build of project (if exists)";
-            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
@@ -397,6 +398,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create db:migrate >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
+            logInfo() << "Invoking bin/build of project (if exists)";
+            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
             QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
@@ -497,10 +502,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
-            logInfo() << "Invoking bin/build of project (if exists)";
-            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             QString deps = "", content = "";
 
@@ -529,6 +530,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
+
+            logInfo() << "Invoking bin/build of project (if exists)";
+            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
@@ -570,6 +575,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
+
+            logInfo() << "Invoking bin/build of project (if exists)";
+            clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->waitForFinished(-1);
 
             logInfo() << "Generating http proxy configuration";
             QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
