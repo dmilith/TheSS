@@ -196,7 +196,7 @@ On first deploy `svdply` will create bare repository from current directory, and
 directory to: ~/Repos/myapp.git, hence current directory, must be a git repository (no other SCMs supported for now).
 
 
-# Example deployer invocation:
+### Example deployer invocation:
 
 ```sh
  svdply myapp.mydomain.com
@@ -224,7 +224,7 @@ curl http://myapp.mydomain.com
 Please note that, you may use svdpanel to monitor your app with your dependencies on remote side to watch deployment progress.
 Here're some assummptions for certain kinds of web-applications:
 
-# For All web-apps:
+### For All web-apps:
 * By default deploy process invokes `sofin dependencies` command which takes `.dependencies` file from repository root dir to determine all required software for web app (to be built properly). If file isn't detected, nothing wrong happens. For instance if you like to deploy a static web application, you may don't have `.dependencies` file at all.
 * Following shell environment values are passed for each web-app:
 
@@ -232,7 +232,7 @@ Here're some assummptions for certain kinds of web-applications:
 LANG                        # UTF8 value of main locale that app should have. By default it's "en_GB.UTF-8"
 ```
 
-# For Nodejs web-apps:
+### For Nodejs web-apps:
 * By default you might want to have `node` entry in your `.dependencies` file.
 * Following shell environment values are passed to web-app:
 
@@ -248,7 +248,7 @@ NODE_WEBSOCKET_CHANNEL_NAME # value of channel name of websockets root
 # all of these values are accessible through process.env.VALUE_NAME on web-app side
 ```
 
-# Rails
+### For Rails web-apps
 * By default you might want to have at least `ruby` and `node` entries in your `.dependencies` file.
 * Following shell environment values are passed to web-app:
 
