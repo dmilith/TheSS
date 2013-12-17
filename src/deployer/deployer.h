@@ -378,6 +378,11 @@ QString getDbName(WebDatabase db) {
     }
 }
 
+void generateServicePorts(QString servicePath, int amount = 1);
+void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);
+void prepareSharedSymlinks(QString& latestReleaseDir, QString& servicePath, QString& stage);
+void prepareHttpProxy(QString& servicePath, QString& appType, QString& latestReleaseDir, QString& domain, QString& serviceName, QString& stage);
+
 void installDependencies();
 void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& stage);
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);

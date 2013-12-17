@@ -18,6 +18,75 @@
 #include "deployer.h"
 
 
+void generateServicePorts(QString servicePath, int amount) {
+    /* generate default port for service */
+    if (amount > 100) {
+        logWarn() << "Are you serious? You want to reserve more than a hundred ports?";
+    }
+    if (amount < 1) {
+        amount = 1;
+    }
+    QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
+    getOrCreateDir(portsDir);
+    QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+    if (not QFile::exists(portFilePath)) {
+        int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+        logDebug() << "Generated main port:" << QString::number(port);
+        writeToFile(portFilePath, QString::number(port));
+    }
+    for (int i = 2; i <= amount + 1; i++) {
+        QString backupPortFilePath = portsDir + QString::number(i);
+        if (not QFile::exists(backupPortFilePath)) {
+            int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+            logDebug() << "Generated additional port:" << QString::number(port);
+            writeToFile(backupPortFilePath, QString::number(port));
+        }
+    }
+}
+
+
+void prepareHttpProxy(QString& servicePath, WebAppTypes appType, QString& latestReleaseDir, QString& domain, QString& serviceName, QString& stage) {
+    logInfo() << "Generating http proxy configuration";
+    QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+    QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
+    logDebug() << "Generated proxy contents:" << contents;
+    writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+}
+
+
+void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage) {
+    logInfo() << "Preparing shared dir for service start";
+    getOrCreateDir(servicePath + "/shared/" + stage + "/public/shared"); /* /public usually exists */
+    getOrCreateDir(servicePath + "/shared/" + stage + "/log");
+    getOrCreateDir(servicePath + "/shared/" + stage + "/tmp");
+    getOrCreateDir(servicePath + "/shared/" + stage + "/config");
+    getOrCreateDir(latestReleaseDir + "/public");
+    logInfo() << "Purging app release /log and /tmp dirs.";
+    removeDir(latestReleaseDir + "/log");
+    removeDir(latestReleaseDir + "/tmp");
+}
+
+
+void prepareSharedSymlinks(QString& latestReleaseDir, QString& servicePath, QString& stage) {
+    auto clne = new SvdProcess("shared_symlinks", getuid(), false);
+    logInfo() << "Symlinking and copying shared directory in current release";
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
+        cd ../../shared/" + stage + "/config/ \n\
+        for i in *; do \n\
+            cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
+        done \n\
+    ");
+    clne->waitForFinished(-1);
+    clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->waitForFinished(-1);
+    clne->deleteLater();
+}
+
+
 void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch) {
     if (not QDir().exists(sourceRepositoryPath)) {
         logError() << "No source git repository found:" << sourceRepositoryPath;
@@ -217,13 +286,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
-            logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
-            logDebug() << "Generated proxy contents:" << contents;
-            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
-            logInfo() << "Launching service:" << serviceName;
+
+            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
+
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+            logInfo() << "Launching service:" << serviceName;
 
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
                 touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
@@ -258,15 +325,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
             content = databaseYmlEntry(database, stage, databaseName);
 
-            logInfo() << "Preparing shared dir for service start";
-            getOrCreateDir(servicePath + "/shared/" + stage + "/public/shared"); /* /public usually exists */
-            getOrCreateDir(servicePath + "/shared/" + stage + "/log");
-            getOrCreateDir(servicePath + "/shared/" + stage + "/tmp");
-            getOrCreateDir(servicePath + "/shared/" + stage + "/config");
-            getOrCreateDir(latestReleaseDir + "/public");
-            logInfo() << "Purging app release dir";
-            removeDir(latestReleaseDir + "/log");
-            removeDir(latestReleaseDir + "/tmp");
+            prepareSharedDirs(latestReleaseDir, servicePath, stage);
             writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
 
             /* write to service env file */
@@ -278,15 +337,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
-            /* generate default port for service */
-            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
-            getOrCreateDir(portsDir);
-            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
-            if (not QFile::exists(portFilePath)) {
-                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-                logDebug() << "Generated port:" << QString::number(port);
-                writeToFile(portFilePath, QString::number(port));
-            }
+            generateServicePorts(servicePath);
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
@@ -372,20 +423,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            logInfo() << "Symlinking and copying shared directory in current release";
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
-                cd ../../shared/" + stage + "/config/ \n\
-                for i in *; do \n\
-                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
-                done \n\
-            ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
+            prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
 
             logInfo() << "Building assets";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
@@ -420,11 +458,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
-            logDebug() << "Generated proxy contents:" << contents;
-            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
@@ -439,47 +473,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case NodeSite: {
 
+            prepareSharedDirs(latestReleaseDir, servicePath, stage);
+            prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
 
-            logInfo() << "Preparing shared dir for service start";
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/public/shared"); /* /public usually exists */
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/log");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/tmp");
-            getOrCreateDir(latestReleaseDir + "/../../shared/" + stage + "/config");
-            getOrCreateDir(latestReleaseDir + "/public");
-            logInfo() << "Purging app release dir";
-            removeDir(latestReleaseDir + "/log");
-            removeDir(latestReleaseDir + "/tmp");
-
-            logInfo() << "Symlinking and copying shared directory in current release";
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
-                cd ../../shared/" + stage + "/config/ \n\
-                for i in *; do \n\
-                    cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 \n\
-                done \n\
-            ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-            clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
-
-            /* generate default port for service */
-            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
-            getOrCreateDir(portsDir);
-            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
-            QString backupPortFilePath = portsDir + QString("1"); /* websockets/ backup port */
-            if (not QFile::exists(portFilePath)) {
-                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-                logDebug() << "Generated main port:" << QString::number(port);
-                writeToFile(portFilePath, QString::number(port));
-            }
-            if (not QFile::exists(backupPortFilePath)) {
-                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-                logDebug() << "Generated backup port:" << QString::number(port);
-                writeToFile(backupPortFilePath, QString::number(port));
-            }
+            generateServicePorts(servicePath, 2); /* XXX: 2 ports for node by default */
 
             /* generate env and write it to service.env file */
             QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
@@ -532,11 +529,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
-            logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
-            logDebug() << "Generated proxy contents:" << contents;
-            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
+
+            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Relaunching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
@@ -556,15 +551,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 raise(SIGTERM);
             #endif
 
-            /* generate default port for service */
-            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
-            getOrCreateDir(portsDir);
-            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
-            if (not QFile::exists(portFilePath)) {
-                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-                logDebug() << "Generated port:" << QString::number(port);
-                writeToFile(portFilePath, QString::number(port));
-            }
+            generateServicePorts(servicePath);
 
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
                 logInfo() << "Older service already running. Invoking stop for:" << serviceName;
@@ -589,12 +576,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            logInfo() << "Generating http proxy configuration";
-            QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-            QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
-
-            logDebug() << "Generated proxy contents:" << contents;
-            writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
