@@ -221,7 +221,20 @@ directory to: ~/Repos/myapp.git, hence current directory, must be a git reposito
 #                      do the rest of web-app deploy
 #
 
+# params accepted by `svdply`:
+APP_STAGE       # default: "staging"
+APP_BRANCH      # default: "current_branch"
+APP_USER        # default: $USER
+APP_DOMAIN      # default: domain given as svdply param
+
+# examples:
+APP_STAGE=development svdply myapp.mydomain.com
+APP_STAGE=production APP_BRANCH=production svdply myapp.mydomain.com
+
+
+# then go to:
 curl http://myapp.mydomain.com
+
 # and if Web App was properly configured it will just happily reply on request :)
 ```
 
