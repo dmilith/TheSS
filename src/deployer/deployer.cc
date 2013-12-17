@@ -335,8 +335,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     jsonResult += part + " && ";
                 }
                 jsonResult += startResultJson;
+                jsonResult += "\"}";
+
+                Q_FOREACH(QString acmd, serviceWorkers.keys()) {
+                    QString cmd = serviceWorkers.take(acmd);
+                    jsonResult += QString(", \"stop\": {\"commands\": \"");
+                    jsonResult += cmd + " ";
+                }
                 jsonResult += "\"} }";
-                logDebug() << "GENERATED RUBY JSON:" << jsonResult;
 
             } else { /* generate standard igniter entry */
 
@@ -344,7 +350,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
-            logDebug() << "And workers:" << serviceWorkers;
 
             while (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
                 logDebug() << "Older service already running. Invoking stop for:" << serviceName;
@@ -420,31 +425,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
-
-            if (serviceWorkers.size() > 0) {
-                logInfo() << "Launching service workers";
-                Q_FOREACH(QString cmd, serviceWorkers.keys()) {
-                    logDebug() << "Launching:" << cmd;
-                    SvdProcess *workerA = new SvdProcess(cmd, getuid(), false);
-                    workerA->spawnProcess(cmd);
-                    workerA->waitForFinished(-1);
-                    workerA->deleteLater();
-                }
-
-                /* generating overriden stop hook including workers */
-                jsonResult[jsonResult.length() - 1] = ' '; /* hacky but we need to take last "}" from igniter */
-                Q_FOREACH(QString acmd, serviceWorkers.keys()) {
-                    QString cmd = serviceWorkers.take(acmd);
-                    logDebug() << "Entry:" << acmd << " - to be terminated with command:" << cmd;
-
-                    jsonResult += QString(", \"stop\": {\"commands\": \"");
-                    jsonResult += cmd + " ";
-                }
-                jsonResult += "\"} }";
-                logDebug() << "Updating igniter with data:" << jsonResult;
-                writeToFile(igniterFile, jsonResult);
-            }
-
 
             logInfo() << "Relaunching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
