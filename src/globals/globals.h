@@ -115,7 +115,7 @@
     #define DEFAULT_CRON_ENTRY "0 4 * * * ?" /* exactly 4am */
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
-    #define DEFAULT_CRON_CHECK_DELAY 10000000 // 10s
+    #define DEFAULT_CRON_CHECK_DELAY 60000000 // 60s
     #define DEFAULT_SERVICE_PAUSE_INTERVAL 5000000 // 5 seconds
     #define BABYSITTER_TIMEOUT_INTERVAL 30000000 // 30 seconds
     #define COLLECTOR_TIMEOUT_INTERVAL 1000000 // 1 second

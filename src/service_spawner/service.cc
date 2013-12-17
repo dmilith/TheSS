@@ -649,7 +649,7 @@ void SvdService::cronSitterSlot() {
 
         /* If current time matches cron entry.. */
         if (crontabEntry->cronMatch()) {
-            if (QFile::exists(indicator) and not crontabEntry->isContinuous()) {
+            if (QFile::exists(indicator)) {
                 logDebug() << "No need to launching cron service with indicator:" << indicator << "because it's already been invoked once for service:" << name;
                 delete crontabEntry;
                 config->deleteLater();
@@ -662,11 +662,16 @@ void SvdService::cronSitterSlot() {
             process->spawnProcess(entry->commands);
             process->waitForStarted(-1);
 
+            if (crontabEntry->isContinuous()) {
+                logDebug() << "Cron continuous mode, removing indicator.";
+                QFile::remove(indicator);
+            }
+
             /* asynchronous handling of cron jobs: */
             connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), process, SLOT(deleteLater(void)));
 
         } else {
-            QFile::remove(indicator); /* XXX: FIXME: TODO: there's a bug here, when crontab is set to respond on each minute each hour and each day. Case: 0/1 * * * * ? will cause cron to invoke once and once only */
+            QFile::remove(indicator);
         }
 
         delete crontabEntry;
