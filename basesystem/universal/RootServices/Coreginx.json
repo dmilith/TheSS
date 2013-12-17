@@ -3,9 +3,10 @@
     "staticPort": 80,
     "schedulerActions": [
         {
-            "cronEntry": "*/1 * * * * ?",
+            "cronEntry": "* * * * * ?",
             "commands": "
-while true; do
+for i in $(seq 1 5); do
+    printf \"------------RELOADING-NGINX-ENTRIES------------\" >> SERVICE_PREFIX/service.log 2>&1
     SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1 && printf 'Reloaded Coreginx proxy configurations.\n' >> SERVICE_PREFIX/service.log 2>&1
     sleep 10
 done

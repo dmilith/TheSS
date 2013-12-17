@@ -45,6 +45,11 @@ SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
 
     if (cronList.at(5) == "?") /* 5th position should be always "?" */
         this->commands = commands;
+
+    if ((entry == "* * * * * ?") || (entry.endsWith("/1 * * * * ?"))) {
+        logDebug() << "Cron continuous mode enabled.";
+        this->continuous = true;
+    }
 }
 
 
@@ -115,6 +120,11 @@ bool SvdCrontab::check(int currentTimeValue, int indx) {
     }
 
     return true;
+}
+
+
+bool SvdCrontab::isContinuous() {
+    return continuous;
 }
 
 

@@ -649,7 +649,7 @@ void SvdService::cronSitterSlot() {
 
         /* If current time matches cron entry.. */
         if (crontabEntry->cronMatch()) {
-            if (QFile::exists(indicator)) {
+            if (QFile::exists(indicator) and not crontabEntry->isContinuous()) {
                 logDebug() << "No need to launching cron service with indicator:" << indicator << "because it's already been invoked once for service:" << name;
                 delete crontabEntry;
                 config->deleteLater();
