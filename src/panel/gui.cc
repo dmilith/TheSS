@@ -553,6 +553,7 @@ void PanelGui::key(int ch){
             } else {
                 status = launchSS();
             }
+            displaySSLog();
             break;
 
 
@@ -570,6 +571,7 @@ void PanelGui::key(int ch){
             } else {
                 status = launchSS();
             }
+            displaySSLog();
             break;
 
 
