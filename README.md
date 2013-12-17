@@ -224,7 +224,7 @@ directory to: ~/Repos/myapp.git, hence current directory, must be a git reposito
 # params accepted by `svdply`:
 APP_STAGE       # default: "staging"
 APP_BRANCH      # default: "current_branch"
-APP_USER        # default: $USER
+APP_USER        # default: $USER used by ssh to connect to remote host
 APP_DOMAIN      # default: domain given as svdply param
 
 # examples:

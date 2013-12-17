@@ -38,31 +38,25 @@ WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
             case StaticSite:
                 this->typeName = "Static";
                 filesThatShouldExist << "/index.html";
-                filesThatShouldNotExist << "/package.json" << "/Gemfile" << "/Rakefile" << "/Procfile";
+                filesThatShouldNotExist << "/Gemfile" << "/Rakefile" << "/Procfile" << "/index.php";
                 break;
-
-            // case UnicornRubySite:
-            //     this->typeName = "RailsUnicorn";
-            //     filesThatShouldExist << "/config/unicorn.rb" << "/Gemfile" << "/Rakefile";
-            //     filesThatShouldNotExist << "/index.html";
-            //     break;
 
             case RubySite:
                 this->typeName = "Ruby";
-                filesThatShouldExist << "/Gemfile" << "/Rakefile"; // << "/config/boot.rb"
-                filesThatShouldNotExist << "/index.html";
+                filesThatShouldExist << "/Gemfile" << "/Rakefile";
+                filesThatShouldNotExist << "/index.html" << "/index.php";
                 break;
 
             case NodeSite:
                 this->typeName = "Node";
                 filesThatShouldExist << "/package.json";
-                filesThatShouldNotExist << "/index.html";
+                filesThatShouldNotExist << "/index.html" << "/Gemfile" << "/Rakefile" << "/Procfile";
                 break;
 
             case PhpSite:
                 this->typeName = "Php";
                 filesThatShouldExist << "/index.php";
-                filesThatShouldNotExist << "/Gemfile";
+                filesThatShouldNotExist << "/Gemfile" << "/package.json" << "/Rakefile" << "/Procfile";
                 break;
 
             default:
@@ -71,7 +65,7 @@ WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
         }
 
         if (shouldExist(filesThatShouldExist, path) and shouldNotExist(filesThatShouldNotExist, path)) {
-            logDebug() << "Passed all requirements of type:" << this->typeName;
+            logInfo() << "Detected web-app type:" << this->typeName;
             this->appType = i;
             return;
         }
