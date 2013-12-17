@@ -288,11 +288,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 writeToFile(portFilePath, QString::number(port));
             }
 
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-                logInfo() << "Older service already running. Invoking stop for:" << serviceName;
-                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
-            }
-
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
             appDependencies = deps.split("\n");
             logDebug() << "Gathering dependencies:" << appDependencies;
@@ -350,6 +345,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
             logDebug() << "And workers:" << serviceWorkers;
+
+            while (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
+                logDebug() << "Older service already running. Invoking stop for:" << serviceName;
+                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+                sleep(1);
+            }
 
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
