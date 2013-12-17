@@ -235,7 +235,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case RubySite: {
 
-            /* generate database.yml for Ruby app */
             QString databaseName = serviceName + "-" + stage;
             WebDatabase database = NoDB;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
@@ -301,12 +300,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
+            QString startResultJson = ""; /* command that actually launches main app */
 
             QMap<QString, QString> serviceWorkers; /* additional workers of service: (startCommands, stopCommands) */
             QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
             if (QFile::exists(procFile)) {
                 QStringList entries = readFileContents(procFile).trimmed().split("\n");
                 logInfo() << "Proceeding with Procfile entries:" << entries;
+
                 Q_FOREACH(QString entry, entries) {
                     QString procfileHead = entry.split(":").at(0);
                     QString procfileTail = entry.split(":").at(1);
@@ -316,7 +317,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
                         logDebug() << "Worker entry:" << procfileTail << "on port:" << servPort;
-                        jsonResult += QString(" \"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+                        startResultJson += " cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 & ";
                     } else {
                         logInfo() << "Found an entry:" << procfileHead;
                         QString procPidFile = procfileHead + ".pid";
@@ -332,6 +333,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         );
                     }
                 }
+
+                /* generate correct order of application execution after workers */
+                jsonResult += QString(" \"start\": {\"commands\": \"");
+                Q_FOREACH(QString part, serviceWorkers.keys()) { /* keys => start commands */
+                    jsonResult += part + " && ";
+                }
+                jsonResult += startResultJson;
+                jsonResult += "\"} }";
+                logDebug() << "GENERATED RUBY JSON:" << jsonResult;
 
             } else { /* generate standard igniter entry */
 
