@@ -297,9 +297,10 @@ server { \n\
         expires 30d; \n\
         break; \n\
     } \n\
-    location / { \n\
+    location ~ \\.php$ { \n\
         root " + latestReleaseDir + "; \n\
         index index.php; \n\
+        try_files = $uri @missing; \n\
         if (-f $request_filename) { \n\
             break; \n\
         } \n\
@@ -307,6 +308,9 @@ server { \n\
         fastcgi_param SCRIPT_FILENAME " + latestReleaseDir + "$fastcgi_script_name; \n\
         fastcgi_param PATH_INFO $fastcgi_script_name; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
+    } \n\
+    location @missing { \n\
+        rewrite ^ $scheme://$host/index.php permanent; \n\
     } \n\
     location ~ /\\. { \n\
         deny  all; \n\
