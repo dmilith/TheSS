@@ -6,8 +6,8 @@
             "cronEntry": "* * * * * ?",
             "commands": "
 for i in $(seq 1 5); do
-    printf \"$(date +%d%m%Y-%M%S)\n\" >> SERVICE_PREFIX/service.log 2>&1
-    printf \"\n------------reloading-nginx-entries------------\n\" >> SERVICE_PREFIX/service.log 2>&1
+    printf \"\n---$(date +%d%m%Y-%M%S)---\n\" >> SERVICE_PREFIX/service.log 2>&1
+    printf \"------------reloading-nginx-entries------------\n\" >> SERVICE_PREFIX/service.log 2>&1
     SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1 && printf \"-----Reloaded-Coreginx-proxy-configurations----\n\" >> SERVICE_PREFIX/service.log 2>&1
     sleep 10
 done
