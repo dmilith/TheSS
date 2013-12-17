@@ -562,6 +562,22 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 logError() << "Apple PHP deployments aren't supported yet!";
                 raise(SIGTERM);
             #endif
+
+            /* generate default port for service */
+            QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
+            getOrCreateDir(portsDir);
+            QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+            if (not QFile::exists(portFilePath)) {
+                int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+                logDebug() << "Generated port:" << QString::number(port);
+                writeToFile(portFilePath, QString::number(port));
+            }
+
+            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
+                logInfo() << "Older service already running. Invoking stop for:" << serviceName;
+                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+            }
+
             jsonResult += QString("\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D && echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"} }";
 
             /* write igniter to user igniters */
