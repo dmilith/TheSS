@@ -410,7 +410,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             }
 
-            logInfo() << "Running database create/ migrate/ seed";
+            logInfo() << "Running database migrations";
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
             clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
