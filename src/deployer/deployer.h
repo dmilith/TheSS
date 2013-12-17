@@ -297,7 +297,7 @@ server { \n\
         expires 30d; \n\
         break; \n\
     } \n\
-    location ~ \\.php$ { \n\
+    location / { \n\
         root " + latestReleaseDir + "; \n\
         index index.php; \n\
         try_files = $uri @missing; \n\
