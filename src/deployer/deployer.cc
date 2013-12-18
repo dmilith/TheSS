@@ -250,9 +250,15 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
         QFile::remove(location + START_TRIGGER_FILE);
         touch(location + START_TRIGGER_FILE);
 
+        int steps = 0;
         while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
             logDebug() << "Still waiting for service:" << val;
             sleep(1);
+            steps++;
+            if (steps > 10) {
+                logError() << "Exitting endless loop, cause service:" << val << "refuses to go down!";
+                break;
+            }
         }
     }
 
