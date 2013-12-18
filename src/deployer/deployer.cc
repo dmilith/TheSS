@@ -512,10 +512,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             switch (database) {
                 case Postgresql: {
                     logDebug() << "Creating user:" << databaseName;
-                    clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                    clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database) + " -p $(sofin port " + getDbName(database) + ") " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                     clne->waitForFinished(-1);
                     logDebug() << "Creating database:" << databaseName;
-                    clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Postgresql -p $(sofin port Postgresql) -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                    clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database) + " -p $(sofin port " + getDbName(database) + ") -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                     clne->waitForFinished(-1);
 
                 } break;
