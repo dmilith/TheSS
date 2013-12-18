@@ -325,64 +325,13 @@ server { \n\
 }
 
 
-inline QString databaseYmlEntry(WebDatabase db, QString stage, QString databaseName) {
-    switch (db) {
-
-        case Postgresql:
-            return stage + ": \n\
-  adapter: postgresql \n\
-  encoding: unicode \n\
-  database: " + databaseName + " \n\
-  username: " + databaseName + " \n\
-  pool: 5 \n\
-  port: <%= File.read(ENV['HOME'] + \"/SoftwareData/Postgresql/.ports/0\") %> \n\
-  host: <%= ENV['HOME'] + \"/SoftwareData/Postgresql/\" %> \n\
-"; // XXX: should contains latestRelease cause of potential database failure that might happen after db:migrate
-
-        case Mysql:
-            return ""; // NOTE: NYI
-
-        case Mongo:
-            return ""; // NOTE: NYI
-
-        case Redis:
-            return ""; // NOTE: NYI
-
-        case ElasticSearch:
-            return ""; // NOTE: NYI
-
-        case Sphinx:
-            return ""; // NOTE: NYI
-
-        case NoDB: /* NoDB means we might want to use SQLite3 driver */
-            return "\n\
-development: \n\
-  adapter: sqlite3 \n\
-  database: db/db_" + databaseName + "_" + stage + ".sqlite3 \n\
-  timeout: 5000 \n\
-";
-
-    }
-}
-
-
-QString getDbName(WebDatabase db) {
-    switch (db) {
-        case Postgresql: return "Postgresql";
-        case Mysql: return "Mysql";
-        case Mongo: return "Mongo";
-        case Redis: return "Redis";
-        case ElasticSearch: return "ElasticSearch";
-        case Sphinx: return "Sphinx";
-        case NoDB: return "NoDB";
-    }
-}
-
+QString getDbName(WebDatastore db);
+WebDatastore detectDatabase(QString& deps, QString& depsFile);
+void generateDatastoreSetup(WebDatastore db, QString serviceName, QString stage, WebAppTypes appType);
 void generateServicePorts(QString servicePath, int amount = 1);
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);
 void prepareSharedSymlinks(QString& latestReleaseDir, QString& servicePath, QString& stage);
 void prepareHttpProxy(QString& servicePath, QString& appType, QString& latestReleaseDir, QString& domain, QString& serviceName, QString& stage);
-
 void installDependencies();
 void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& stage);
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);

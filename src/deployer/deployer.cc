@@ -18,6 +18,68 @@
 #include "deployer.h"
 
 
+void generateDatastoreSetup(WebDatastore db, QString serviceName, QString stage, WebAppTypes appType) {
+    QString databaseName = serviceName + "-" + stage;
+    QString servicePath = getServiceDataDir(serviceName);
+
+    switch (db) {
+
+        case Postgresql: {
+            switch (appType) {
+                case RubySite:
+                    writeToFile(servicePath + "/shared/" + stage + "/config/database.yml",
+stage + ": \n\
+  adapter: postgresql \n\
+  encoding: unicode \n\
+  database: " + databaseName + " \n\
+  username: " + databaseName + " \n\
+  pool: 5 \n\
+  port: <%= File.read(ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/.ports/0\") %> \n\
+  host: <%= ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/\" %> \n");
+                    break;
+
+                default: break;
+            }
+        } break;
+
+        case Mysql: {
+            // return ""; // NOTE: NYI
+        } break;
+
+        case Mongo: {
+            // return ""; // NOTE: NYI
+        } break;
+
+        case Redis: {
+            // return ""; // NOTE: NYI
+        } break;
+
+        case ElasticSearch: {
+            // return ""; // NOTE: NYI
+        } break;
+
+        case Sphinx: {
+            // return ""; // NOTE: NYI
+        } break;
+
+        case NoDB: {
+            switch (appType) {
+                case RubySite:
+                    writeToFile(servicePath + "/shared/" + stage + "/config/database.yml",
+stage + ": \n\
+  adapter: sqlite3 \n\
+  database: db/db_" + databaseName + "_" + stage + ".sqlite3 \n\
+  timeout: 5000 \n");
+                break;
+
+                default: break;
+            }
+
+        } /* NoDB means we might want to use SQLite3 driver */
+    }
+}
+
+
 void generateServicePorts(QString servicePath, int amount) {
     /* generate default port for service */
     if (amount > 100) {
@@ -246,6 +308,34 @@ QString buildEnv(QString& serviceName, QStringList deps) {
 }
 
 
+WebDatastore detectDatabase(QString& deps, QString& depsFile) {
+    if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
+        logInfo() << "Detected Postgresql dependency in file:" << depsFile;
+        return Postgresql;
+    }
+    if (deps.trimmed().toLower().contains("mysql")) {
+        logInfo() << "Detected Mysql dependency in file:" << depsFile;
+        return Mysql;
+    }
+
+    logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
+    return NoDB;
+}
+
+
+QString getDbName(WebDatastore db) {
+    switch (db) {
+        case Postgresql: return "Postgresql";
+        case Mysql: return "Mysql";
+        case Mongo: return "Mongo";
+        case Redis: return "Redis";
+        case ElasticSearch: return "ElasticSearch";
+        case Sphinx: return "Sphinx";
+        case NoDB: return "NoDB";
+    }
+}
+
+
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
 
     logInfo() << "Creating app environment";
@@ -303,30 +393,17 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case RubySite: {
 
             QString databaseName = serviceName + "-" + stage;
-            WebDatabase database = NoDB;
+            WebDatastore database = NoDB;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
-            QString deps = "", content = "";
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            QString deps = "";
 
-            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
+            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
                 deps = readFileContents(depsFile).trimmed();
-
-                if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
-                    logInfo() << "Detected Postgresql dependency in file:" << depsFile;
-                    database = Postgresql;
-                }
-                if (deps.trimmed().toLower().contains("mysql")) {
-                    logInfo() << "Detected Mysql dependency in file:" << depsFile;
-                    database = Mysql;
-                }
             }
-
-            if (database == NoDB) {
-                logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
-            }
-            content = databaseYmlEntry(database, stage, databaseName);
-
+            database = detectDatabase(deps, depsFile);
             prepareSharedDirs(latestReleaseDir, servicePath, stage);
-            writeToFile(servicePath + "/shared/" + stage + "/config/database.yml", content);
+            generateDatastoreSetup(database, serviceName, stage, appType);
 
             /* write to service env file */
             logInfo() << "Building environment for stage:" << stage;
@@ -334,7 +411,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
             generateServicePorts(servicePath);

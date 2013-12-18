@@ -21,7 +21,7 @@ enum WebAppTypes {
     NoType              = 0x05 /* NOTE: this one *must* be always last type */
 };
 
-enum WebDatabase {
+enum WebDatastore {
     Postgresql          = 0x01,
     Mysql               = 0x02,
     Mongo               = 0x03,
