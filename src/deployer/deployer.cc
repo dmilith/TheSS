@@ -255,8 +255,8 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
             logDebug() << "Still waiting for service:" << val;
             sleep(1);
             steps++;
-            if (steps > 10) {
-                logError() << "Exitting endless loop, cause service:" << val << "refuses to go down!";
+            if (steps > 30) {
+                logError() << "Exitting endless loop, cause service:" << val << "refuses to go down after " << QString::number(steps -1) << " seconds!";
                 break;
             }
         }
@@ -484,10 +484,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
+            int steps = 0;
             while (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
                 logDebug() << "Older service already running. Invoking stop for:" << serviceName;
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
                 sleep(1);
+                steps++;
+                if (steps > 30) {
+                    logError() << "Exitting endless loop, cause service:" << serviceName << "refuses to go down after " << QString::number(steps -1) << " seconds!";
+                    break;
+                }
             }
 
             /* write igniter to user igniters */
