@@ -74,7 +74,7 @@ http {
         location / {
             root SERVICE_PREFIX/verknowsys;
             index index.html index.htm;
-            try_files /$uri /SERVICE_DOMAIN$uri /default$uri/ @error;
+            try_files /SERVICE_DOMAIN$uri /default$uri/ @error;
         }
 
         location @error {
