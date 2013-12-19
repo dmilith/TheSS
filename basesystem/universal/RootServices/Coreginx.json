@@ -95,8 +95,7 @@ cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest.release)/ S
     },
     "validate": {
         "commands": "
-test ! -d SERVICE_PREFIX/html && mkdir -p SERVICE_PREFIX/html && echo '<html>Hello I am Nginx and I am not configured yet!</html>' > SERVICE_PREFIX/html/index.html
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t
 ",
         "expectOutput": "test is successful"
     },
