@@ -323,7 +323,7 @@ QString buildEnv(QString& serviceName, QStringList deps) {
 }
 
 
-WebDatastore detectDatabase(QString& deps, QString& depsFile) {
+WebDatastore detectDatastore(QString& deps, QString& depsFile) {
     if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
         logInfo() << "Detected Postgresql dependency in file:" << depsFile;
         return Postgresql;
@@ -414,7 +414,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
                 deps = readFileContents(depsFile).trimmed();
             }
-            database = detectDatabase(deps, depsFile);
+            database = detectDatastore(deps, depsFile);
             prepareSharedDirs(latestReleaseDir, servicePath, stage);
             generateDatastoreSetup(database, serviceName, stage, appType);
 
