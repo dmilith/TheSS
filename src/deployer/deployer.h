@@ -308,7 +308,7 @@ server { \n\
         if (-d $request_filename) { \n\
             break; \n\
         } \n\
-        rewrite ^(.+)$ /index.php$1 last; \n\
+        # rewrite ^ /index.php$1 last; \n\
         index index.php; \n\
         # try_files = $uri @missing; \n\
         if (-f $request_filename) { \n\
