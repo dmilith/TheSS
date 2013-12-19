@@ -167,7 +167,7 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
     getOrCreateDir(servicePath + "/releases/");
 
-    logInfo() << "Cleaning old deploys (over" << QString::number(MAX_DEPLOYS_TO_KEEP) << ")";
+    logInfo() << "Cleaning old deploys - over count of:" << QString::number(MAX_DEPLOYS_TO_KEEP);
     QStringList gatheredReleases = QDir(servicePath + "/releases/").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
     QStringList releases;
     if (gatheredReleases.size() > MAX_DEPLOYS_TO_KEEP) {
@@ -285,7 +285,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
     QString elmLast = appDependencies.at(appDependencies.size() - 1);
     elmLast[0] = elmLast.at(0).toUpper();
     jsonResult += "\"" + elmLast + "\"], ";
-    jsonResult += QString("\n \"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
+    jsonResult += QString("\n\n\"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
 
     logInfo() << "Spawning depdendency:" << elmLast;
     QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + elmLast;
@@ -379,7 +379,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             QString jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
             logInfo() << "Generating igniter:" << igniterFile;
@@ -452,7 +452,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
                         logDebug() << "Worker entry:" << procfileTail << "on port:" << servPort;
-                        startResultJson += " cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 & ";
+                        startResultJson += " cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 & ";
                     } else {
                         logInfo() << "Found an entry:" << procfileHead;
                         QString procPidFile = procfileHead + ".pid";
@@ -460,7 +460,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
                             /* (start commands, stop commands) : */
-                            "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -P " + servicePath + "/" + procPidFile + " -L " + servicePath + DEFAULT_SERVICE_LOG_FILE + "-" + procfileHead + " -d && echo 'Started worker " + procfileHead + "' >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ",
+                            "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -P " + servicePath + "/" + procPidFile + " -L " + servicePath + DEFAULT_SERVICE_LOG_FILE + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ",
 
                             /* , stop commands) : */
                             "svddw $(cat " + servicePath + "/" + procPidFile + ") >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 "
@@ -470,16 +470,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 }
 
                 /* generate correct order of application execution after workers */
-                jsonResult += QString("\n\"start\": {\"commands\": \"");
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"");
                 Q_FOREACH(QString part, serviceWorkers.keys()) { /* keys => start commands */
-                    jsonResult += part + " && ";
+                    jsonResult += part + " &&\n";
                 }
                 jsonResult += startResultJson;
                 jsonResult += "\"}";
 
                 Q_FOREACH(QString acmd, serviceWorkers.keys()) {
                     QString cmd = serviceWorkers.take(acmd);
-                    jsonResult += QString(", \n\"stop\": {\"commands\": \"");
+                    jsonResult += QString(", \n\n\"stop\": {\"commands\": \"");
                     jsonResult += cmd + " ";
                 }
                 jsonResult += "\"}\n}";
@@ -487,7 +487,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"} }";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -600,7 +600,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + "bin/app 2>&1 &" + "\"} }"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + "bin/app 2>&1 &" + "\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             /* write igniter to user igniters */
@@ -614,7 +614,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
-            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            clne->spawnProcess("cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies);
@@ -651,7 +651,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
             }
 
-            jsonResult += QString("\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D && echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"} }";
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
 
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
