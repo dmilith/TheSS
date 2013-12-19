@@ -69,8 +69,9 @@ http {
     access_log off;
 
     server {
-        listen $(cat SERVICE_PREFIX/.ports/0);
-        server_name *.SERVICE_DOMAIN SERVICE_DOMAIN;
+        listen $(cat SERVICE_PREFIX/.ports/0) default_server;
+        server_name _;
+        server_name_in_redirect off;
         location / {
             root SERVICE_PREFIX/verknowsys;
             index index.html index.htm;
