@@ -312,10 +312,6 @@ server { \n\
         fastcgi_param PATH_INFO $fastcgi_script_name; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
     } \n\
-    #location @missing { \n\
-        # rewrite ^ $scheme://$host/index.php permanent; \n\
-        # break; \n\
-    #} \n\
     location ~ /\\. { \n\
         deny  all; \n\
     } \n\

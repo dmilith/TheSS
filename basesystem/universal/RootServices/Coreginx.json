@@ -36,10 +36,6 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PRE
     "configure": {
         "commands": "
 printf \"
-<html><h1>Site not deployed yet</h1></html>
-\" > /Public/server_error.html
-
-printf \"
 worker_processes 8;
 pid SERVICE_PREFIX/service.pid;
 error_log SERVICE_PREFIX/service.log;
