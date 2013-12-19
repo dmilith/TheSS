@@ -78,8 +78,8 @@ http {
         }
 
         location @error {
-            root /Public;
-            index server_error.html;
+            root SERVICE_PREFIX/verknowsys;
+            index error.html;
         }
     }
 
