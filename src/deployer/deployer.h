@@ -327,6 +327,7 @@ server { \n\
 
 QString getDbName(WebDatastore db);
 WebDatastore detectDatabase(QString& deps, QString& depsFile);
+void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies);
 void generateDatastoreSetup(WebDatastore db, QString serviceName, QString stage, WebAppTypes appType);
 void generateServicePorts(QString servicePath, int amount = 1);
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);
