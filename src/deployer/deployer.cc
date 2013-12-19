@@ -186,6 +186,7 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
     QString command = QString("export DATE=\"app-$(date +%d%m%Y-%H%M%S)\"") +
         "&& cd " + servicePath + " > " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
+        "&& sofin reload > " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
         "&& git clone " + sourceRepositoryPath + " releases/${DATE}" + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
         "&& cd " + servicePath + "/releases/${DATE} " + " 2>&1 " +
         "&& git checkout -b " + branch + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + /* branch might already exists */
