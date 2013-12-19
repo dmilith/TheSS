@@ -73,7 +73,8 @@ http {
         server_name *.SERVICE_DOMAIN SERVICE_DOMAIN;
         location / {
             root SERVICE_PREFIX/verknowsys;
-            try_files /index.html /SERVICE_DOMAIN$uri /default$uri/ @error;
+            index index.html index.htm;
+            try_files $uri $uri/ /SERVICE_DOMAIN$uri /default$uri/ @error;
         }
 
         location @error {
