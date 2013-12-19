@@ -36,7 +36,7 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PRE
     "configure": {
         "commands": "
 printf \"
-<html><center>Site not deployed yet</center></html>
+<html><h1>Site not deployed yet</h1></html>
 \" > /Public/server_error.html
 
 printf \"
@@ -72,7 +72,7 @@ http {
         listen $(cat SERVICE_PREFIX/.ports/0);
         server_name *.SERVICE_DOMAIN SERVICE_DOMAIN;
         location / {
-            root SERVICE_PREFIX/html;
+            root SERVICE_PREFIX/verknowsys;
             index index.html index.htm;
             try_files /SERVICE_DOMAIN$uri /default$uri/ @error;
         }
@@ -87,6 +87,9 @@ http {
     include /Users/*/SoftwareData/*/proxy.conf;
 }
 \" > SERVICE_PREFIX/service.conf
+
+mv SERVICE_PREFIX/verknowsys SERVICE_PREFIX/verknowsys.$(date +%d%m%Y-%H%M%S)
+REL_ROOT_DIR=/Users/verknowsys/SoftwareData/Verknowsys cp -R ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest.release)/ SERVICE_PREFIX/verknowsys
 "
     },
     "validate": {
