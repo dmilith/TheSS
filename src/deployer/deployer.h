@@ -302,8 +302,15 @@ server { \n\
     } \n\
     location / { \n\
         root " + latestReleaseDir + "; \n\
+        if (-f $request_filename) { \n\
+            break; \n\
+        } \n\
+        if (-d $request_filename) { \n\
+            break; \n\
+        } \n\
+        rewrite ^(.+)$ /index.php$1 last; \n\
         index index.php; \n\
-        try_files = $uri @missing; \n\
+        # try_files = $uri @missing; \n\
         if (-f $request_filename) { \n\
             break; \n\
         } \n\
@@ -312,10 +319,10 @@ server { \n\
         fastcgi_param PATH_INFO $fastcgi_script_name; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
     } \n\
-    location @missing { \n\
-        rewrite ^ $scheme://$host/index.php permanent; \n\
-        break; \n\
-    } \n\
+    #location @missing { \n\
+        # rewrite ^ $scheme://$host/index.php permanent; \n\
+        # break; \n\
+    #} \n\
     location ~ /\\. { \n\
         deny  all; \n\
     } \n\
