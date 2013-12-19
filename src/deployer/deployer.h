@@ -314,6 +314,7 @@ server { \n\
     } \n\
     location @missing { \n\
         rewrite ^ $scheme://$host/index.php permanent; \n\
+        break; \n\
     } \n\
     location ~ /\\. { \n\
         deny  all; \n\
