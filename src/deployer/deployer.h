@@ -302,15 +302,8 @@ server { \n\
     } \n\
     location / { \n\
         root " + latestReleaseDir + "; \n\
-        if (-f $request_filename) { \n\
-            break; \n\
-        } \n\
-        if (-d $request_filename) { \n\
-            break; \n\
-        } \n\
-        # rewrite ^ /index.php$1 last; \n\
         index index.php; \n\
-        # try_files = $uri @missing; \n\
+        try_files = $uri /index.php; \n\
         if (-f $request_filename) { \n\
             break; \n\
         } \n\
