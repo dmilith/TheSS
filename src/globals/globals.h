@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.66.21"
+    #define APP_VERSION "0.66.22"
     #define COPYRIGHT "Copyright © 2o13 VerKnowSys.com - All Rights Reserved."
 
     /* default BSD case: */
@@ -94,6 +94,7 @@
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
     #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/service.latest.release"
     #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous.release"
+    #define DEFAULT_SERVICE_RELEASES_HISTORY "/service.releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
 
     #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
