@@ -300,7 +300,7 @@ server { \n\
         expires 30d; \n\
         break; \n\
     } \n\
-    location /error { \n\
+    location = /error { \n\
         index error.html \n\
         root " + latestReleaseDir + "; \n\
     } \n\
@@ -315,6 +315,7 @@ server { \n\
         fastcgi_param SCRIPT_FILENAME " + latestReleaseDir + "$fastcgi_script_name; \n\
         fastcgi_param PATH_INFO $fastcgi_script_name; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
+        proxy_intercept_errors; \n\
     } \n\
     location ~ /\\. { \n\
         deny  all; \n\
