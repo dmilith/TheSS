@@ -37,7 +37,7 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PRE
         "commands": "
 printf \"
 <html><center>Site not deployed yet</center></html>
-\" > /SystemUsers/SoftwareData/Coreginx/server_error.html
+\" > /Public/server_error.html
 
 printf \"
 worker_processes 8;
@@ -68,7 +68,7 @@ http {
         listen $(cat SERVICE_PREFIX/.ports/0);
         server_name *.SERVICE_DOMAIN SERVICE_DOMAIN;
         location / {
-            error_page 500 502 503 504 = /SystemUsers/SoftwareData/Coreginx/server_error.html;
+            error_page 500 502 503 504 = /Public/server_error.html;
             root SERVICE_PREFIX/html;
             index index.html index.htm;
         }

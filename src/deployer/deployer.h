@@ -29,11 +29,12 @@ server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
-    access_log off; \n\
+    error_page 400 403 502 503 504 = /Public/server_error.html; \n\
     location / { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
     } \n\
+    access_log off; \n\
 }\n";
 
         case RubySite:
@@ -45,6 +46,7 @@ server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
+    error_page 400 403 502 503 504 = /Public/server_error.html; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
@@ -54,6 +56,7 @@ server { \n\
             proxy_pass http://" + serviceName + "-" + stage + "; \n\
         } \n\
     } \n\
+    access_log off; \n\
 } \n";
 
 
@@ -290,8 +293,8 @@ upstream " + serviceName + "-" + stage + " { \n\
 server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
+    error_page 400 403 502 503 504 = /Public/server_error.html; \n\
     location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
-        access_log off; \n\
         root " + latestReleaseDir + "; \n\
         add_header Cache-Control max-age=315360000; \n\
         expires 30d; \n\
@@ -315,6 +318,7 @@ server { \n\
     location ~ /\\. { \n\
         deny  all; \n\
     } \n\
+    access_log off; \n\
 }\n";
         }
 
