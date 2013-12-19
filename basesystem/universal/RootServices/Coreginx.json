@@ -89,7 +89,8 @@ http {
 \" > SERVICE_PREFIX/service.conf
 
 mv SERVICE_PREFIX/verknowsys SERVICE_PREFIX/verknowsys.$(date +%d%m%Y-%H%M%S)
-REL_ROOT_DIR=/Users/verknowsys/SoftwareData/Verknowsys cp -R ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest.release)/ SERVICE_PREFIX/verknowsys
+export REL_ROOT_DIR=/Users/verknowsys/SoftwareData/Verknowsys
+cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest.release)/ SERVICE_PREFIX/verknowsys >> SERVICE_PREFIX/service.log 2>&1
 "
     },
     "validate": {
