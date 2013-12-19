@@ -315,7 +315,6 @@ server { \n\
         fastcgi_param SCRIPT_FILENAME " + latestReleaseDir + "$fastcgi_script_name; \n\
         fastcgi_param PATH_INFO $fastcgi_script_name; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
-        proxy_intercept_errors; \n\
     } \n\
     location ~ /\\. { \n\
         deny  all; \n\
