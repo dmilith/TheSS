@@ -39,7 +39,7 @@ server { \n\
         case RubySite:
             return "\n\
 upstream " + serviceName + "-" + stage + " { \n\
-    server 127.0.0.1:" + port + "; \n\
+    server " + DEFAULT_LOCAL_ADDRESS + ":" + port + "; \n\
 } \n\
 server { \n\
     listen 80; \n\
@@ -60,7 +60,7 @@ server { \n\
         case NodeSite:
             return "\n\
 upstream " + serviceName + "-" + stage + " { \n\
-    server 127.0.0.1:" + port + "; \n\
+    server " + DEFAULT_LOCAL_ADDRESS + ":" + port + "; \n\
 } \n\
 server { \n\
     listen 80; \n\
@@ -92,7 +92,7 @@ writeToFile(prefix + "/service.conf", "[global] \n\
     events.mechanism = kqueue \n\
     ;security.limit_extensions = .php .html .htm .less .js .coffee \n\
 [www] \n\
-    listen = 127.0.0.1:" + port + " \n\
+    listen = " + DEFAULT_LOCAL_ADDRESS + ":" + port + " \n\
     pm = dynamic \n\
     pm.max_children = 5 \n\
     pm.start_servers = 2 \n\
@@ -285,7 +285,7 @@ fastcgi_param  SERVER_PORT        $server_port; \n\
 fastcgi_param  SERVER_NAME        $server_name; \n");
             return "\n\
 upstream " + serviceName + "-" + stage + " { \n\
-    server 127.0.0.1:" + port + "; \n\
+    server " + DEFAULT_LOCAL_ADDRESS + ":" + port + "; \n\
 } \n\
 server { \n\
     listen 80; \n\
