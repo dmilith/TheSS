@@ -25,6 +25,7 @@
 #define OLD_SERVICE_SHUTDOWN_TIMEOUT 60 /* in seconds */
 
 
+const QStringList getAllowedToSpawnDeps();
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port);
 QString getDbName(WebDatastore db);
 WebDatastore detectDatastore(QString& deps, QString& depsFile);

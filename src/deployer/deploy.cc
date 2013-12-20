@@ -8,6 +8,13 @@
 #include "deploy.h"
 
 
+const QStringList getAllowedToSpawnDeps() {
+    QStringList output;
+    output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "elasticsearch";
+    return output;
+}
+
+
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port) {
     switch (type) {
         case StaticSite:
@@ -612,10 +619,7 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
 
 
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
-    QStringList allowedToSpawnDeps; /* dependencies allowed to spawn as independenc service */
-    allowedToSpawnDeps << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "elasticsearch"; // XXX: hardcoded
-    // TODO: define Sphinx igniter
-
+    QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independenc service */
     QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
     QString deps = readFileContents(depsFile).trimmed();
 
@@ -631,12 +635,10 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
             appDependencies[i] = "";
     }
     appDependencies.removeAll("");
-
     if (appDependencies.size() == 0) {
         logInfo() << "Empty list of dependencies software, that acts, like some kind of a server.";
         return jsonResult + "], "; /* return empty list */
     }
-
 
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
@@ -710,6 +712,8 @@ QString buildEnv(QString& serviceName, QStringList deps) {
 
 
 WebDatastore detectDatastore(QString& deps, QString& depsFile) {
+    // XXX: TODO: handle multiple datastore used. For example Redis, Postgres and Sphinx in conjuction - real life case
+
     if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
         logInfo() << "Detected Postgresql dependency in file:" << depsFile;
         return Postgresql;
@@ -717,6 +721,14 @@ WebDatastore detectDatastore(QString& deps, QString& depsFile) {
     if (deps.trimmed().toLower().contains("mysql")) {
         logInfo() << "Detected Mysql dependency in file:" << depsFile;
         return Mysql;
+    }
+    if (deps.trimmed().toLower().contains("mongo")) {
+        logInfo() << "Detected Mongodb dependency in file:" << depsFile;
+        return Mongo;
+    }
+    if (deps.trimmed().toLower().contains("sphinx")) {
+        logInfo() << "Detected Sphinx dependency in file:" << depsFile;
+        return Sphinx;
     }
 
     logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
