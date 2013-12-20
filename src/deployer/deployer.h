@@ -52,9 +52,16 @@ server { \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
         proxy_set_header Host $http_host; \n\
         proxy_redirect off; \n\
+        try_files = $uri /$uri $uri/ @error; \n\
         if (!-f $request_filename) { \n\
             proxy_pass http://" + serviceName + "-" + stage + "; \n\
         } \n\
+    } \n\
+    access_log off; \n\
+    error_page 400 402 403 404 502 503 504 = @error; \n\
+    location @error { \n\
+        index error.html \n\
+        root " + latestReleaseDir + "/public; \n\
     } \n\
     access_log off; \n\
 } \n";
@@ -73,11 +80,18 @@ server { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
         proxy_set_header Host $http_host; \n\
+        try_files = $uri /$uri $uri/ @error; \n\
         proxy_redirect off; \n\
         if (!-f $request_filename) { \n\
             proxy_pass http://" + serviceName + "-" + stage + "; \n\
         } \n\
     } \n\
+    error_page 400 402 403 404 502 503 504 = @error; \n\
+    location @error { \n\
+        index error.html \n\
+        root " + latestReleaseDir + "/public; \n\
+    } \n\
+    access_log off; \n\
 } \n";
 
 
