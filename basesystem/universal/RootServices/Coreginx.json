@@ -35,7 +35,8 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PRE
     },
     "configure": {
         "commands": "
-test -d /Software/Nginx/html && rm -fr /Software/Nginx/html && ln -s SERVICE_ROOT/verknowsys /Software/Nginx/html
+test ! -d SERVICE_ROOT/html && test ! -L SERVICE_ROOT/html && ln -s SERVICE_PREFIX/verknowsys /Software/Nginx/html
+test -d SERVICE_ROOT/html && rm -fr SERVICE_ROOT/html && ln -s SERVICE_PREFIX/verknowsys /Software/Nginx/html
 
 printf \"
 worker_processes 8;
