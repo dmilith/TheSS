@@ -1087,6 +1087,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case NoType: {
             logError() << "No web application detected in service directory:" << servicePath;
+            QFile::remove(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
             raise(SIGTERM);
 
         } break;
