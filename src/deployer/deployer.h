@@ -311,7 +311,7 @@ server { \n\
     } \n\
     location / { \n\
         root " + latestReleaseDir + "; \n\
-        index index.php; \n\
+        fastcgi_index index.php; \n\
         try_files = $uri /$uri $uri/ /index.php; \n\
         if (-f $request_filename) { \n\
             break; \n\
