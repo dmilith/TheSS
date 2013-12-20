@@ -330,11 +330,12 @@ server { \n\
 }
 
 
-void generateDatastoreSetup(WebDatastore db, QString serviceName, QString stage, WebAppTypes appType) {
+void generateDatastoreSetup(QList<WebDatastore> dbs, QString serviceName, QString stage, WebAppTypes appType) {
     QString databaseName = serviceName + "-" + stage;
     QString servicePath = getServiceDataDir(serviceName);
     QString destinationFile;
 
+    Q_FOREACH(auto db, dbs)
     switch (db) {
 
         case Postgresql: {
@@ -711,28 +712,32 @@ QString buildEnv(QString& serviceName, QStringList deps) {
 }
 
 
-WebDatastore detectDatastore(QString& deps, QString& depsFile) {
-    // XXX: TODO: handle multiple datastore used. For example Redis, Postgres and Sphinx in conjuction - real life case
+QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile) {
+    QList<WebDatastore> out;
 
     if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
         logInfo() << "Detected Postgresql dependency in file:" << depsFile;
-        return Postgresql;
+        out << Postgresql;
     }
     if (deps.trimmed().toLower().contains("mysql")) {
         logInfo() << "Detected Mysql dependency in file:" << depsFile;
-        return Mysql;
+        out << Mysql;
     }
     if (deps.trimmed().toLower().contains("mongo")) {
         logInfo() << "Detected Mongodb dependency in file:" << depsFile;
-        return Mongo;
+        out << Mongo;
     }
     if (deps.trimmed().toLower().contains("sphinx")) {
         logInfo() << "Detected Sphinx dependency in file:" << depsFile;
-        return Sphinx;
+        out << Sphinx;
     }
 
-    logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
-    return NoDB;
+    if (out.isEmpty()) {
+        logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
+        out << NoDB;
+    }
+
+    return out;
 }
 
 
@@ -804,7 +809,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case RubySite: {
 
             QString databaseName = serviceName + "-" + stage;
-            WebDatastore database = NoDB;
+            QList<WebDatastore> datastores;
             QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             QString deps = "";
@@ -812,9 +817,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
                 deps = readFileContents(depsFile).trimmed();
             }
-            database = detectDatastore(deps, depsFile);
+            datastores = detectDatastores(deps, depsFile);
             prepareSharedDirs(latestReleaseDir, servicePath, stage);
-            generateDatastoreSetup(database, serviceName, stage, appType);
+            generateDatastoreSetup(datastores, serviceName, stage, appType);
 
             /* write to service env file */
             logInfo() << "Building environment for stage:" << stage;
@@ -925,24 +930,26 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
-            logInfo() << "Running database setup for database:" << getDbName(database);
-            switch (database) {
-                case Postgresql: {
-                    logDebug() << "Creating user:" << databaseName;
-                    clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database) + " -p $(sofin port " + getDbName(database) + ") " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                    clne->waitForFinished(-1);
-                    logDebug() << "Creating database:" << databaseName;
-                    clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(database) + " -p $(sofin port " + getDbName(database) + ") -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                    clne->waitForFinished(-1);
+            Q_FOREACH(auto datastore, datastores) {
+                logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
+                switch (datastore) {
+                    case Postgresql: {
+                        logDebug() << "Creating user:" << databaseName;
+                        clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                        clne->waitForFinished(-1);
+                        logDebug() << "Creating datastore:" << databaseName;
+                        clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                        clne->waitForFinished(-1);
 
-                } break;
+                    } break;
 
-                default: break;
+                    default: break;
 
+                }
             }
 
             logInfo() << "Running database migrations";
-            if (database != Postgresql) { /* postgresql db creation is already done before this hook */
+            if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
                 clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                 clne->waitForFinished(-1);
             }
