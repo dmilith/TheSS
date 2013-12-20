@@ -202,9 +202,11 @@ Default error handling behavior is very simple, and made of three simple steps:
     1. If your app is started, everything under yourdomain.com/XXX
        (except yourdomain.com/error.html) must be handled by app itself.
     2. If your app is down, any request on yourdomain.com/XXX will end up at
-       static yourdomain.com/error.html page, hence "error.html" should
+       static yourdomain.com/error.html page, hence "/error.html" should
        exists in web-app root directory by default for each web-app. If it's
        not - sorry, you'll see standard Nginx error handler instead.
+       NOTE: root directory of /error.html file for Ruby/Node apps, is
+       prefixed with "/public", so it's /public/error.html in these cases.
     3. If your app is bound onto different domain, you'll see standard
        ServeD error page, with information that your site wasn't deployed yet.
 
