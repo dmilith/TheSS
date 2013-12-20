@@ -108,18 +108,21 @@ void generateServicePorts(QString servicePath, int amount) {
 
 
 bool validateNginxEntry(QString& servicePath, QString& contents) {
-    QString prefix = "http { ";
+    QString prefix = "events { worker_connections 1024; } http { error_log off; access_log off; ";
     QString postfix = " }";
     QString uuid = QUuid::createUuid().toString();
     QString uuidFile = servicePath + "/" + uuid;
     QString testFile = servicePath + "/proxy.conf-" + uuid;
+
+    contents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort())); /* replace defaul port 80 with some bogus port */
     writeToFile(testFile, prefix + contents + postfix);
 
     logDebug() << "Generated contents will be validated:" << prefix + contents + postfix;
     logDebug() << "Validation confirmation UUID:" << uuid << "in file:" << uuidFile;
 
+    getOrCreateDir("/tmp/logs");
     auto clne = new SvdProcess("nginx_entry_validate", getuid(), false);
-    clne->spawnProcess("nginx -t -c " + testFile + " && touch " + uuidFile);
+    clne->spawnProcess("nginx -t -c " + testFile + " -p /tmp && touch " + uuidFile);
     clne->waitForFinished(10); // XXX: hardcoded 10s
     clne->deleteLater();
 
