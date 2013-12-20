@@ -189,11 +189,18 @@ bin/svdpanel
 
 
 ## Web deployer, and assumptions
-TheSS provides script called `svdply`. It's designed to be launched on developer machine from local git repository.
-It automatically performs deploy of supported web application from current directory, to machine (accessible
-through ssh) on specified domain. First part of subdomain will be app name shown by `svdpanel` on remote side.
+TheSS provides script called `svdply` (exported by default when installed with Sofin). It's designed to be
+launched on developer machine from local git repository. It's designed to be cross platform, and uses only
+some `sh` code-glue, basic `tar` (to pack bare repository) and `git` on client side. Rest is done on server
+side, so it should work even from Windows hosts (with [msysgit](https://code.google.com/p/msysgit) environment probably).
+(I'm not using Windows since last century, don't ask me about it).
+
+`svdply` automatically performs deploy of supported web application from current directory, to machine (accessible
+through ssh) on specified domain. First part of domain will be app name shown by `svdpanel` on remote side.
+
 On first deploy `svdply` will create bare repository from current directory, and send it to remote
 directory to: ~/Repos/myapp.git, hence current directory, must be a git repository (no other SCMs supported for now).
+
 
 ### Web-app error handling
 
@@ -201,42 +208,42 @@ Default error handling behavior is very simple, and made of three simple steps:
 
     1. If your app is started, everything under yourdomain.com/XXX
        (except yourdomain.com/error.html) must be handled by app itself.
+
     2. If your app is down, any request on yourdomain.com/XXX will end up at
        static yourdomain.com/error.html page, hence "/error.html" should
        exists in web-app root directory by default for each web-app. If it's
        not - sorry, you'll see standard Nginx error handler instead.
        NOTE: root directory of /error.html file for Ruby/Node apps, is
        prefixed with "/public", so it's /public/error.html in these cases.
+
     3. If your app is bound onto different domain, you'll see standard
        ServeD error page, with information that your site wasn't deployed yet.
-
-That's all.
 
 
 ### Example deployer invocation:
 
 ```sh
- svdply myapp.mydomain.com
-#|      |     |
-#|      |      \____ "domain" part, used to:
-#|      |            - locate host server address
-#|       \           - do remote ssh connection
-#|        \
-#|         \________ "name" part, used in:
-#|                   - igniter name (~/Igniters/myapp.json)
-# \                  - git repository push address
-#  \                   (by dafault: myapp.mydomain.com:Repos/myapp.git)
-#  \                 - git repository name (on remote)
-#   \
-#    \______________ will:
-#                    - do ssh connection to $USER@myapp.mydomain.com host
-#                    - if "svd" remote in current git repository doesn't
-#                      exists, will be created both on local and remote hosts
-#                    - current branch of git repository (from current
-#                      directory) will be pushed to "svd" remote
-#                    - svddeployer will be launched on remote machine, and
-#                      do the rest of web-app deploy
-#
+svdply myapp.mydomain.com
+ |      |     |
+ |      |      \____ "domain" part, used to:
+ |      |            - locate host server address
+ |       \           - do remote ssh connection
+ |        \
+ |         \________ "name" part, used in:
+ |                   - igniter name (~/Igniters/myapp.json)
+  \                  - git repository push address
+   \                   (by dafault: myapp.mydomain.com:Repos/myapp.git)
+    \                - git repository name (on remote)
+     \
+      \_____________ will:
+                     - do ssh connection to $USER@myapp.mydomain.com host
+                     - if "svd" remote in current git repository doesn't
+                       exists, will be created both on local and remote hosts
+                     - current branch of git repository (from current
+                       directory) will be pushed to "svd" remote
+                     - svddeployer will be launched on remote machine, and
+                       do the rest of web-app deploy
+
 
 # params accepted by `svdply`:
 APP_STAGE       # default: "staging"
@@ -308,7 +315,7 @@ RAKE_ENV                    # value of environment stage of Rake
 ## FAQ
 * "I don't want to use Sofin to install my software" - Thess is by definition designed to make use of Sofin software. If you want to use thess with some other utility - not Sofin - you're on your own. I'm not interested in developing any additional package managment support ever. It's that simple.
 * "It doesn't work at all. No services are starting" - First, make sure you have working "svdss" in background. Then make sure you have default shell installed for launched services (/Software/Zsh). If you still have problems, please report.
-* "I've found a SIGSEGV in your crappy code. How to help you track it?" - First of all, disable optimizations in src/Common.pro. Replace "-O3" with "-O0 -g" in compiler flags setting. Rebuild project from scratch. Then just run your code with "lldb" or "gdb", and when you reproduce an error please send me output of "bt" command. Your contibution is never forgotten!
+* "I've found a SIGSEGV in your crappy code. How to help you track it?" - First of all, disable optimizations in src/Common.pro. Replace "-O3" with "-O0 -g" in compiler flags setting. Rebuild project from scratch (`bin/clean && bin/build`). Then just run your code with "lldb" or "gdb", and when you reproduce an error please send me output of "bt" command. Your contibution is never forgotten!
 
 
 ## Used 3rd party software and licenses info:
