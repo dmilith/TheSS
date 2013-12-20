@@ -57,7 +57,6 @@ server { \n\
     } \n\
     location /error.html { \n\
         index error.html \n\
-        root " + latestReleaseDir + "/public; \n\
     } \n\
     access_log off; \n\
 } \n";
@@ -85,7 +84,6 @@ server { \n\
     } \n\
     location /error.html { \n\
         index error.html \n\
-        root " + latestReleaseDir + "/public; \n\
     } \n\
     access_log off; \n\
 } \n";
@@ -303,14 +301,13 @@ upstream " + serviceName + "-" + stage + " { \n\
 server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
+    root " + latestReleaseDir + "; \n\
     location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
-        root " + latestReleaseDir + "; \n\
         add_header Cache-Control max-age=315360000; \n\
         expires 30d; \n\
         break; \n\
     } \n\
     location / { \n\
-        root " + latestReleaseDir + "; \n\
         fastcgi_index index.php; \n\
         try_files = $uri /$uri $uri/ /index.php; \n\
         if (-f $request_filename) { \n\
@@ -324,7 +321,6 @@ server { \n\
     } \n\
     location /error.html { \n\
         index error.html \n\
-        root " + latestReleaseDir + "; \n\
         proxy_redirect off; \n\
     } \n\
     location ~ /\\. { \n\
