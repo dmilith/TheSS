@@ -326,13 +326,16 @@ server { \n\
 void generateDatastoreSetup(WebDatastore db, QString serviceName, QString stage, WebAppTypes appType) {
     QString databaseName = serviceName + "-" + stage;
     QString servicePath = getServiceDataDir(serviceName);
+    QString destinationFile;
 
     switch (db) {
 
         case Postgresql: {
             switch (appType) {
-                case RubySite:
-                    writeToFile(servicePath + "/shared/" + stage + "/config/database.yml",
+                case RubySite: {
+                    destinationFile = servicePath + "/shared/" + stage + "/config/database.yml";
+                    if (not QFile::exists(destinationFile))
+                        writeToFile(destinationFile,
 stage + ": \n\
   adapter: postgresql \n\
   encoding: unicode \n\
@@ -341,46 +344,87 @@ stage + ": \n\
   pool: 5 \n\
   port: <%= File.read(ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/.ports/0\") %> \n\
   host: <%= ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/\" %> \n");
-                    break;
-
+                } break;
                 default: break;
             }
         } break;
 
+
         case Mysql: {
-            // return ""; // NOTE: NYI
+            switch (appType) {
+                case RubySite: {
+                    destinationFile = servicePath + "/shared/" + stage + "/config/database.yml";
+                    if (not QFile::exists(destinationFile))
+                        writeToFile(destinationFile,
+stage + ": \n\
+  adapter: mysql2 \n\
+  encoding: utf8 \n\
+  database: " + databaseName + " \n\
+  username: " + databaseName + " \n\
+  socket: <%= File.read(ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/service.sock\") %> \n\
+  host: " + DEFAULT_LOCAL_ADDRESS + " \n");
+                } break;
+                default: break;
+            }
         } break;
+
 
         case Mongo: {
-            // return ""; // NOTE: NYI
+            switch (appType) {
+                case RubySite: {
+                    destinationFile = servicePath + "/shared/" + stage + "/config/mongoid.yml";
+                    if (not QFile::exists(destinationFile))
+                        writeToFile(destinationFile,
+stage + ": \n\
+  sessions: \n\
+    default: \n\
+      database: " + databaseName + " \n\
+      hosts: \n\
+        - " + DEFAULT_LOCAL_ADDRESS + ":<%= File.read(ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/.ports/0\") %> \n");
+                } break;
+                default: break;
+            }
         } break;
+
 
         case Redis: {
-            // return ""; // NOTE: NYI
+            /* no conf */
         } break;
+
 
         case ElasticSearch: {
-            // return ""; // NOTE: NYI
+            /* no conf */
         } break;
+
 
         case Sphinx: {
-            // return ""; // NOTE: NYI
+            switch (appType) {
+                case RubySite: {
+                    destinationFile = servicePath + "/shared/" + stage + "/config/sphinx.yml";
+                    if (not QFile::exists(destinationFile))
+                        writeToFile(destinationFile,
+stage + ": \n\
+  morphology: stem_en");
+                } break;
+                default: break;
+            }
         } break;
 
-        case NoDB: {
+
+        case NoDB: { /* NoDB fallback to SQLite3 driver */
             switch (appType) {
-                case RubySite:
-                    writeToFile(servicePath + "/shared/" + stage + "/config/database.yml",
+                case RubySite: {
+                    destinationFile = servicePath + "/shared/" + stage + "/config/database.yml";
+                    if (not QFile::exists(destinationFile))
+                        writeToFile(destinationFile,
 stage + ": \n\
   adapter: sqlite3 \n\
   database: db/db_" + databaseName + "_" + stage + ".sqlite3 \n\
   timeout: 5000 \n");
-                break;
-
+                } break;
                 default: break;
             }
-
-        } /* NoDB means we might want to use SQLite3 driver */
+        } break;
     }
 }
 
