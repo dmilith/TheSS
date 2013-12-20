@@ -320,8 +320,8 @@ server { \n\
         fastcgi_param SCRIPT_FILENAME " + latestReleaseDir + "$fastcgi_script_name; \n\
         fastcgi_param PATH_INFO $fastcgi_script_name; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
+        error_page 400 402 403 404 502 503 504 = error.html; \n\
     } \n\
-    error_page 400 402 403 404 502 503 504 = error.html; \n\
     location /error.html { \n\
         index error.html \n\
         root " + latestReleaseDir + "; \n\
