@@ -107,7 +107,7 @@ void generateServicePorts(QString servicePath, int amount) {
 }
 
 
-bool validateNginxEntry(QString& servicePath, QString& contents) {
+bool validateNginxEntry(QString& servicePath, QString contents) {
     QString prefix = "events { worker_connections 1024; } http { error_log off; access_log off; ";
     QString postfix = " }";
     QString uuid = QUuid::createUuid().toString();
@@ -127,7 +127,8 @@ bool validateNginxEntry(QString& servicePath, QString& contents) {
     clne->deleteLater();
 
     if (QFile::exists(uuidFile)) {
-        logDebug() << "Validation passed. Removing confirmation file:" << uuidFile;
+        logInfo() << "Nginx entry validation passed.";
+        logDebug() << "Removing confirmation file:" << uuidFile;
         QFile::remove(uuidFile);
         QFile::remove(testFile);
         return true;
