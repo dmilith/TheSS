@@ -115,6 +115,7 @@ bool validateNginxEntry(QString& servicePath, QString& contents) {
     QString testFile = servicePath + "/proxy.conf-" + uuid;
     writeToFile(testFile, prefix + contents + postfix);
 
+    logDebug() << "Generated contents will be validated:" << prefix + contents + postfix;
     logDebug() << "Validation confirmation UUID:" << uuid << "in file:" << uuidFile;
 
     auto clne = new SvdProcess("nginx_entry_validate", getuid(), false);
@@ -124,6 +125,7 @@ bool validateNginxEntry(QString& servicePath, QString& contents) {
 
     if (QFile::exists(uuidFile)) {
         logDebug() << "Validation passed. Removing confirmation file:" << uuidFile;
+        QFile::remove(uuidFile);
         return true;
     }
     QFile::remove(testFile);
