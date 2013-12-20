@@ -301,7 +301,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
             logDebug() << "Still waiting for service:" << val;
             sleep(1);
             steps++;
-            if (steps > 30) {
+            if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
                 logError() << "Exitting endless loop, cause service:" << val << "refuses to go down after " << QString::number(steps -1) << " seconds!";
                 break;
             }
@@ -534,7 +534,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
                 sleep(1);
                 steps++;
-                if (steps > 30) {
+                if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
                     logError() << "Exitting endless loop, cause service:" << serviceName << "refuses to go down after " << QString::number(steps -1) << " seconds!";
                     break;
                 }
