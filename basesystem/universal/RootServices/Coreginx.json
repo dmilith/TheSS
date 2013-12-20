@@ -65,18 +65,24 @@ http {
     access_log off;
 
     server {
-        listen $(cat SERVICE_PREFIX/.ports/0) default_server;
-        server_name _;
+        listen $(cat SERVICE_PREFIX/.ports/0);
+        server_name SERVICE_DOMAIN;
         server_name_in_redirect off;
         location / {
             root SERVICE_PREFIX/verknowsys;
-            index index.html index.htm;
-            try_files /SERVICE_DOMAIN$uri /default$uri/ @error;
+            index index.html;
+            error_page 400 403 404 502 503 504 = error.html;
         }
+    }
 
-        location @error {
+    server {
+        listen $(cat SERVICE_PREFIX/.ports/0);
+        server_name *.SERVICE_DOMAIN;
+        server_name_in_redirect off;
+        location / {
             root SERVICE_PREFIX/verknowsys;
             index error.html;
+            error_page 400 403 404 502 503 504 = error.html;
         }
     }
 
