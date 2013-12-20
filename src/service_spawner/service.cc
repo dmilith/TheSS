@@ -923,7 +923,7 @@ void SvdService::destroySlot() {
             }
         }
     }
-    this->networkManager->deleteLater();
+    // this->networkManager->deleteLater();
     this->exit();
 }
 
