@@ -43,7 +43,7 @@ WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
 
             case RubySite:
                 this->typeName = "Ruby";
-                filesThatShouldExist << "/Gemfile" << "/Rakefile";
+                filesThatShouldExist << "/Gemfile";
                 filesThatShouldNotExist << "/index.html" << "/index.php";
                 break;
 
