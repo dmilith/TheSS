@@ -320,7 +320,7 @@ server { \n\
         error_page 400 402 403 404 502 503 504 = error.html; \n\
     } \n\
     location /error.html { \n\
-        index error.html \n\
+        index error.html; \n\
         proxy_redirect off; \n\
     } \n\
     location ~ /\\. { \n\
