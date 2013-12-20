@@ -195,6 +195,14 @@ through ssh) on specified domain. First part of subdomain will be app name shown
 On first deploy `svdply` will create bare repository from current directory, and send it to remote
 directory to: ~/Repos/myapp.git, hence current directory, must be a git repository (no other SCMs supported for now).
 
+### Web-app error handling
+
+Default error handling behavior is very simple, and made of three simple steps:
+1. If your app is started, everything under yourdomain.com/XXX (except yourdomain.com/error.html) must be handled by app itself.
+2. If your app is down, any request on yourdomain.com/XXX will end up at static yourdomain.com/error.html page, hence "error.html" should exists in web-app root directory by default for each web-app. If it's not - sorry, you'll see standard Nginx error handler instead.
+3. If your app is bound onto different domain, you'll see standard ServeD error page, with information that your site wasn't deployed yet.
+That's all.
+
 
 ### Example deployer invocation:
 
