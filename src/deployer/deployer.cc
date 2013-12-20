@@ -114,10 +114,10 @@ bool validateNginxEntry(QString& servicePath, QString& contents) {
     QString uuidFile = servicePath + "/" + uuid;
     QString testFile = servicePath + "/proxy.conf-" + uuid;
 
-    contents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort())); /* replace defaul port 80 with some bogus port */
-    writeToFile(testFile, prefix + contents + postfix);
+    QString genContents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort())); /* replace defaul port 80 with some bogus port */
+    writeToFile(testFile, prefix + genContents + postfix);
 
-    logDebug() << "Generated contents will be validated:" << prefix + contents + postfix;
+    logDebug() << "Generated contents will be validated:" << prefix + genContents + postfix;
     logDebug() << "Validation confirmation UUID:" << uuid << "in file:" << uuidFile;
 
     getOrCreateDir("/tmp/logs");
@@ -129,6 +129,7 @@ bool validateNginxEntry(QString& servicePath, QString& contents) {
     if (QFile::exists(uuidFile)) {
         logDebug() << "Validation passed. Removing confirmation file:" << uuidFile;
         QFile::remove(uuidFile);
+        QFile::remove(testFile);
         return true;
     }
     QFile::remove(testFile);
