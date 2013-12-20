@@ -107,12 +107,40 @@ void generateServicePorts(QString servicePath, int amount) {
 }
 
 
+bool validateNginxEntry(QString& servicePath, QString& contents) {
+    QString prefix = "http { ";
+    QString postfix = " }";
+    QString uuid = QUuid::createUuid().toString();
+    QString uuidFile = servicePath + "/" + uuid;
+    QString testFile = servicePath + "/proxy.conf-" + uuid;
+    writeToFile(testFile, prefix + contents + postfix);
+
+    logDebug() << "Validation confirmation UUID:" << uuid << "in file:" << uuidFile;
+
+    auto clne = new SvdProcess("nginx_entry_validate", getuid(), false);
+    clne->spawnProcess("nginx -t -c " + testFile + " && touch " + uuidFile);
+    clne->waitForFinished(10); // XXX: hardcoded 10s
+    clne->deleteLater();
+
+    if (QFile::exists(uuidFile)) {
+        logDebug() << "Validation passed. Removing confirmation file:" << uuidFile;
+        return true;
+    }
+    QFile::remove(testFile);
+    return false; /* means failure by definition */
+}
+
+
 void prepareHttpProxy(QString& servicePath, WebAppTypes appType, QString& latestReleaseDir, QString& domain, QString& serviceName, QString& stage) {
     logInfo() << "Generating http proxy configuration";
     QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
-    logDebug() << "Generated proxy contents:" << contents;
-    writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+    if (validateNginxEntry(servicePath, contents)) {
+        logDebug() << "Generated proxy contents:" << contents;
+        writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+    } else {
+        logWarn() << "Web-App Validation failed";
+    }
 }
 
 

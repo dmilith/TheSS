@@ -339,6 +339,7 @@ server { \n\
 
 QString getDbName(WebDatastore db);
 WebDatastore detectDatastore(QString& deps, QString& depsFile);
+bool validateNginxEntry(QString& servicePath, QString& contents);
 void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies);
 void generateDatastoreSetup(WebDatastore db, QString serviceName, QString stage, WebAppTypes appType);
 void generateServicePorts(QString servicePath, int amount = 1);
