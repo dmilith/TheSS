@@ -56,7 +56,7 @@ server { \n\
         error_page 400 402 403 404 502 503 504 = error.html; \n\
     } \n\
     location /error.html { \n\
-        index error.html \n\
+        index error.html; \n\
     } \n\
     access_log off; \n\
 } \n";
@@ -83,7 +83,7 @@ server { \n\
         error_page 400 403 404 502 503 504 = error.html; \n\
     } \n\
     location /error.html { \n\
-        index error.html \n\
+        index error.html; \n\
     } \n\
     access_log off; \n\
 } \n";
