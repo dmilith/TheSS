@@ -293,21 +293,21 @@ upstream " + serviceName + "-" + stage + " { \n\
 server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
-    error_page 400 402 403 404 502 503 504 = /error; \n\
+    error_page 400 402 403 404 502 503 504 = @error; \n\
     location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
         root " + latestReleaseDir + "; \n\
         add_header Cache-Control max-age=315360000; \n\
         expires 30d; \n\
         break; \n\
     } \n\
-    location = /error { \n\
+    location @error { \n\
         index error.html \n\
         root " + latestReleaseDir + "; \n\
     } \n\
     location / { \n\
         root " + latestReleaseDir + "; \n\
         index index.php; \n\
-        try_files = $uri /index.php; \n\
+        try_files = $uri /$uri $uri/ /index.php; \n\
         if (-f $request_filename) { \n\
             break; \n\
         } \n\
