@@ -112,7 +112,7 @@ bool validateNginxEntry(QString& servicePath, QString contents) {
     QString postfix = " }";
     QString uuid = QUuid::createUuid().toString();
     QString uuidFile = servicePath + "/" + uuid;
-    QString testFile = servicePath + "/proxy.conf-" + uuid;
+    QString testFile = "/tmp/proxy.conf-" + uuid;
 
     QString genContents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort())); /* replace defaul port 80 with some bogus port */
     writeToFile(testFile, prefix + genContents + postfix);
