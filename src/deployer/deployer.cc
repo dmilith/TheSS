@@ -123,7 +123,7 @@ bool validateNginxEntry(QString& servicePath, QString contents) {
     getOrCreateDir("/tmp/logs");
     auto clne = new SvdProcess("nginx_entry_validate", getuid(), false);
     clne->spawnProcess("nginx -t -c " + testFile + " -p /tmp && touch " + uuidFile);
-    clne->waitForFinished(10); // XXX: hardcoded 10s
+    clne->waitForFinished(DEFAULT_SERVICE_PAUSE_INTERVAL); /* give it some time */
     clne->deleteLater();
 
     if (QFile::exists(uuidFile)) {
