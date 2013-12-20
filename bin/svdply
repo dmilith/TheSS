@@ -53,6 +53,7 @@ first_deploy () {
     scp ./${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}" > /dev/null 2>&1
     rm -rf ./${APP_NAME}.git
     ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
+    rm -f ./${APP_TARBALL}
     cd "${cwd}"
     note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
