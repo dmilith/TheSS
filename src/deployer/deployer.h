@@ -325,6 +325,7 @@ server { \n\
     location /error.html { \n\
         index error.html \n\
         root " + latestReleaseDir + "; \n\
+        break; \n\
     } \n\
     location ~ /\\. { \n\
         deny  all; \n\
