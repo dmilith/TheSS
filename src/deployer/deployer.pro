@@ -14,13 +14,14 @@ HEADERS   += ../notifications/notifications.h \
              ../service_spawner/logger.h \
              ../notifications/notifications.h \
              webapp_types.h \
-             deployer.h
+             deploy.h
 SOURCES   += ../service_spawner/process.cc \
              ../service_spawner/utils.cc \
              ../death_watch/death_watch.cc \
              ../service_spawner/logger.cc \
              ../notifications/notifications.cc \
              webapp_types.cc \
+             deploy.cc \
              deployer.cc
 LIBS      += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a ../libquazip.a -lz
 TARGET    = ../../bin/svddeployer
