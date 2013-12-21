@@ -10,7 +10,7 @@
 
 const QStringList getAllowedToSpawnDeps() {
     QStringList output;
-    output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "elasticsearch";
+    output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "elasticsearch" << "mongodb";
     return output;
 }
 
