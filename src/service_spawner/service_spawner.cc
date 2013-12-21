@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 
     /* file lock setup */
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
-    if (getpid() == 0) {
+    if (getuid() == 0) {
         lockName = getHomeDir() + "/.root.pid";
     }
     if (QFile::exists(lockName)) {
