@@ -855,7 +855,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
                         logDebug() << "Worker entry:" << procfileTail << "on port:" << servPort;
-                        startResultJson += " cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -b " + DEFAULT_LOCAL_ADDRESS + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 & ";
+                        startResultJson += " cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOG_FILE + " 2>&1 & "; /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
                     } else {
                         logInfo() << "Found an entry:" << procfileHead;
                         QString procPidFile = procfileHead + ".pid";
