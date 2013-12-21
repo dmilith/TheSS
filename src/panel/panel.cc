@@ -104,7 +104,7 @@ QStringList * Panel::availableServices() {
 bool Panel::isSSOnline(){
     QString ssPidFile = home.absoluteFilePath("." + user + ".pid");
     if (getuid() == 0) {
-        ssPidFile = QString(SYSTEM_USERS_DIR) + "/." + user + ".pid";
+        ssPidFile = QString(SYSTEM_USERS_DIR) + "/.root.pid";
     }
     QString aPid = readFileContents(ssPidFile).trimmed();
     bool ok = false;
