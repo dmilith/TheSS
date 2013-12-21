@@ -881,7 +881,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 jsonResult += "\"}, \n\n\"stop\": {\"commands\": \"";
                 Q_FOREACH(QString acmd, serviceWorkers.keys()) {
                     QString cmd = serviceWorkers.take(acmd);
-                    jsonResult += cmd + " &&\n";
+                    jsonResult += cmd + " ;\n";
                 }
                 jsonResult += "\"}\n}";
 
