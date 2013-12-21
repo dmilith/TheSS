@@ -921,9 +921,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
 
-            logInfo() << "Building assets";
-            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
+            if (QFile::exists(latestReleaseDir + "/Rakefile")) {
+                logInfo() << "Building assets";
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->waitForFinished(-1);
+            }
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
@@ -947,12 +949,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
 
             logInfo() << "Running database migrations";
-            if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+            if (QFile::exists(latestReleaseDir + "/Rakefile")) {
+                logInfo() << "Rakefile found, proceeding with standard tasks";
+                if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
+                    clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                    clne->waitForFinished(-1);
+                }
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                 clne->waitForFinished(-1);
-            }
-            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
+            } else
+                logInfo() << "No Rakefile found. Skipping standard rake tasks";
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies);
 
