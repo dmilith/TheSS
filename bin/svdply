@@ -70,11 +70,11 @@ git remote rm ${DEFAULT_REMOTE}
 git remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
 git push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy
 
-note "Requesting domain entry ${APP_DOMAIN}"
-ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}_${APP_DOMAIN}.web-app" || error "Web deployment request failed or domain already in use!"
-
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
 ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
 
+note "Registering domain entry ${APP_DOMAIN}"
+ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}_${APP_DOMAIN}.web-app" || error "Web deployment request failed or domain already in use!"
+
 note "Deploy complete. ServeD should reload settings immediately."
-note "Application should be available at: http://${APP_DOMAIN} very soon."
+note "Application should very soon be available at: http://${APP_DOMAIN}"
