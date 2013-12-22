@@ -12,6 +12,9 @@ fi
 
 readonly APP_DOMAIN="${1}"
 
+if [ "${DEBUG}" = "true" ]; then
+    export ADDITIONAL=" -d"
+fi
 
 APP_NAME="$(echo "${1}" | awk -F '[.]' '{print $1}')"
 readonly APP_NAME="$(${PRINTF_BIN} "${APP_NAME}" | ${CUT_BIN} -c1 | ${TR_BIN} '[a-z]' '[A-Z]')$(${PRINTF_BIN} "${APP_NAME}" | ${SED_BIN} 's/^[a-zA-Z]//')"
@@ -71,7 +74,7 @@ note "Requesting domain entry ${APP_DOMAIN}"
 ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}_${APP_DOMAIN}.web-app-request" || error "Web deployment request failed or domain already in use!"
 
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
-ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} -d" || error "Deploy failed!" # -d is temporary
+ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
 
 note "Deploy complete. It might take up up to minute before Coreginx reloads changes, cause whole process is async."
 note "Application should be available at: http://${APP_DOMAIN}"
