@@ -96,8 +96,8 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     logDebug() << "Validating existance of:" << aFile << "may proceed?-" << mayProceed;
     auto fileContent = readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" +file).trimmed();
     if (not fileContent.isEmpty()) {
-        logDebug() << "Trying to find existing domain:" << fileContent << "(in:" << file << ")";
-        if (domains.contains(fileContent) && (not fileEntries.contains(file))) {
+        logDebug() << "Trying to find existing domain:" << fileContent << "(in:" << file << "), existing domains:" << domains;
+        if (domains.contains(fileContent) and not fileEntries.contains(file)) {
             QSet<QString> remFiles;
             remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
             remFiles << serviceBase + "/proxy.conf";

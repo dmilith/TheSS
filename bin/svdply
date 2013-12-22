@@ -76,5 +76,5 @@ ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > 
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
 ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
 
-note "Deploy complete. It might take up up to minute before Coreginx reloads changes, cause whole process is async."
-note "Application should be available at: http://${APP_DOMAIN}"
+note "Deploy complete. ServeD should reload settings immediately."
+note "Application should be available at: http://${APP_DOMAIN} very soon."
