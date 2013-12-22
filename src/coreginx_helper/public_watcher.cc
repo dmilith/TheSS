@@ -19,7 +19,7 @@ SvdPublicWatcher::SvdPublicWatcher() {
     connect(fileEvents, SIGNAL(directoryChanged(QString)), this, SLOT(dirChangedSlot(QString)));
     connect(fileEvents, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedSlot(QString)));
     fileEvents->registerFile(DEFAULT_PUBLIC_DIR);
-    Q_FOREACH(auto file, entries) {
+    Q_FOREACH(QString file, entries) {
         logDebug() << "Putting watch on file:" << file;
         fileEvents->registerFile(QString(DEFAULT_PUBLIC_DIR) + "/" + file);
     }
