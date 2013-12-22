@@ -465,11 +465,12 @@ void generateServicePorts(QString servicePath, int amount) {
 
 
 bool validateNginxEntry(QString& servicePath, QString contents) {
-    QString prefix = "events { worker_connections 1024; } http { error_log off; access_log off; ";
+    QString prefix = "events { worker_connections 1024; } http { error_log logs/error.log; access_log off; ";
     QString postfix = " }";
     QString uuid = QUuid::createUuid().toString();
     QString uuidFile = servicePath + "/" + uuid;
-    QString testFile = "/tmp/proxy.conf-" + uuid;
+    QString tmpDir = getOrCreateDir("/tmp/tmp-" + QString::number(getuid()));
+    QString testFile = tmpDir + "/proxy.conf-" + uuid;
 
     QString genContents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort())); /* replace defaul port 80 with some bogus port */
     writeToFile(testFile, prefix + genContents + postfix);
@@ -477,9 +478,9 @@ bool validateNginxEntry(QString& servicePath, QString contents) {
     logDebug() << "Generated contents will be validated:" << prefix + genContents + postfix;
     logDebug() << "Validation confirmation UUID:" << uuid << "in file:" << uuidFile;
 
-    getOrCreateDir("/tmp/logs");
+    getOrCreateDir(tmpDir + "/logs");
     auto clne = new SvdProcess("nginx_entry_validate", getuid(), false);
-    clne->spawnProcess("nginx -t -c " + testFile + " -p /tmp && touch " + uuidFile);
+    clne->spawnProcess("nginx -t -c " + testFile + " -p " + tmpDir + " && touch " + uuidFile);
     clne->waitForFinished(DEFAULT_SERVICE_PAUSE_INTERVAL); /* give it some time */
     clne->deleteLater();
 
