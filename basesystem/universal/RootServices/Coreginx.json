@@ -1,20 +1,6 @@
 {
     "softwareName": "Nginx",
     "staticPort": 80,
-    "schedulerActions": [
-        {
-            "cronEntry": "* * * * * ?",
-            "commands": "
-for i in $(seq 1 11); do
-    printf \"\n---$(date +%d%m%Y-%H%M%S)---\n\" >> SERVICE_PREFIX/service.log 2>&1
-    printf \"------------reloading-nginx-entries------------\n\" >> SERVICE_PREFIX/service.log 2>&1
-    SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1 && printf \"-----Reloaded-Coreginx-proxy-configurations----\n\" >> SERVICE_PREFIX/service.log 2>&1
-    sleep 5
-done
-"
-
-        }
-    ],
     "install": {
         "commands": "sofin get nginx",
         "expectOutput": "All done"

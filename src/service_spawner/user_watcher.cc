@@ -134,7 +134,10 @@ SvdUserWatcher::SvdUserWatcher(uid_t uid) {
 
 
 void SvdUserWatcher::shutdownSlot() {
+    QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
     if (uid == 0) {
+        lockName = getHomeDir() + "/.root.pid";
+
         /* remove user pid files */
         // Q_FOREACH(int userUid, gatherUserUids()) {
         //     QString lockName = QString(USERS_HOME_DIR) + "/" + QString::number(userUid) + "/." + QString::number(userUid) + ".pid";
@@ -143,7 +146,6 @@ void SvdUserWatcher::shutdownSlot() {
         // }
         shutdownDefaultVPNNetwork();
     }
-    QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
     logDebug() << "Removing lock file:" << lockName;
     QFile::remove(lockName);
     QFile::remove(getHomeDir() + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
@@ -158,9 +160,12 @@ void SvdUserWatcher::checkUserControlTriggers() {
         notification(msg, NOTIFY);
         QFile::remove(homeDir + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
-        QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
-        if (getuid() == 0)
+        if (getuid() == 0) {
+            QFile::remove(homeDir + "/.root.pid");
             shutdownDefaultVPNNetwork();
+        } else
+            QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
+
         raise(SIGINT);
     }
     if (QFile::exists(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
@@ -168,9 +173,12 @@ void SvdUserWatcher::checkUserControlTriggers() {
         notification(msg, NOTIFY);
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
-        QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
-        if (getuid() == 0)
+        if (getuid() == 0) {
             shutdownDefaultVPNNetwork();
+            QFile::remove(homeDir + "/.root.pid");
+        } else
+            QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
+
         raise(SIGTERM);
     }
 }
