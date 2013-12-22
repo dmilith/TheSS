@@ -23,14 +23,19 @@
 class SvdPublicWatcher: public QObject {
     Q_OBJECT
 
+    private:
+        SvdFileEventsManager *fileEvents = NULL;
+        QSet<QString> entries;
+
+
     public:
         SvdPublicWatcher();
         ~SvdPublicWatcher();
-
-
-    private:
-        SvdFileEventsManager *fileEvents = NULL;
-        void invokeFileChangedTrigger();
+        void reindexPublicDir();
+        void invokeDirChangedTrigger();
+        void invokeFileChangedTrigger(const QString& file);
+        void processEntries(QSet<QString> newEntries);
+        void validateDomainExistanceFor(const QString& file);
 
 
     signals:

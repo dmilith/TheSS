@@ -110,10 +110,10 @@ int main(int argc, char *argv[]) {
         }
         raise(SIGTERM);
     }
-    if (getuid() != 0) {
-        logError() << "Root account is necessary for Coreginx Helper.";
-        raise(SIGTERM);
-    }
+    // if (getuid() != 0) {
+    //     logError() << "Root account is necessary for Coreginx Helper.";
+    //     raise(SIGTERM);
+    // }
 
 
     logInfo() << "Initializing Coreginx Helper..";
