@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
     QStringList args = app.arguments();
-    bool background = false; /* by default launch svddeployer as foreground task */
+    bool background = true; /* by default launch svddeployer as foreground task */
     QRegExp rxEnableForeground("-f"); /* run in foreground */
     QRegExp rxEnableDebug("-d");
     QRegExp rxEnableTrace("-t");
