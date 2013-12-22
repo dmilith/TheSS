@@ -34,7 +34,6 @@ class SvdPublicWatcher: public QObject {
         void reindexPublicDir();
         void invokeDirChangedTrigger();
         void invokeFileChangedTrigger(const QString& file);
-        void processEntries(QSet<QString> newEntries);
         void validateDomainExistanceFor(QString file);
         void loadExistingDomains();
 

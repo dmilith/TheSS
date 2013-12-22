@@ -43,19 +43,12 @@ void SvdPublicWatcher::reindexPublicDir() {
     QSet<QString> currentEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
     QSet<QString> newEntries = currentEntries.subtract(fileEntries);
     logInfo() << "Detected new fileEntries:" << newEntries;
-    processEntries(newEntries);
-}
-
-
-void SvdPublicWatcher::processEntries(QSet<QString> newEntries) {
-    if (newEntries.isEmpty())
-        logDebug() << "Empty list to process. Skipped";
-    else {
+    if (not newEntries.isEmpty())
         Q_FOREACH(auto entry, newEntries) {
             logInfo() << "Processing entry:" << entry;
             validateDomainExistanceFor(entry);
         }
-    }
+    fileEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
 }
 
 
@@ -91,7 +84,7 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     auto userName = invokedFile.split("_").at(1);
     logDebug() << "Username:" << userName;
     logDebug() << "ServiceName:" << serviceName;
-    if (userName.endsWith(".web-app-request")) {
+    if (userName.endsWith(".web-app")) {
         logWarn() << "Skipping invalid file in Public dir:" << invokedFile;
         return;
     }
@@ -102,36 +95,33 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     bool mayProceed = QFile::exists(aFile);
     logDebug() << "Validating existance of:" << aFile << "may proceed?-" << mayProceed;
     auto fileContent = readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" +file).trimmed();
-    if (not fileContent.isEmpty())
-        Q_FOREACH(auto entry, fileEntries) {
-            auto entryContents = readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" + entry).trimmed();
-            if (entry != file) { /* don't check same file */
-                logDebug() << "Trying to compare:" << entryContents << "with" << fileContent << "(" << entry << "?" << file << ")";
-                if (domains.contains(entryContents)) {
-                    QSet<QString> remFiles;
-                    remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
-                    remFiles << serviceBase + "/proxy.conf";
-                    logError() << "Entries files contain domain:" << fileContent << "Files:" << remFiles << " will be removed!";
-                    auto notificationRoot = root + NOTIFICATIONS_DATA_DIR;
-                    auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
-                    hash->addData(invokedFile.toUtf8(), invokedFile.length());
-                    auto notificationFile = notificationRoot + "/" + hash->result().toHex() + "-duplicated_domain.error";
-                    auto notificationContents = "Domain check failed! Domain already taken: " + fileContent;
-                    logDebug() << "Writing to:" << notificationFile << "with content:" << notificationContents;
-                    if (QDir(notificationRoot).exists()) {
-                        writeToFile(notificationFile, notificationContents);
-                        logInfo() << "Error Notification created!";
-                    } else {
-                        logWarn() << "Can't create notification in non existant directory:" << notificationRoot;
-                    }
-                    Q_FOREACH(auto el, remFiles) {
-                        logDebug() << "Removing:" << el;
-                        QFile::remove(el);
-                    }
-                }
+    if (not fileContent.isEmpty()) {
+        logDebug() << "Trying to find existing domain:" << fileContent << "(in:" << file << ")";
+        if (domains.contains(fileContent) && (not fileEntries.contains(file))) {
+            QSet<QString> remFiles;
+            remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
+            remFiles << serviceBase + "/proxy.conf";
+            logError() << "Entries files contain domain:" << fileContent << "Files:" << remFiles << " will be removed!";
+            auto notificationRoot = root + NOTIFICATIONS_DATA_DIR;
+            auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+            hash->addData(invokedFile.toUtf8(), invokedFile.length());
+            auto notificationFile = notificationRoot + "/" + hash->result().toHex() + "-duplicated_domain.error";
+            auto notificationContents = "Domain check failed for web-app: " + serviceName + ", user:" + userName + "! Domain already taken: " + fileContent;
+            logDebug() << "Writing to:" << notificationFile << "with content:" << notificationContents;
+            if (QDir(notificationRoot).exists()) {
+                writeToFile(notificationFile, notificationContents);
+                logInfo() << "Error Notification created!";
+            } else {
+                logWarn() << "Can't create notification in non existant directory:" << notificationRoot;
             }
+            Q_FOREACH(auto el, remFiles) {
+                logDebug() << "Removing:" << el;
+                QFile::remove(el);
+            }
+        } else { /* redeploy of same app case */
+            logDebug() << "Redeploy of web-app:" << serviceName << " detected.";
         }
-    else
+    } else
         logDebug() << "File contents empty.";
 }
 
