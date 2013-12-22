@@ -119,7 +119,12 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
                 QFile::remove(el);
             }
         } else { /* redeploy of same app case */
-            logDebug() << "Redeploy of web-app:" << serviceName << " detected.";
+            logInfo() << "Detected first deploy, or redeploy of web-app:" << serviceName << "for user:" << userName;
+            auto coreginxReloadTrigger = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/Coreginx" + RELOAD_TRIGGER_FILE;
+            logDebug() << "Creating reload request for Coreginx service:" << coreginxReloadTrigger;
+            QFile::remove(coreginxReloadTrigger); /* sanity check */
+            touch(coreginxReloadTrigger);
+            logInfo() << "Coreginx reload was triggered.";
         }
     } else
         logDebug() << "File contents empty.";
