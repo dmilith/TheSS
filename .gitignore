@@ -25,3 +25,5 @@ releases/
 /bin/svdirc_notify
 
 /bin/svddeployer
+
+/bin/svdcoreginx_helper

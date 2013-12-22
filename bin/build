@@ -41,6 +41,11 @@ build () {
             (make ${MAKE_OPTS} && printf "Successfully built svddeployer\n") || exit 1
             ;;
 
+        coreginx_helper|cgx|c)
+            (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built svdcoreginx_helper\n") || exit 1
+            ;;
+
         *)
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
             (make ${MAKE_OPTS} && printf "Successfully built ss\n") || exit 1
@@ -56,6 +61,9 @@ build () {
 
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
             (make ${MAKE_OPTS} && printf "Successfully built svdpanel\n") || exit 1
+
+            (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
+            (make ${MAKE_OPTS} && printf "Successfully built svdcoreginx_helper\n") || exit 1
 
             (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
             (make ${MAKE_OPTS} && printf "Successfully built tests\n") || exit 1

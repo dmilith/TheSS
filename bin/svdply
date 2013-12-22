@@ -67,8 +67,11 @@ git remote rm ${DEFAULT_REMOTE}
 git remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
 git push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy
 
+note "Requesting domain entry ${APP_DOMAIN}"
+ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_USER}_${APP_NAME}_${APP_DOMAIN}.web-app-request" || error "Web deployment request failed or domain already in use!"
+
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
 ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} -d" || error "Deploy failed!" # -d is temporary
 
-note "Deploy complete. It might take up up to 15s before Coreginx reloads changes."
+note "Deploy complete. It might take up up to minute before Coreginx reloads changes, cause whole process is async."
 note "Application should be available at: http://${APP_DOMAIN}"
