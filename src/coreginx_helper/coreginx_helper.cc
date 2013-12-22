@@ -7,6 +7,7 @@
 
 
 #include "../deployer/deploy.h"
+#include "public_watcher.h"
 
 
 int main(int argc, char *argv[]) {
@@ -109,6 +110,10 @@ int main(int argc, char *argv[]) {
         }
         raise(SIGTERM);
     }
+    if (getuid() != 0) {
+        logError() << "Root account is necessary for Coreginx Helper.";
+        raise(SIGTERM);
+    }
 
 
     logInfo() << "Initializing Coreginx Helper..";
@@ -119,11 +124,7 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, unixSignalHandler);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
-    if (getuid() != 0) {
-        logError() << "Root account is necessary for Coreginx Helper.";
-        raise(SIGTERM);
-    }
-
+    new SvdPublicWatcher();
     logInfo() << "Coreginx helper operational.";
 
     return app.exec();
