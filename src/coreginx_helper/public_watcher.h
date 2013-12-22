@@ -35,7 +35,7 @@ class SvdPublicWatcher: public QObject {
         void invokeDirChangedTrigger();
         void invokeFileChangedTrigger(const QString& file);
         void processEntries(QSet<QString> newEntries);
-        void validateDomainExistanceFor(const QString& file);
+        void validateDomainExistanceFor(QString file);
 
 
     signals:
