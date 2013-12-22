@@ -110,14 +110,25 @@ int main(int argc, char *argv[]) {
         }
         raise(SIGTERM);
     }
-    // if (getuid() != 0) {
-    //     logError() << "Root account is necessary for Coreginx Helper.";
-    //     raise(SIGTERM);
-    // }
 
+
+    logInfo() << "Performing sanity checks..";
+    if (getuid() != 0) {
+        logError() << "Root account is necessary for Coreginx Helper.";
+        raise(SIGTERM);
+    }
+
+    auto coreginxDataDir = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/Coreginx";
+    getOrCreateDir(coreginxDataDir);
+    touch(coreginxDataDir + AUTOSTART_TRIGGER_FILE);
+    if (not QFile::exists(coreginxDataDir + DEFAULT_SERVICE_RUNNING_FILE)) {
+        logWarn() << "Coreginx not spawned. Triggering service start and autostart.";
+        QFile::remove(coreginxDataDir + START_TRIGGER_FILE);
+        touch(coreginxDataDir + START_TRIGGER_FILE);
+    } else
+        logInfo() << "Coreginx is already running";
 
     logInfo() << "Initializing Coreginx Helper..";
-
     logDebug() << "Lock name:" << cgxhPidFile;
     writeToFile(cgxhPidFile, QString::number(getpid()));
 
