@@ -51,33 +51,30 @@ int main(int argc, char *argv[]) {
     if (not background) {
         ConsoleAppender *consoleAppender = new ConsoleAppender();
         Logger::registerAppender(consoleAppender);
-        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
+        consoleAppender->setFormat("%t{dd-HH:mm:ss} cgx[%-7l] <%c:(%F:%i)> %m\n");
         if (trace && debug)
             consoleAppender->setDetailsLevel(Logger::Trace);
         else if (debug && !trace)
             consoleAppender->setDetailsLevel(Logger::Debug);
         else {
             consoleAppender->setDetailsLevel(Logger::Info);
-            consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+            consoleAppender->setFormat("%t{dd-HH:mm:ss} cgx[%-7l] %m\n");
         }
         new ConsoleLoggerTimer(consoleAppender);
 
     } else {
         FileAppender *fileAppender;
-        if (getuid() == 0)
-            fileAppender = new FileAppender(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_LOG_FILE);
-        else
-            fileAppender = new FileAppender(QString(getenv("HOME")) + DEFAULT_SS_LOG_FILE);
+        fileAppender = new FileAppender(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_LOG_FILE);
 
         Logger::registerAppender(fileAppender);
-        fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
+        fileAppender->setFormat("%t{dd-HH:mm:ss} cgx[%-7l] <%c:(%F:%i)> %m\n");
         if (trace && debug)
             fileAppender->setDetailsLevel(Logger::Trace);
         else if (debug && !trace)
             fileAppender->setDetailsLevel(Logger::Debug);
         else {
             fileAppender->setDetailsLevel(Logger::Info);
-            fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+            fileAppender->setFormat("%t{dd-HH:mm:ss} cgx[%-7l] %m\n");
         }
         new FileLoggerTimer(fileAppender);
     }
