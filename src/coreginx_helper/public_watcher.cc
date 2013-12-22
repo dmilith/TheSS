@@ -45,7 +45,6 @@ void SvdPublicWatcher::processEntries(QSet<QString> newEntries) {
         Q_FOREACH(auto entry, newEntries) {
             logInfo() << "Processing entry:" << entry;
             validateDomainExistanceFor(entry);
-            // TODO check if domain exists or not in cwd
         }
     }
 }
@@ -67,7 +66,6 @@ void SvdPublicWatcher::invokeDirChangedTrigger() {
 
 void SvdPublicWatcher::invokeFileChangedTrigger(const QString& file) {
     logInfo() << "Invoked file changed trigger of file:" << file;
-    // reindexPublicDir(); /* we don't need to reload dir entries, cause nothing has changed there if just file was changed */
     reindexPublicDir();
     validateDomainExistanceFor(file);
 }
@@ -119,7 +117,6 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
             }
         }
     }
-
 }
 
 
