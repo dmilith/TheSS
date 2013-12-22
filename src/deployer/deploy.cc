@@ -503,7 +503,7 @@ void prepareHttpProxy(QString& servicePath, WebAppTypes appType, QString& latest
         logDebug() << "Generated proxy contents:" << contents;
         writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
     } else {
-        logWarn() << "Web-App Validation failed, cause of a failure in generated nginx proxy file. Proxy file generation skipped!";
+        logWarn() << "Web-App proxy autogeneration failed. It might be a failure in generated nginx proxy file or user input. Proxy file generation skipped!";
     }
 }
 
