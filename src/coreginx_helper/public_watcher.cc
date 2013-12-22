@@ -13,13 +13,14 @@ SvdPublicWatcher::SvdPublicWatcher() {
     logDebug() << "Starting SvdPublicWatcher";
 
     fileEvents = new SvdFileEventsManager();
-    entries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
+    fileEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
+    loadExistingDomains();
 
     /* connect file event slots to watcher: */
     connect(fileEvents, SIGNAL(directoryChanged(QString)), this, SLOT(dirChangedSlot(QString)));
     connect(fileEvents, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedSlot(QString)));
     fileEvents->registerFile(DEFAULT_PUBLIC_DIR);
-    Q_FOREACH(QString file, entries) {
+    Q_FOREACH(QString file, fileEntries) {
         logDebug() << "Putting watch on file:" << file;
         fileEvents->registerFile(QString(DEFAULT_PUBLIC_DIR) + "/" + file);
     }
@@ -29,11 +30,19 @@ SvdPublicWatcher::SvdPublicWatcher() {
 }
 
 
+void SvdPublicWatcher::loadExistingDomains() {
+    Q_FOREACH(QString entry, fileEntries) {
+        domains << readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" + entry).trimmed();
+    }
+    logDebug() << "Loaded domains:" << domains;
+}
+
+
 void SvdPublicWatcher::reindexPublicDir() {
-    logDebug() << "Old set of ENTRIES:" << this->entries;
+    logDebug() << "Old set of ENTRIES:" << this->fileEntries;
     QSet<QString> currentEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
-    QSet<QString> newEntries = currentEntries.subtract(entries);
-    logInfo() << "Detected new entries:" << newEntries;
+    QSet<QString> newEntries = currentEntries.subtract(fileEntries);
+    logInfo() << "Detected new fileEntries:" << newEntries;
     processEntries(newEntries);
 }
 
@@ -67,6 +76,7 @@ void SvdPublicWatcher::invokeDirChangedTrigger() {
 void SvdPublicWatcher::invokeFileChangedTrigger(const QString& file) {
     logInfo() << "Invoked file changed trigger of file:" << file;
     reindexPublicDir();
+    loadExistingDomains();
     validateDomainExistanceFor(file);
 }
 
@@ -89,34 +99,40 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     auto root = "/Users/" + userName + SOFTWARE_DATA_DIR;
     auto serviceBase = root + "/" + serviceName;
     auto aFile = serviceBase + DEFAULT_SERVICE_CONFIGURED_FILE;
-    logDebug() << "Validating existance of:" << aFile << "?-" << QFile::exists(aFile);
+    bool mayProceed = QFile::exists(aFile);
+    logDebug() << "Validating existance of:" << aFile << "may proceed?-" << mayProceed;
     auto fileContent = readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" +file).trimmed();
-    Q_FOREACH(auto entry, entries) {
-        auto entryContents = readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" + entry).trimmed();
-        if (entry != file) { /* don't check same file */
-            logDebug() << "Trying to compare:" << entryContents << "with" << fileContent << "(" << entry << "?" << file << ")";
-            if (entryContents == fileContent) {
-                QSet<QString> remFiles;
-                remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
-                remFiles << serviceBase + "/proxy.conf";
-                logError() << "Entries files contain domain:" << fileContent << "Files:" << remFiles << " will be removed!";
-                auto notificationRoot = root + NOTIFICATIONS_DATA_DIR;
-                auto notificationFile = notificationRoot + "/duplicated_domain.error";
-                auto notificationContents = "Domain check failed! Domain already taken: " + fileContent;
-                logDebug() << "Writing to:" << notificationFile << "with content:" << notificationContents;
-                if (QDir(notificationRoot).exists()) {
-                    writeToFile(notificationFile, notificationContents);
-                    logInfo() << "Error Notification created!";
-                } else {
-                    logWarn() << "Can't create notification in non existant directory:" << notificationRoot;
-                }
-                Q_FOREACH(auto el, remFiles) {
-                    logDebug() << "Removing:" << el;
-                    QFile::remove(el);
+    if (not fileContent.isEmpty())
+        Q_FOREACH(auto entry, fileEntries) {
+            auto entryContents = readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" + entry).trimmed();
+            if (entry != file) { /* don't check same file */
+                logDebug() << "Trying to compare:" << entryContents << "with" << fileContent << "(" << entry << "?" << file << ")";
+                if (domains.contains(entryContents)) {
+                    QSet<QString> remFiles;
+                    remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
+                    remFiles << serviceBase + "/proxy.conf";
+                    logError() << "Entries files contain domain:" << fileContent << "Files:" << remFiles << " will be removed!";
+                    auto notificationRoot = root + NOTIFICATIONS_DATA_DIR;
+                    auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+                    hash->addData(invokedFile.toUtf8(), invokedFile.length());
+                    auto notificationFile = notificationRoot + "/" + hash->result().toHex() + "-duplicated_domain.error";
+                    auto notificationContents = "Domain check failed! Domain already taken: " + fileContent;
+                    logDebug() << "Writing to:" << notificationFile << "with content:" << notificationContents;
+                    if (QDir(notificationRoot).exists()) {
+                        writeToFile(notificationFile, notificationContents);
+                        logInfo() << "Error Notification created!";
+                    } else {
+                        logWarn() << "Can't create notification in non existant directory:" << notificationRoot;
+                    }
+                    Q_FOREACH(auto el, remFiles) {
+                        logDebug() << "Removing:" << el;
+                        QFile::remove(el);
+                    }
                 }
             }
         }
-    }
+    else
+        logDebug() << "File contents empty.";
 }
 
 

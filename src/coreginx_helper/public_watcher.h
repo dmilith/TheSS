@@ -25,7 +25,7 @@ class SvdPublicWatcher: public QObject {
 
     private:
         SvdFileEventsManager *fileEvents = NULL;
-        QSet<QString> entries;
+        QSet<QString> fileEntries, domains;
 
 
     public:
@@ -36,6 +36,7 @@ class SvdPublicWatcher: public QObject {
         void invokeFileChangedTrigger(const QString& file);
         void processEntries(QSet<QString> newEntries);
         void validateDomainExistanceFor(QString file);
+        void loadExistingDomains();
 
 
     signals:
