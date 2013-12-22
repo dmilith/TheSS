@@ -42,7 +42,7 @@ void SvdPublicWatcher::reindexPublicDir() {
     logDebug() << "Old set of ENTRIES:" << this->fileEntries;
     QSet<QString> currentEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
     QSet<QString> newEntries = currentEntries.subtract(fileEntries);
-    logInfo() << "Detected new fileEntries:" << newEntries;
+    logDebug() << "Detected new fileEntries:" << newEntries;
     if (not newEntries.isEmpty())
         Q_FOREACH(auto entry, newEntries) {
             logInfo() << "Processing entry:" << entry;
