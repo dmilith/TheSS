@@ -43,7 +43,8 @@ note "App name: ${APP_NAME}"
 note "App domain: ${APP_DOMAIN}"
 note "App branch: ${APP_BRANCH}"
 note "App stage: ${APP_STAGE}"
-
+(test -f ${APP_SSL_CERT} && note "APP_SSL_CERT file: ${APP_SSL_CERT}" \
+test -f ${APP_SSL_KEY} && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "Default self-signed SSL will be created for domain: ${APP_DOMAIN}"
 
 first_deploy () {
     cwd="$(pwd)"
@@ -64,6 +65,19 @@ first_deploy () {
 conn_check=$(ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "uname -a")
 test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}"
 note "Deploying to: ${conn_check}"
+
+if [ -f "${APP_SSL_CERT}" ]; then
+    if [ -f "${APP_SSL_KEY}" ]; then
+        note "Uploading given SSL CERT: ${APP_SSL_CERT} and KEY: ${APP_SSL_KEY}"
+        scp "${APP_SSL_CERT}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
+        scp "${APP_SSL_KEY}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
+        note "Successfully copied certificate: ${APP_SSL_CERT}, and key: ${APP_SSL_KEY}."
+    else
+        error "APP_SLL_CERT specified, but APP_SSL_KEY file is missing!"
+    fi
+else
+    note "Specify APP_SLL_CERT and APP_SSL_KEY to upload your SSL certificate."
+fi
 
 note "Pushing current repository state to remote: ${DEFAULT_REMOTE}, on branch: ${APP_BRANCH}"
 git remote rm ${DEFAULT_REMOTE}
