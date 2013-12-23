@@ -840,7 +840,7 @@ void SvdService::restartWithoutDepsSlot() {
 
 
 void SvdService::reloadSlot() {
-    logDebug() << "Invoked reload slot for service:" << name;
+    logInfo() << "Invoked reload slot for service:" << name;
     logTrace() << "Loading service igniter" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE;
