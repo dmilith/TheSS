@@ -77,6 +77,27 @@ server { \n\
         index error.html; \n\
     } \n\
     access_log off; \n\
+} \n\
+server { \n\
+    listen 443 ssl; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "/public; \n\
+    ssl_certificate " + sslDir + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + domain + ".key; \n\
+    location / { \n\
+        proxy_set_header X-Real-IP $remote_addr; \n\
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
+        proxy_set_header Host $http_host; \n\
+        proxy_redirect off; \n\
+        if (!-f $request_filename) { \n\
+            proxy_pass http://" + serviceName + "-" + stage + "; \n\
+        } \n\
+        error_page 400 402 403 404 502 503 504 = error.html; \n\
+    } \n\
+    location /error.html { \n\
+        index error.html; \n\
+    } \n\
+    access_log off; \n\
 } \n";
 
 
@@ -89,6 +110,28 @@ server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
+    location / { \n\
+        proxy_set_header X-Real-IP $remote_addr; \n\
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
+        proxy_set_header Host $http_host; \n\
+        try_files = $uri /$uri $uri/ @error; \n\
+        proxy_redirect off; \n\
+        if (!-f $request_filename) { \n\
+            proxy_pass http://" + serviceName + "-" + stage + "; \n\
+        } \n\
+        error_page 400 403 404 502 503 504 = error.html; \n\
+    } \n\
+    location /error.html { \n\
+        index error.html; \n\
+    } \n\
+    access_log off; \n\
+} \n\
+server { \n\
+    listen 443 ssl; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "/public; \n\
+    ssl_certificate " + sslDir + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + domain + ".key; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
@@ -320,6 +363,38 @@ server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
+    location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
+        add_header Cache-Control max-age=315360000; \n\
+        expires 30d; \n\
+        break; \n\
+    } \n\
+    location / { \n\
+        fastcgi_index index.php; \n\
+        try_files = $uri /$uri $uri/ /index.php; \n\
+        if (-f $request_filename) { \n\
+            break; \n\
+        } \n\
+        include " + latestReleaseDir + "/fastcgi_params; \n\
+        fastcgi_param SCRIPT_FILENAME " + latestReleaseDir + "$fastcgi_script_name; \n\
+        fastcgi_param PATH_INFO $fastcgi_script_name; \n\
+        fastcgi_pass " + serviceName + "-" + stage + "; \n\
+        error_page 400 402 403 404 502 503 504 = error.html; \n\
+    } \n\
+    location /error.html { \n\
+        index error.html; \n\
+        proxy_redirect off; \n\
+    } \n\
+    location ~ /\\. { \n\
+        deny  all; \n\
+    } \n\
+    access_log off; \n\
+}\n\
+server { \n\
+    listen 443 ssl; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "; \n\
+    ssl_certificate " + sslDir + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + domain + ".key; \n\
     location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
         add_header Cache-Control max-age=315360000; \n\
         expires 30d; \n\
