@@ -15,7 +15,18 @@ const QStringList getAllowedToSpawnDeps() {
 }
 
 
-QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port) {
+QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
+    if (not sslPemPath.isEmpty()) { /* ssl pem file given */
+        logWarn() << "NYI";
+
+    } else {
+        logInfo() << "Generating self signed SSL certificate for service:" << serviceName;
+        SvdProcess *prc = new SvdProcess("an_self_signed_cert_generate", getuid(), false);
+        QString sslDir = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + DEFAULT_SSL_DIR);
+        prc->spawnProcess("test ! -f " + sslDir + domain + ".crt && echo \"EU\nPoland\nGdansk\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + domain + ".crt -keyout " + sslDir + domain + ".key");
+        prc->waitForFinished(-1);
+        prc->deleteLater();
+    }
     switch (type) {
         case StaticSite:
             return "\n\
