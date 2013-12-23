@@ -43,8 +43,8 @@ note "App name: ${APP_NAME}"
 note "App domain: ${APP_DOMAIN}"
 note "App branch: ${APP_BRANCH}"
 note "App stage: ${APP_STAGE}"
-(test -f ${APP_SSL_CERT} && note "APP_SSL_CERT file: ${APP_SSL_CERT}" \
-test -f ${APP_SSL_KEY} && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "Default self-signed SSL will be created for domain: ${APP_DOMAIN}"
+(test -f "${APP_SSL_CERT}" && note "APP_SSL_CERT file: ${APP_SSL_CERT}" \
+test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "Default self-signed SSL will be created for domain: ${APP_DOMAIN}"
 
 first_deploy () {
     cwd="$(pwd)"
