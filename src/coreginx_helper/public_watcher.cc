@@ -22,7 +22,7 @@ SvdPublicWatcher::SvdPublicWatcher() {
     fileEvents->registerFile(DEFAULT_PUBLIC_DIR);
     Q_FOREACH(QString file, fileEntries) {
         logDebug() << "Putting watch on file:" << file;
-        fileEvents->registerFile(QString(DEFAULT_PUBLIC_DIR) + "/" + file);
+        fileEvents->registerFile(QString(DEFAULT_PUBLIC_DIR) + file);
     }
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
@@ -32,7 +32,7 @@ SvdPublicWatcher::SvdPublicWatcher() {
 
 void SvdPublicWatcher::loadExistingDomains() {
     Q_FOREACH(QString entry, fileEntries) {
-        domains << readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" + entry).trimmed();
+        domains << readFileContents(QString(DEFAULT_PUBLIC_DIR) + entry).trimmed();
     }
     logDebug() << "Loaded domains:" << domains;
 }
@@ -75,7 +75,7 @@ void SvdPublicWatcher::invokeFileChangedTrigger(const QString& file) {
 
 
 void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
-    auto invokedFile = file.replace(QString(DEFAULT_PUBLIC_DIR) + "/", "");
+    auto invokedFile = file.replace(QString(DEFAULT_PUBLIC_DIR), "");
     if (not invokedFile.contains("_")) {
         logWarn() << "Skipped check for file:" << invokedFile;
         return;
@@ -89,17 +89,17 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
         return;
     }
     logInfo() << "Validating service:" << serviceName << "for user:" << userName;
-    auto root = "/Users/" + userName + SOFTWARE_DATA_DIR;
+    auto root = QString(DEFAULT_HOME_DIR) + userName + SOFTWARE_DATA_DIR;
     auto serviceBase = root + "/" + serviceName;
     auto aFile = serviceBase + DEFAULT_SERVICE_CONFIGURED_FILE;
     bool mayProceed = QFile::exists(aFile);
     logDebug() << "Validating existance of:" << aFile << "may proceed?-" << mayProceed;
-    auto fileContent = readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" +file).trimmed();
+    auto fileContent = readFileContents(QString(DEFAULT_PUBLIC_DIR) + file).trimmed();
     if (not fileContent.isEmpty()) {
         logDebug() << "Trying to find existing domain:" << fileContent << "(in:" << file << "), existing domains:" << domains;
         if (domains.contains(fileContent) and not fileEntries.contains(file)) {
             QSet<QString> remFiles;
-            remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
+            remFiles << QString(DEFAULT_PUBLIC_DIR) + file;
             remFiles << serviceBase + "/proxy.conf";
             logError() << "Entries files contain domain:" << fileContent << "Files:" << remFiles << " will be removed!";
             auto notificationRoot = root + NOTIFICATIONS_DATA_DIR;
@@ -134,7 +134,7 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
 void SvdPublicWatcher::dirChangedSlot(const QString& dir) {
     logInfo() << "Directory changed:" << dir;
 
-    if (dir == DEFAULT_PUBLIC_DIR) {
+    if (QString(DEFAULT_PUBLIC_DIR).contains(dir)) {
         logTrace() << "Invoked trigger in dir:" << dir;
         invokeDirChangedTrigger();
         return;
