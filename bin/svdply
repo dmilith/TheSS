@@ -77,4 +77,4 @@ note "Registering domain entry ${APP_DOMAIN}"
 ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed or domain already in use!"
 
 note "Deploy complete. ServeD should reload settings immediately."
-note "Application should be available at: http://${APP_DOMAIN}"
+note "Application should be available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
