@@ -496,7 +496,8 @@ bool validateNginxEntry(QString& servicePath, QString contents) {
     QString tmpDir = getOrCreateDir("/tmp/tmp-" + QString::number(getuid()));
     QString testFile = tmpDir + "/proxy.conf-" + uuid;
 
-    QString genContents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort())); /* replace defaul port 80 with some bogus port */
+    QString genContents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort()));
+    genContents = contents.replace("listen 443", "listen " + QString::number(registerFreeTcpPort())); /* replace defaul port 80 and 443 with some bogus ports */
     writeToFile(testFile, prefix + genContents + postfix);
 
     logDebug() << "Generated contents will be validated:" << prefix + genContents + postfix;
