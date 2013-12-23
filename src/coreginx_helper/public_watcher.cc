@@ -84,10 +84,12 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     auto userName = invokedFile.split("_").at(1);
     logDebug() << "Username:" << userName;
     logDebug() << "ServiceName:" << serviceName;
-    if (userName.endsWith(".web-app")) {
-        logWarn() << "Skipping invalid file in Public dir:" << invokedFile;
-        return;
+    userName = userName.replace(".web-app", "");
+    if (userName.isEmpty()) {
+        logError() << "Empty user name given?";
+        raise(SIGTERM);
     }
+
     logInfo() << "Validating service:" << serviceName << "for user:" << userName;
     auto root = QString(DEFAULT_HOME_DIR) + userName + SOFTWARE_DATA_DIR;
     auto serviceBase = root + "/" + serviceName;
