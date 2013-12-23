@@ -497,7 +497,7 @@ bool validateNginxEntry(QString& servicePath, QString contents) {
 
 
 void prepareHttpProxy(QString& servicePath, WebAppTypes appType, QString& latestReleaseDir, QString& domain, QString& serviceName, QString& stage) {
-    logInfo() << "Generating http proxy configuration";
+    logInfo() << "Generating http proxy configuration for web-app";
     QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
     if (validateNginxEntry(servicePath, contents)) {
@@ -592,7 +592,7 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
     clne->spawnProcess(command);
     clne->waitForFinished(-1);
-    logInfo() << "Web app:" << serviceName << "cloned on branch:" << branch;
+    logInfo() << "Web app:" << serviceName << "cloned from branch:" << branch;
     clne->deleteLater();
 }
 
@@ -757,7 +757,7 @@ QString getDbName(WebDatastore db) {
 
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
 
-    logInfo() << "Creating app environment";
+    logInfo() << "Creating web-app environment";
     QString servicePath = getServiceDataDir(serviceName);
     QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAIN_FILE;
     logDebug() << "Writing domain:" << domain << "to file:" << domainFilePath;
@@ -949,9 +949,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 }
             }
 
-            logInfo() << "Running database migrations";
             if (QFile::exists(latestReleaseDir + "/Rakefile")) {
                 logInfo() << "Rakefile found, proceeding with standard tasks";
+                logInfo() << "Running database migrations";
                 if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
                     clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                     clne->waitForFinished(-1);
