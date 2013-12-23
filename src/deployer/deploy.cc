@@ -16,13 +16,14 @@ const QStringList getAllowedToSpawnDeps() {
 
 
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
+    QString sslDir = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + DEFAULT_SSL_DIR);
     if (not sslPemPath.isEmpty()) { /* ssl pem file given */
         logWarn() << "NYI";
 
     } else {
         logInfo() << "Generating self signed SSL certificate for service:" << serviceName;
         SvdProcess *prc = new SvdProcess("an_self_signed_cert_generate", getuid(), false);
-        QString sslDir = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + DEFAULT_SSL_DIR);
+
         prc->spawnProcess("test ! -f " + sslDir + domain + ".crt && echo \"EU\nPoland\nGdansk\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + domain + ".crt -keyout " + sslDir + domain + ".key");
         prc->waitForFinished(-1);
         prc->deleteLater();
@@ -34,6 +35,18 @@ server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
+    location / { \n\
+        index index.html index.htm; \n\
+        expires 30d; \n\
+    } \n\
+    access_log off; \n\
+}\n\
+server { \n\
+    listen 443 ssl; \n\
+    server_name " + domain + "; \n\
+    root " + latestReleaseDir + "; \n\
+    ssl_certificate " + sslDir + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + domain + ".key; \n\
     location / { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
