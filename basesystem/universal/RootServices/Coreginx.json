@@ -60,7 +60,6 @@ http {
         location / {
             root SERVICE_PREFIX/verknowsys;
             index index.html;
-            error_page 400 403 404 502 503 504 = error.html;
         }
     }
 
@@ -71,7 +70,6 @@ http {
         location / {
             root SERVICE_PREFIX/verknowsys;
             index error.html;
-            error_page 400 403 404 502 503 504 = error.html;
         }
     }
 
