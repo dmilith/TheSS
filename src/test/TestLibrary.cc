@@ -348,7 +348,7 @@ void TestLibrary::testWebAppDetection() {
     appDetector = new WebAppTypeDetector(path + "/SomeRailsApp");
     logDebug() << "Detected application type:" << appDetector->typeName;
     QVERIFY(appDetector->getType() == RubySite);
-    QVERIFY(appDetector->typeName == "Rails");
+    QVERIFY(appDetector->typeName == "Ruby");
     delete appDetector;
 
     appDetector = new WebAppTypeDetector(path + "/SomeNodeApp");
