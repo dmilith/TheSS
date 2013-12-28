@@ -87,6 +87,7 @@ server { \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
+        proxy_set_header X-Forwarded-Proto https; \n\
         proxy_set_header Host $http_host; \n\
         proxy_redirect off; \n\
         if (!-f $request_filename) { \n\
@@ -135,6 +136,7 @@ server { \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
+        proxy_set_header X-Forwarded-Proto https; \n\
         proxy_set_header Host $http_host; \n\
         try_files = $uri /$uri $uri/ @error; \n\
         proxy_redirect off; \n\
