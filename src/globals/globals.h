@@ -61,7 +61,7 @@
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
     #define DEFAULT_SERVICE_ENV_FILE "/service.env"
     #define DEFAULT_SERVICE_LOG_FILE "/service.log"
-    #define SOFIN_DEPENDENCIES_FILE "/.dependencies"
+    #define DEFAULT_SERVICE_DEPENDENCIES_FILE "/.dependencies"
 
     /* triggers */
     #define INSTALL_TRIGGER_FILE "/.install"

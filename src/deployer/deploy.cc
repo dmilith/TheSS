@@ -703,9 +703,9 @@ void installDependencies(QString& serviceName) {
     /* setting up service domain */
     auto clne = new SvdProcess("install_dependencies", getuid(), false);
     QString servicePath = getServiceDataDir(serviceName);
-    logInfo() << "Installing service dependencies";
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
+    logInfo() << "Installing service dependencies:" << readFileContents(latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE).trimmed().split("\n");
 
     clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
@@ -724,7 +724,7 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
 
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
     QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independenc service */
-    QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
+    QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     QString deps = readFileContents(depsFile).trimmed();
 
     /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
@@ -913,7 +913,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             QString databaseName = serviceName + "-" + stage;
             QList<WebDatastore> datastores;
-            QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
+            QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             QString deps = "";
 
@@ -1099,7 +1099,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
-            QString depsFile = latestReleaseDir + SOFIN_DEPENDENCIES_FILE;
+            QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString deps = "", content = "";
 
             /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
