@@ -1,0 +1,26 @@
+#!/bin/sh
+
+CONF_FILE="/etc/sofin.conf.sh"
+if [ -e "${CONF_FILE}" ]; then
+    . "${CONF_FILE}"
+    validate_env
+else
+    echo "FATAL: No configuration file found: ${CONF_FILE}"
+    exit 1
+fi
+
+USER_NAME="$1"
+if [ "${USER_NAME}" = "" ]; then
+    note "New user name not specified!\n"
+    exit 1
+fi
+
+note "Adding user name: ${USER_NAME}\n"
+pw useradd "${USER_NAME}" -n "${USER_NAME}" -d "/Users/${USER_NAME}" -m -s /Software/Zsh/exports/zsh >/dev/null|| error "Failed to add user!"
+mkdir -p "/Users/${USER_NAME}/.ssh"
+
+note "Paste user ssh key below (ctrl-d after new line to end)\n"
+cat > "/Users/${USER_NAME}/.ssh/authorized_keys"
+chown -R "${USER_NAME}" "/Users/${USER_NAME}"
+
+note "User added: ${USER_NAME}\n"
