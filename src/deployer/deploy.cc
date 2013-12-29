@@ -383,6 +383,7 @@ server { \n\
         fastcgi_param PATH_INFO $fastcgi_script_name; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
         fastcgi_intercept_errors on; \n\
+        error_log \"" + getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOG_FILE + "\"; \n\
         error_page 400 402 403 404 502 503 504 = error.html; \n\
     } \n\
     location /error.html { \n\
