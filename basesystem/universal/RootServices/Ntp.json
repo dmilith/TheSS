@@ -1,6 +1,7 @@
 {
     "watchPort": false,
     "alwaysOn": false,
+    "autoStart": true,
 
     "schedulerActions": [
     {
