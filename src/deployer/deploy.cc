@@ -205,14 +205,14 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     memory_limit = 512M \n\
     error_reporting = E_ALL & ~E_DEPRECATED \n\
     display_errors = On \n\
-    display_startup_errors = Off \n\
+    display_startup_errors = On \n\
     log_errors = On \n\
     log_errors_max_len = 1024 \n\
-    ignore_repeated_errors = Off \n\
+    ignore_repeated_errors = On \n\
     ignore_repeated_source = Off \n\
     report_memleaks = On \n\
-    track_errors = Off \n\
-    html_errors = Off \n\
+    track_errors = On \n\
+    html_errors = On \n\
     variables_order = \"GPCS\" \n\
     request_order = \"GP\" \n\
     register_globals = Off \n\
@@ -236,9 +236,11 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     allow_url_fopen = On \n\
     allow_url_include = Off \n\
     default_socket_timeout = 60 \n\
+[mysql] \n\
+    mysql.default_socket=\"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
 [Pdo_mysql] \n\
     pdo_mysql.cache_size = 2000 \n\
-    pdo_mysql.default_socket= \":" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
+    pdo_mysql.default_socket= \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
 [Syslog] \n\
     define_syslog_variables  = Off \n\
 [mail function] \n\
@@ -265,7 +267,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     mysql.max_persistent = -1 \n\
     mysql.max_links = -1 \n\
     mysql.default_port = \n\
-    mysql.default_socket = \":" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
+    mysql.default_socket = \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
     mysql.default_host = \n\
     mysql.default_user = \n\
     mysql.default_password = \n\
