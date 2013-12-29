@@ -193,7 +193,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     safe_mode_exec_dir = \n\
     safe_mode_allowed_env_vars = PHP_ \n\
     safe_mode_protected_env_vars = LD_LIBRARY_PATH \n\
-    open_basedir = \"/tmp:" + latestReleaseDir + "\n \n\
+    open_basedir = \"/tmp:" + latestReleaseDir + "\" \n\
     disable_functions = exec,popen,system \n\
     disable_classes = \n\
     realpath_cache_size = 128k \n\
