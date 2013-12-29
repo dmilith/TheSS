@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
     getOrCreateDir(repositoryRootPath);
     QString repositoryPath = repositoryRootPath + serviceName + ".git";
 
-    cloneRepository(repositoryPath, serviceName, branch);
+    cloneRepository(repositoryPath, serviceName, branch, domain);
     installDependencies(serviceName);
     createEnvironmentFiles(serviceName, domain, stage, branch);
 

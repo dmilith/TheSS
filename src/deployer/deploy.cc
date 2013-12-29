@@ -644,7 +644,7 @@ void prepareSharedSymlinks(QString& latestReleaseDir, QString& servicePath, QStr
 }
 
 
-void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch) {
+void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& domain) {
     if (not QDir().exists(sourceRepositoryPath)) {
         logError() << "No source git repository found:" << sourceRepositoryPath;
         raise(SIGTERM);
@@ -659,6 +659,9 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
     /* create "deploying" state */
     touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
     logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << "for service:" << serviceName;
+
+    logDebug() << "Writing domain file of service with path:" << servicePath;
+    writeToFile(servicePath + DEFAULT_SERVICE_DOMAIN_FILE, domain);
 
     getOrCreateDir(servicePath + "/releases/");
 
@@ -700,7 +703,6 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
 
 void installDependencies(QString& serviceName) {
-    /* setting up service domain */
     auto clne = new SvdProcess("install_dependencies", getuid(), false);
     QString servicePath = getServiceDataDir(serviceName);
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
