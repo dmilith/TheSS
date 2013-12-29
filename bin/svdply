@@ -10,6 +10,8 @@ else
     exit 1
 fi
 
+
+readonly SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no"
 readonly APP_DOMAIN="${1}"
 
 if [ "${DEBUG}" = "true" ]; then
@@ -53,16 +55,16 @@ first_deploy () {
     # TODO: consider support for directories without git repository in it
     git clone --bare ${cwd} ${APP_NAME}.git > /dev/null 2>&1
     tar cf ${APP_TARBALL} ./${APP_NAME}.git
-    ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
+    ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
     scp ./${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}" > /dev/null 2>&1
     rm -rf ./${APP_NAME}.git
-    ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
+    ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
     rm -f ./${APP_TARBALL}
     cd "${cwd}"
     note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
 
-conn_check=$(ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "uname -a")
+conn_check=$(ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "uname -a" 2> /dev/null)
 test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}"
 note "Deploying to: ${conn_check}"
 
@@ -79,16 +81,17 @@ else
     note "Specify APP_SLL_CERT and APP_SSL_KEY to upload your SSL certificate."
 fi
 
-note "Pushing current repository state to remote: ${DEFAULT_REMOTE}, on branch: ${APP_BRANCH}"
-git remote rm ${DEFAULT_REMOTE}
+note "Pushing current repository to remote: ${DEFAULT_REMOTE}, on branch: ${APP_BRANCH}"
+git remote rm ${DEFAULT_REMOTE} > /dev/null 2>&1
 git remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
 git push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy
 
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
-ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
+ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
 
 note "Registering domain entry ${APP_DOMAIN}"
-ssh -o CheckHostIP=no "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed or domain already in use!"
+ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed or domain already in use!"
 
-note "Deploy complete. ServeD should reload settings immediately."
-note "Application should be available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
+note "Deploy complete!"
+note "Web application should be soon available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
+note "ServeD will reload proxy immediately, but your app may require some additional time to set up. Please be patient."
