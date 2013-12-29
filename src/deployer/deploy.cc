@@ -265,7 +265,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     mysql.max_persistent = -1 \n\
     mysql.max_links = -1 \n\
     mysql.default_port = \n\
-    mysql.default_socket = \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
+    mysql.default_socket = \":" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
     mysql.default_host = \n\
     mysql.default_user = \n\
     mysql.default_password = \n\
