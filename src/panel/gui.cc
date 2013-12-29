@@ -354,18 +354,21 @@ QString PanelGui::newEntry(QString defaultEntry = "Domain name") {
 
 void PanelGui::removeCurrentService(){
     auto service = servicesList->currentItem();
-    if(service == NULL){
+    if (service == NULL){
         status = "You can't remove non existant service.";
     } else {
-        if(service->isRunning){
+        if (service->isRunning){
             status = "You can't remove running service: " + service->name;
         } else {
-            if(confirm(" Are you sure you want to destroy data\n and configuration of service: " + service->name + "?")){
-                if(service->remove()){
+            if (confirm(" Are you sure you want to destroy data\n and configuration of service: " + service->name + "?")){
+                if (service->remove()){
                     status = "Data dir removed: " + service->dir.absolutePath();
                 } else {
                     status = "Permissions failure. Check your user priviledges on your software data dir";
                 }
+                QString webAppPublicFile = DEFAULT_PUBLIC_DIR + service->name + "_" + QDir(getHomeDir()).dirName() + ".web-app";
+                logInfo() << "Wiping out web-app public file:" << webAppPublicFile;
+                QFile::remove(webAppPublicFile);
             } else {
                 status = "Cancelled removing data dir: " + service->name;
             }
