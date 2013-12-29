@@ -367,7 +367,6 @@ void PanelGui::removeCurrentService(){
                     status = "Permissions failure. Check your user priviledges on your software data dir";
                 }
                 QString webAppPublicFile = DEFAULT_PUBLIC_DIR + service->name + "_" + QDir(getHomeDir()).dirName() + ".web-app";
-                logInfo() << "Wiping out web-app public file:" << webAppPublicFile;
                 QFile::remove(webAppPublicFile);
             } else {
                 status = "Cancelled removing data dir: " + service->name;
