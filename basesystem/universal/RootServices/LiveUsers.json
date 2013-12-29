@@ -1,0 +1,15 @@
+{
+    "watchPort": false,
+    "alwaysOn": false,
+
+    "schedulerActions": [
+    {
+        "cronEntry": "*/2 * * * * ?",
+        "commands": "
+printf '$(date +%d%m%Y-%H%M%S) - Updating users..\n' >> SERVICE_PREFIX/service.log 2>&1
+ttys_updater >> SERVICE_PREFIX/service.log 2>&1
+printf '$(date +%d%m%Y-%H%M%S) - Update complete.\n' >> SERVICE_PREFIX/service.log 2>&1
+"
+    }
+    ]
+}
