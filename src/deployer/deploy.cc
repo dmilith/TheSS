@@ -226,7 +226,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     default_mimetype = \"text/html\" \n\
     default_charset = \"UTF-8\" \n\
     doc_root = \n\
-    user_dir = " + latestReleaseDir + " \n\
+    user_dir = \"/tmp:" + latestReleaseDir + "\" \n\
     enable_dl = Off \n\
     file_uploads = On \n\
     upload_max_filesize = 50M \n\
