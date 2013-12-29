@@ -1,14 +1,39 @@
 #!/bin/sh
 
-CONF_FILE="/etc/sofin.conf.sh"
-if [ -e "${CONF_FILE}" ]; then
-    . "${CONF_FILE}"
-    note "Validating environment"
-    validate_env
-else
-    echo "FATAL: No configuration file found: ${CONF_FILE}"
-    exit 1
-fi
+
+case "$(uname)" in
+    Darwin|FreeBSD)
+        CONF_FILE="/etc/sofin.conf.sh"
+        if [ -e "${CONF_FILE}" ]; then
+            . "${CONF_FILE}"
+            validate_env
+        else
+            echo "FATAL: No configuration file found: ${CONF_FILE}"
+            exit 1
+        fi
+        ;;
+
+    *)
+        echo "Simplifying functions for custom workstation system: $(uname)"
+        alias note="echo"
+        alias warn="echo"
+        error () {
+            echo "$*"
+            exit 1
+        }
+        export PRINTF_BIN=printf
+        export TAR_BIN=tar
+        export SED_BIN=sed
+        export CUT_BIN=cut
+        export AWK_BIN=awk
+        export TR_BIN=tr
+        export RM_BIN=rm
+        export GIT_BIN=git
+        export SSH_BIN=ssh
+        export SCP_BIN=scp
+        ;;
+
+esac
 
 
 readonly SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no"
@@ -18,9 +43,9 @@ if [ "${DEBUG}" = "true" ]; then
     export ADDITIONAL=" -d"
 fi
 
-APP_NAME="$(echo "${1}" | awk -F '[.]' '{print $1}')"
+APP_NAME="$(echo "${1}" | ${AWK_BIN} -F '[.]' '{print $1}')"
 readonly APP_NAME="$(${PRINTF_BIN} "${APP_NAME}" | ${CUT_BIN} -c1 | ${TR_BIN} '[a-z]' '[A-Z]')$(${PRINTF_BIN} "${APP_NAME}" | ${SED_BIN} 's/^[a-zA-Z]//')"
-readonly APP_BRANCH="$(git name-rev --name-only HEAD)"
+readonly APP_BRANCH="$(${GIT_BIN} name-rev --name-only HEAD)"
 readonly APP_REPOSITORY="$(pwd)"
 readonly APP_TARBALL="${APP_NAME}.tar.gz"
 readonly DEFAULT_REMOTE="svd"
@@ -53,26 +78,26 @@ first_deploy () {
     cd ..
     note "Creating bare repository from current directory"
     # TODO: consider support for directories without git repository in it
-    git clone --bare ${cwd} ${APP_NAME}.git > /dev/null 2>&1
-    tar cf ${APP_TARBALL} ./${APP_NAME}.git
-    ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
-    scp ./${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}" > /dev/null 2>&1
-    rm -rf ./${APP_NAME}.git
-    ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
-    rm -f ./${APP_TARBALL}
+    ${GIT_BIN} clone --bare "${cwd}" ${APP_NAME}.git > /dev/null 2>&1
+    ${TAR_BIN} cf ${APP_TARBALL} ./${APP_NAME}.git
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
+    ${SCP_BIN} ${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}" > /dev/null 2>&1
+    ${RM_BIN} -rf ${APP_NAME}.git
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
+    ${RM_BIN} -f ${APP_TARBALL}
     cd "${cwd}"
     note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
 
-conn_check=$(ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "uname -a" 2> /dev/null)
+conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "uname -a" 2> /dev/null)
 test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}"
-note "Deploying to: ${conn_check}"
+note "Deploying to machine: ${conn_check}"
 
 if [ -f "${APP_SSL_CERT}" ]; then
     if [ -f "${APP_SSL_KEY}" ]; then
         note "Uploading given SSL CERT: ${APP_SSL_CERT} and KEY: ${APP_SSL_KEY}"
-        scp "${APP_SSL_CERT}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
-        scp "${APP_SSL_KEY}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
+        ${SCP_BIN} "${APP_SSL_CERT}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
+        ${SCP_BIN} "${APP_SSL_KEY}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
         note "Successfully copied certificate: ${APP_SSL_CERT}, and key: ${APP_SSL_KEY}."
     else
         error "APP_SLL_CERT specified, but APP_SSL_KEY file is missing!"
@@ -81,16 +106,18 @@ else
     note "Specify APP_SLL_CERT and APP_SSL_KEY to upload your SSL certificate."
 fi
 
-note "Pushing current repository to remote: ${DEFAULT_REMOTE}, on branch: ${APP_BRANCH}"
-git remote rm ${DEFAULT_REMOTE} > /dev/null 2>&1
-git remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
-git push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy
+note "Pushing current repository to remote: ${DEFAULT_REMOTE}"
+${GIT_BIN} remote rm ${DEFAULT_REMOTE} > /dev/null 2>&1
+${GIT_BIN} remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
+${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy
 
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
-ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "\$(readlink \$(which svddeployer)) -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
+${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
 
-note "Registering domain entry ${APP_DOMAIN}"
-ssh ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "printf \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed or domain already in use!"
+# TODO: add support for multiple hosts (multiple DNS "A" entries for domain)
+
+note "Registering domain entry: ${APP_DOMAIN} on ServeD node"
+${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed or domain already in use!"
 
 note "Deploy complete!"
 note "Web application should be soon available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
