@@ -11,16 +11,16 @@ fi
 
 USER_NAME="$1"
 if [ "${USER_NAME}" = "" ]; then
-    note "New user name not specified!\n"
+    note "New user name not specified!"
     exit 1
 fi
 
-note "Adding user name: ${USER_NAME}\n"
+note "Adding user name: ${USER_NAME}"
 pw useradd "${USER_NAME}" -n "${USER_NAME}" -d "/Users/${USER_NAME}" -m -s /Software/Zsh/exports/zsh >/dev/null|| error "Failed to add user!"
 mkdir -p "/Users/${USER_NAME}/.ssh"
 
-note "Paste user ssh key below (ctrl-d after new line to end)\n"
+note "Paste user ssh key below (ctrl-d after new line to end)"
 cat > "/Users/${USER_NAME}/.ssh/authorized_keys"
 chown -R "${USER_NAME}" "/Users/${USER_NAME}"
 
-note "User added: ${USER_NAME}\n"
+note "User added: ${USER_NAME}"
