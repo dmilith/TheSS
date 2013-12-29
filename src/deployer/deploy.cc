@@ -279,7 +279,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     mysqli.max_links = -1 \n\
     mysqli.cache_size = 2000 \n\
     mysqli.default_port = 3306 \n\
-    mysqli.default_socket = \n\
+    mysqli.default_socket = \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
     mysqli.default_host = \n\
     mysqli.default_user = \n\
     mysqli.default_pw = \n\
