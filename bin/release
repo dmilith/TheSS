@@ -22,7 +22,7 @@ base_name="thess-${version}"
 archive_name="${base_name}.tar.bz2"
 note "Preparing package: ${archive_name} with version: ${version}"
 
-tar --disable-copyfile --exclude='.' --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/${archive_name} ./ > ${OUT} 2>&1
+tar --disable-copyfile --exclude='.git' --exclude='.gitignore' --exclude='releases' -cjf releases/${archive_name} ./ > ${OUT} 2>&1
 mkdir -p releases/${base_name} > ${OUT} 2>&1
 mv releases/${archive_name} releases/${base_name}/
 cd releases/${base_name} > ${OUT} 2>&1
