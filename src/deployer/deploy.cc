@@ -705,11 +705,16 @@ void installDependencies(QString& serviceName) {
     QString servicePath = getServiceDataDir(serviceName);
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
-    logInfo() << "Installing service dependencies:" << readFileContents(latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE).trimmed().split("\n");
+    auto dependenciesFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
+    if (QFile::exists(dependenciesFile)) {
+        QString conts = readFileContents(dependenciesFile).trimmed();
+        logInfo() << "Installing service dependencies:" << conts;
+    }
 
     clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
     clne->deleteLater();
+    logDebug() << "Repository cloned!";
 }
 
 
