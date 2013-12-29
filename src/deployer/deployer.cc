@@ -9,6 +9,28 @@
 #include "deploy.h"
 
 
+void deployerSignalHandler(int sigNum) {
+    switch (sigNum) {
+        case SIGINT: {
+            logWarn() << "Caught Interrupt signal. Quitting application.";
+            qApp->quit();
+        } break;
+
+        case SIGQUIT: {
+            logInfo() << "Caught Quit signal. Quitting application.";
+            qApp->quit();
+        } break;
+
+        case SIGABRT: {
+            logWarn() << "Caught Abort signal! Execution aborted.";
+            raise(SIGTERM);
+        } break;
+
+        default: {
+            logWarn() << "Caught unhandled signal:" << strsignal(sigNum);
+        }
+    }
+}
 
 
 int main(int argc, char *argv[]) {
@@ -31,6 +53,7 @@ int main(int argc, char *argv[]) {
     /* web app name is simultanously a git repository name: */
     QString serviceName = "", stage = "staging", branch = "master", domain = QString(getenv("USER")) + ".dev"; // appName.env[USER].dev domain always points to 127.0.0.1, but will be almost valid TLD for services resolving domains.
 
+    /* gathering errors and warnings */
     QStringList errors, warnings;
 
     bool debug = false, trace = false;
@@ -122,6 +145,16 @@ int main(int argc, char *argv[]) {
     bool ok = false, fail = false;
     QString ssPidFile = getHomeDir() + "/." + getenv("USER") + ".pid";
     QString aPid = readFileContents(ssPidFile).trimmed();
+    /* handle some POSIX signals */
+    signal(SIGINT, deployerSignalHandler);
+    signal(SIGABRT, deployerSignalHandler);
+    signal(SIGQUIT, deployerSignalHandler);
+    signal(SIGUSR1, deployerSignalHandler);
+    signal(SIGUSR2, deployerSignalHandler);
+    signal(SIGHUP, deployerSignalHandler);
+    signal(SIGTTIN, SIG_IGN); /* ignore tty signals */
+    signal(SIGTTOU, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
     uint pid = aPid.toInt(&ok, 10);
     if (ok) {
         if (not pidIsAlive(pid)) {
