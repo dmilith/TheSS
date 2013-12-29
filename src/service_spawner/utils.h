@@ -79,7 +79,6 @@ Json::Value* parseJSON(const QString& filename);
 QString tail(const QString& pathToFile, int lines, int positionModifier = 0);
 const QString toHMS(uint duration);
 const QString getOrCreateDir(const QString& path);
-const QString getWebAppsDir();
 const QString getHomeDir();
 const QString getSoftwareDataDir();
 const QString getServiceDataDir(const QString& name);

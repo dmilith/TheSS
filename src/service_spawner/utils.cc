@@ -309,11 +309,6 @@ void writeToFile(const QString& fileName, const QString& contents, bool rotateTh
 }
 
 
-const QString getWebAppsDir() {
-    return getOrCreateDir(getHomeDir() + DEFAULT_WEBAPPS_DIR);
-}
-
-
 const QString getHomeDir(uid_t uid) {
     if (uid == 0)
         return QString(SYSTEM_USERS_DIR);
