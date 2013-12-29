@@ -40,7 +40,7 @@ void PanelGui::init(){
     servicesList->setItems(&panel->services);
 
     if(panel->services.length() == 0){
-        status = "No initialized services found in data directory. Hit F7 to add new.";
+        status = "Hint: Hit F7 to add new Service.";
     }
 }
 
