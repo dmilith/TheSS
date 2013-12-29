@@ -238,7 +238,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     default_socket_timeout = 60 \n\
 [Pdo_mysql] \n\
     pdo_mysql.cache_size = 2000 \n\
-    pdo_mysql.default_socket= \n\
+    pdo_mysql.default_socket= \":" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
 [Syslog] \n\
     define_syslog_variables  = Off \n\
 [mail function] \n\
