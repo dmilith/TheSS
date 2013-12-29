@@ -141,10 +141,6 @@ int main(int argc, char *argv[]) {
         new FileLoggerTimer(fileAppender);
     }
 
-    /* NOTE: make sure TheSS is running for user, and launch it if it's not: */
-    bool ok = false, fail = false;
-    QString ssPidFile = getHomeDir() + "/." + getenv("USER") + ".pid";
-    QString aPid = readFileContents(ssPidFile).trimmed();
     /* handle some POSIX signals */
     signal(SIGINT, deployerSignalHandler);
     signal(SIGABRT, deployerSignalHandler);
@@ -155,20 +151,32 @@ int main(int argc, char *argv[]) {
     signal(SIGTTIN, SIG_IGN); /* ignore tty signals */
     signal(SIGTTOU, SIG_IGN);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
+
+    /* NOTE: make sure that web-app isn't already in deploying state for user */
+    bool ok = false, failed = false;
+    QString wadPidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE; //getHomeDir() + "/.wad-" + serviceName + ".pid";
+    QString aPid = readFileContents(wadPidFile).trimmed();
     uint pid = aPid.toInt(&ok, 10);
     if (ok) {
-        if (not pidIsAlive(pid)) {
-            logWarn() << "No alive pid of Service Spawner found. It will be started for user:" << getenv("USER");
-            fail = true;
+        if (not pidIsAlive(pid))
+            failed = true;
+        else {
+            logError() << "Deploy aborted! WAD deploy state for service:" << serviceName << "is already in deploying state. You may need to manually resolve possible deployment issue.";
+            raise(SIGTERM);
         }
-    } else {
-        logWarn() << "Pid file is damaged or doesn't contains valid pid. File will be removed, and ss restarted.";
-        QFile::remove(ssPidFile);
-        fail = true;
+    } else
+        failed = true;
+
+    if (failed) {
+        logInfo() << "No alive pid of WAD for service:" << serviceName << "found. Resetting dead state for service deployment.";
+        logDebug() << "Removing WAD deploying state file:" << wadPidFile;
+        QFile::remove(wadPidFile);
     }
-    if (fail) {
-        launchServiceSpawner();
-    }
+
+    /* setup new file lock with current pid */
+    uint currentPid = getpid();
+    logDebug() << "Setting up and writing pid:" << currentPid << "new lock name:" << wadPidFile;
+    writeToFile(wadPidFile, QString::number(currentPid));
 
     /* print warnings and errors */
     if (not warnings.isEmpty()) {
@@ -189,26 +197,14 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    logInfo() << "Deploying app:" << serviceName << "for stage:" << stage << "branch:" << branch << "at domain:" << domain;
-
-    /* file lock setup */
-    QString lockName = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE;
-    if (QFile::exists(lockName)) {
-        logError() << "WAD is already running.";
-        return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
-    }
-    logDebug() << "Lock name:" << lockName;
-    writeToFile(lockName, QString::number(getpid()));
-
-    signal(SIGINT, unixSignalHandler);
-    signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
+    logInfo() << "ServeD Web-App-Deployer (WAD)" << QString("v") + APP_VERSION << COPYRIGHT;
+    logInfo() << "Deploy started for service:" << serviceName << "(stage:" << stage << "from branch:" << branch << "destination domain:" << domain << ")";
 
     if (getuid() == 0) {
         logError() << "Web deployments as root are not allowed a.t.m.";
         raise(SIGTERM);
     }
 
-    logInfo("Web App Deployer (WAD) v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
     auto diskMap = getDiskFree(getenv("HOME"));
     Q_FOREACH(auto map, diskMap.keys()) {
         auto value = diskMap.take(map);
@@ -228,8 +224,7 @@ int main(int argc, char *argv[]) {
     installDependencies(serviceName);
     createEnvironmentFiles(serviceName, domain, stage, branch);
 
-    logInfo() << "Deploy successful. Cleaning deploying state and locks";
-    QFile::remove(getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE);
-    QFile::remove(lockName);
+    logInfo() << "Deploy successful. Cleaning deploying state.";
+    QFile::remove(wadPidFile);
     return EXIT_SUCCESS;
 }
