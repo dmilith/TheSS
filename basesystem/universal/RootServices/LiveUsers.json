@@ -4,11 +4,13 @@
 
     "schedulerActions": [
     {
-        "cronEntry": "*/2 * * * * ?",
+        "cronEntry": "*/1 * * * * ?",
         "commands": "
-printf '$(date +%d%m%Y-%H%M%S) - Updating users..\n' >> SERVICE_PREFIX/service.log 2>&1
+export DATE=$(date +%d%m%Y-%H%M%S)
+printf \"${DATE} - Updating users..\n\" >> SERVICE_PREFIX/service.log 2>&1
 ttys_updater >> SERVICE_PREFIX/service.log 2>&1
-printf '$(date +%d%m%Y-%H%M%S) - Update complete.\n' >> SERVICE_PREFIX/service.log 2>&1
+export AF_DATE=$(date +%d%m%Y-%H%M%S)
+printf \"${AF_DATE} - Update complete.\n\" >> SERVICE_PREFIX/service.log 2>&1
 "
     }
     ]
