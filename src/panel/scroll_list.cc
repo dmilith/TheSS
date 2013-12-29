@@ -121,7 +121,7 @@ void AvailableServicesList::displayEmptyItem(int i){
 
 
 void ServicesList::displayHeader(){
-    mvwprintw(win, 3, 0, " # Name                        PID Address               Status        Flags   Autostart");
+    mvwprintw(win, 3, 0, " # Address:Port                               PID Name                  Status        Flags");
 }
 
 void ServicesList::displayItem(PanelService * service, int i, int num, bool current){
@@ -170,15 +170,15 @@ void ServicesList::displayItem(PanelService * service, int i, int num, bool curr
     x += 2;
 
     /* name */
-    mvwprintw(win, y, x, " %-26s", service->name.toUtf8().data());
-    x += 27;
+    mvwprintw(win, y, x, " %-41s", (service->domain + ":" + service->port).toUtf8().data());
+    x += 42;
 
     /* pid */
     mvwprintw(win, y, x, "%5s", service->pid.toUtf8().data());
     x += 5;
 
     /* domain:port */
-    mvwprintw(win, y, x, " %-21s", (service->domain + ":" + service->port).toUtf8().data());
+    mvwprintw(win, y, x, " %-21s", service->name.toUtf8().data());
     x += 22;
 
     /* flags & status */
@@ -186,9 +186,6 @@ void ServicesList::displayItem(PanelService * service, int i, int num, bool curr
     x += 14;
     mvwprintw(win, y, x, " %s", service->flags);
     x += 6;
-
-    if(service->autostart)  mvwprintw(win, y, x, "   YES       ");
-    else    mvwprintw(win, y, x, "             ");
 
     wattroff(win, color);
 }

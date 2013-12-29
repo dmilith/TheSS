@@ -31,7 +31,7 @@ public:
     bool remove();
     void refresh();
 
-    char flags[6];
+    char flags[7];
     QString name, pid, domain, port;
     bool autostart;
     int status;
