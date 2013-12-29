@@ -270,11 +270,12 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
             }
         }
 
-        if (autoStart) {
-            logInfo() << "Autostart predefined on igniter side (has highest priority): Autostart state set.";
-            QString serviceDataDir = getOrCreateDir(getServiceDataDir(name));
-            logDebug() << "Touching:" << serviceDataDir + AUTOSTART_TRIGGER_FILE;
-            touch(serviceDataDir + AUTOSTART_TRIGGER_FILE);
+        QString serviceDataDir = getOrCreateDir(getServiceDataDir(name));
+        QString autoStFile = serviceDataDir + AUTOSTART_TRIGGER_FILE;
+        if (autoStart and not QFile::exists(autoStFile)) {
+            logInfo() << "Autostart predefined on igniter side (has highest priority): Autostart state set for service:" << name;
+            logDebug() << "Touching:" << autoStFile;
+            touch(autoStFile);
         }
 
         delete defaults;
