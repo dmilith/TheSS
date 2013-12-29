@@ -168,10 +168,10 @@ writeToFile(prefix + "/service.conf", "[global] \n\
 [www] \n\
     listen = " + DEFAULT_LOCAL_ADDRESS + ":" + port + " \n\
     pm = dynamic \n\
-    pm.max_children = 5 \n\
-    pm.start_servers = 2 \n\
+    pm.max_children = 2 \n\
+    pm.start_servers = 1 \n\
     pm.min_spare_servers = 1 \n\
-    pm.max_spare_servers = 3 \n\
+    pm.max_spare_servers = 2 \n\
     ;pm.process_idle_timeout = 10s; \n\
     ;pm.max_requests = 500 \n");
 
