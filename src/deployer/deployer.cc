@@ -221,7 +221,6 @@ int main(int argc, char *argv[]) {
     QString repositoryPath = repositoryRootPath + serviceName + ".git";
 
     cloneRepository(repositoryPath, serviceName, branch, domain);
-    installDependencies(serviceName);
     createEnvironmentFiles(serviceName, domain, stage, branch);
 
     logInfo() << "Deploy successful. Cleaning deploying state.";

@@ -708,11 +708,9 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 }
 
 
-void installDependencies(QString& serviceName) {
+void installDependencies(QString& serviceName, QString& latestReleaseDir) {
     auto clne = new SvdProcess("install_dependencies", getuid(), false);
     QString servicePath = getServiceDataDir(serviceName);
-    auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
-    auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
     auto dependenciesFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     if (QFile::exists(dependenciesFile)) {
         QString conts = readFileContents(dependenciesFile).trimmed();
@@ -881,6 +879,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     logDebug() << "Current release:" << latestRelease;
     auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
+    installDependencies(serviceName, latestReleaseDir);
     logDebug() << "Release path:" << latestReleaseDir;
     auto appDetector = new WebAppTypeDetector(latestReleaseDir);
     auto appType = appDetector->getType();
