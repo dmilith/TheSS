@@ -716,7 +716,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
     auto dependenciesFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     if (QFile::exists(dependenciesFile)) {
         QString conts = readFileContents(dependenciesFile).trimmed();
-        logInfo() << "Installing service dependencies:" << conts;
+        logInfo() << "Installing service dependencies:" << conts.replace("\n", ", ");
     }
 
     clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
