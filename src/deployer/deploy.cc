@@ -727,6 +727,24 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 
 
 void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage) {
+    logDebug() << "Requested spawn of a bin/build. Requesting presence of all dependencies.";
+    Q_FOREACH(auto val, appDependencies) {
+        logDebug() << "Processing dependency:" << val;
+        val[0] = val.at(0).toUpper();
+        QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
+
+        int steps = 0;
+        while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
+            logDebug() << "Still waiting for service:" << val;
+            sleep(1);
+            steps++;
+            if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
+                logError() << "Exitting endless loop, cause service:" << val << "refuses to get up after " << QString::number(steps -1) << " seconds!";
+                break;
+            }
+        }
+    }
+
     auto clne = new SvdProcess("spawn_bin_build", getuid(), false);
     logInfo() << "Invoking bin/build of project (if exists)";
     clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
