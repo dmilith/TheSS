@@ -121,4 +121,5 @@ ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "${PRINTF_BIN} \"${APP_DOM
 
 note "Deploy complete!"
 note "Web application should be soon available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
-note "ServeD will reload proxy immediately, but your app may require some additional time to set up. Please be patient."
+note "ServeD will reload proxy immediately, but your app may require some additional time to set up."
+note "Please be patient."
