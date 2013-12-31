@@ -440,7 +440,7 @@ server { \n\
 
 
 void generateDatastoreSetup(QList<WebDatastore> dbs, QString serviceName, QString stage, WebAppTypes appType) {
-    QString databaseName = serviceName + "-" + stage;
+    QString databaseName = serviceName + "_" + stage;
     QString servicePath = getServiceDataDir(serviceName);
     QString destinationFile;
 
@@ -925,7 +925,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case RubySite: {
 
-            QString databaseName = serviceName + "-" + stage;
+            QString databaseName = serviceName + "_" + stage;
             QList<WebDatastore> datastores;
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
