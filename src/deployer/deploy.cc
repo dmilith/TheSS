@@ -726,10 +726,10 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 }
 
 
-void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies) {
+void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage) {
     auto clne = new SvdProcess("spawn_bin_build", getuid(), false);
     logInfo() << "Invoking bin/build of project (if exists)";
-    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
     clne->waitForFinished(-1);
     clne->deleteLater();
 }
@@ -905,7 +905,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
 
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies);
+            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
@@ -1077,7 +1077,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else
                 logInfo() << "No Rakefile found. Skipping standard rake tasks";
 
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies);
+            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
@@ -1143,7 +1143,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies);
+            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
@@ -1191,7 +1191,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies);
+            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 

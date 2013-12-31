@@ -30,7 +30,7 @@ QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, Q
 QString getDbName(WebDatastore db);
 QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile);
 bool validateNginxEntry(QString& servicePath, QString contents);
-void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies);
+void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage);
 void generateDatastoreSetup(QList<WebDatastore> dbs, QString serviceName, QString stage, WebAppTypes appType);
 void generateServicePorts(QString servicePath, int amount = 1);
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);
