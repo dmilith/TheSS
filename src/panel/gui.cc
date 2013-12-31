@@ -800,14 +800,17 @@ void PanelGui::key(int ch){
             break;
 
         case 'K': /* show service config file */
+        case 'k':
             displayConfig();
             break;
 
         case 'E':
+        case 'e':
             displayEnv();
             break;
 
         case 'L': /* refresh log window */
+        case 'l':
             displayLog();
             break;
 
