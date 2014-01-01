@@ -9,21 +9,22 @@
     "start": {
         "commands": "
 printf 'Launching Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf >> SERVICE_PREFIX/service.log 2>&1
 "
     },
     "afterStop": {
-        "commands": ""
+        "commands": "echo 'Coreginx afterStop' >> SERVICE_PREFIX/service.log"
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PREFIX/service.log 2>&1
 "
     },
     "configure": {
         "commands": "
-test -d SERVICE_ROOT/html && rm -rf SERVICE_ROOT/html
-test ! -L SERVICE_ROOT/html && ln -s SERVICE_PREFIX/verknowsys /Software/Nginx/html
+test ! -d SERVICE_PREFIX/logs && mkdir SERVICE_PREFIX/logs
+test -d SERVICE_PREFIX/html && rm -rf SERVICE_PREFIX/html
+test ! -L SERVICE_PREFIX/html && ln -s SERVICE_PREFIX/verknowsys SERVICE_PREFIX/html
 
 printf \"
 worker_processes 8;
@@ -86,14 +87,14 @@ cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest.release)/ S
     },
     "validate": {
         "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t
+SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -p SERVICE_PREFIX -t
 ",
         "expectOutput": "test is successful"
     },
     "reload": {
         "commands": "
 printf 'Reloading Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1
 "
     }
 }
