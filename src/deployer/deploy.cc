@@ -734,12 +734,12 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
         QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
 
         int steps = 0;
-        while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
-            logDebug() << "Still waiting for service:" << val;
+        while (not QFile::exists(location + DEFAULT_SERVICE_PID_FILE)) { /* XXX: hacky, cause most, but not all services will create service.pid file in service directory */
+            logDebug() << "Still waiting for pid of service:" << val;
             sleep(1);
             steps++;
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
-                logError() << "Exitting endless loop, cause service:" << val << "refuses to get up after " << QString::number(steps -1) << " seconds!";
+                logError() << "Exitting endless loop, cause service:" << val << "refuses to create pid, after " << QString::number(steps -1) << " seconds!";
                 break;
             }
         }
