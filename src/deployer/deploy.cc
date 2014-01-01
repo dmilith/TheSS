@@ -155,6 +155,7 @@ server { \n\
         case PhpSite: {
             QString prefix = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName;
 writeToFile(prefix + "/service.conf", "[global] \n\
+    pid = " + prefix + DEFAULT_SERVICE_PID_FILE + " \n\
     error_log = " + prefix + "/service.log \n\
     ;emergency_restart_threshold = 0 \n\
     ;emergency_restart_interval = 0 \n\
@@ -1195,7 +1196,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
             }
 
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
 
             /* write igniter to user igniters */
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
