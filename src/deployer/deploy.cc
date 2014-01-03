@@ -1182,12 +1182,19 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case PhpSite: {
 
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             #ifdef __APPLE__
                 logError() << "Apple PHP deployments aren't supported yet!";
                 raise(SIGTERM);
             #endif
+
+            /* write to service env file */
+            logInfo() << "Building environment for stage:" << stage;
+            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            envEntriesString += "PHP_ENV=" + stage + "\n";
+            writeToFile(envFilePath, envEntriesString);
 
             generateServicePorts(servicePath);
 
