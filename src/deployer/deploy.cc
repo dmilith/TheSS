@@ -361,7 +361,8 @@ fastcgi_param  REMOTE_ADDR        $remote_addr; \n\
 fastcgi_param  REMOTE_PORT        $remote_port; \n\
 fastcgi_param  SERVER_ADDR        $server_addr; \n\
 fastcgi_param  SERVER_PORT        $server_port; \n\
-fastcgi_param  SERVER_NAME        $server_name; \n");
+fastcgi_param  SERVER_NAME        $server_name; \n\
+fastcgi_param  PHP_ENV            " + stage + "; \n");
             return "\n\
 upstream " + serviceName + "-" + stage + " { \n\
     server " + DEFAULT_LOCAL_ADDRESS + ":" + port + "; \n\
@@ -1182,19 +1183,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case PhpSite: {
 
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             #ifdef __APPLE__
                 logError() << "Apple PHP deployments aren't supported yet!";
                 raise(SIGTERM);
             #endif
-
-            /* write to service env file */
-            logInfo() << "Building environment for stage:" << stage;
-            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "PHP_ENV=" + stage + "\n";
-            writeToFile(envFilePath, envEntriesString);
 
             generateServicePorts(servicePath);
 
