@@ -10,7 +10,7 @@
 Tail::Tail(PanelService * service, const QString& dirname, const QString& filename):
         dirname(dirname), filename(filename), service(service){
 
-    path = dirname + "/" + filename;
+    path = dirname + filename; // + "/"
 
     eventsManager = new SvdFileEventsManager();
     eventsManager->registerFile(dirname);
