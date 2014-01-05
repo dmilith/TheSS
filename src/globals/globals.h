@@ -61,6 +61,7 @@
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
     #define DEFAULT_SERVICE_ENV_FILE "/service.env"
     #define DEFAULT_SERVICE_LOG_FILE "/service.log"
+    #define DEFAULT_SERVICE_CONF_FILE "/service.conf"
     #define DEFAULT_SERVICE_DEPENDENCIES_FILE "/.dependencies"
 
     /* triggers */

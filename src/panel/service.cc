@@ -34,9 +34,9 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     }
     this->dir = QDir(basePath);
 
-    this->log = new Tail(this, basePath, "service.log");
-    this->conf  = new Tail(this, basePath, "service.conf");
-    this->env   = new Tail(this, basePath, "service.env");
+    this->log = new Tail(this, basePath, DEFAULT_SERVICE_LOG_FILE);
+    this->conf = new Tail(this, basePath, DEFAULT_SERVICE_CONF_FILE);
+    this->env = new Tail(this, basePath, DEFAULT_SERVICE_ENV_FILE);
 
     refresh();
 }
