@@ -362,12 +362,12 @@ void PanelGui::removeCurrentService(){
         } else {
             if (confirm(" Are you sure you want to destroy data\n and configuration of service: " + service->name + "?")){
                 if (service->remove()){
-                    status = "Data dir removed: " + service->dir.absolutePath();
+                    QString webAppPublicFile = DEFAULT_PUBLIC_DIR + service->name + "_" + QDir(getHomeDir()).dirName() + ".web-app";
+                    QFile::remove(webAppPublicFile);
+                    status = "Removed dir: " + service->dir.absolutePath() + " and file: " + webAppPublicFile;
                 } else {
                     status = "Permissions failure. Check your user priviledges on your software data dir";
                 }
-                QString webAppPublicFile = DEFAULT_PUBLIC_DIR + service->name + "_" + QDir(getHomeDir()).dirName() + ".web-app";
-                QFile::remove(webAppPublicFile);
             } else {
                 status = "Cancelled removing data dir: " + service->name;
             }
