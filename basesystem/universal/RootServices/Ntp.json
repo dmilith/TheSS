@@ -5,7 +5,7 @@
 
     "schedulerActions": [
     {
-        "cronEntry": "* 2 * * * ?",
+        "cronEntry": "*/10 * * * * ?",
         "commands": "
 printf 'Syncing time\n' >> SERVICE_PREFIX/service.log 2>&1
 ntpdate ntp.nask.pl >> SERVICE_PREFIX/service.log 2>&1
