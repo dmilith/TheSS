@@ -26,3 +26,5 @@ releases/
 /bin/svddeployer
 /bin/svdcoreginx_helper
 .obj/*
+/TheSS.sublime-project
+/TheSS.sublime-workspace
