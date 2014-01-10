@@ -2,3 +2,4 @@
 
 bin/build test
 bin/test-app -nocrashhandler -random
+rm -rf ${HOME}/SoftwareData/Test*
