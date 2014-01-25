@@ -37,8 +37,7 @@ WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
         switch (i) {
             case StaticSite:
                 this->typeName = "Static";
-                filesThatShouldExist << "/index.html";
-                filesThatShouldNotExist << "/Gemfile" << "/Rakefile" << "/Procfile" << "/index.php";
+                filesThatShouldNotExist << "/Rakefile" << "/Procfile" << "/index.php";
                 break;
 
             case RubySite:
