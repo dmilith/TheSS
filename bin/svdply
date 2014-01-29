@@ -78,8 +78,8 @@ first_deploy () {
     cd ..
     note "Creating bare repository from current directory"
     # TODO: consider support for directories without git repository in it
-    ${TAR_BIN} cf ${APP_TARBALL} ./${APP_NAME}.git
     ${GIT_BIN} clone --mirror "${cwd}" ${APP_NAME}.git > /dev/null 2>&1
+    ${TAR_BIN} cf ${APP_TARBALL} ./${APP_NAME}.git || error "Error creating git repository mirror!"
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
     ${SCP_BIN} ${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}" > /dev/null 2>&1
     ${RM_BIN} -rf ${APP_NAME}.git
