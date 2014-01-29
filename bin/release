@@ -43,10 +43,10 @@ bin/build > ${OUT} 2>&1 && (
         ssh sofin@v "source ~/.functions.sh && gather-source http://dmilith.verknowsys.com/Public/Sofin-releases/${name}" > ${OUT} 2>&1 && \
         asha1=$(shasum releases/${name} | awk '{print $1;}')
         note "${name}: publish is now complete. File sha1 checksum is: ${asha1}"
-        if [ -f ~/Projects/Sofin-definitions/definitions/${definit}.def ]; then
+        if [ -f /Projects/Sofin-definitions/definitions/${definit}.def ]; then
             note "Appending new sha1 to definition: ${definit}.def"
-            sed -i '' -e "s/^APP_SHA=.*/APP_SHA=\"${asha1}\"/" ~/Projects/Sofin-definitions/definitions/${definit}.def
-            sed -i '' -e "s/^APP_VERSION=.*/APP_VERSION=\"${version}\"/" ~/Projects/Sofin-definitions/definitions/${definit}.def
+            sed -i '' -e "s/^APP_SHA=.*/APP_SHA=\"${asha1}\"/" /Projects/Sofin-definitions/definitions/${definit}.def
+            sed -i '' -e "s/^APP_VERSION=.*/APP_VERSION=\"${version}\"/" /Projects/Sofin-definitions/definitions/${definit}.def
         fi
     fi
     )
