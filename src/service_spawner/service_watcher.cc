@@ -119,12 +119,19 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
         logInfo() << "Performing autostart of service:" << name;
         emit startService();
     }
-    delete config;
 
     if (indicatorFiles->running->exists()) {
+        logInfo() << "Cleaning old crontab indicators for service:" << name;
+        Q_FOREACH(auto entry, config->schedulerActions) {
+            QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
+            logDebug() << "Removing old cron indicator:" << indicator;
+            QFile::remove(indicator);
+        }
         logInfo() << "Found already started service. Resuming background tasks for service:" << name;
         service->startSlot();
     }
+
+    delete config;
 }
 
 
