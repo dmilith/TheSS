@@ -135,10 +135,7 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
 
 
 void SvdPublicWatcher::commitDeploy(const QString& serviceName, const QString& userName) {
-    QString baseCoreginxDir = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/Coreginx";
-    if (QDir().exists(baseCoreginxDir + "-verknowsys"))
-        baseCoreginxDir += "-verknowsys";
-    auto coreginxReloadTrigger = baseCoreginxDir + RELOAD_TRIGGER_FILE;
+    auto coreginxReloadTrigger = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/Coreginx" + RELOAD_TRIGGER_FILE;
     logDebug() << "Creating reload request for Coreginx service:" << coreginxReloadTrigger;
     QFile::remove(coreginxReloadTrigger); /* sanity check */
     touch(coreginxReloadTrigger);
