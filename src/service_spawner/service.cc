@@ -754,6 +754,13 @@ void SvdService::stopSlot(bool withDeps) {
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE);
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE);
 
+        logInfo() << "Cleaning crontab indicators for service:" << config->name;
+        Q_FOREACH(auto entry, config->schedulerActions) {
+            QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
+            logDebug() << "Removing old cron indicator:" << indicator;
+            QFile::remove(indicator);
+        }
+
         logTrace() << "After process stop execution:" << name;
         process->deleteLater();
     }
