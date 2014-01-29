@@ -96,7 +96,12 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     auto aFile = serviceBase + DEFAULT_SERVICE_CONFIGURED_FILE;
     bool mayProceed = QFile::exists(aFile);
     logDebug() << "Validating existance of:" << aFile << "may proceed?-" << mayProceed;
-    auto fileContent = readFileContents(QString(DEFAULT_PUBLIC_DIR) + file).trimmed();
+    auto aPublicFile = QString(DEFAULT_PUBLIC_DIR) + file;
+    auto fileContent = readFileContents(aPublicFile).trimmed();
+    if (not QFile::exists(aPublicFile)) {
+        logInfo() << "Detected first deploy of web-app:" << serviceName << "for user:" << userName;
+        commitDeploy(serviceName, userName);
+    } else
     if (not fileContent.isEmpty()) {
         logDebug() << "Trying to find existing domain:" << fileContent << "(in:" << file << "), existing domains:" << domains;
         if (domains.contains(fileContent) and not fileEntries.contains(file)) {
@@ -121,15 +126,20 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
                 QFile::remove(el);
             }
         } else { /* redeploy of same app case */
-            logInfo() << "Detected first deploy, or redeploy of web-app:" << serviceName << "for user:" << userName;
-            auto coreginxReloadTrigger = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/Coreginx" + RELOAD_TRIGGER_FILE;
-            logDebug() << "Creating reload request for Coreginx service:" << coreginxReloadTrigger;
-            QFile::remove(coreginxReloadTrigger); /* sanity check */
-            touch(coreginxReloadTrigger);
-            logInfo() << "Coreginx reload was triggered.";
+            logInfo() << "Detected redeploy of web-app:" << serviceName << "for user:" << userName;
+            commitDeploy(serviceName, userName);
         }
     } else
         logDebug() << "File contents empty.";
+}
+
+
+void SvdPublicWatcher::commitDeploy(const QString& serviceName, const QString& userName) {
+    auto coreginxReloadTrigger = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/Coreginx" + RELOAD_TRIGGER_FILE;
+    logDebug() << "Creating reload request for Coreginx service:" << coreginxReloadTrigger;
+    QFile::remove(coreginxReloadTrigger); /* sanity check */
+    touch(coreginxReloadTrigger);
+    logInfo() << "Coreginx reload was triggered.";
 }
 
 
