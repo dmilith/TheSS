@@ -31,6 +31,7 @@ case "$(uname)" in
         export GIT_BIN=git
         export SSH_BIN=ssh
         export SCP_BIN=scp
+        export TAIL_BIN=tail
         ;;
 
 esac
@@ -89,7 +90,7 @@ first_deploy () {
     note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
 
-conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "uname -a" 2> /dev/null)
+conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "uname -a" | ${TAIL_BIN} -n 1 2> /dev/null)
 test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}"
 note "Deploying to machine: ${conn_check}"
 
