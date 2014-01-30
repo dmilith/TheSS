@@ -33,7 +33,7 @@ QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, Q
             return "\n\
 server { \n\
     listen 80; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
     location / { \n\
         index index.html index.htm; \n\
@@ -43,7 +43,7 @@ server { \n\
 }\n\
 server { \n\
     listen 443 ssl; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
     ssl_certificate " + sslDir + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + domain + ".key; \n\
@@ -61,7 +61,7 @@ upstream " + serviceName + "-" + stage + " { \n\
 } \n\
 server { \n\
     listen 80; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
@@ -80,7 +80,7 @@ server { \n\
 } \n\
 server { \n\
     listen 443 ssl; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
     ssl_certificate " + sslDir + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + domain + ".key; \n\
@@ -109,7 +109,7 @@ upstream " + serviceName + "-" + stage + " { \n\
 } \n\
 server { \n\
     listen 80; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
@@ -129,7 +129,7 @@ server { \n\
 } \n\
 server { \n\
     listen 443 ssl; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
     ssl_certificate " + sslDir + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + domain + ".key; \n\
@@ -308,7 +308,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     session.auto_start = 0 \n\
     session.cookie_lifetime = 0 \n\
     session.cookie_path = / \n\
-    session.cookie_domain = \n\
+    session.cookie_domain = " + domain + " \n\
     session.cookie_httponly = \n\
     session.serialize_handler = php \n\
     session.gc_probability = 1 \n\
@@ -369,7 +369,7 @@ upstream " + serviceName + "-" + stage + " { \n\
 } \n\
 server { \n\
     listen 80; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
     location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
         add_header Cache-Control max-age=315360000; \n\
@@ -401,7 +401,7 @@ server { \n\
 }\n\
 server { \n\
     listen 443 ssl; \n\
-    server_name " + domain + "; \n\
+    server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
     ssl_certificate " + sslDir + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + domain + ".key; \n\
