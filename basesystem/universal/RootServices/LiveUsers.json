@@ -5,7 +5,7 @@
 
     "schedulerActions": [
     {
-        "cronEntry": "*/1 * * * * ?",
+        "cronEntry": "*/3 * * * * ?",
         "commands": "
 export DATE=$(date +%d%m%Y-%H%M%S)
 printf \"${DATE} - Updating users..\n\" >> SERVICE_PREFIX/service.log 2>&1
