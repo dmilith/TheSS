@@ -116,9 +116,5 @@ void PanelService::toggleAutostart() {
 }
 
 bool PanelService::remove(){
-    auto prc = new SvdProcess("SS", getuid(), false);
-    prc->spawnProcess("rm -rf " + basePath);
-    prc->waitForFinished(10);
-    prc->deleteLater();
-    return true;
+    return removeDir(basePath);
 }
