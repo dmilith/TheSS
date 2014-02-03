@@ -783,9 +783,9 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
         touch(location + START_TRIGGER_FILE);
 
         int steps = 0;
-        while (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
-            logDebug() << "Still waiting for service:" << val;
-            sleep(1);
+        int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+        while (not pidIsAlive(aPid)) {
+            logInfo() << "Still waiting for service:" << val;
             steps++;
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
                 logError() << "Exitting endless loop, cause service:" << val << "refuses to go down after " << QString::number(steps -1) << " seconds!";
