@@ -291,6 +291,8 @@ bool removeDir(const QString& dirName) {
         QFile file(dirName);
         if (file.exists())
             result = file.remove();
+        else
+            result = false;
     }
     return result;
 }

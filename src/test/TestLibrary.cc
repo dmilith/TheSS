@@ -48,6 +48,7 @@ void TestLibrary::testDirRemoval() {
     touch("/tmp/abc0123/456/ciapag/zdamly/456");
     touch("/tmp/abc0123/456/ciapag/zdamly/abc");
     QVERIFY(removeDir("/tmp/abc0123"));
+    QVERIFY(removeDir("/tmp/I_dont_exist") == false);
 }
 
 
