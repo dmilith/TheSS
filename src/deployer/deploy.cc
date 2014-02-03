@@ -777,10 +777,11 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
+        logInfo() << "Stopping old dependency:" << val;
         QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
         getOrCreateDir(location);
-        QFile::remove(location + START_TRIGGER_FILE);
-        touch(location + START_TRIGGER_FILE);
+        QFile::remove(location + STOP_TRIGGER_FILE);
+        touch(location + STOP_TRIGGER_FILE);
 
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
