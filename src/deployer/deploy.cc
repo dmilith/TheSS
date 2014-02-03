@@ -435,8 +435,6 @@ server { \n\
 }\n";
         }
 
-        case NoType:
-            return "";
     }
 }
 
@@ -1226,12 +1224,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
 
 
-        case NoType: {
-            logError() << "No web application detected in service directory:" << servicePath;
-            QFile::remove(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
-            raise(SIGTERM);
-
-        } break;
     }
 
     clne->deleteLater();
