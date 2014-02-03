@@ -273,20 +273,24 @@ void touch(const QString& fileName) {
 
 
 bool removeDir(const QString& dirName) {
-    bool result = false;
+    bool result = true;
     QDir dir(dirName);
+
     if (dir.exists(dirName)) {
-        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
-            if (info.isDir()) {
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot|QDir::AllDirs|QDir::Files, QDir::DirsFirst)) {
+            if (info.isDir())
                 result = removeDir(info.absoluteFilePath());
-            } else {
+            else
                 result = QFile::remove(info.absoluteFilePath());
-            }
-            if (!result) {
+
+            if (!result)
                 return result;
-            }
         }
-        result = dir.rmpath(dirName);
+        result = dir.rmdir(dirName);
+    } else {
+        QFile file(dirName);
+        if (file.exists())
+            result = file.remove();
     }
     return result;
 }

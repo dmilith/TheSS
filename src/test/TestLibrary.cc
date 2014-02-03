@@ -36,6 +36,21 @@ TestLibrary::TestLibrary() {
 
 /* test functions */
 
+void TestLibrary::testDirRemoval() {
+    QDir().mkdir("/tmp/abc0123");
+    QDir().mkdir("/tmp/abc0123/123");
+    QDir().mkdir("/tmp/abc0123/456");
+    touch("/tmp/abc0123/456/zouza");
+    touch("/tmp/abc0123/456/zouza123");
+    touch("/tmp/abc0123/456/badziąg");
+    QDir().mkdir("/tmp/abc0123/456/ciapag/zdamly");
+    touch("/tmp/abc0123/456/ciapag/zdamly/123");
+    touch("/tmp/abc0123/456/ciapag/zdamly/456");
+    touch("/tmp/abc0123/456/ciapag/zdamly/abc");
+    QVERIFY(removeDir("/tmp/abc0123"));
+}
+
+
 void TestLibrary::testParseJSONRedis() {
     auto config = new SvdServiceConfig("Redis"); /* Load app specific values */
     QCOMPARE(config->name, QString("Redis"));
