@@ -785,7 +785,8 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-        while (not pidIsAlive(aPid)) {
+        logInfo() << "aPID:" << QString::number(aPid);
+        while (pidIsAlive(aPid)) {
             logInfo() << "Still waiting for service:" << val;
             steps++;
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
