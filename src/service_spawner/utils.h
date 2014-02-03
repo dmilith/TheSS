@@ -56,7 +56,7 @@ QList<int> gatherUserUids();
 QString readFileContents(const QString& fileName);
 
 bool expect(const QString& inputFileContent, const QString& expectedString);
-bool removeDir(const QString& dirName);
+bool removeDir(const QString& dirName, bool system_method = false);
 void copyPath(QString src, QString dst);
 bool setPublicDirPriviledges(const QString& path);
 bool setUserDirPriviledges(const QString& path);

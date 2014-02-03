@@ -272,14 +272,19 @@ void touch(const QString& fileName) {
 }
 
 
-bool removeDir(const QString& dirName) {
+bool removeDir(const QString& dirName, bool system_method) {
+    if (system_method) {
+        QString cmd = "/bin/rm -rf " + dirName;
+        system(cmd.toUtf8());
+        return true;
+    }
     bool result = true;
     QDir dir(dirName);
 
     if (dir.exists(dirName)) {
         Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot|QDir::AllDirs|QDir::Files, QDir::DirsFirst)) {
             if (info.isDir())
-                result = removeDir(info.absoluteFilePath());
+                result = removeDir(info.absoluteFilePath(), system_method);
             else
                 result = QFile::remove(info.absoluteFilePath());
 

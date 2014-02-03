@@ -23,6 +23,7 @@ public:
     void scrollLog(int n, int rows);
     void toggleWrap();
     void resetScroll();
+    void destroy();
 
 signals:
     void updated();

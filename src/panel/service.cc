@@ -116,5 +116,5 @@ void PanelService::toggleAutostart() {
 }
 
 bool PanelService::remove(){
-    return removeDir(basePath);
+    return removeDir(basePath, true);
 }
