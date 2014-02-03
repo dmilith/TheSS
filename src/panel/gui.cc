@@ -361,7 +361,7 @@ void PanelGui::removeCurrentService(){
             status = "You can't remove running service: " + service->name;
         } else {
             if (confirm(" Are you sure you want to destroy data\n and configuration of service: " + service->name + "?")){
-                if (service->remove()){
+                if (removeDir(service->dir.absolutePath())){
                     QString webAppPublicFile = DEFAULT_PUBLIC_DIR + service->name + "_" + QDir(getHomeDir()).dirName() + ".web-app";
                     QFile::remove(webAppPublicFile);
                     status = "Removed dir: " + service->dir.absolutePath() + " and file: " + webAppPublicFile;

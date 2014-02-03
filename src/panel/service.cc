@@ -114,7 +114,3 @@ void PanelService::toggleAutostart() {
     else QFile::remove(file);
     refresh();
 }
-
-bool PanelService::remove(){
-    return removeDir(basePath);
-}

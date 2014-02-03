@@ -28,7 +28,6 @@ public:
     void restartWithoutDeps();
     void reload();
     void toggleAutostart();
-    bool remove();
     void refresh();
 
     char flags[7];
