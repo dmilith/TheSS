@@ -13,12 +13,11 @@
 
 
 enum WebAppTypes {
-    StaticSite          = 0x01,
-    RubySite            = 0x02,
-    NodeSite            = 0x03,
-    PhpSite             = 0x04,
+    RubySite            = 0x01,
+    NodeSite            = 0x02,
+    PhpSite             = 0x03,
 
-    NoType              = 0x05 /* NOTE: this one *must* be always last type */
+    StaticSite          = 0x05 /* NOTE: this one *must* be always last type */
 };
 
 enum WebDatastore {
@@ -34,7 +33,7 @@ enum WebDatastore {
 
 class WebAppTypeDetector {
 
-    WebAppTypes appType = NoType;
+    WebAppTypes appType = StaticSite;
 
     public:
         WebAppTypeDetector(const QString& path);

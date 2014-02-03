@@ -29,16 +29,11 @@ bool shouldNotExist(const QStringList filesThatShouldNotExist, const QString& pa
 WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
 
     QStringList filesThatShouldExist, filesThatShouldNotExist;
-    for (WebAppTypes i = StaticSite; i <= NoType; i++) {
-        this->typeName = "NoType";
+    for (WebAppTypes i = RubySite; i <= StaticSite; i++) {
         filesThatShouldExist = QStringList();
         filesThatShouldNotExist = QStringList();
 
         switch (i) {
-            case StaticSite:
-                this->typeName = "Static";
-                filesThatShouldNotExist << "/Rakefile" << "/Procfile" << "/index.php";
-                break;
 
             case RubySite:
                 this->typeName = "Ruby";
@@ -59,8 +54,9 @@ WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
                 break;
 
             default:
-                this->typeName = "NoType";
-                break;
+                this->typeName = "Static";
+                this->appType = StaticSite;
+                return;
         }
 
         if (shouldExist(filesThatShouldExist, path) and shouldNotExist(filesThatShouldNotExist, path)) {
