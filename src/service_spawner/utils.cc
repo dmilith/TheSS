@@ -187,6 +187,7 @@ void performCleanupOfOldLogs() {
 
 
 bool pidIsAlive(uint pid) {
+    if (pid == 0) return false;
     int result = kill(pid, 0);
     if (result == 0)
         return true;
