@@ -17,11 +17,11 @@ printf 'Launching Mysql\n' >> SERVICE_PREFIX/service.log 2>&1
 SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_PREFIX/service.conf --skip-grant-tables -C utf8 > SERVICE_PREFIX/service.log 2>&1 &
 "
     },
-    "validate": {
+    "configure": {
         "commands": "
 test ! -d SERVICE_PREFIX/tmp && mkdir -p SERVICE_PREFIX/tmp && chmod 700 SERVICE_PREFIX/tmp
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+printf \"
 [mysqld_safe]
 socket = SERVICE_PREFIX/service.sock
 nice = 0
@@ -63,6 +63,9 @@ max_allowed_packet = 16M
 [isamchk]
 key_buffer = 16M
 \" > SERVICE_PREFIX/service.conf
+
+printf 'Performing initial Mysql setup\n' >> SERVICE_PREFIX/service.log
+SERVICE_ROOT/bin/perl SERVICE_ROOT/scripts/mysql_install_db --basedir SERVICE_PREFIX >> SERVICE_PREFIX/service.log 2>&1
 "
     }
 }
