@@ -374,8 +374,8 @@ void TestLibrary::testWebAppDetection() {
 
     appDetector = new WebAppTypeDetector(path + "/SomeNoWebApp");
     logDebug() << "Detected application type:" << appDetector->typeName;
-    QVERIFY(appDetector->getType() == NoType);
-    QVERIFY(appDetector->typeName == "NoType");
+    QVERIFY(appDetector->getType() == StaticSite);
+    QVERIFY(appDetector->typeName == "Static");
     delete appDetector;
 
 }
