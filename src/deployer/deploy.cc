@@ -184,7 +184,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     asp_tags = Off \n\
     precision = 14 \n\
     y2k_compliance = On \n\
-    output_buffering = 4096 \n\
+    output_buffering = Off \n\
     zlib.output_compression = Off \n\
     implicit_flush = Off \n\
     unserialize_callback_func = \n\
@@ -217,11 +217,11 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     variables_order = \"GPCS\" \n\
     request_order = \"GP\" \n\
     register_globals = Off \n\
-    register_long_arrays = Off \n\
-    register_argc_argv = Off \n\
+    register_long_arrays = On \n\
+    register_argc_argv = On \n\
     auto_globals_jit = On \n\
     post_max_size = 8M \n\
-    magic_quotes_gpc = On \n\
+    magic_quotes_gpc = Off \n\
     magic_quotes_runtime = Off \n\
     magic_quotes_sybase = Off \n\
     auto_prepend_file = \n\
@@ -230,13 +230,14 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     default_charset = \"UTF-8\" \n\
     doc_root = \n\
     user_dir = \"/tmp:" + latestReleaseDir + "\" \n\
-    enable_dl = Off \n\
+    enable_dl = On \n\
     file_uploads = On \n\
     upload_max_filesize = 50M \n\
     max_file_uploads = 20 \n\
     allow_url_fopen = On \n\
     allow_url_include = Off \n\
     default_socket_timeout = 60 \n\
+    cgi.force_redirect = On \n\
 [mysql] \n\
     mysql.default_socket=\"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
 [Pdo_mysql] \n\
@@ -263,7 +264,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     ibase.max_links = -1 \n\
 [MySQL] \n\
     mysql.allow_local_infile = On \n\
-    mysql.allow_persistent = On \n\
+    mysql.allow_persistent = Off \n\
     mysql.cache_size = 2000 \n\
     mysql.max_persistent = -1 \n\
     mysql.max_links = -1 \n\
