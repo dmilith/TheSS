@@ -180,7 +180,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     docref_root = 0 \n\
     docref_ext = 0 \n\
     engine = On \n\
-    short_open_tag = Off \n\
+    short_open_tag = On \n\
     asp_tags = Off \n\
     precision = 14 \n\
     y2k_compliance = On \n\
