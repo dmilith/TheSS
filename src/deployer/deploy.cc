@@ -40,8 +40,8 @@ server { \n\
     location / { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
-    } \n\
-    " + appProxyContent + " \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 }\n\
 server { \n\
@@ -53,8 +53,8 @@ server { \n\
     location / { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
-    } \n\
-    " + appProxyContent + " \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 }\n";
 
