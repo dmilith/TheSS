@@ -760,7 +760,7 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
 
 
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
-    QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independenc service */
+    QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independent service */
     QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     QString deps = readFileContents(depsFile).trimmed();
 
@@ -1168,20 +1168,21 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             generateServicePorts(servicePath);
 
+            QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independent service */
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
-            QString deps = "";
+            QString deps = readFileContents(depsFile).trimmed();
 
-            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
-                deps = readFileContents(depsFile).trimmed();
+            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
+            QStringList appDependencies = deps.split("\n");
+            logDebug() << "Gathered dependencies:" << appDependencies << "of size:" << appDependencies.size();
+
+            /* filter forbiddens */
+            for (int i = 0; i < appDependencies.size(); i++) {
+                QString d1 = appDependencies.at(i);
+                if (not allowedToSpawnDeps.contains(d1))
+                    appDependencies[i] = "";
             }
-            appDependencies = deps.split("\n");
-            logDebug() << "Gathering dependencies:" << appDependencies;
-
-            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-            //     logInfo() << "Older service already running. Invoking stop for:" << serviceName;
-            //     touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
-            // }
+            appDependencies.removeAll("");
 
             jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
 
