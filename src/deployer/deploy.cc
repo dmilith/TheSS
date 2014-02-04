@@ -372,23 +372,16 @@ server { \n\
     listen 80; \n\
     server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
-    location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
-        add_header Cache-Control max-age=315360000; \n\
-        expires 30d; \n\
-        break; \n\
-    } \n\
-    location / { \n\
-        fastcgi_index index.php; \n\
-        try_files = $uri /$uri $uri/ /index.php; \n\
-        if (-f $request_filename) { \n\
-            break; \n\
-        } \n\
-        include " + latestReleaseDir + "/fastcgi_params; \n\
-        fastcgi_param SCRIPT_FILENAME " + latestReleaseDir + "$fastcgi_script_name; \n\
-        fastcgi_param PATH_INFO $fastcgi_script_name; \n\
+    index index.php; \n\
+    try_files $uri $uri/ /index.php; \n\
+    location ~ .php$ { \n\
+        fastcgi_split_path_info ^(.+\\.php)(.*)$; \n\
         fastcgi_pass " + serviceName + "-" + stage + "; \n\
+        fastcgi_index  index.php; \n\
         fastcgi_intercept_errors on; \n\
+        fastcgi_param SCRIPT_FILENAME " + latestReleaseDir + "$fastcgi_script_name; \n\
         error_log " + getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOG_FILE + "; \n\
+        include " + latestReleaseDir + "/fastcgi_params; \n\
         error_page 400 402 403 404 502 503 504 = error.html; \n\
     } \n\
     location /error.html { \n\
