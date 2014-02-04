@@ -1168,10 +1168,20 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             generateServicePorts(servicePath);
 
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-                logInfo() << "Older service already running. Invoking stop for:" << serviceName;
-                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+            QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            QString deps = "";
+
+            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
+                deps = readFileContents(depsFile).trimmed();
             }
+            appDependencies = deps.split("\n");
+            logDebug() << "Gathering dependencies:" << appDependencies;
+
+            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
+            //     logInfo() << "Older service already running. Invoking stop for:" << serviceName;
+            //     touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+            // }
 
             jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
 
