@@ -747,8 +747,8 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
             steps++;
             if (steps % 3 == 0) {
                 logInfo() << "Still waiting for service:" << val << "with pid:" << aPid;
-                if (QFile::exists(location + DEFAULT_SERVICE_SOCKET_FILE) and
-                    QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE) and
+                if (QFile::exists(location + "/../" + val + DEFAULT_SERVICE_SOCKET_FILE) and
+                    QFile::exists(location + "/../" + val + DEFAULT_SERVICE_RUNNING_FILE) and
                     (aPid == 0)) { /* XXX: NOTE: case when dependency has own pid managment and pid file is empty */
                         logInfo() << "Dependency:" << val << "seems to be running, but pid is self managed. Will continue";
                         break;
