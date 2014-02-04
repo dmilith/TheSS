@@ -79,7 +79,8 @@ server { \n\
     } \n\
     location /error.html { \n\
         index error.html; \n\
-    } \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 } \n\
 server { \n\
@@ -101,7 +102,8 @@ server { \n\
     } \n\
     location /error.html { \n\
         index error.html; \n\
-    } \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 } \n";
 
@@ -128,7 +130,8 @@ server { \n\
     } \n\
     location /error.html { \n\
         index error.html; \n\
-    } \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 } \n\
 server { \n\
@@ -151,7 +154,8 @@ server { \n\
     } \n\
     location /error.html { \n\
         index error.html; \n\
-    } \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 } \n";
 
@@ -394,7 +398,8 @@ server { \n\
     } \n\
     location ~ /\\. { \n\
         deny  all; \n\
-    } \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 }\n\
 server { \n\
@@ -428,7 +433,8 @@ server { \n\
     } \n\
     location ~ /\\. { \n\
         deny  all; \n\
-    } \n\
+    } \n\n\
+" + appProxyContent + " \n\n\
     access_log off; \n\
 }\n";
         }
