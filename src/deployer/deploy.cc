@@ -910,10 +910,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
             logInfo() << "Launching service:" << serviceName;
 
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_TRIGGER_FILE);
-            else
-                touch(servicePath + START_TRIGGER_FILE);
+            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+            //     touch(servicePath + RESTART_TRIGGER_FILE);
+            // else
+            //     touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
@@ -1082,10 +1082,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Relaunching service using newly generated igniter.";
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_TRIGGER_FILE);
-            else
-                touch(servicePath + START_TRIGGER_FILE);
+            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+            //     touch(servicePath + RESTART_TRIGGER_FILE);
+            // else
+            //     touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
@@ -1151,10 +1151,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Relaunching service using newly generated igniter.";
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_TRIGGER_FILE);
-            else
-                touch(servicePath + START_TRIGGER_FILE);
+            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+            //     touch(servicePath + RESTART_TRIGGER_FILE);
+            // else
+            //     touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
@@ -1196,10 +1196,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Launching service using newly generated igniter.";
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_TRIGGER_FILE);
-            else
-                touch(servicePath + START_TRIGGER_FILE);
+            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+            //     touch(servicePath + RESTART_TRIGGER_FILE);
+            // else
+            //     touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
