@@ -41,5 +41,6 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain);
 QString buildEnv(QString& serviceName, QStringList deps);
+QStringList filterSpawnableDependencies(const QString& deps);
 
 #endif

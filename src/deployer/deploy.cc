@@ -764,22 +764,13 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
 
 
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
-    QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independent service */
+    /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
     QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     QString deps = readFileContents(depsFile).trimmed();
-
-    /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
-    QStringList appDependencies = deps.split("\n");
+    QStringList appDependencies = filterSpawnableDependencies(deps);
     logDebug() << "Gathered dependencies:" << appDependencies << "of size:" << appDependencies.size();
     QString jsonResult = "\"dependencies\": [";
 
-    /* filter forbiddens */
-    for (int i = 0; i < appDependencies.size(); i++) {
-        QString d1 = appDependencies.at(i);
-        if (not allowedToSpawnDeps.contains(d1))
-            appDependencies[i] = "";
-    }
-    appDependencies.removeAll("");
     if (appDependencies.size() == 0) {
         logInfo() << "Empty list of dependencies software, that acts, like some kind of a server.";
         return jsonResult + "], "; /* return empty list */
@@ -869,6 +860,25 @@ QString getDbName(WebDatastore db) {
 }
 
 
+QStringList filterSpawnableDependencies(const QString& deps) {
+    /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
+    QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independent service */
+    QStringList appDependencies = deps.split("\n");
+    logDebug() << "Filtering dependencies:" << appDependencies << "of size:" << appDependencies.size();
+
+    /* filter forbiddens */
+    for (int i = 0; i < appDependencies.size(); i++) {
+        QString d1 = appDependencies.at(i);
+        if (not allowedToSpawnDeps.contains(d1))
+            appDependencies[i] = "";
+    }
+    appDependencies.removeAll("");
+
+    logDebug() << "Filtered dependencies:" << appDependencies << "of size:" << appDependencies.size();
+    return appDependencies;
+}
+
+
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
 
     logInfo() << "Creating web-app environment";
@@ -946,9 +956,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             generateServicePorts(servicePath);
 
-            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
-            appDependencies = deps.split("\n");
-            logDebug() << "Gathering dependencies:" << appDependencies;
+            appDependencies = filterSpawnableDependencies(deps);
+
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
@@ -1114,14 +1123,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(envFilePath, envEntriesString);
 
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
-            QString deps = "", content = "";
+            QString deps = readFileContents(depsFile).trimmed();
+            appDependencies = filterSpawnableDependencies(deps);
 
-            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
-            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin */
-                deps = readFileContents(depsFile).trimmed();
-            }
-            appDependencies = deps.split("\n");
-            logDebug() << "Gathering dependencies:" << appDependencies;
             QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"portsPool\": 2, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
@@ -1172,21 +1176,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             generateServicePorts(servicePath);
 
-            QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independent service */
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString deps = readFileContents(depsFile).trimmed();
-
-            /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
-            QStringList appDependencies = deps.split("\n");
-            logDebug() << "Gathered dependencies:" << appDependencies << "of size:" << appDependencies.size();
-
-            /* filter forbiddens */
-            for (int i = 0; i < appDependencies.size(); i++) {
-                QString d1 = appDependencies.at(i);
-                if (not allowedToSpawnDeps.contains(d1))
-                    appDependencies[i] = "";
-            }
-            appDependencies.removeAll("");
+            appDependencies = filterSpawnableDependencies(deps);
 
             jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
 
@@ -1194,10 +1186,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
-
-            // logInfo() << "Starting server application";
-            // QFile::remove(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
-            // touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
