@@ -2,7 +2,6 @@
 * svdcoreginx_helper sucks, it's written badly and it doesn't reload Coreginx on first svdply deploy.
 * LiveUsers igniter should be more intelligent. It now reloads ttys even if there were no changes in user autostart trigger.
 * When user deletes ~/.autostart ttys should be altered (entry removed).
-* Sometimes operation of service destroy doesn't work well (big recursive data dirs issue) and requires several attempts to get it done.
 * Deployer asynchronous behavior requires bin/build on web-app side to be synchronous. Probably whole deployment should be fully synchronous to achieve reliable workload with possible issues during deployment (user errors).
 
 ## TODO list (in order of importance):
