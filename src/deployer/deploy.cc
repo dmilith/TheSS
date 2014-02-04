@@ -745,14 +745,19 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
             sleep(1);
             aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             steps++;
+
+            /* check for tcp port of dependency? */
+            uint dependencyPort = readFileContents(location + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed().toUInt();
+            if ((dependencyPort != 0) and
+                ((registerFreeTcpPort(dependencyPort) != dependencyPort) or
+                 (registerFreeUdpPort(dependencyPort) != dependencyPort))
+                ) {
+                    logInfo() << "Dependency:" << val << "seems to be running, TCP port taken:" << QString::number(dependencyPort);
+                    break;
+            }
+
             if (steps % 3 == 0) {
                 logInfo() << "Still waiting for service:" << val << "with pid:" << aPid;
-                if (QFile::exists(location + "/../" + val + DEFAULT_SERVICE_SOCKET_FILE) and
-                    QFile::exists(location + "/../" + val + DEFAULT_SERVICE_RUNNING_FILE) and
-                    (aPid == 0)) { /* XXX: NOTE: case when dependency has own pid managment and pid file is empty */
-                        logInfo() << "Dependency:" << val << "seems to be running, but pid is self managed. Will continue";
-                        break;
-                }
             }
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
                 logError() << "Exitting endless loop, cause service:" << val << "refuses to create pid, after " << QString::number(steps -1) << " seconds!";
