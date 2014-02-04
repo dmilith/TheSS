@@ -1204,15 +1204,17 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Setting up autostart for service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
             // logInfo() << "Launching service using newly generated igniter.";
-            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-            //     touch(servicePath + RESTART_TRIGGER_FILE);
-            // else
-            //     touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
 
     }
+
+    logInfo() << "Starting main service.";
+    if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+        touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+    else
+        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
     clne->deleteLater();
 }
