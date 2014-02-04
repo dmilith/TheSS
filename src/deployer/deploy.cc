@@ -730,7 +730,7 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
     logInfo() << "Requested spawn of a bin/build. Requesting presence of all dependencies.";
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
-        QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
+        QString location = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val);
 
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
