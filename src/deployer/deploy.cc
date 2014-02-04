@@ -902,14 +902,13 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
-            logInfo() << "Setting up autostart of service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
             logInfo() << "Launching service:" << serviceName;
 
+            logInfo() << "Setting up autostart of service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
             // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
             //     touch(servicePath + RESTART_TRIGGER_FILE);
             // else
@@ -1042,9 +1041,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 clne->waitForFinished(-1);
             }
 
-            logInfo() << "Setting up autostart of service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
             Q_FOREACH(auto datastore, datastores) {
                 logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
                 switch (datastore) {
@@ -1081,7 +1077,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
-            logInfo() << "Relaunching service using newly generated igniter.";
+            logInfo() << "Setting up autostart of service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
+            // logInfo() << "Relaunching service using newly generated igniter.";
             // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
             //     touch(servicePath + RESTART_TRIGGER_FILE);
             // else
@@ -1143,14 +1141,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
-            logInfo() << "Setting up autostart of service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
-            logInfo() << "Relaunching service using newly generated igniter.";
+            logInfo() << "Setting up autostart of service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
+            // logInfo() << "Relaunching service using newly generated igniter.";
             // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
             //     touch(servicePath + RESTART_TRIGGER_FILE);
             // else
