@@ -788,6 +788,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
         logInfo() << "aPID:" << QString::number(aPid) << "from:" << location + DEFAULT_SERVICE_PID_FILE;
         while (pidIsAlive(aPid)) {
             logInfo() << "Still waiting for service:" << val;
+            sleep(1);
             steps++;
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
                 logError() << "Exitting endless loop, cause service:" << val << "refuses to go down after " << QString::number(steps -1) << " seconds!";
