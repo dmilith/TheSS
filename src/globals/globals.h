@@ -43,6 +43,7 @@
     #define SOFTWARE_DIR "/Software"
     #define LOGS_DIR "/Logs"
     #define DEFAULT_PROXY_FILE "/proxy.conf"
+    #define DEFAULT_APP_PROXY_FILE "/.proxy.conf" /* addition to proxy from app repo */
     #define DEFAULT_SSL_DIR "/SSL/"
     #define DEFAULT_PUBLIC_DIR "/Public/"
     #define DEFAULT_HOME_DIR "/Users/"

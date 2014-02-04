@@ -16,7 +16,9 @@ const QStringList getAllowedToSpawnDeps() {
 
 
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
-    QString sslDir = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + DEFAULT_SSL_DIR);
+    QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName;
+    QString sslDir = getOrCreateDir(servicePath + DEFAULT_SSL_DIR);
+    QString appProxyContent = readFileContents(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + DEFAULT_APP_PROXY_FILE).trimmed();
     if (not sslPemPath.isEmpty()) { /* ssl pem file given */
         logWarn() << "NYI";
 
@@ -39,6 +41,7 @@ server { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
     } \n\
+    " + appProxyContent + " \n\
     access_log off; \n\
 }\n\
 server { \n\
@@ -51,6 +54,7 @@ server { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
     } \n\
+    " + appProxyContent + " \n\
     access_log off; \n\
 }\n";
 
@@ -181,7 +185,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     docref_ext = 0 \n\
     engine = On \n\
     short_open_tag = On \n\
-    asp_tags = Off \n\
+    asp_tags = On \n\
     precision = 14 \n\
     y2k_compliance = On \n\
     output_buffering = Off \n\
