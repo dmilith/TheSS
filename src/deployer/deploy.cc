@@ -806,8 +806,8 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
         logInfo() << "Spawning depdendency:" << elm;
         QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + elm;
         getOrCreateDir(location);
-        QFile::remove(location + START_TRIGGER_FILE);
-        touch(location + START_TRIGGER_FILE);
+        // QFile::remove(location + START_TRIGGER_FILE);
+        // touch(location + START_TRIGGER_FILE);
         jsonResult += "\"" + elm + "\", ";
     }
 
@@ -940,9 +940,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Launching service:" << serviceName;
 
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_TRIGGER_FILE);
             else
-                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
@@ -1037,10 +1037,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             int aPid = readFileContents(servicePath + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             logInfo() << "aPID:" << QString::number(aPid) << "from:" << servicePath + DEFAULT_SERVICE_PID_FILE;
             while (pidIsAlive(aPid)) {
-                logDebug() << "Older service still running. Invoking stop for:" << serviceName << "with pid:" << aPid;
-                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+                // touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
                 sleep(1);
                 steps++;
+                if (steps % 3 == 0)
+                    logInfo() << "Older service still running. Invoking stop for:" << serviceName << "with pid:" << aPid;
                 if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
                     logError() << "Exitting endless loop, cause service:" << serviceName << "refuses to go down after " << QString::number(steps -1) << " seconds!";
                     break;
@@ -1111,9 +1112,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Relaunching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_TRIGGER_FILE);
             else
-                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
@@ -1180,9 +1181,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Relaunching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_TRIGGER_FILE);
             else
-                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
@@ -1214,7 +1215,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QFile::remove(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
             touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
 
-            logInfo() << "Setting up autostart of service:" << serviceName;
+            logInfo() << "Setting up autostart for service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
@@ -1225,9 +1226,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logInfo() << "Launching service using newly generated igniter.";
             if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_TRIGGER_FILE);
             else
-                touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + START_TRIGGER_FILE);
 
         } break;
 
