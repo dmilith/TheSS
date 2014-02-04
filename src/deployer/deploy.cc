@@ -26,7 +26,7 @@ QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, Q
         logInfo() << "Generating self signed SSL certificate for service:" << serviceName;
         SvdProcess *prc = new SvdProcess("an_self_signed_cert_generate", getuid(), false);
 
-        prc->spawnProcess("test ! -f " + sslDir + domain + ".crt && echo \"EU\nPoland\nGdansk\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + domain + ".crt -keyout " + sslDir + domain + ".key");
+        prc->spawnProcess("test ! -f " + sslDir + domain + ".crt && echo \"EU\nPoland\nWejherowo\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + domain + ".crt -keyout " + sslDir + domain + ".key");
         prc->waitForFinished(-1);
         prc->deleteLater();
     }
