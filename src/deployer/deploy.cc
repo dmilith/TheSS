@@ -729,15 +729,18 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage) {
     logDebug() << "Requested spawn of a bin/build. Requesting presence of all dependencies.";
     Q_FOREACH(auto val, appDependencies) {
-        logDebug() << "Processing dependency:" << val;
         val[0] = val.at(0).toUpper();
         QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
 
         int steps = 0;
-        while (not QFile::exists(location + DEFAULT_SERVICE_PID_FILE)) { /* XXX: hacky, cause most, but not all services will create service.pid file in service directory */
-            logDebug() << "Still waiting for pid of service:" << val;
+        int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+        logInfo() << "Processing bin/build for service:" << val << "with pid:" << QString::number(aPid) << "from:" << location + DEFAULT_SERVICE_PID_FILE;
+        while (pidIsAlive(aPid)) {
             sleep(1);
             steps++;
+            if (steps % 3 == 0) {
+                logInfo() << "Still waiting for service:" << val << "with pid:" << aPid;
+            }
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
                 logError() << "Exitting endless loop, cause service:" << val << "refuses to create pid, after " << QString::number(steps -1) << " seconds!";
                 break;
@@ -1034,7 +1037,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             int aPid = readFileContents(servicePath + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             logInfo() << "aPID:" << QString::number(aPid) << "from:" << servicePath + DEFAULT_SERVICE_PID_FILE;
             while (pidIsAlive(aPid)) {
-                logDebug() << "Older service still running. Invoking stop for:" << serviceName;
+                logDebug() << "Older service still running. Invoking stop for:" << serviceName << "with pid:" << aPid;
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
                 sleep(1);
                 steps++;
