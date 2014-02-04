@@ -781,36 +781,9 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
         return jsonResult + "], "; /* return empty list */
     }
 
-    Q_FOREACH(auto val, appDependencies) {
-        val[0] = val.at(0).toUpper();
-        logInfo() << "Stopping old dependency:" << val;
-        QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
-        getOrCreateDir(location);
-        QFile::remove(location + STOP_TRIGGER_FILE);
-        touch(location + STOP_TRIGGER_FILE);
-
-        int steps = 0;
-        int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-        logInfo() << "aPID:" << QString::number(aPid) << "from:" << location + DEFAULT_SERVICE_PID_FILE;
-        while (pidIsAlive(aPid)) {
-            logInfo() << "Still waiting for service:" << val;
-            sleep(1);
-            steps++;
-            if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
-                logError() << "Exitting endless loop, cause service:" << val << "refuses to go down after " << QString::number(steps -1) << " seconds!";
-                break;
-            }
-        }
-    }
-
     for (int indx = 0; indx < appDependencies.size() - 1; indx++) {
         QString elm = appDependencies.at(indx);
         elm[0] = elm.at(0).toUpper();
-        logInfo() << "Spawning depdendency:" << elm;
-        QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + elm;
-        getOrCreateDir(location);
-        // QFile::remove(location + START_TRIGGER_FILE);
-        // touch(location + START_TRIGGER_FILE);
         jsonResult += "\"" + elm + "\", ";
     }
 
@@ -819,11 +792,6 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
     jsonResult += "\"" + elmLast + "\"], ";
     jsonResult += QString("\n\n\"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
 
-    logInfo() << "Spawning depdendency:" << elmLast;
-    QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + elmLast;
-    getOrCreateDir(location);
-    QFile::remove(location + START_TRIGGER_FILE);
-    touch(location + START_TRIGGER_FILE);
     logDebug() << "DEBUG: jsonResult:" << jsonResult;
     return jsonResult;
 }
