@@ -18,7 +18,7 @@ const QStringList getAllowedToSpawnDeps() {
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
     QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName;
     QString sslDir = getOrCreateDir(servicePath + DEFAULT_SSL_DIR);
-    QString appProxyContent = readFileContents(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + DEFAULT_APP_PROXY_FILE).trimmed();
+    QString appProxyContent = readFileContents(latestReleaseDir + DEFAULT_APP_PROXY_FILE).trimmed();
     if (not sslPemPath.isEmpty()) { /* ssl pem file given */
         logWarn() << "NYI";
 
