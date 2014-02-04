@@ -59,6 +59,8 @@
     #define DEFAULT_LOCAL_ADDRESS "127.0.0.1"
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
     #define DEFAULT_SYSTEM_DOMAIN "localhost"
+
+    #define DEFAULT_SERVICE_SOCKET_FILE "/service.sock"
     #define DEFAULT_SERVICE_PID_FILE "/service.pid"
     #define DEFAULT_SERVICE_ENV_FILE "/service.env"
     #define DEFAULT_SERVICE_LOG_FILE "/service.log"
