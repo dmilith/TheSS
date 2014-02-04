@@ -1031,8 +1031,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             int steps = 0;
-            while (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-                logDebug() << "Older service already running. Invoking stop for:" << serviceName;
+            int aPid = readFileContents(servicePath + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+            logInfo() << "aPID:" << QString::number(aPid) << "from:" << servicePath + DEFAULT_SERVICE_PID_FILE;
+            while (pidIsAlive(aPid)) {
+                logDebug() << "Older service still running. Invoking stop for:" << serviceName;
                 touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
                 sleep(1);
                 steps++;
