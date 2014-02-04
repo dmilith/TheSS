@@ -735,8 +735,11 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
         logInfo() << "Processing bin/build for service:" << val << "with pid:" << QString::number(aPid) << "from:" << location + DEFAULT_SERVICE_PID_FILE;
-        while (pidIsAlive(aPid)) {
+        while (not pidIsAlive(aPid)) {
+            QFile::remove(location + START_TRIGGER_FILE);
+            touch(location + START_TRIGGER_FILE);
             sleep(1);
+            aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             steps++;
             if (steps % 3 == 0) {
                 logInfo() << "Still waiting for service:" << val << "with pid:" << aPid;
