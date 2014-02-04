@@ -64,8 +64,8 @@ max_allowed_packet = 16M
 key_buffer = 16M
 \" > SERVICE_PREFIX/service.conf
 
-printf 'Performing initial Mysql setup\n' >> SERVICE_PREFIX/service.log
-SERVICE_ROOT/bin/perl SERVICE_ROOT/scripts/mysql_install_db --basedir SERVICE_ROOT >> SERVICE_PREFIX/service.log 2>&1
+# printf 'Performing initial Mysql setup\n' >> SERVICE_PREFIX/service.log
+# SERVICE_ROOT/bin/perl SERVICE_ROOT/scripts/mysql_install_db --basedir SERVICE_ROOT >> SERVICE_PREFIX/service.log 2>&1
 "
     }
 }
