@@ -727,7 +727,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 
 
 void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage) {
-    logDebug() << "Requested spawn of a bin/build. Requesting presence of all dependencies.";
+    logInfo() << "Requested spawn of a bin/build. Requesting presence of all dependencies.";
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
         QString location = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val;
@@ -1180,12 +1180,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
 
-            logInfo() << "Starting server application";
-            QFile::remove(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
-            touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
-
-            logInfo() << "Setting up autostart for service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
+            // logInfo() << "Starting server application";
+            // QFile::remove(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
+            // touch(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName + START_TRIGGER_FILE);
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
 
@@ -1193,7 +1190,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
-            logInfo() << "Launching service using newly generated igniter.";
+            logInfo() << "Setting up autostart for service:" << serviceName;
+            touch(servicePath + AUTOSTART_TRIGGER_FILE);
+            // logInfo() << "Launching service using newly generated igniter.";
             // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
             //     touch(servicePath + RESTART_TRIGGER_FILE);
             // else
