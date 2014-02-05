@@ -321,7 +321,7 @@ bool SvdServiceConfig::serviceInstalled() {
 
 
 bool SvdServiceConfig::serviceConfigured() {
-    return QFile::exists(prefixDir() + "/.configured");
+    return QFile::exists(prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE);
 }
 
 
