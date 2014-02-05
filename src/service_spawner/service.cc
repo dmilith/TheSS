@@ -438,15 +438,15 @@ void SvdService::configureSlot() {
     } else if (QFile::exists(configuredIndicator)) {
         notification("Service already configured: " + name, NOTIFY);
     } else {
-        logTrace() << "Loading service igniter" << name;
+        logInfo() << "Configuring service:" << name;
         touch(indicator);
         logTrace() << "Launching commands:" << config->configure->commands;
         auto process = new SvdProcess(name);
         process->spawnProcess(config->configure->commands);
         process->waitForFinished(-1);
-        deathWatch(process->pid());
         QFile::remove(indicator);
-        logDebug() << "Service configured:" << name;
+        // deathWatch(process->pid());
+        logInfo() << "Service configured:" << name;
         if (not expect(readFileContents(process->outputFile), config->configure->expectOutput)) {
             QString msg = name + " failed in configure hook. exp: '" + config->configure->expectOutput + "'";
             notification(msg, ERROR);
@@ -516,7 +516,7 @@ void SvdService::startSlot(bool withDeps) {
         logDebug() << "Emitting install slot for service:" << name;
         emit installSlot();
         if (not config->serviceConfigured()) {
-            logInfo() << "Configuring service:" << name;
+            logInfo() << "Service:" << name << "not configured yet! Configuring..";
             emit configureSlot();
         }
 
