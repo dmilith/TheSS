@@ -752,7 +752,7 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
                 ((registerFreeTcpPort(dependencyPort) != dependencyPort) or
                  (registerFreeUdpPort(dependencyPort) != dependencyPort))
                 ) {
-                    logInfo() << "Dependency:" << val << "seems to be running, TCP port taken:" << QString::number(dependencyPort);
+                    logInfo() << "Dependency:" << val << "seems to be running, TCP/UDP port taken:" << QString::number(dependencyPort);
                     break;
             }
 
