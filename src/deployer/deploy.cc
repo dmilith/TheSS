@@ -935,15 +935,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(igniterFile, jsonResult);
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
-
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
-            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-            //     touch(servicePath + RESTART_TRIGGER_FILE);
-            // else
-            //     touch(servicePath + START_TRIGGER_FILE);
+            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
         } break;
 
@@ -1105,14 +1100,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-
             logInfo() << "Setting up autostart of service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
-            // logInfo() << "Relaunching service using newly generated igniter.";
-            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-            //     touch(servicePath + RESTART_TRIGGER_FILE);
-            // else
-            //     touch(servicePath + START_TRIGGER_FILE);
+            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
         } break;
 
@@ -1154,28 +1143,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             logInfo() << "Generating igniter:" << igniterFile;
             writeToFile(igniterFile, jsonResult);
 
-            if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-                logInfo() << "Older service already running. Invoking stop for:" << serviceName;
-                touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
-            }
-
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
             clne->spawnProcess("cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
-
-
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-
             logInfo() << "Setting up autostart of service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
-            // logInfo() << "Relaunching service using newly generated igniter.";
-            // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-            //     touch(servicePath + RESTART_TRIGGER_FILE);
-            // else
-            //     touch(servicePath + START_TRIGGER_FILE);
+            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
+            restartWithoutDependencies(servicePath);
 
         } break;
 
@@ -1203,24 +1180,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(igniterFile, jsonResult);
 
             spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
-
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-
             logInfo() << "Setting up autostart for service:" << serviceName;
-            touch(servicePath + AUTOSTART_TRIGGER_FILE);
-            // logInfo() << "Launching service using newly generated igniter.";
+            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
         } break;
 
 
     }
-
-    logInfo() << "Starting main service.";
-    if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-        touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-    else
-        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 
     clne->deleteLater();
 }
