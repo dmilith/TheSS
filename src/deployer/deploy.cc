@@ -921,24 +921,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* do app type specific action */
     auto clne = new SvdProcess("create_environment", getuid(), false);
     QStringList appDependencies;
+    QString jsonResult = "";
 
     switch (appType) {
 
         case StaticSite: {
 
-            QString jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, ";
+            jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += QString("\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
-            /* write igniter to user igniters */
-            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
-            logInfo() << "Generating igniter:" << igniterFile;
-            writeToFile(igniterFile, jsonResult);
 
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
-            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
-
-            logInfo() << "Setting up autostart of service:" << serviceName;
-            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
         } break;
 
@@ -970,7 +962,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             appDependencies = filterSpawnableDependencies(deps);
 
-            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
@@ -1043,10 +1035,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             //     }
             // }
 
-            /* write igniter to user igniters */
-            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
-            logInfo() << "Generating igniter:" << igniterFile;
-            writeToFile(igniterFile, jsonResult);
+
 
             QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
             logInfo() << "Gathering SSL CA certs from:" << cacertLocation << "if necessary.";
@@ -1096,13 +1085,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else
                 logInfo() << "No Rakefile found. Skipping standard rake tasks";
 
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
-
-            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
-
-            logInfo() << "Setting up autostart of service:" << serviceName;
-            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
         } break;
 
 
@@ -1131,35 +1113,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"portsPool\": 2, ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"portsPool\": 2, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + "bin/app 2>&1 &" + "\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
-            /* write igniter to user igniters */
-            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
-            logInfo() << "Generating igniter:" << igniterFile;
-            writeToFile(igniterFile, jsonResult);
-
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
             clne->spawnProcess("cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " npm install >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
             clne->waitForFinished(-1);
-
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
-            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
-
-            logInfo() << "Setting up autostart of service:" << serviceName;
-            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
-            restartWithoutDependencies(servicePath);
 
         } break;
 
 
         case PhpSite: {
 
-            QString jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             #ifdef __APPLE__
                 logError() << "Apple PHP deployments aren't supported yet!";
@@ -1174,21 +1144,40 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
 
-            /* write igniter to user igniters */
-            QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
-            logInfo() << "Generating igniter:" << igniterFile;
-            writeToFile(igniterFile, jsonResult);
 
-            spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
-            prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
-
-            logInfo() << "Setting up autostart for service:" << serviceName;
-            if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
         } break;
 
 
     }
 
+    /* write igniter to user igniters */
+    QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+    logInfo() << "Generating igniter:" << igniterFile;
+    writeToFile(igniterFile, jsonResult);
+
+    spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
+    prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
+
+    logInfo() << "Finishing jobs";
+    switch (appType) {
+        case RubySite:
+            restartWithoutDependencies(servicePath);
+            break;
+
+        case NodeSite:
+            restartWithoutDependencies(servicePath);
+            break;
+
+        default:
+            break;
+
+    }
+
+    if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
+    if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
+        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+        logInfo() << "Launching service:" << serviceName;
+    }
     clne->deleteLater();
 }
