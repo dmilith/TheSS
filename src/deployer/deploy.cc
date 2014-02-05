@@ -1020,23 +1020,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
-            // int steps = 0;
-            // int aPid = readFileContents(servicePath + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-            // logInfo() << "aPID:" << QString::number(aPid) << "from:" << servicePath + DEFAULT_SERVICE_PID_FILE;
-            // while (pidIsAlive(aPid)) {
-            //     // touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
-            //     sleep(1);
-            //     steps++;
-            //     if (steps % 3 == 0)
-            //         logInfo() << "Older service still running. Invoking stop for:" << serviceName << "with pid:" << aPid;
-            //     if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
-            //         logError() << "Exitting endless loop, cause service:" << serviceName << "refuses to go down after " << QString::number(steps -1) << " seconds!";
-            //         break;
-            //     }
-            // }
-
-
-
             QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
             logInfo() << "Gathering SSL CA certs from:" << cacertLocation << "if necessary.";
             clne->spawnProcess("cd " + servicePath + " && test ! -f " + DEFAULT_SSL_CA_FILE + " && curl -C - -L -O " + cacertLocation + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1");
@@ -1143,8 +1126,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             appDependencies = filterSpawnableDependencies(deps);
 
             jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
-
-
 
         } break;
 
