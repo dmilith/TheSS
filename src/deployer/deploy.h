@@ -42,5 +42,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain);
 QString buildEnv(QString& serviceName, QStringList deps);
 QStringList filterSpawnableDependencies(const QString& deps);
+void restartWithoutDependencies(const QString& servicePath);
 
 #endif
