@@ -929,9 +929,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
-            logInfo() << "Launching service:" << serviceName;
-
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
             // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
@@ -1099,7 +1096,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
@@ -1163,7 +1159,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Setting up autostart of service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
@@ -1202,7 +1197,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-            touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
             logInfo() << "Setting up autostart for service:" << serviceName;
             touch(servicePath + AUTOSTART_TRIGGER_FILE);
