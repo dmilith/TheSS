@@ -1140,6 +1140,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
     prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
+    logInfo() << "Setting configured state for service:" << serviceName;
+    touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+
     logInfo() << "Finishing jobs";
     switch (appType) {
         case RubySite:
