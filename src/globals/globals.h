@@ -11,7 +11,7 @@
 
     /* global constants */
     #define APP_VERSION "0.70.2"
-    #define COPYRIGHT "Copyright © 2o13-2o14 verknowsys.com"
+    #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
     #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh" // "/bin/svdshell" //
