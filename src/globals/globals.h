@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.70.1"
+    #define APP_VERSION "0.70.2"
     #define COPYRIGHT "Copyright © 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -93,13 +93,13 @@
     #define DEFAULT_SERVICE_RELOADING_FILE "/.reloading"
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
     #define DEFAULT_SERVICE_DEPLOYING_FILE "/.deploying"
+    #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cronWorking"
     #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
     #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
-    #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cron_working"
-    #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/service.latest.release"
-    #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous.release"
+    #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/service.latest-release"
+    #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous-release"
     #define DEFAULT_SERVICE_RELEASES_HISTORY "/service.releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
 
