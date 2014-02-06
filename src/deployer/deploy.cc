@@ -952,6 +952,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += QString("\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
 
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+
             /* write to service env file */
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             logInfo() << "Building environment for stage:" << stage;
@@ -969,17 +971,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case RubySite: {
 
-            QString databaseName = serviceName + "_" + stage;
-            QList<WebDatastore> datastores;
-            QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
-            QString deps = "";
-
-            if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
-                deps = readFileContents(depsFile).trimmed();
-            }
-            datastores = detectDatastores(deps, depsFile);
-            prepareSharedDirs(latestReleaseDir, servicePath, stage);
-            generateDatastoreSetup(datastores, serviceName, stage, appType);
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
@@ -1071,42 +1063,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
 
-            if (QFile::exists(latestReleaseDir + "/Rakefile") and QDir().exists(latestReleaseDir + "/app/assets")) {
-                logInfo() << "Building assets";
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                clne->waitForFinished(-1);
-            }
-
-            Q_FOREACH(auto datastore, datastores) {
-                logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
-                switch (datastore) {
-                    case Postgresql: {
-                        logDebug() << "Creating user:" << databaseName;
-                        clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                        clne->waitForFinished(-1);
-                        logDebug() << "Creating datastore:" << databaseName;
-                        clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                        clne->waitForFinished(-1);
-
-                    } break;
-
-                    default: break;
-
-                }
-            }
-
-            if (QFile::exists(latestReleaseDir + "/Rakefile")) {
-                logInfo() << "Rakefile found, proceeding with standard tasks";
-                logInfo() << "Running database migrations";
-                if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
-                    clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                    clne->waitForFinished(-1);
-                }
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-                clne->waitForFinished(-1);
-            } else
-                logInfo() << "No Rakefile found. Skipping standard rake tasks";
-
         } break;
 
 
@@ -1178,6 +1134,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     writeToFile(igniterFile, jsonResult);
 
     requestDependenciesRunningOf(latestReleaseDir, appDependencies);
+    Q_FOREACH(auto datastore, datastores) {
+        logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
+        switch (datastore) {
+            case Postgresql: {
+                logDebug() << "Creating user:" << databaseName;
+                clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->waitForFinished(-1);
+                logDebug() << "Creating datastore:" << databaseName;
+                clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->waitForFinished(-1);
+
+            } break;
+
+            default: break;
+
+        }
+    }
     spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
     prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
