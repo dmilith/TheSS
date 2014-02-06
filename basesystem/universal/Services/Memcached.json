@@ -1,5 +1,6 @@
 {
     "softwareName": "Memcached",
+    "domain": "localhost",
     "install": {
         "commands": "sofin get memcached",
         "expectOutput": "All done"

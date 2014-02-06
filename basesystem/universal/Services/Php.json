@@ -1,5 +1,6 @@
 {
     "softwareName": "Php",
+    "domain": "localhost",
     "install": {
         "commands": "sofin get php",
         "expectOutput": "All done"

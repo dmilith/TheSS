@@ -2,6 +2,7 @@
     "softwareName": "Redis",
     "watchPort": false,
     "autoStart": true,
+    "domain": "localhost",
     "schedulerActions": [
         {
             "cronEntry": "*/50 * * * * ?",
