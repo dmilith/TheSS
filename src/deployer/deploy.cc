@@ -930,6 +930,20 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QStringList appDependencies;
     QString jsonResult = "";
 
+
+    logInfo() << "Preparing web-app";
+    QString databaseName = serviceName + "_" + stage;
+    QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
+    QString deps = "";
+
+    if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
+        deps = readFileContents(depsFile).trimmed();
+    }
+    QList<WebDatastore> datastores;
+    datastores = detectDatastores(deps, depsFile);
+    prepareSharedDirs(latestReleaseDir, servicePath, stage);
+    generateDatastoreSetup(datastores, serviceName, stage, appType);
+
     switch (appType) {
 
         case StaticSite: {
