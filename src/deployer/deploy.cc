@@ -842,24 +842,24 @@ QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile) {
     QFileInfo bname(depsFile);
 
     if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
-        logInfo() << "Detected Postgresql dependency in file:" << bname.baseName();
+        logInfo() << "Detected Postgresql dependency";
         out << Postgresql;
     }
     if (deps.trimmed().toLower().contains("mysql")) {
-        logInfo() << "Detected Mysql dependency in file:" << bname.baseName();
+        logInfo() << "Detected Mysql dependency";
         out << Mysql;
     }
     if (deps.trimmed().toLower().contains("mongo")) {
-        logInfo() << "Detected Mongodb dependency in file:" << bname.baseName();
+        logInfo() << "Detected Mongodb dependency";
         out << Mongo;
     }
     if (deps.trimmed().toLower().contains("sphinx")) {
-        logInfo() << "Detected Sphinx dependency in file:" << bname.baseName();
+        logInfo() << "Detected Sphinx dependency";
         out << Sphinx;
     }
 
     if (out.isEmpty()) {
-        logInfo() << "Falling back to SqLite3 driver cause no database defined in dependencies";
+        logInfo() << "Falling back to SqLite3 driver default.";
         out << NoDB;
     }
 
