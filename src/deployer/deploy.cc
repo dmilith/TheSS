@@ -372,7 +372,10 @@ fastcgi_param  SERVER_ADDR        $server_addr; \n\
 fastcgi_param  SERVER_PORT        $server_port; \n\
 fastcgi_param  SERVER_NAME        $server_name; \n\
 fastcgi_param  PHP_ENV            " + stage + "; \n\
-fastcgi_param  PHP_APP_NAME       " + serviceName + "; \n");
+fastcgi_param  PHP_APP_NAME       " + serviceName + "; \n\
+fastcgi_param  PHP_ROOT           " + latestReleaseDir + "; \n\
+fastcgi_param  PHP_PORT           " + port + "; \n\
+fastcgi_param  PHP_DOMAIN         " + domain + "; \n");
             return "\n\
 upstream " + serviceName + "-" + stage + " { \n\
     server " + DEFAULT_LOCAL_ADDRESS + ":" + port + "; \n\
@@ -939,6 +942,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "STATIC_ENV=" + stage + "\n";
             envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
+            envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
+            envEntriesString += "STATIC_PORT=" + servPort + "\n";
+            envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
             writeToFile(envFilePath, envEntriesString);
 
         } break;
@@ -965,7 +971,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
+            envEntriesString += "RUBY_ENV=" + stage + "\n";
             envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
+            envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
+            envEntriesString += "RUBY_PORT=" + servPort + "\n";
+            envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
             writeToFile(envFilePath, envEntriesString);
 
             generateServicePorts(servicePath);
