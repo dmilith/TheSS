@@ -935,6 +935,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             /* write to service env file */
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             logInfo() << "Building environment for stage:" << stage;
+            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "STATIC_ENV=" + stage + "\n";
+            envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
+            writeToFile(envFilePath, envEntriesString);
 
         } break;
 
