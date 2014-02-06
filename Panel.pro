@@ -1,4 +1,4 @@
-# NCurses control panel for TheSS - © 2013 verknowsys.com
+# NCurses control panel for TheSS - (c) 2o13-2o14 verknowsys.com
 #
 # author:
 #   Daniel (dmilith) Dettlaff

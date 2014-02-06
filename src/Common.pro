@@ -1,4 +1,4 @@
-# TheSS Common - © 2013 verknowsys.com
+# TheSS Common - (c) 2o13-2o14 verknowsys.com
 #
 # author:
 #   Daniel (dmilith) Dettlaff

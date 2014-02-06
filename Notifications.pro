@@ -1,4 +1,4 @@
-# ServeD natives - Notifications System Manager - © 2013 verknowsys.com
+# ServeD natives - Notifications System Manager - (c) 2o13-2o14 verknowsys.com
 #
 # author:
 #   Daniel (dmilith) Dettlaff

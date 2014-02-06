@@ -142,7 +142,7 @@ int PanelGui::kbhit() {
 
 void PanelGui::displayHeader(){
     wattron(mainWindow, C_DEFAULT);
-    mvwprintw(mainWindow, 0, 0, "Control Panel v%s. © 2013 verknowsys.com", APP_VERSION);
+    mvwprintw(mainWindow, 0, 0, "Control Panel v%s. %s", APP_VERSION, COPYRIGHT);
 }
 
 void PanelGui::displayFooter(){
