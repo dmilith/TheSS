@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.68.16"
+    #define APP_VERSION "0.70.0"
     #define COPYRIGHT "Copyright © 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -30,7 +30,7 @@
         #define CLOCK_REALTIME REALTIME_CLOCK
         #define DEFAULT_DEATH_WATCHER_PAUSE 500000 /* .5 seconds by default for developer machine */
     #else
-        #define DEFAULT_DEATH_WATCHER_PAUSE 9000000 /* 9 seconds by default for production */
+        #define DEFAULT_DEATH_WATCHER_PAUSE 2000000 /* 2 seconds by default for production */
     #endif
 
     #define DEFAULT_USER_UID 501
