@@ -1160,6 +1160,22 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Finishing jobs";
     switch (appType) {
         case RubySite:
+            if (QFile::exists(latestReleaseDir + "/Rakefile")) {
+                logInfo() << "Rakefile found, running database migrations";
+                if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
+                    clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                    clne->waitForFinished(-1);
+                }
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->waitForFinished(-1);
+            } else
+                logInfo() << "No Rakefile found. Skipping standard rake tasks";
+
+            if (QFile::exists(latestReleaseDir + "/Rakefile") and QDir().exists(latestReleaseDir + "/app/assets")) {
+                logInfo() << "Building assets for web-app:" << serviceName;
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->waitForFinished(-1);
+            }
             restartWithoutDependencies(servicePath);
             break;
 
