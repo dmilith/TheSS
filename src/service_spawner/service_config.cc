@@ -417,18 +417,25 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         QString domainFilePath = prefixDir() + QString(DEFAULT_SERVICE_DOMAIN_FILE);
         QString userDomain = QHostInfo::localHostName();
         if (not domain.isEmpty()) { /* predefined value of domain from igniter has a higher priority over dynamic one */
-            userDomain = domain;
-            ccont = ccont.replace("SERVICE_DOMAIN", domain);
-            writeToFile(domainFilePath, domain);
+            if (QFile::exists(domainFilePath)) {
+                logTrace() << "Defined igniter domain, but domain file found, hence using one from .domain file!";
+                QString aDomain = readFileContents(domainFilePath).trimmed();
+                userDomain = aDomain;
+            } else {
+                /* use domain from igniter if domain file doesn't exists */
+                logTrace() << "Using igniter domain";
+                userDomain = domain;
+                writeToFile(domainFilePath, userDomain);
+            }
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
         } else {
             if (not QFile::exists(domainFilePath)) { //(domain.isEmpty()) {
-                ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
                 writeToFile(domainFilePath, userDomain);
             } else {
                 QString aDomain = readFileContents(domainFilePath).trimmed();
-                ccont = ccont.replace("SERVICE_DOMAIN", aDomain); /* replace with user domain content */
                 userDomain = aDomain;
             }
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
         }
 
         /* Replace SERVICE_ADDRESS */
