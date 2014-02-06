@@ -371,7 +371,8 @@ fastcgi_param  REMOTE_PORT        $remote_port; \n\
 fastcgi_param  SERVER_ADDR        $server_addr; \n\
 fastcgi_param  SERVER_PORT        $server_port; \n\
 fastcgi_param  SERVER_NAME        $server_name; \n\
-fastcgi_param  PHP_ENV            " + stage + "; \n");
+fastcgi_param  PHP_ENV            " + stage + "; \n\
+fastcgi_param  PHP_APP_NAME       " + serviceName + "; \n");
             return "\n\
 upstream " + serviceName + "-" + stage + " { \n\
     server " + DEFAULT_LOCAL_ADDRESS + ":" + port + "; \n\
@@ -931,6 +932,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += QString("\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
 
+            /* write to service env file */
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            logInfo() << "Building environment for stage:" << stage;
 
         } break;
 
@@ -940,7 +944,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString databaseName = serviceName + "_" + stage;
             QList<WebDatastore> datastores;
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             QString deps = "";
 
             if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
@@ -951,11 +954,13 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             generateDatastoreSetup(datastores, serviceName, stage, appType);
 
             /* write to service env file */
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
+            envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
             writeToFile(envFilePath, envEntriesString);
 
             generateServicePorts(servicePath);
@@ -1085,6 +1090,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
             envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "NODE_ENV=" + stage + "\n";
             envEntriesString += "NODE_PORT=" + servPort + "\n";
