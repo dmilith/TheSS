@@ -735,14 +735,15 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 
 
 void requestDependenciesRunningOf(const QString& latestReleaseDir, const QStringList appDependencies) {
-    logInfo() << "Requested spawn of a bin/build. Requesting presence of all dependencies.";
+    logInfo() << "Requesting dependencies presence.";
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
         QString location = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val);
 
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-        logInfo() << "Processing bin/build for service:" << val << "with pid:" << QString::number(aPid) << "from:" << location + DEFAULT_SERVICE_PID_FILE;
+        logInfo() << "Processing bin/build for service:" << val << "with pid:" << QString::number(aPid);
+        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PID_FILE;
         while (not pidIsAlive(aPid)) {
             QFile::remove(location + START_TRIGGER_FILE);
             touch(location + START_TRIGGER_FILE);
@@ -838,26 +839,27 @@ QString buildEnv(QString& serviceName, QStringList deps) {
 
 QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile) {
     QList<WebDatastore> out;
+    QFileInfo bname(depsFile);
 
     if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
-        logInfo() << "Detected Postgresql dependency in file:" << depsFile;
+        logInfo() << "Detected Postgresql dependency in file:" << bname.baseName();
         out << Postgresql;
     }
     if (deps.trimmed().toLower().contains("mysql")) {
-        logInfo() << "Detected Mysql dependency in file:" << depsFile;
+        logInfo() << "Detected Mysql dependency in file:" << bname.baseName();
         out << Mysql;
     }
     if (deps.trimmed().toLower().contains("mongo")) {
-        logInfo() << "Detected Mongodb dependency in file:" << depsFile;
+        logInfo() << "Detected Mongodb dependency in file:" << bname.baseName();
         out << Mongo;
     }
     if (deps.trimmed().toLower().contains("sphinx")) {
-        logInfo() << "Detected Sphinx dependency in file:" << depsFile;
+        logInfo() << "Detected Sphinx dependency in file:" << bname.baseName();
         out << Sphinx;
     }
 
     if (out.isEmpty()) {
-        logWarn() << "Falling back to SqLite3 driver cause no database defined in dependencies";
+        logInfo() << "Falling back to SqLite3 driver cause no database defined in dependencies";
         out << NoDB;
     }
 
