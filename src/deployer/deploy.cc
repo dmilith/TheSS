@@ -1114,7 +1114,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case PhpSite: {
 
-            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"domain\": \"localhost\", \"softwareName\": \"Php\", ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             #ifdef __APPLE__
                 logError() << "Apple PHP deployments aren't supported yet!";
