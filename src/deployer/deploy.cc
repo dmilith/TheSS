@@ -734,7 +734,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 }
 
 
-void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage) {
+void requestDependenciesRunningOf(const QString& latestReleaseDir, const QStringList appDependencies) {
     logInfo() << "Requested spawn of a bin/build. Requesting presence of all dependencies.";
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
@@ -769,7 +769,10 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& ser
             }
         }
     }
+}
 
+
+void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage) {
     auto clne = new SvdProcess("spawn_bin_build", getuid(), false);
     logInfo() << "Invoking bin/build of project (if exists)";
     clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build " + stage + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
@@ -1160,6 +1163,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Generating igniter:" << igniterFile;
     writeToFile(igniterFile, jsonResult);
 
+    requestDependenciesRunningOf(latestReleaseDir, appDependencies);
     spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
     prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
