@@ -1025,10 +1025,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             clne->spawnProcess("cd " + servicePath + " && test ! -f " + DEFAULT_SSL_CA_FILE + " && curl -C - -L -O " + cacertLocation + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1");
             clne->waitForFinished(-1);
 
-            logInfo() << "Installing bundle for stage:" << stage << "of Rails Site";
-            getOrCreateDir(servicePath + "/bundle-" + stage);
-            clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-            clne->waitForFinished(-1);
+            if (QFile::exists(latestReleaseDir + "/Gemfile")) {
+                logInfo() << "Installing bundle for stage:" << stage << "of Rails Site";
+                getOrCreateDir(servicePath + "/bundle-" + stage);
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->waitForFinished(-1);
+            }
 
             prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
 
