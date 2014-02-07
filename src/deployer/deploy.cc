@@ -729,18 +729,21 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
     bool installMissing = false;
     Q_FOREACH(auto deps, conts.split("\n")) {
         deps[0] = deps.at(0).toUpper(); /* capitalize */
-        auto config = new SvdServiceConfig(deps);
+        QString fileBase = QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/";
         logInfo() << "Checking installation state of dependency:" << deps;
-        if (not config->serviceInstalled()) {
-            logInfo() << "Missing dependency:" << deps;
+        if (not QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) {
+            installMissing = true;
 
-            // XXX: hack, obviously:
+            // XXX: hacks, obviously:
             if (deps.endsWith("magick")) {
-                logInfo() << "'Immunity card' present!";
-            } else
-                installMissing = true;
+                deps = deps.replace("magick", "Magick");
+                if (QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) installMissing = false;
+            }
+            if (deps.endsWith("-usock")) {
+                deps = deps.replace("-usock", "");
+                if (QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) installMissing = false;
+            }
         }
-        delete config;
     }
 
     if (installMissing) {
