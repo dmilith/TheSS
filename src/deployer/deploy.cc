@@ -1012,7 +1012,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Ruby\", ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
@@ -1113,7 +1113,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"portsPool\": 2, ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Node\", \"portsPool\": 2, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
