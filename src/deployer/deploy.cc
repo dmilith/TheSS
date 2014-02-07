@@ -733,7 +733,12 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
         logInfo() << "Checking installation state of dependency:" << deps;
         if (not config->serviceInstalled()) {
             logInfo() << "Missing dependency:" << deps;
-            installMissing = true;
+
+            // XXX: hack, obviously:
+            if (deps.endsWith("magick")) {
+                logInfo() << "'Immunity card' present!";
+            } else
+                installMissing = true;
         }
         delete config;
     }
