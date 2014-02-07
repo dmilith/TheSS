@@ -11,6 +11,10 @@ case "$(uname)" in
             echo "FATAL: No configuration file found: ${CONF_FILE}"
             exit 1
         fi
+        export ZIP_BIN=/usr/bin/zip
+        if [ ! -x ${ZIP_BIN} ]; then
+            error "No zip binary found!"
+        fi
         ;;
 
     *)
@@ -22,7 +26,8 @@ case "$(uname)" in
             exit 1
         }
         export PRINTF_BIN=printf
-        export TAR_BIN=tar
+        export UNZIP_BIN=unzip
+        export ZIP_BIN=zip
         export SED_BIN=sed
         export CUT_BIN=cut
         export AWK_BIN=awk
@@ -48,7 +53,7 @@ APP_NAME="$(echo "${1}" | ${AWK_BIN} -F '[.]' '{print $1}')"
 readonly APP_NAME="$(${PRINTF_BIN} "${APP_NAME}" | ${CUT_BIN} -c1 | ${TR_BIN} '[a-z]' '[A-Z]')$(${PRINTF_BIN} "${APP_NAME}" | ${SED_BIN} 's/^[a-zA-Z]//')"
 readonly APP_BRANCH="$(${GIT_BIN} name-rev --name-only HEAD)"
 readonly APP_REPOSITORY="$(pwd)"
-readonly APP_TARBALL="${APP_NAME}.tar.gz"
+readonly APP_ZIP="${APP_NAME}.zip"
 readonly DEFAULT_REMOTE="svd"
 
 if [ "${APP_STAGE}" = "" ]; then
@@ -80,13 +85,12 @@ first_deploy () {
     note "Creating bare repository from current directory"
     # TODO: consider support for directories without git repository in it
     ${GIT_BIN} clone --mirror "${cwd}" ${APP_NAME}.git > /dev/null 2>&1
-    ${TAR_BIN} cf ${APP_TARBALL} ./${APP_NAME}.git || error "Error creating git repository mirror!"
+    ${ZIP_BIN} -m -X -q -0 -r ${APP_ZIP} ${APP_NAME}.git || error "Error creating git repository mirror archive!"
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
-    ${SCP_BIN} ${APP_TARBALL} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_TARBALL}" > /dev/null 2>&1
-    ${RM_BIN} -rf ${APP_NAME}.git
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && tar xf ${APP_TARBALL} && rm ${APP_TARBALL}"
-    ${RM_BIN} -f ${APP_TARBALL}
+    ${SCP_BIN} ${APP_ZIP} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_ZIP}" > /dev/null 2>&1
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && unzip -q ${APP_ZIP} && rm ${APP_ZIP}"
     cd "${cwd}"
+    ${RM_BIN} -f ../${APP_ZIP}
     note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
 
