@@ -724,7 +724,6 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
     auto dependenciesFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     if (QFile::exists(dependenciesFile)) {
         conts = readFileContents(dependenciesFile).trimmed();
-        logInfo() << "Installing service dependencies:" << conts.replace("\n", ", ");
     }
 
     bool installMissing = false;
@@ -739,6 +738,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
     }
 
     if (installMissing) {
+        logInfo() << "Installing service dependencies:" << conts.replace("\n", ", ");
         auto clne = new SvdProcess("install_dependencies", getuid(), false);
         clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
         clne->waitForFinished(-1);
