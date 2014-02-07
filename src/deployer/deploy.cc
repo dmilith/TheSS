@@ -734,7 +734,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 }
 
 
-void requestDependenciesRunningOf(const QString& latestReleaseDir, const QStringList appDependencies) {
+void requestDependenciesRunningOf(const QStringList appDependencies) {
     logInfo() << "Requesting dependencies presence.";
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
@@ -1135,7 +1135,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Generating igniter:" << igniterFile;
     writeToFile(igniterFile, jsonResult);
 
-    requestDependenciesRunningOf(latestReleaseDir, appDependencies);
+    requestDependenciesRunningOf(appDependencies);
     Q_FOREACH(auto datastore, datastores) {
         logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
         switch (datastore) {
