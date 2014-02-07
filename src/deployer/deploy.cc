@@ -730,7 +730,6 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
     Q_FOREACH(auto deps, conts.split("\n")) {
         deps[0] = deps.at(0).toUpper(); /* capitalize */
         QString fileBase = QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/";
-        logInfo() << "Checking installation state of dependency:" << deps;
         if (not QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) {
             installMissing = true;
 
@@ -744,6 +743,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
                 if (QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) installMissing = false;
             }
         }
+        logInfo() << "Checking installation state of dependency:" << deps;
     }
 
     if (installMissing) {
