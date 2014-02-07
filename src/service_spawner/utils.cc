@@ -60,8 +60,7 @@ void setupDefaultVPNNetwork() {
         auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
         proc->spawnProcess(DEFAULT_VPN_INTERFACE_SETUP_COMMAND);
         proc->waitForFinished(-1);
-        proc->close();
-        delete proc;
+        proc->deleteLater();
     #endif
 }
 
@@ -72,8 +71,7 @@ void shutdownDefaultVPNNetwork() {
         auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
         proc->spawnProcess(DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND);
         proc->waitForFinished(-1);
-        proc->close();
-        delete proc;
+        proc->deleteLater();
     #endif
 }
 
