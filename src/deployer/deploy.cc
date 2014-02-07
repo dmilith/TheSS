@@ -732,6 +732,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
         auto config = new SvdServiceConfig(deps);
         logInfo() << "Checking installation state of dependency:" << deps;
         if (not config->serviceInstalled()) {
+            logInfo() << "Missing dependency:" << deps;
             installMissing = true;
         }
         delete config;
