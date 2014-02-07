@@ -317,9 +317,9 @@ const QString SvdServiceConfig::userServiceRoot() {
 }
 
 
-bool SvdServiceConfig::serviceInstalled() {
+bool SvdServiceConfig::serviceInstalled() { /* XXX: it's not working properly.. and even can't for now. For services with != name than original software this function is useless.. TBR */
     return QFile::exists(serviceRoot() + "/" + softwareName.toLower() + ".installed") or
-        QFile::exists(QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + softwareName.toLower() + ".installed");
+        QFile::exists(userServiceRoot() + "/" + softwareName.toLower() + ".installed");
 }
 
 
