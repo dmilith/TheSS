@@ -19,7 +19,7 @@
     "minimumRequiredDiskSpace": 0,
 
 /* defines name of software available in Sofin definitions. Default - Builtin is a way of defining igniters for software already installed, or available outside of Sofin */
-    "softwareName": "Builtin",
+    "softwareName": "",
 
 /* defines name of service that's parent to current service (dependency model helper) */
     "parentService": "",
