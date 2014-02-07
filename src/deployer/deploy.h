@@ -17,6 +17,7 @@
 #include "../service_spawner/logger.h"
 #include "../service_spawner/utils.h"
 #include "../service_spawner/process.h"
+#include "../service_spawner/service_config.h"
 #include "webapp_types.h"
 
 

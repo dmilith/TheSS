@@ -719,18 +719,31 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
 
 
 void installDependencies(QString& serviceName, QString& latestReleaseDir) {
-    auto clne = new SvdProcess("install_dependencies", getuid(), false);
     QString servicePath = getServiceDataDir(serviceName);
+    QString conts = "";
     auto dependenciesFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     if (QFile::exists(dependenciesFile)) {
-        QString conts = readFileContents(dependenciesFile).trimmed();
+        conts = readFileContents(dependenciesFile).trimmed();
         logInfo() << "Installing service dependencies:" << conts.replace("\n", ", ");
     }
 
-    clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
-    clne->waitForFinished(-1);
-    clne->deleteLater();
-    logDebug() << "Repository cloned!";
+    bool installMissing = false;
+    Q_FOREACH(auto deps, conts.split("\n")) {
+        deps[0] = deps.at(0).toUpper(); /* capitalize */
+        auto config = new SvdServiceConfig(deps);
+        logInfo() << "Checking installation state of dependency:" << deps;
+        if (not config->serviceInstalled()) {
+            installMissing = true;
+        }
+        delete config;
+    }
+
+    if (installMissing) {
+        auto clne = new SvdProcess("install_dependencies", getuid(), false);
+        clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+        clne->waitForFinished(-1);
+        clne->deleteLater();
+    }
 }
 
 
