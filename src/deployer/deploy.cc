@@ -554,6 +554,7 @@ stage + ": \n\
 }
 
 
+/* consider generating different port for redeployed services soon. */
 void generateServicePorts(QString servicePath, int amount) {
     /* generate default port for service */
     if (amount > 100) {
@@ -757,14 +758,13 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 
 
 void requestDependenciesRunningOf(const QStringList appDependencies) {
-    logInfo() << "Requesting dependencies presence.";
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
         QString location = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val);
 
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-        logInfo() << "Processing bin/build for service:" << val << "with pid:" << QString::number(aPid);
+        logInfo() << "Requesting dependency presence:" << val << "with pid:" << QString::number(aPid);
         logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PID_FILE;
         while (not pidIsAlive(aPid)) {
             QFile::remove(location + START_TRIGGER_FILE);
