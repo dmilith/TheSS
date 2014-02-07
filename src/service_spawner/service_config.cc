@@ -307,26 +307,24 @@ SvdServiceConfig::~SvdServiceConfig() {
 }
 
 
+const QString SvdServiceConfig::serviceRoot() {
+    return QString(SOFTWARE_DIR) + "/" + softwareName; // low prio
+}
+
+
 const QString SvdServiceConfig::userServiceRoot() {
-    return getenv("HOME") + QString(DEFAULT_USER_APPS_DIR) + "/" + softwareName;
+    return QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + softwareName;
 }
 
 
 bool SvdServiceConfig::serviceInstalled() {
-    if (uid == 0)
-        return QFile::exists(serviceRoot() + "/" + softwareName.toLower() + ".installed");
-    else
-        return QFile::exists(userServiceRoot() + "/" + softwareName.toLower() + ".installed");
+    return QFile::exists(serviceRoot() + "/" + softwareName.toLower() + ".installed") or
+        QFile::exists(userServiceRoot() + "/" + softwareName.toLower() + ".installed");
 }
 
 
 bool SvdServiceConfig::serviceConfigured() {
     return QFile::exists(prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE);
-}
-
-
-const QString SvdServiceConfig::serviceRoot() {
-    return QString(SOFTWARE_DIR) + "/" + softwareName; // low prio
 }
 
 
