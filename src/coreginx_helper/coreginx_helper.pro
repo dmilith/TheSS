@@ -14,6 +14,9 @@ HEADERS   += ../notifications/notifications.h \
              ../service_spawner/logger.h \
              ../service_spawner/file_events_manager.h \
              ../notifications/notifications.h \
+             ../service_spawner/cron_entry.h \
+             ../service_spawner/service_config.h \
+             ../service_spawner/service.h \
              ../deployer/deploy.h \
              public_watcher.h
 
@@ -25,8 +28,11 @@ SOURCES   += ../service_spawner/process.cc \
              ../service_spawner/file_events_manager.cc \
              ../deployer/webapp_types.cc \
              ../deployer/deploy.cc \
+             ../service_spawner/cron_entry.cc \
+             ../service_spawner/service_config.cc \
+             ../service_spawner/service.cc \
              public_watcher.cc \
              coreginx_helper.cc
 
-LIBS      += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a ../libquazip.a -lz
+LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../bin/svdcoreginx_helper
