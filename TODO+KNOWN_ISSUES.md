@@ -1,7 +1,6 @@
 ## Known Issues:
 * svdcoreginx_helper sucks, it's written badly and it doesn't reload Coreginx on first svdply deploy.
 * LiveUsers igniter should be more intelligent. It now reloads ttys even if there were no changes in user autostart trigger.
-* Deployer asynchronous behavior requires bin/build on web-app side to be synchronous. Probably whole deployment should be fully synchronous to achieve reliable workload with possible issues during deployment (user errors).
 
 ## TODO list (in order of importance):
 * Multiple domains for one service support. Difficulty approx.: 6/10.
