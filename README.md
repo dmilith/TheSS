@@ -274,11 +274,23 @@ LANG                        # UTF8 value of main locale that app should use.
                             # By default it's "en_GB.UTF-8"
 ```
 
+### For Static web-apps:
+
+```sh
+STATIC_APP_NAME             # service name
+STATIC_ENV                  # value of environment stage
+STATIC_ROOT                 # absolute path to root directory of web-app
+STATIC_PORT                 # usually unused, but still provided for web-app
+STATIC_DOMAIN               # value of domain name - what user did specify
+                            # by doing "svdply domain.name"
+```
+
 ### For Nodejs web-apps:
 * By default you might want to have `node` entry in your `.dependencies` file.
 * Following shell environment values are passed to web-app:
 
 ```sh
+NODE_APP_NAME               # service name
 NODE_ROOT                   # absolute path to root directory of web-app
 NODE_PORT                   # value contains generated port on which web-app
                             # main worker should listen on
@@ -298,11 +310,18 @@ NODE_WEBSOCKET_CHANNEL_NAME # value of channel name of websockets root
 * Following shell environment values are passed to web-app:
 
 ```sh
+RUBY_APP_NAME               # service name
 SSL_CERT_FILE               # absolute path to cacerts file - generated
                             # and handled automatically by web-app
                             # deployment process
 RAILS_ENV                   # value of environment stage of Rails
 RAKE_ENV                    # value of environment stage of Rake
+RUBY_ENV                    # value of environment stage of Ruby
+RUBY_ROOT                   # absolute path to root directory of web-app
+RUBY_PORT                   # value contains generated port on which web-app
+                            # main worker should listen on
+RUBY_DOMAIN                 # value of domain name - what user did specify
+                            # by doing "svdply domain.name"
 ```
 
 
