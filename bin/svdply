@@ -41,8 +41,8 @@ case "$(uname)" in
 
 esac
 
-
-readonly SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no"
+export DEPLOY_PORT="22" # default ssh port
+export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
 readonly APP_DOMAIN="${1}"
 
 if [ "${DEBUG}" = "true" ]; then
@@ -50,6 +50,7 @@ if [ "${DEBUG}" = "true" ]; then
 fi
 
 APP_NAME="$(echo "${1}" | ${AWK_BIN} -F '[.]' '{print $1}')"
+APP_NAME_LC="${APP_NAME}"
 readonly APP_NAME="$(${PRINTF_BIN} "${APP_NAME}" | ${CUT_BIN} -c1 | ${TR_BIN} '[a-z]' '[A-Z]')$(${PRINTF_BIN} "${APP_NAME}" | ${SED_BIN} 's/^[a-zA-Z]//')"
 readonly APP_BRANCH="$(${GIT_BIN} name-rev --name-only HEAD)"
 readonly APP_REPOSITORY="$(pwd)"
@@ -83,46 +84,56 @@ first_deploy () {
     cwd="$(pwd)"
     cd ..
     note "Creating bare repository from current directory"
+    remote_address="$1"
     # TODO: consider support for directories without git repository in it
     ${GIT_BIN} clone --mirror "${cwd}" ${APP_NAME}.git > /dev/null 2>&1
     ${ZIP_BIN} -m -X -q -0 -r ${APP_ZIP} ${APP_NAME}.git || error "Error creating git repository mirror archive!"
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
-    ${SCP_BIN} ${APP_ZIP} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_ZIP}" > /dev/null 2>&1
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "cd ~/Repos/ && unzip -q ${APP_ZIP} && rm ${APP_ZIP}"
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${remote_address}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
+    ${SCP_BIN} ${APP_ZIP} "${APP_USER}@${remote_address}:Repos/${APP_ZIP}" > /dev/null 2>&1
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${remote_address}" "cd ~/Repos/ && unzip -q ${APP_ZIP} && rm ${APP_ZIP}"
     cd "${cwd}"
     ${RM_BIN} -f ../${APP_ZIP}
     note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
 
-conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "uname -a" | ${TAIL_BIN} -n 1 2> /dev/null)
-test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${APP_DOMAIN}"
-note "Deploying to machine: ${conn_check}"
-
-if [ -f "${APP_SSL_CERT}" ]; then
-    if [ -f "${APP_SSL_KEY}" ]; then
-        note "Uploading given SSL CERT: ${APP_SSL_CERT} and KEY: ${APP_SSL_KEY}"
-        ${SCP_BIN} "${APP_SSL_CERT}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
-        ${SCP_BIN} "${APP_SSL_KEY}" "${APP_USER}@${APP_DOMAIN}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
-        note "Successfully copied certificate: ${APP_SSL_CERT}, and key: ${APP_SSL_KEY}."
-    else
-        error "APP_SLL_CERT specified, but APP_SSL_KEY file is missing!"
-    fi
-else
-    note "Specify APP_SLL_CERT and APP_SSL_KEY to upload your SSL certificate."
-fi
-
-note "Pushing current repository to remote: ${DEFAULT_REMOTE}"
-${GIT_BIN} remote rm ${DEFAULT_REMOTE} > /dev/null 2>&1
-${GIT_BIN} remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
-${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy
-
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
-${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
+for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
+    main_domain="$(${PRINTF_BIN} "${APP_DOMAIN}\n" | ${SED_BIN} -e "s/${APP_NAME_LC}.//")"
+    srv_record="$(${DIG_BIN} +short _served-node._tcp.${main_domain} SRV)"
+    if [ "${srv_record}" != "" ]; then
+        srv_port="$(${PRINTF_BIN} "${srv_record}\n" | ${AWK_BIN} '{print $3;}')"
+        note "Gathered port: ${srv_port} from SRV record of domain: ${main_domain}"
+        export DEPLOY_PORT="${srv_port}"
+        export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
+    fi
 
-# TODO: add support for multiple hosts (multiple DNS "A" entries for domain)
+    conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "uname -a" | ${TAIL_BIN} -n 1 2> /dev/null)
+    test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${mirror}"
+    note "Deploying to machine: ${conn_check}"
 
-note "Registering domain entry: ${APP_DOMAIN} on ServeD node"
-${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${APP_DOMAIN}" "${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed or domain already in use!"
+    if [ -f "${APP_SSL_CERT}" ]; then
+        if [ -f "${APP_SSL_KEY}" ]; then
+            note "Uploading given SSL CERT: ${APP_SSL_CERT} and KEY: ${APP_SSL_KEY}"
+            ${SCP_BIN} "${APP_SSL_CERT}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
+            ${SCP_BIN} "${APP_SSL_KEY}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
+            note "Successfully copied certificate: ${APP_SSL_CERT}, and key: ${APP_SSL_KEY}."
+        else
+            error "APP_SLL_CERT specified, but APP_SSL_KEY file is missing!"
+        fi
+    else
+        note "Specify APP_SLL_CERT and APP_SSL_KEY to upload your SSL certificate."
+    fi
+
+    note "Pushing current repository to remote: ${DEFAULT_REMOTE}"
+    ${GIT_BIN} remote rm ${DEFAULT_REMOTE} > /dev/null 2>&1
+    ${GIT_BIN} remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
+    ${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy "${mirror}"
+
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
+
+    note "Registering domain entry: ${APP_DOMAIN} on ServeD node: ${mirror}"
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed for node: ${mirror}!"
+done
 
 note "Deploy complete!"
 note "Web application should be soon available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
