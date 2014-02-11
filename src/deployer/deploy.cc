@@ -1150,7 +1150,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* write igniter to user igniters */
     QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
-    logInfo() << "Generating igniter:" << igniterFile;
+    logDebug() << "Generating igniter:" << igniterFile;
     writeToFile(igniterFile, jsonResult);
 
     requestDependenciesRunningOf(appDependencies);
@@ -1174,10 +1174,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     spawnBinBuild(latestReleaseDir, serviceName, servicePath, appDependencies, stage);
     prepareHttpProxy(servicePath, appType, latestReleaseDir, domain, serviceName, stage);
 
-    logInfo() << "Setting configured state for service:" << serviceName;
+    logDebug() << "Setting configured state for service:" << serviceName;
     touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
-    logInfo() << "Finishing jobs";
+    logDebug() << "Finishing jobs";
     switch (appType) {
         case RubySite:
             if (QFile::exists(latestReleaseDir + "/Rakefile")) {
