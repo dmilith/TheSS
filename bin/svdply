@@ -99,11 +99,22 @@ first_deploy () {
 
 note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
 for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
-    main_domain="$(${PRINTF_BIN} "${APP_DOMAIN}\n" | ${SED_BIN} -e "s/${APP_NAME_LC}.//")"
-    srv_record="$(${DIG_BIN} +short _served-node._tcp.${main_domain} SRV)"
+    root_domain_name="$(${PRINTF_BIN} "${APP_DOMAIN}\n" | ${SED_BIN} -e "s/${APP_NAME_LC}.//")"
+    pre_srv_record="$(${DIG_BIN} +short _served-node._tcp.${APP_DOMAIN} SRV)"
+    srv_record=""
+    if [ "${pre_srv_record}" != "" ]; then
+        # check SRV record of app domain first
+        note "Record present in entry of domain: ${APP_DOMAIN}"
+        srv_record="${pre_srv_record}"
+    else
+        # if empty - check SRV record of root domain
+        note "Checking root entry of domain: ${root_domain_name}"
+        srv_record="$(${DIG_BIN} +short _served-node._tcp.${root_domain_name} SRV)"
+    fi
+
     if [ "${srv_record}" != "" ]; then
         srv_port="$(${PRINTF_BIN} "${srv_record}\n" | ${AWK_BIN} '{print $3;}')"
-        note "Gathered port: ${srv_port} from SRV record of domain: ${main_domain}"
+        note "Gathered port: ${srv_port} from SRV record of domain: ${root_domain_name}"
         export DEPLOY_PORT="${srv_port}"
         export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
         export SCP_OPTIONS="-P ${DEPLOY_PORT}"
