@@ -43,6 +43,7 @@ esac
 
 export DEPLOY_PORT="22" # default ssh port
 export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
+export SCP_OPTIONS="-P ${DEPLOY_PORT}"
 readonly APP_DOMAIN="${1}"
 
 if [ "${DEBUG}" = "true" ]; then
@@ -89,7 +90,7 @@ first_deploy () {
     ${GIT_BIN} clone --mirror "${cwd}" ${APP_NAME}.git > /dev/null 2>&1
     ${ZIP_BIN} -m -X -q -0 -r ${APP_ZIP} ${APP_NAME}.git || error "Error creating git repository mirror archive!"
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${remote_address}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
-    ${SCP_BIN} ${APP_ZIP} "${APP_USER}@${remote_address}:Repos/${APP_ZIP}" > /dev/null 2>&1
+    ${SCP_BIN} ${SCP_OPTIONS} ${APP_ZIP} "${APP_USER}@${remote_address}:Repos/${APP_ZIP}" > /dev/null 2>&1
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${remote_address}" "cd ~/Repos/ && unzip -q ${APP_ZIP} && rm ${APP_ZIP}"
     cd "${cwd}"
     ${RM_BIN} -f ../${APP_ZIP}
@@ -105,6 +106,7 @@ for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
         note "Gathered port: ${srv_port} from SRV record of domain: ${main_domain}"
         export DEPLOY_PORT="${srv_port}"
         export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
+        export SCP_OPTIONS="-P ${DEPLOY_PORT}"
     fi
 
     conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "uname -a" | ${TAIL_BIN} -n 1 2> /dev/null)
@@ -114,8 +116,8 @@ for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
     if [ -f "${APP_SSL_CERT}" ]; then
         if [ -f "${APP_SSL_KEY}" ]; then
             note "Uploading given SSL CERT: ${APP_SSL_CERT} and KEY: ${APP_SSL_KEY}"
-            ${SCP_BIN} "${APP_SSL_CERT}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
-            ${SCP_BIN} "${APP_SSL_KEY}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
+            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_CERT}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
+            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_KEY}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
             note "Successfully copied certificate: ${APP_SSL_CERT}, and key: ${APP_SSL_KEY}."
         else
             error "APP_SLL_CERT specified, but APP_SSL_KEY file is missing!"
