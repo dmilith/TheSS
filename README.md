@@ -142,6 +142,8 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 * Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).
 * Supports Web Applications deployment - more about it below (since 0.66.x).
 * Supports Procfile (Heroku-compatible) process list for RubySite deployment. If no Procfile detected in deployed app, default will be used.
+* Supports SRV domains entry: `_served-node._tcp.DOMAIN.COM` (since 0.72.x) for default deployer secure port placeholder (default ssh port is 22).
+* Partially supports distributed web-app deployment model (0.72.x)
 
 
 ## Igniter examples:
