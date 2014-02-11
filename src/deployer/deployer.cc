@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
         failed = true;
 
     if (failed) {
-        logInfo() << "No alive pid of WAD for service:" << serviceName << "found. Resetting dead state for service deployment.";
+        logDebug() << "No alive pid of WAD for service:" << serviceName << "found. Resetting dead state for service deployment.";
         logDebug() << "Removing WAD deploying state file:" << wadPidFile;
         QFile::remove(wadPidFile);
     }

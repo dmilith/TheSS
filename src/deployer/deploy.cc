@@ -881,7 +881,7 @@ QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile) {
     }
 
     if (out.isEmpty()) {
-        logInfo() << "Falling back to SqLite3 driver default.";
+        logInfo() << "No database driver required.";
         out << NoDB;
     }
 
@@ -955,8 +955,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QString jsonResult = "";
 
 
-    logInfo() << "Preparing web-app";
     QString databaseName = serviceName + "_" + stage;
+    logInfo() << "Processing web-app:" << serviceName << "dbName:" << databaseName;
     QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     QString deps = "";
 
