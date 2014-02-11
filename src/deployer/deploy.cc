@@ -966,6 +966,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QList<WebDatastore> datastores;
     datastores = detectDatastores(deps, depsFile);
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
+    prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
     generateDatastoreSetup(datastores, serviceName, stage, appType);
 
     switch (appType) {
@@ -1085,15 +1086,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 clne->waitForFinished(-1);
             }
 
-            prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
-
         } break;
 
 
         case NodeSite: {
-
-            prepareSharedDirs(latestReleaseDir, servicePath, stage);
-            prepareSharedSymlinks(latestReleaseDir, servicePath, stage);
 
             generateServicePorts(servicePath, 2); /* XXX: 2 ports for node by default */
 
