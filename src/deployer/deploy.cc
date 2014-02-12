@@ -919,7 +919,7 @@ QStringList filterSpawnableDependencies(const QString& deps) {
 
 
 void startWithoutDependencies(const QString& servicePath) {
-    logInfo() << "Relaunching service without dependencies, using newly generated igniter.";
+    logInfo() << "Launching service without dependencies, using newly generated igniter.";
     if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
         touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 }
@@ -1190,11 +1190,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                 clne->waitForFinished(-1);
             }
-            startWithoutDependencies(servicePath);
             break;
 
         case NodeSite:
-            startWithoutDependencies(servicePath);
             break;
 
         default:
@@ -1203,9 +1201,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
 
     if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
-    if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-        logInfo() << "Launching service:" << serviceName;
-    }
+    startWithoutDependencies(servicePath);
     clne->deleteLater();
 }
