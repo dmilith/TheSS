@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.72.3"
+    #define APP_VERSION "0.72.4"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -48,6 +48,7 @@
     #define DEFAULT_HOME_DIR "/Users/"
     #define DEFAULT_USER_APPS_DIR "/Apps"
     #define DEFAULT_WEBAPPS_DIR "/WebApps"
+    #define WEB_APP_PID_FILE_POSTFIX "-prev"
     #define SOFTWARE_DATA_DIR "/SoftwareData"
     #define SYSTEM_USERS_DIR "/SystemUsers"
     #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"
