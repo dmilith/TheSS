@@ -573,11 +573,10 @@ void generateServicePorts(QString servicePath, int amount) {
     // }
     for (int i = 2; i < amount + 1; i++) {
         QString backupPortFilePath = portsDir + QString::number(i - 1);
-        if (not QFile::exists(backupPortFilePath)) {
+        // if (not QFile::exists(backupPortFilePath)) {
             int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-            logDebug() << "Generated additional port:" << QString::number(port);
             writeToFile(backupPortFilePath, QString::number(port));
-        }
+        // }
     }
 }
 
