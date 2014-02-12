@@ -265,9 +265,15 @@ void SvdService::babySitterSlot() {
                         logDebug() << "Port compare:" << currentPort << "with" << port << "(should be different)";
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
-                            QString msg = "Babysitter has found unoccupied dynamic port: " + QString::number(currentPort) + " registered for service: " + name;
-                            notification(msg, ERROR);
-                            emit restartSlot();
+                            if (config->webApp) {
+                                QString msg = "Babysitter has found unoccupied web-app port: " + QString::number(currentPort) + " registered for service: " + name + ". Emitting startSlot just in case";
+                                notification(msg, NOTIFY);
+                                emit startSlot();
+                            } else {
+                                QString msg = "Babysitter has found unoccupied dynamic port: " + QString::number(currentPort) + " registered for service: " + name;
+                                notification(msg, ERROR);
+                                emit restartSlot();
+                            }
                         }
                     } else {
                         QString msg = "Babysitter hasn't found port file for service: " + name;
