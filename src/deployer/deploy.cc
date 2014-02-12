@@ -966,7 +966,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case StaticSite: {
 
-            jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, ";
+            jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, \"webApp\": true, ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += QString("\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
 
@@ -1010,7 +1010,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Ruby\", ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Ruby\", \"webApp\": true, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
@@ -1106,7 +1106,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Node\", \"portsPool\": 2, ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Node\", \"webApp\": true, \"portsPool\": 2, ";
             QString environment = buildEnv(serviceName, appDependencies);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
@@ -1122,7 +1122,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case PhpSite: {
 
-            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", \"webApp\": true, ";
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             #ifdef __APPLE__
                 logError() << "Apple PHP deployments aren't supported yet!";
