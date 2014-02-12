@@ -592,6 +592,12 @@ void SvdService::startSlot(bool withDeps) {
         process->spawnProcess(config->start->commands);
         process->waitForFinished(-1);
 
+        if (config->webApp) {
+            logInfo() << "Creating pid copy for pid hot swap.";
+            QString port = readFileContents(config->userServiceRoot() + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER);
+            writeToFile(config->userServiceRoot() + DEFAULT_SERVICE_PID_FILE + "-" + port, readFileContents(config->userServiceRoot() + DEFAULT_SERVICE_PID_FILE));
+        }
+
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
             QString msg = name + " failed in start hook. exp: '" + config->start->expectOutput + "'";
             notification(msg, ERROR);
