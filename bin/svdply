@@ -1,6 +1,15 @@
 #!/bin/sh
 
 
+export APP_DOMAIN="${1}"
+readonly DEFAULT_REMOTE="svd"
+
+# defaults:
+export DEPLOY_PORT="22"
+export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
+export SCP_OPTIONS="-P ${DEPLOY_PORT}"
+
+
 case "$(uname)" in
     Darwin|FreeBSD)
         CONF_FILE="/etc/sofin.conf.sh"
@@ -8,7 +17,7 @@ case "$(uname)" in
             . "${CONF_FILE}"
             validate_env
         else
-            echo "FATAL: No configuration file found: ${CONF_FILE}"
+            echo "FATAL: No configuration file found: ${CONF_FILE} or Sofin not installed that host: ${APP_DOMAIN}"
             exit 1
         fi
         export ZIP_BIN=/usr/bin/zip
@@ -37,14 +46,11 @@ case "$(uname)" in
         export SSH_BIN=ssh
         export SCP_BIN=scp
         export TAIL_BIN=tail
+        export BASENAME_BIN=basename
         ;;
 
 esac
 
-export DEPLOY_PORT="22" # default ssh port
-export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
-export SCP_OPTIONS="-P ${DEPLOY_PORT}"
-readonly APP_DOMAIN="${1}"
 
 show_usage () {
     note "Usage:"
@@ -64,20 +70,43 @@ if [ "${APP_DOMAIN}" = "" ]; then
     show_usage
 fi
 
-APP_NAME="$(echo "${1}" | ${AWK_BIN} -F '[.]' '{print $1}')"
-APP_NAME_LC="${APP_NAME}"
+# set app specific defaults
+export APP_NAME="$(echo "${1}" | ${AWK_BIN} -F '[.]' '{print $1}')"
+readonly APP_NAME_LC="${APP_NAME}"
 readonly APP_NAME="$(${PRINTF_BIN} "${APP_NAME}" | ${CUT_BIN} -c1 | ${TR_BIN} '[a-z]' '[A-Z]')$(${PRINTF_BIN} "${APP_NAME}" | ${SED_BIN} 's/^[a-zA-Z]//')"
-readonly APP_BRANCH="$(${GIT_BIN} name-rev --name-only HEAD)"
+export APP_BRANCH="$(${GIT_BIN} name-rev --name-only HEAD)"
 readonly APP_REPOSITORY="$(pwd)"
 readonly APP_ZIP="${APP_NAME}.zip"
-readonly DEFAULT_REMOTE="svd"
+
+
+# override with option arguments
+DEPLOY_OPTIONS="$(${PRINTF_BIN} "$*\n" | ${SED_BIN} -e "s/${APP_DOMAIN}//")"
+for option in ${DEPLOY_OPTIONS}; do
+    case ${option} in
+        -help|-h|--help)
+            show_usage
+            ;;
+
+        *)
+            note "Setting option: ${option}"
+            eval "${option}"
+            ;;
+    esac
+
+done
+
+
+# optional settings
+if [ "${APP_DEBUG}" != "" ]; then
+    export APP_ADDITIONAL_OPTS=" -d"
+fi
 
 if [ "${APP_STAGE}" = "" ]; then
-    APP_STAGE="staging" # default stage anyway
+    export APP_STAGE="staging" # default stage
 fi
 
 if [ "${APP_USER}" = "" ]; then
-    APP_USER="$USER"
+    export APP_USER="$USER"
 fi
 
 if [ ! -f "${APP_REPOSITORY}/.git/config" ]; then
@@ -88,12 +117,9 @@ if [ "${APP_NAME}" = "" ]; then
     error "Missing application name!"
 fi
 
-note "App name: ${APP_NAME}"
-note "App domain: ${APP_DOMAIN}"
-note "App branch: ${APP_BRANCH}"
-note "App stage: ${APP_STAGE}"
-(test -f "${APP_SSL_CERT}" && note "APP_SSL_CERT file: ${APP_SSL_CERT}" \
-test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "Default self-signed SSL will be created for domain: ${APP_DOMAIN}"
+
+note "Web-App name: ${APP_NAME}, domain: ${APP_DOMAIN}, branch: ${APP_BRANCH}, stage: ${APP_STAGE}, repository: ${APP_REPOSITORY}"
+# TODO: support value for CERT/ KEY that will disable ssl for given APP_DOMAIN
 
 first_deploy () {
     cwd="$(pwd)"
@@ -111,7 +137,6 @@ first_deploy () {
     note "Done pushing repo to ${DEFAULT_REMOTE} ~/Repos/${APP_NAME}.git remote!"
 }
 
-note "Deploying application ${APP_NAME} for domain ${APP_DOMAIN}"
 for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
     root_domain_name="$(${PRINTF_BIN} "${APP_DOMAIN}\n" | ${SED_BIN} -e "s/${APP_NAME_LC}.//")"
     pre_srv_record="$(${DIG_BIN} +short _served-node._tcp.${APP_DOMAIN} SRV)"
@@ -138,11 +163,14 @@ for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
     test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${mirror}"
     note "Deploying to machine: ${conn_check}"
 
+    (test -f "${APP_SSL_CERT}" && note "APP_SSL_CERT file: ${APP_SSL_CERT}" \
+test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "Default self-signed SSL will be created for domain: ${APP_DOMAIN}"
+
     if [ -f "${APP_SSL_CERT}" ]; then
         if [ -f "${APP_SSL_KEY}" ]; then
             note "Uploading given SSL CERT: ${APP_SSL_CERT} and KEY: ${APP_SSL_KEY}"
-            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_CERT}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
-            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_KEY}" "${APP_USER}@${mirror}:/Users/${APP_USER}/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
+            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_CERT}" "${APP_USER}@${mirror}:~/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
+            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_KEY}" "${APP_USER}@${mirror}:~/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
             note "Successfully copied certificate: ${APP_SSL_CERT}, and key: ${APP_SSL_KEY}."
         else
             error "APP_SLL_CERT specified, but APP_SSL_KEY file is missing!"
@@ -156,7 +184,7 @@ for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
     ${GIT_BIN} remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
     ${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy "${mirror}"
 
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${ADDITIONAL}" || error "Deploy failed!"
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${APP_ADDITIONAL_OPTS}" || error "Deploy failed!"
 
     note "Registering domain entry: ${APP_DOMAIN} on ServeD node: ${mirror}"
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed for node: ${mirror}!"
