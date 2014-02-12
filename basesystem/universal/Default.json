@@ -102,7 +102,6 @@ touch SERVICE_PREFIX/.running",
 
     "afterStop":  {
         "commands": "
-test -f SERVICE_PREFIX/service.pid && svddw $(cat SERVICE_PREFIX/service.pid) && rm SERVICE_PREFIX/service.pid
 test -f SERVICE_PREFIX/.running && rm SERVICE_PREFIX/.running",
         "expectOutput": "",
         "expectOutputTimeout": 60
