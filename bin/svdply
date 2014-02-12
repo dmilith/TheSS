@@ -190,7 +190,7 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     note "Registering domain entry: ${APP_DOMAIN} on ServeD node: ${mirror}"
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed for node: ${mirror}!"
 
-    # ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "test -f ~/SoftwareData/${APP_NAME}/service.pid-prev && svddw \$(cat ~/SoftwareData/${APP_NAME}/service.pid-prev)"
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "test -f ~/SoftwareData/${APP_NAME}/service.pid-prev && svddw \$(cat ~/SoftwareData/${APP_NAME}/service.pid-prev)"
 done
 
 note "Web application should be available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
