@@ -707,11 +707,11 @@ void SvdService::afterStartSlot() {
             notification(msg, ERROR);
 
         }
-        if (config->webApp) {
-            logInfo() << "Creating pid copy for pid hot swap.";
-            QString port = readFileContents(config->userServiceRoot() + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER);
-            writeToFile(config->userServiceRoot() + DEFAULT_SERVICE_PID_FILE + "-" + port, readFileContents(config->userServiceRoot() + DEFAULT_SERVICE_PID_FILE));
-        }
+        // if (config->webApp) {
+        //     logInfo() << "Creating pid copy for pid hot swap.";
+        //     QString port = readFileContents(config->userServiceRoot() + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER);
+        //     writeToFile(config->userServiceRoot() + DEFAULT_SERVICE_PID_FILE + "-" + port, readFileContents(config->userServiceRoot() + DEFAULT_SERVICE_PID_FILE));
+        // }
 
         QFile::remove(indicator);
         logTrace() << "After process afterStart execution:" << name;
