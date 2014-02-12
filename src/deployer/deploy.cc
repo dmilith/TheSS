@@ -956,9 +956,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
     QString databaseName = serviceName + "_" + stage;
-    logInfo() << "Processing web-app:" << serviceName << "dbName:" << databaseName;
+    logInfo() << "Stopping existing web-app:" << serviceName;
     QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     QString deps = "";
+    if (QFile::exists(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE))
+        QFile::remove(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
+    touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
 
     if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
         deps = readFileContents(depsFile).trimmed();
