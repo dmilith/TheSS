@@ -24,7 +24,7 @@ host all all 0.0.0.0/0 password
 
 printf \"
 port = $(cat SERVICE_PREFIX/.ports/0)
-max_connections = 200
+max_connections = 100
 checkpoint_segments = 24
 password_encryption = on
 shared_buffers = 64MB
