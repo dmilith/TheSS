@@ -1,8 +1,8 @@
 #!/bin/sh
 
-
 export APP_DOMAIN="${1}"
 readonly DEFAULT_REMOTE="svd"
+readonly BEGIN_TIMER=$(date +%s)
 
 # defaults:
 export DEPLOY_PORT="22"
@@ -47,6 +47,7 @@ case "$(uname)" in
         export SCP_BIN=scp
         export TAIL_BIN=tail
         export BASENAME_BIN=basename
+        export BC_BIN=bc
         ;;
 
 esac
@@ -190,7 +191,6 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed for node: ${mirror}!"
 done
 
-note "Deploy complete!"
-note "Web application should be soon available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
-note "ServeD will reload proxy immediately, but your app may require some additional time to set up."
-note "Please be patient."
+note "Web application should be available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
+readonly END_TIMER=$(date +%s)
+note "Deploy completed in $(echo ${END_TIMER} - ${BEGIN_TIMER} | ${BC_BIN}) seconds."
