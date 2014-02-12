@@ -139,7 +139,7 @@ void SvdPublicWatcher::commitDeploy(const QString& serviceName, const QString& u
     logDebug() << "Creating reload request for Coreginx service:" << coreginxReloadTrigger;
     QFile::remove(coreginxReloadTrigger); /* sanity check */
     touch(coreginxReloadTrigger);
-    logInfo() << "Coreginx reload was triggered.";
+    logInfo() << "Coreginx reload was triggered for request from service:" << serviceName;
 }
 
 
