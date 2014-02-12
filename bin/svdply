@@ -46,8 +46,22 @@ export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PO
 export SCP_OPTIONS="-P ${DEPLOY_PORT}"
 readonly APP_DOMAIN="${1}"
 
-if [ "${DEBUG}" = "true" ]; then
-    export ADDITIONAL=" -d"
+show_usage () {
+    note "Usage:"
+    note "  $(${BASENAME_BIN} $0) your-app.your-domain.com [OPTION=VALUE OPTION2=VALUE2]"
+    note
+    note "Available options:"
+    note "  APP_USER          # user name on remote host (default: your-user-name)"
+    note "  APP_DEBUG         # set to any value to enable deployer debug log"
+    note "  APP_STAGE         # stage of web-app to deploy (default: staging)"
+    note "  APP_BRANCH        # git branch name to deploy (default: master)"
+    note "  APP_SSL_KEY       # path to SSL key file (default: auto-generate)"
+    note "  APP_SSL_CERT      # path to SSL certificate file (default: auto-signed)"
+    exit 0
+}
+
+if [ "${APP_DOMAIN}" = "" ]; then
+    show_usage
 fi
 
 APP_NAME="$(echo "${1}" | ${AWK_BIN} -F '[.]' '{print $1}')"
