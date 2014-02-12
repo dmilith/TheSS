@@ -591,7 +591,6 @@ void SvdService::startSlot(bool withDeps) {
         notification("Launching service: " + name, NOTIFY);
         process->spawnProcess(config->start->commands);
         process->waitForFinished(-1);
-        deathWatch(process->pid());
 
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
             QString msg = name + " failed in start hook. exp: '" + config->start->expectOutput + "'";
