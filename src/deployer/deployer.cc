@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
     /* NOTE: make sure that web-app isn't already in deploying state for user */
     bool ok = false, failed = false;
     QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    writeToFile(oldWebServicePidFile + WEB_APP_PID_FILE_POSTFIX, readFileContents(oldWebServicePidFile).trimmed());
+    uint oldPid = readFileContents(oldWebServicePidFile).trimmed().toUInt();
 
     QString wadPidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE;
     QString aPid = readFileContents(wadPidFile).trimmed();
@@ -225,6 +225,7 @@ int main(int argc, char *argv[]) {
     QString repositoryPath = repositoryRootPath + serviceName + ".git";
 
     cloneRepository(repositoryPath, serviceName, branch, domain);
+    deathWatch(oldPid);
     createEnvironmentFiles(serviceName, domain, stage, branch);
 
     logInfo() << "Deploy successful. Cleaning deploying state.";
