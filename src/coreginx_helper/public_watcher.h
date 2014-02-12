@@ -32,7 +32,7 @@ class SvdPublicWatcher: public QObject {
         SvdPublicWatcher();
         ~SvdPublicWatcher();
         void reindexPublicDir();
-        void commitDeploy(const QString& serviceName, const QString& userName);
+        void commitDeploy(const QString& serviceName);
         void invokeDirChangedTrigger();
         void invokeFileChangedTrigger(const QString& file);
         void validateDomainExistanceFor(QString file);

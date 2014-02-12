@@ -100,7 +100,7 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     auto fileContent = readFileContents(aPublicFile).trimmed();
     if (not QFile::exists(aPublicFile)) {
         logInfo() << "Detected first deploy of web-app:" << serviceName << "for user:" << userName;
-        commitDeploy(serviceName, userName);
+        commitDeploy(serviceName);
     } else
     if (not fileContent.isEmpty()) {
         logDebug() << "Trying to find existing domain:" << fileContent << "(in:" << file << "), existing domains:" << domains;
@@ -127,14 +127,14 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
             }
         } else { /* redeploy of same app case */
             logInfo() << "Detected redeploy of web-app:" << serviceName << "for user:" << userName;
-            commitDeploy(serviceName, userName);
+            commitDeploy(serviceName);
         }
     } else
         logDebug() << "File contents empty.";
 }
 
 
-void SvdPublicWatcher::commitDeploy(const QString& serviceName, const QString& userName) {
+void SvdPublicWatcher::commitDeploy(const QString& serviceName) {
     auto coreginxReloadTrigger = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/Coreginx" + RELOAD_TRIGGER_FILE;
     logDebug() << "Creating reload request for Coreginx service:" << coreginxReloadTrigger;
     QFile::remove(coreginxReloadTrigger); /* sanity check */
