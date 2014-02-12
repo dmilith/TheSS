@@ -7,6 +7,7 @@
 
 
 #include "deploy.h"
+#include "../death_watch/death_watch.h"
 
 
 void deployerSignalHandler(int sigNum) {
@@ -154,6 +155,9 @@ int main(int argc, char *argv[]) {
 
     /* NOTE: make sure that web-app isn't already in deploying state for user */
     bool ok = false, failed = false;
+    QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
+    uint oldWebServicePid = readFileContents(oldWebServicePidFile).trimmed().toUInt();
+
     QString wadPidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE; //getHomeDir() + "/.wad-" + serviceName + ".pid";
     QString aPid = readFileContents(wadPidFile).trimmed();
     uint pid = aPid.toInt(&ok, 10);
@@ -225,5 +229,7 @@ int main(int argc, char *argv[]) {
 
     logInfo() << "Deploy successful. Cleaning deploying state.";
     QFile::remove(wadPidFile);
+    logInfo() << "Stopping old service worker";
+    deathWatch(oldWebServicePid);
     return EXIT_SUCCESS;
 }

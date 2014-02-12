@@ -919,18 +919,13 @@ QStringList filterSpawnableDependencies(const QString& deps) {
 
 
 void startWithoutDependencies(const QString& servicePath) {
-    logInfo() << "Launching service, using newly generated igniter.";
+    logInfo() << "Relaunching service without dependencies, using newly generated igniter.";
     if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
         touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
 }
 
 
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
-    QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    uint oldWebServicePid = readFileContents(oldWebServicePidFile).trimmed().toUInt();
-    if (oldWebServicePid != 0) {
-        logInfo() << "Found previous web-app worker with pid:" << QString::number(oldWebServicePid);
-    }
 
     logInfo() << "Creating web-app environment";
     QString servicePath = getServiceDataDir(serviceName);
@@ -1206,9 +1201,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             break;
 
     }
-
-    logInfo() << "Stopping old service worker";
-    deathWatch(oldWebServicePid);
 
     if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE)) touch(servicePath + AUTOSTART_TRIGGER_FILE);
     if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {

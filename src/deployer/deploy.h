@@ -18,7 +18,6 @@
 #include "../service_spawner/utils.h"
 #include "../service_spawner/process.h"
 #include "../service_spawner/service_config.h"
-#include "../death_watch/death_watch.h"
 #include "webapp_types.h"
 
 
