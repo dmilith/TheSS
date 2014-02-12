@@ -566,11 +566,11 @@ void generateServicePorts(QString servicePath, int amount) {
     QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
     getOrCreateDir(portsDir);
     QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
-    if (not QFile::exists(portFilePath)) {
-        int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
-        logDebug() << "Generated main port:" << QString::number(port);
-        writeToFile(portFilePath, QString::number(port));
-    }
+    // if (not QFile::exists(portFilePath)) {
+    //     int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+    //     logDebug() << "Generated main port:" << QString::number(port);
+    //     writeToFile(portFilePath, QString::number(port));
+    // }
     for (int i = 2; i < amount + 1; i++) {
         QString backupPortFilePath = portsDir + QString::number(i - 1);
         if (not QFile::exists(backupPortFilePath)) {
@@ -956,13 +956,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
     QString databaseName = serviceName + "_" + stage;
-    logInfo() << "Stopping existing web-app:" << serviceName;
     QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     QString deps = "";
-    if (QFile::exists(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE))
-        QFile::remove(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
-    touch(servicePath + STOP_WITHOUT_DEPS_TRIGGER_FILE);
-
     if (QFile::exists(depsFile)) { /* NOTE: special software list file from Sofin, called ".dependencies" */
         deps = readFileContents(depsFile).trimmed();
     }
@@ -980,7 +975,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += QString("\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
 
+            generateServicePorts(servicePath);
             QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+
 
             /* write to service env file */
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
@@ -999,6 +996,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case RubySite: {
 
+            generateServicePorts(servicePath);
             QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
@@ -1014,8 +1012,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "RUBY_PORT=" + servPort + "\n";
             envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
             writeToFile(envFilePath, envEntriesString);
-
-            generateServicePorts(servicePath);
 
             appDependencies = filterSpawnableDependencies(deps);
 
