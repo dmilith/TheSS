@@ -506,11 +506,11 @@ void SvdService::startSlot(bool withDeps) {
         }
     }
 
-    auto defaultLogFile = config->prefixDir() + DEFAULT_SERVICE_LOG_FILE;
-    if (QFile::exists(defaultLogFile)) {
-        logDebug() << "Rotating last log";
-        rotateFile(defaultLogFile);
-    }
+    // auto defaultLogFile = config->prefixDir() + DEFAULT_SERVICE_LOG_FILE;
+    // if (QFile::exists(defaultLogFile)) {
+    //     logDebug() << "Rotating last log";
+    //     rotateFile(defaultLogFile);
+    // }
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to run service" << name << "because it's already running.";
