@@ -326,7 +326,7 @@ void SvdService::babySitterSlot() {
             auto babySit = new SvdProcess(name);
             babySit->spawnProcess(config->babySitter->commands);
             babySit->waitForFinished(-1); // TODO: implement support for config->babySitter->expectOutputTimeout
-            deathWatch(babySit->pid());
+            // deathWatch(babySit->pid());
             logDebug() << "Checking contents of file:" << babySit->outputFile;
             if (not expect(readFileContents(babySit->outputFile), config->babySitter->expectOutput)) {
                 QString msg = name + " failed in babySitter slot: " + config->babySitter->expectOutput;
@@ -392,7 +392,7 @@ void SvdService::installSlot() {
         touch(indicator);
         process->spawnProcess(config->install->commands);
         process->waitForFinished(-1); // no timeout
-        deathWatch(process->pid());
+        // deathWatch(process->pid());
         QFile::remove(indicator); // this indicates finish of installing process
         if (not expect(readFileContents(process->outputFile), config->install->expectOutput)) {
             QString msg = name + " failed in install slot: " + config->babySitter->expectOutput;
@@ -701,7 +701,6 @@ void SvdService::afterStartSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->afterStart->commands);
         process->waitForFinished(-1);
-        // deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile), config->afterStart->expectOutput)) {
             QString msg = name + " failed in afterStart hook. exp: '" + config->afterStart->expectOutput + "'";
             notification(msg, ERROR);
@@ -742,7 +741,7 @@ void SvdService::stopSlot(bool withDeps) {
             logDebug() << "Service terminated.";
         }
         process->waitForFinished(-1);
-        deathWatch(process->pid());
+        // deathWatch(process->pid());
         notification("Terminating service: " + name, NOTIFY);
         if (not expect(readFileContents(process->outputFile), config->stop->expectOutput)) {
             QString msg = name + " failed in stop hook. exp: '" + config->stop->expectOutput + "'";
@@ -816,7 +815,7 @@ void SvdService::afterStopSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->afterStop->commands);
         process->waitForFinished(-1);
-        deathWatch(process->pid());
+        // deathWatch(process->pid());
         QFile::remove(indicator);
         if (not expect(readFileContents(process->outputFile), config->afterStop->expectOutput)) {
             QString msg = name + " failed in afterStop hook. exp: '" + config->afterStop->expectOutput + "'";
@@ -866,7 +865,7 @@ void SvdService::reloadSlot() {
         auto process = new SvdProcess(name);
         process->spawnProcess(config->reload->commands);
         process->waitForFinished(-1);
-        deathWatch(process->pid());
+        // deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile), config->reload->expectOutput)) {
             QString msg = name + " failed in reload hook. exp: '" + config->reload->expectOutput + "'";
             notification(msg, ERROR);
@@ -900,7 +899,7 @@ void SvdService::validateSlot() {
             process->spawnProcess(config->validate->commands);
             process->waitForFinished(-1);
 
-            deathWatch(process->pid());
+            // deathWatch(process->pid());
             if (not expect(readFileContents(process->outputFile), config->validate->expectOutput)) {
                 QString msg = name + " failed in validate hook. exp: '" + config->validate->expectOutput + "'";
                 notification(msg, ERROR);
