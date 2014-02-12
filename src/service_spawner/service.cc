@@ -268,8 +268,9 @@ void SvdService::babySitterSlot() {
                             if (config->webApp) {
                                 QString msg = "Babysitter has found unoccupied web-app port: " + QString::number(currentPort) + " registered for service: " + name + ". Emitting startSlot just in case";
                                 notification(msg, NOTIFY);
-                                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
-                                emit startSlot();
+                                // QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+                                // touch recon
+                                emit reConfigureWithoutDepsSlot();
                             } else {
                                 QString msg = "Babysitter has found unoccupied dynamic port: " + QString::number(currentPort) + " registered for service: " + name;
                                 notification(msg, ERROR);
