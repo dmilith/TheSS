@@ -2,7 +2,7 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.64",
+    "formatVersion": "0.72",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
@@ -44,6 +44,9 @@
 
     /* autoStart with true will cause service to start automatically */
     "autoStart": false,
+
+    /* by default igniter is working as non web-app  */
+    "webApp": false,
 
     "reportAllErrors": true,
     "reportAllInfos": false,

@@ -483,7 +483,7 @@ Json::Value* parseJSON(const QString& filename) {
 
     listOfInts << "staticPort" << "portsPool" << "minimumRequiredDiskSpace";
     listOfStrings << "softwareName" << "repository" << "parentService" << "domain";
-    listOfBools << "autoStart" << "reportAllErrors" << "reportAllInfos" << "reportAllDebugs" << "watchPort" << "watchUdpPort" << "alwaysOn" << "resolveDomain";
+    listOfBools << "autoStart" << "reportAllErrors" << "reportAllInfos" << "reportAllDebugs" << "watchPort" << "watchUdpPort" << "alwaysOn" << "resolveDomain" << "webApp";
 
     /* objects */
     for (int indx = 0; indx < listOfObjects.length(); indx++) {

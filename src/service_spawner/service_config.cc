@@ -33,6 +33,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         softwareName = (*defaults)["softwareName"].asCString();
         autoStart = (*defaults)["autoStart"].asBool();
         reportAllErrors = (*defaults)["reportAllErrors"].asBool();
+        webApp = (*defaults)["webApp"].asBool();
         reportAllInfos = (*defaults)["reportAllInfos"].asBool();
         reportAllDebugs = (*defaults)["reportAllDebugs"].asBool();
         watchPort = (*defaults)["watchPort"].asBool();
@@ -142,6 +143,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         reportAllErrors = root->get("reportAllErrors", (*defaults)["reportAllErrors"]).asBool();
         reportAllInfos = root->get("reportAllInfos", (*defaults)["reportAllInfos"]).asBool();
         reportAllDebugs = root->get("reportAllDebugs", (*defaults)["reportAllDebugs"]).asBool();
+        webApp = root->get("webApp", (*defaults)["webApp"]).asBool();
         watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
         watchUdpPort = root->get("watchUdpPort", (*defaults)["watchUdpPort"]).asBool();
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
