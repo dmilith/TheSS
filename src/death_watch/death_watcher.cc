@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
     /* check args */
     if (args.size() == 1) {
-        logError() << "You need to specify pid to put a death watch on.";
+        logInfo() << "You need to specify pid to put a death watch on.";
         return 1;
     }
     logInfo() << "DeathWatch version" << APP_VERSION << ". " << COPYRIGHT;
