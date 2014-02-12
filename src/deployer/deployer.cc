@@ -155,8 +155,8 @@ int main(int argc, char *argv[]) {
 
     /* NOTE: make sure that web-app isn't already in deploying state for user */
     bool ok = false, failed = false;
-    QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    writeToFile(oldWebServicePidFile + "-prev", readFileContents(oldWebServicePidFile).trimmed());
+    // QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
+    // writeToFile(oldWebServicePidFile + "-prev", readFileContents(oldWebServicePidFile).trimmed());
 
     QString wadPidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE; //getHomeDir() + "/.wad-" + serviceName + ".pid";
     QString aPid = readFileContents(wadPidFile).trimmed();
