@@ -78,8 +78,6 @@ public slots:
     void onDirectoryChanged(QString dir);
     bool isSSOnline();
     QStringList * availableServices();
-    void shutdown();
-    void gracefullyTerminate();
     QString addService(QString name);
 public:
     void setGui(PanelGui * gui);
