@@ -154,7 +154,7 @@ void PanelGui::displayFooter(){
     functions << "F1" << "trc" << "F2" << "dbg"
               << "F3" << "inf" << "F4" << "err"
               << "F5" << "rfsh" << "F6" << "rnm" << "F7" << "new"
-              << "F8" << "dstr";
+              << "F8" << "dstr" << "F9" << "forced ss off" << "F10" << "ss off";
 
     int x = 0, y = rows - 15;
     char * str;
@@ -247,6 +247,9 @@ void PanelGui::helpDialog(){
     list << "  F6      - Rename service (also creates duplicate of current igniter)";
     list << "  F7, N   - Add new service";
     list << "  F8, X   - Delete current service";
+    list << "  F9      - Shutdown TheSS if running (services stay)";
+    list << "  F10     - Gracefully shutdown TheSS if running";
+    list << "  F11     - Forced TheSS shutdown (make it dead, no matter what)";
     list << "  F12     - Reset service state & trigger files (useful for igniter debugging)";
     list << "  ` ~ \\   - Show TheSS log";
 
@@ -538,10 +541,43 @@ void PanelGui::key(int ch){
             break;
 
 
+        case KEY_F(9):
+            if (panel->isSSOnline()) {
+                status = "Terminating ServiceSpawner (services remain in background)";
+                panel->shutdown();
+            } else {
+                status = "ServiceSpawner is already offline";
+            }
+            displaySSLog();
+            break;
+
+
         case '\\':
         case '~':
         case '`': /* Show SS log */
             displaySSLog();
+            break;
+
+
+        case KEY_F(10):
+            if (panel->isSSOnline()) {
+                status = "Gracefully shutting down ServiceSpawner";
+                panel->gracefullyTerminate();
+            } else {
+                status = "ServiceSpawner is already offline";
+            }
+            displaySSLog();
+            break;
+
+
+        case KEY_F(11):
+            if (panel->isSSOnline()) {
+                status = "Force ServiceSpawner shutdown";
+                endwin();
+                system("svddw $(cat $HOME/.$USER.pid)");
+                initscr();
+                refresh();
+            }
             break;
 
 

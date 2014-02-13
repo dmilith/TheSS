@@ -117,6 +117,17 @@ void Panel::setLogLevel(QString level) {
     touch(home.absoluteFilePath("." + level));
 }
 
+void Panel::gracefullyTerminate() {
+    touch(home.absoluteFilePath(DEFAULT_SS_GRACEFUL_SHUTDOWN_FILE));
+}
+
+void Panel::shutdown() {
+    if (getuid() == 0)
+        touch(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
+    else
+        touch(home.absoluteFilePath(DEFAULT_SS_SHUTDOWN_FILE));
+}
+
 QString Panel::addService(QString name) {
     QString status;
     QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + "/" + name);
