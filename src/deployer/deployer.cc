@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
     QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
     QString oldPid = readFileContents(oldWebServicePidFile).trimmed();
     writeToFile(oldWebServicePidFile + WEB_APP_PID_FILE_POSTFIX, oldPid);
-    logInfo() << "Storing new worker pid:" << oldPid;
+    logInfo() << "Storing old worker pid:" << oldPid;
     // uint oldPid = readFileContents(oldWebServicePidFile).trimmed().toUInt();
 
     QString wadPidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE;
