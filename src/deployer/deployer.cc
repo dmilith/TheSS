@@ -156,7 +156,9 @@ int main(int argc, char *argv[]) {
     /* NOTE: make sure that web-app isn't already in deploying state for user */
     bool ok = false, failed = false;
     QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    writeToFile(oldWebServicePidFile + WEB_APP_PID_FILE_POSTFIX, readFileContents(oldWebServicePidFile).trimmed());
+    QString oldPid = readFileContents(oldWebServicePidFile).trimmed();
+    writeToFile(oldWebServicePidFile + WEB_APP_PID_FILE_POSTFIX, oldPid);
+    logInfo() << "Storing new worker pid:" << oldPid;
     // uint oldPid = readFileContents(oldWebServicePidFile).trimmed().toUInt();
 
     QString wadPidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE;
@@ -230,5 +232,10 @@ int main(int argc, char *argv[]) {
 
     logInfo() << "Deploy successful. Cleaning deploying state.";
     QFile::remove(wadPidFile);
+
+    QString newPid = readFileContents(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+    logInfo() << "Storing new worker pid:" << newPid;
+    QString webServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
+    writeToFile(webServicePidFile + "-" + newPid, readFileContents(webServicePidFile).trimmed());
     return EXIT_SUCCESS;
 }
