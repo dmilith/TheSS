@@ -233,9 +233,7 @@ int main(int argc, char *argv[]) {
     logInfo() << "Deploy successful. Cleaning deploying state.";
     QFile::remove(wadPidFile);
 
-    QString newPid = readFileContents(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-    logInfo() << "Storing new worker pid:" << newPid;
     QString webServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    writeToFile(webServicePidFile + "-" + newPid, readFileContents(webServicePidFile).trimmed());
+    writeToFile(webServicePidFile + "-" + WEB_APP_PID_FILE_POSTFIX_NEXT, readFileContents(webServicePidFile).trimmed());
     return EXIT_SUCCESS;
 }

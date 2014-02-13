@@ -187,14 +187,10 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
 
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${APP_ADDITIONAL_OPTS}" || error "Deploy failed!"
 
-    note "Registering domain entry: ${APP_DOMAIN} on ServeD node: ${mirror}"
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed for node: ${mirror}!"
-
     note "Stopping old web-app workers"
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "${CP_BIN} ~/SoftwareData/${APP_NAME}/service.pid ~/SoftwareData/${APP_NAME}/service.pid-\$(cat ~/SoftwareData/${APP_NAME}/.ports/0) && \
-    sleep 3 && \
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "${MV_BIN} ~/SoftwareData/${APP_NAME}/service.pid-\$(cat ~/SoftwareData/${APP_NAME}/.ports/0) ~/SoftwareData/${APP_NAME}/service.pid && \
     svddw \$(cat ~/SoftwareData/${APP_NAME}/service.pid-prev) > /dev/null 2>&1; \
-    ${MV_BIN} ~/SoftwareData/${APP_NAME}/service.pid-\$(cat ~/SoftwareData/${APP_NAME}/.ports/0) ~/SoftwareData/${APP_NAME}/service.pid"
+    ${PRINTF_BIN} \"${APP_DOMAIN}\n\" > /Public/${APP_NAME}_${APP_USER}.web-app" || error "Web deployment request failed for node: ${mirror}!"
 done
 
 note "Web application should be available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"

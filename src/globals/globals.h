@@ -49,6 +49,7 @@
     #define DEFAULT_USER_APPS_DIR "/Apps"
     #define DEFAULT_WEBAPPS_DIR "/WebApps"
     #define WEB_APP_PID_FILE_POSTFIX "-prev"
+    #define WEB_APP_PID_FILE_POSTFIX_NEXT "-next"
     #define SOFTWARE_DATA_DIR "/SoftwareData"
     #define SYSTEM_USERS_DIR "/SystemUsers"
     #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"
