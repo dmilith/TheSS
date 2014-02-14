@@ -224,17 +224,23 @@ void SvdService::babySitterSlot() {
                             QString msg = "Something is wrong with system status of service: " + name + " It will be restarted";
                             notification(msg, ERROR);
                             emit restartSlot();
+                            config->deleteLater();
+                            return;
                         }
                     } else {
                         QString msg = "Service: " + name + " seems to be down. Performing restart.";
                         notification(msg, ERROR);
                         emit restartSlot();
+                        config->deleteLater();
+                        return;
                     }
                 } else {
                     QString msg = "Pid file is damaged or doesn't contains valid pid. File will be removed: " + servicePidFile;
                     notification(msg, ERROR);
                     QFile::remove(servicePidFile);
                     emit restartSlot();
+                    config->deleteLater();
+                    return;
                 }
 
             } else {
@@ -253,6 +259,8 @@ void SvdService::babySitterSlot() {
                         QString msg = "Babysitter has found unoccupied static port: " + QString::number(config->staticPort) + " registered for service " + name;
                         notification(msg, ERROR);
                         emit restartSlot();
+                        config->deleteLater();
+                        return;
                     }
 
                 /* check dynamic port for service */
@@ -270,15 +278,21 @@ void SvdService::babySitterSlot() {
                                 notification(msg, NOTIFY);
                                 QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
                                 emit startWithoutDepsSlot();
+                                config->deleteLater();
+                                return;
                             } else {
                                 QString msg = "Babysitter has found unoccupied dynamic port: " + QString::number(currentPort) + " registered for service: " + name;
                                 notification(msg, ERROR);
                                 emit restartSlot();
+                                config->deleteLater();
+                                return;
                             }
                         }
                     } else {
                         QString msg = "Babysitter hasn't found port file for service: " + name;
                         notification(msg, ERROR);
+                        config->deleteLater();
+                        return;
                     }
                 }
             }
@@ -295,6 +309,8 @@ void SvdService::babySitterSlot() {
                         QString msg = "Babysitter has found unoccupied static UDP port: " + QString::number(config->staticPort) + " registered for service " + name;
                         notification(msg, ERROR);
                         emit restartSlot();
+                        config->deleteLater();
+                        return;
                     }
 
                 /* check dynamic port for service */
@@ -310,10 +326,14 @@ void SvdService::babySitterSlot() {
                             QString msg = "Babysitter has found unoccupied dynamic UDP port: " + QString::number(currentPort) + " registered for service: " + name;
                             notification(msg, ERROR);
                             emit restartSlot();
+                            config->deleteLater();
+                            return;
                         }
                     } else {
                         QString msg = "Babysitter hasn't found port file for service: " + name;
                         notification(msg, ERROR);
+                        config->deleteLater();
+                        return;
                     }
                 }
 
@@ -332,6 +352,9 @@ void SvdService::babySitterSlot() {
                 QString msg = name + " failed in babySitter slot: " + config->babySitter->expectOutput;
                 notification(msg, ERROR);
                 emit restartSlot();
+                config->deleteLater();
+                babySit->deleteLater();
+                return;
             } else {
                 logDebug() << "Babysitter expectations passed for service:" << name;
             }
@@ -372,15 +395,10 @@ void SvdService::installSlot() {
     logDebug() << "Checking notification dirs";
     getOrCreateDir(config->prefixDir());
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
-
-    QString portsDirLocation = config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
-    if (not QDir().exists(portsDirLocation)) {
-        if (QFile::exists(portsDirLocation)) {
-            logWarn() << "Found legacy .ports file. Automatically removing this file from service:" << name;
-            QFile::remove(portsDirLocation);
-        } else
-            logDebug() << "No legacy ports file.";
-    }
+    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
+    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
+    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
+    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
 
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
@@ -502,6 +520,8 @@ void SvdService::startSlot(bool withDeps) {
         if (map[value] <= config->minimumRequiredDiskSpace) {
             QString msg = "Insufficient disk space for service: " + config->name + " on domain: " + config->domain + " Expected disk space amount (MiB): " + QString::number(config->minimumRequiredDiskSpace) + " but disk: " + value + " has only: " + map[value] + "!";
             notification(msg, ERROR);
+            config->deleteLater();
+            return;
         }
     }
 
