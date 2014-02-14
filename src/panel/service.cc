@@ -55,7 +55,14 @@ void PanelService::refresh(){
     autostart = QFile::exists(basePath + AUTOSTART_TRIGGER_FILE);
 
     pid = readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).trimmed();
-    domain = readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).trimmed();
+
+    auto domains = QDir(basePath + DEFAULT_SERVICE_DOMAINS_DIR).entryList(QDir::Files | QDir::NoDotAndDotDot);
+    QString domainsAmount = "(" + QString::number(domains.size()) + ")";
+    if (not domains.isEmpty()) {
+        domain = domainsAmount + domains.first();
+    } else
+        domain = domainsAmount + "localhost";
+
     port = readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     if (domain.isEmpty()) domain = "-";
     if (port.isEmpty()) port = "-";
