@@ -422,7 +422,8 @@ void SvdService::installSlot() {
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
-    getOrCreateDir(config->prefixDir() + releasePostfix());
+    if (config->webApp)
+        getOrCreateDir(config->prefixDir() + releasePostfix());
 
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
