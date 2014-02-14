@@ -1,6 +1,5 @@
 {
     "softwareName": "Redis",
-    "domain": "localhost",
     "schedulerActions": [
         {
             "cronEntry": "* * 1 * * ?",

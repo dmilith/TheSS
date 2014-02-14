@@ -2,7 +2,6 @@
     "watchPort": false,
     "alwaysOn": false,
     "autoStart": true,
-    "domain": "localhost",
     "schedulerActions": [
     {
         "cronEntry": "*/3 * * * * ?",

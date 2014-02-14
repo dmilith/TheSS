@@ -1,6 +1,5 @@
 {
     "softwareName": "Elasticsearch",
-    "domain": "localhost",
     "install": {
         "commands": "sofin get elasticsearch",
         "expectOutput": "All done"

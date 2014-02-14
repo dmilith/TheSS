@@ -3,7 +3,7 @@
     "watchPort": false,
     "watchUdpPort": true,
     "staticPort": 53,
-    "domain": "dmilith.dev",
+    "domains": ["dmilith.dev"],
 
     "install": {
         "commands": "sofin get bind",

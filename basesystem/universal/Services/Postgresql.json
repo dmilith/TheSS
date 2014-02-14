@@ -1,6 +1,5 @@
 {
     "softwareName": "Postgresql",
-    "domain": "localhost",
     "schedulerActions": [
         {
             "cronEntry": "0 0/3 * * * ?",

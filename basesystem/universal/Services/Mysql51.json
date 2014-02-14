@@ -1,7 +1,6 @@
 {
     "softwareName": "Mysql51",
     "watchPort": false,
-    "domain": "localhost",
     "schedulerActions": [
         {
             "cronEntry": "0 9,21 * * * ?",

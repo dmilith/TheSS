@@ -1,6 +1,5 @@
 {
     "softwareName": "Mongodb",
-    "domain": "localhost",
     "install": {
         "commands": "sofin get mongodb",
         "expectOutput": "All done"

@@ -1,7 +1,6 @@
 {
     "softwareName": "Redis",
     "watchPort": false,
-    "domain": "localhost",
     "install": {
         "commands": "sofin get redis",
         "expectOutput": "All done"

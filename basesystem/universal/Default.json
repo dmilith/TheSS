@@ -2,12 +2,12 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.72",
+    "formatVersion": "0.80",
 
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
 
-    "domain": "",
+    "domains": ["localhost"],
 
 /* when set to false, domain won't be resolved for spcified igniter */
     "resolveDomain": false,
