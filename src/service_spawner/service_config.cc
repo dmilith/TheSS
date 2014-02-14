@@ -42,12 +42,25 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         resolveDomain = (*defaults)["resolveDomain"].asBool();
         staticPort = (*defaults)["staticPort"].asInt();
         minimumRequiredDiskSpace = (*defaults)["minimumRequiredDiskSpace"].asInt();
-        domain = (*defaults)["domain"].asCString();
         portsPool = (*defaults)["portsPool"].asInt();
         repository = (*defaults)["repository"].asCString();
         parentService = (*defaults)["parentService"].asCString();
         configureOrder = (*defaults)["configureOrder"].asInt();
         startOrder = (*defaults)["startOrder"].asInt();
+
+        /* load default service domains */
+        for (uint index = 0; index < (*defaults)["domains"].size(); ++index ) {
+            try {
+                auto element = (*defaults)["domains"][index];
+                if (element.isString())
+                    domains.push_back(element.asCString());
+                else
+                    logError() << "Invalid JSON Type for domains. They all should be Strings";
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing default domains of" << name;
+            }
+        }
+        logDebug() << "Defined domains:" << name << "list:" << domains;
 
         /* load http addresses to check */
         for (uint index = 0; index < (*defaults)["watchHttp"].size(); ++index ) {
@@ -151,11 +164,24 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
         portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
         minimumRequiredDiskSpace = root->get("minimumRequiredDiskSpace", (*defaults)["minimumRequiredDiskSpace"]).asInt();
-        domain = root->get("domain", (*defaults)["domain"]).asCString();
         repository = root->get("repository", (*defaults)["repository"]).asCString();
         parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
         configureOrder = root->get("configureOrder", (*defaults)["configureOrder"]).asInt();
         startOrder = root->get("startOrder", (*defaults)["startOrder"]).asInt();
+
+        /* load default service domains */
+        for (uint index = 0; index < (*root)["domains"].size(); ++index ) {
+            try {
+                auto element = (*root)["domains"][index];
+                if (element.isString())
+                    domains.push_back(element.asCString());
+                else
+                    logError() << "Invalid JSON Type for domains. They all should be Strings";
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing default domains of" << name;
+            }
+        }
+        logDebug() << "Defined domains:" << name << "list:" << domains;
 
         /* load http addresses to check */
         for (uint index = 0; index < (*root)["watchHttp"].size(); ++index ) {
@@ -414,29 +440,37 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         ccont = ccont.replace("SERVICE_PREFIX", prefixDir());
 
         /* Replace SERVICE_DOMAIN */
-        QString domainFilePath = prefixDir() + QString(DEFAULT_SERVICE_DOMAIN_FILE);
-        QString userDomain = QHostInfo::localHostName();
-        if (not domain.isEmpty()) { /* predefined value of domain from igniter has a higher priority over dynamic one */
-            if (QFile::exists(domainFilePath)) {
-                logTrace() << "Defined igniter domain, but domain file found, hence using one from .domain file!";
-                QString aDomain = readFileContents(domainFilePath).trimmed();
-                userDomain = aDomain;
-            } else {
-                /* use domain from igniter if domain file doesn't exists */
-                logTrace() << "Using igniter domain";
-                userDomain = domain;
-                writeToFile(domainFilePath, userDomain);
+        QString userDomain = ""; // QHostInfo::localHostName();
+        QString domainFilePath = prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR;
+        auto domains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
+        if (not domains.isEmpty()) {
+            Q_FOREACH(QString domainFP, domains) {
+                // userDomain = domainFP;
+
             }
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
-        } else {
-            if (not QFile::exists(domainFilePath)) { //(domain.isEmpty()) {
-                writeToFile(domainFilePath, userDomain);
-            } else {
-                QString aDomain = readFileContents(domainFilePath).trimmed();
-                userDomain = aDomain;
-            }
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
         }
+
+
+        //     /* predefined value of domain from igniter has a higher priority over dynamic one */
+        //     if (QFile::exists(domainFilePath + )) {
+
+        //     } else {
+        //         /* use domain from igniter if domain file doesn't exists */
+        //         logTrace() << "Using igniter domain";
+        //         userDomain = domain;
+        //         // writeToFile(domainFilePath, userDomain);
+        //         touch()
+        //     }
+        //     ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+        // } else {
+        //     if (not QFile::exists(domainFilePath)) { //(domain.isEmpty()) {
+        //         writeToFile(domainFilePath, userDomain);
+        //     } else {
+        //         QString aDomain = readFileContents(domainFilePath).trimmed();
+        //         userDomain = aDomain;
+        //     }
+        //     ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+        // }
 
         /* Replace SERVICE_ADDRESS */
         QString address = QString(DEFAULT_LOCAL_ADDRESS);

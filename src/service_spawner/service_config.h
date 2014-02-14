@@ -66,10 +66,10 @@ class SvdServiceConfig : public QObject {
 
 
         uint uid; // user uid who loads igniter config
-        QString name, softwareName, repository, parentService, domain;
+        QString name, softwareName, repository, parentService;
         bool autoStart, reportAllErrors, reportAllInfos, reportAllDebugs, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;
         int staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder;
-        QStringList dependencies, watchHttpAddresses;
+        QStringList dependencies, watchHttpAddresses, domains;
         QList<SvdSchedulerAction*> schedulerActions;
         SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;
 
