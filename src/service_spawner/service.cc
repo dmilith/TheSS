@@ -273,20 +273,20 @@ void SvdService::babySitterSlot() {
                         logDebug() << "Port compare:" << currentPort << "with" << port << "(should be different)";
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
-                            if (config->webApp) {
-                                QString msg = "Babysitter has found unoccupied web-app port: " + QString::number(currentPort) + " registered for service: " + name + ". Emitting startSlot just in case";
-                                notification(msg, NOTIFY);
-                                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
-                                emit startWithoutDepsSlot();
-                                config->deleteLater();
-                                return;
-                            } else {
+                            // if (config->webApp) {
+                            //     QString msg = "Babysitter has found unoccupied web-app port: " + QString::number(currentPort) + " registered for service: " + name + ". Emitting startSlot just in case";
+                            //     notification(msg, NOTIFY);
+                            //     QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+                            //     emit startWithoutDepsSlot();
+                            //     config->deleteLater();
+                            //     return;
+                            // } else {
                                 QString msg = "Babysitter has found unoccupied dynamic port: " + QString::number(currentPort) + " registered for service: " + name;
                                 notification(msg, ERROR);
                                 emit restartSlot();
                                 config->deleteLater();
                                 return;
-                            }
+                            // }
                         }
                     } else {
                         QString msg = "Babysitter hasn't found port file for service: " + name;
