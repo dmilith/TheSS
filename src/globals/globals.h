@@ -39,7 +39,7 @@
     #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0"
     #define DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND "ifconfig tap0 destroy"
 
-    #define SOFTWARE_DIR "/Software"
+    #define SOFTWARE_DIR "/Software/"
     #define LOGS_DIR "/Logs"
     #define DEFAULT_PROXY_FILE "/proxy.conf"
     #define DEFAULT_APP_PROXY_FILE "/.proxy.conf" /* addition to proxy from app repo */
@@ -50,12 +50,12 @@
     #define DEFAULT_WEBAPPS_DIR "/WebApps"
     #define WEB_APP_PID_FILE_POSTFIX "-prev"
     #define WEB_APP_PID_FILE_POSTFIX_NEXT "-next"
-    #define SOFTWARE_DATA_DIR "/SoftwareData"
-    #define SYSTEM_USERS_DIR "/SystemUsers"
+    #define SOFTWARE_DATA_DIR "/SoftwareData/"
+    #define SYSTEM_USERS_DIR "/SystemUsers/"
     #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
-    #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "/Igniters/Default")
-    #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "/Igniters/Services")
+    #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "Igniters/Default")
+    #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "Igniters/Services")
     #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services"
     #define DEFAULT_LOCAL_ADDRESS "127.0.0.1"
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
@@ -103,7 +103,8 @@
     #define DEFAULT_SERVICE_RELEASES_HISTORY "/service.releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
 
-    #define DEFAULT_HOLD_BABYSITTER_FILE "/.holdBabySitter" /* if exists, babysitter call will be skipped */
+    #define DEFAULT_STANDALONE_DIR "/standalone/"
+    #define DEFAULT_RELEASES_DIR "/releases/"
     #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains/"
     #define DEFAULT_SERVICE_LOGS_DIR "/.logs/"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"

@@ -310,7 +310,7 @@ SvdServiceConfig::~SvdServiceConfig() {
 
 
 const QString SvdServiceConfig::serviceRoot() {
-    return QString(SOFTWARE_DIR) + "/" + softwareName; // low prio
+    return QString(SOFTWARE_DIR) + softwareName; // low prio
 }
 
 
@@ -332,9 +332,9 @@ bool SvdServiceConfig::serviceConfigured() {
 
 const QString SvdServiceConfig::prefixDir() {
     if (uid == 0) {
-        return QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + name;
+        return QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name;
     } else {
-        return getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + name;
+        return QString(getenv("HOME")) + SOFTWARE_DATA_DIR + name;
     }
 }
 

@@ -130,9 +130,9 @@ void Panel::shutdown() {
 
 QString Panel::addService(QString name) {
     QString status;
-    QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + "/" + name);
+    QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + name);
     if (getuid() == 0)
-        dir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/" + name);
+        dir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name);
 
     if(!dir.exists()){ // service isn't already initialized
             auto all = availableServices();

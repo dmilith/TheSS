@@ -436,9 +436,9 @@ void PanelGui::key(int ch){
                 status = "Can't change domain for non existant service";
             } else {
                 QString name = servicesList->currentItem()->name;
-                QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + name;
+                QString prefixPath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + name;
                 if (getuid() == 0) {
-                    prefixPath = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/" + name;
+                    prefixPath = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name;
                 }
                 QString domainFilePath = prefixPath + QString(DEFAULT_SERVICE_DOMAIN_FILE);
                 QString domain = newEntry();

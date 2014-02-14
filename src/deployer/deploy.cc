@@ -16,7 +16,7 @@ const QStringList getAllowedToSpawnDeps() {
 
 
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
-    QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName;
+    QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
     QString sslDir = getOrCreateDir(servicePath + DEFAULT_SSL_DIR);
     QString appProxyContent = readFileContents(latestReleaseDir + DEFAULT_APP_PROXY_FILE).trimmed();
     if (not sslPemPath.isEmpty()) { /* ssl pem file given */
@@ -161,7 +161,7 @@ server { \n\
 
 
         case PhpSite: {
-            QString prefix = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + serviceName;
+            QString prefix = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
 writeToFile(prefix + "/service.conf", "[global] \n\
     pid = " + prefix + DEFAULT_SERVICE_PID_FILE + " \n\
     error_log = " + prefix + "/service.log \n\
@@ -757,7 +757,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 void requestDependenciesRunningOf(const QStringList appDependencies) {
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
-        QString location = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + val);
+        QString location = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + val);
 
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
@@ -1157,10 +1157,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         switch (datastore) {
             case Postgresql: {
                 logDebug() << "Creating user:" << databaseName;
-                clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                 clne->waitForFinished(-1);
                 logDebug() << "Creating datastore:" << databaseName;
-                clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/" + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
+                clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") -O " + databaseName + " " + databaseName + " >> " + servicePath + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ");
                 clne->waitForFinished(-1);
 
             } break;
