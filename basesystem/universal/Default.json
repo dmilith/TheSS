@@ -7,7 +7,7 @@
 /* defines name of entry in ~/SoftwareData/ */
     "name": "No-Name",
 
-    "domains": ["localhost"],
+    "domains": [],
 
 /* when set to false, domain won't be resolved for spcified igniter */
     "resolveDomain": false,
