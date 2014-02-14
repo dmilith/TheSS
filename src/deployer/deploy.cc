@@ -8,7 +8,7 @@
 #include "deploy.h"
 
 
-const QStringList getAllowedToSpawnDeps() {
+const QStringList getStandaloneDeps() {
     QStringList output; /* XXX: it's hacked hack, but I still have no better solution for this problem.. */
     output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "memcached-usock" << "elasticsearch" << "mongodb";
     return output;
@@ -674,8 +674,8 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
     touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
     logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << "for service:" << serviceName;
 
-    logDebug() << "Writing domain file of service with path:" << servicePath;
-    writeToFile(servicePath + DEFAULT_SERVICE_DOMAIN_FILE, domain);
+    logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
+    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
 
     getOrCreateDir(servicePath + "/releases/");
 
@@ -901,7 +901,7 @@ QString getDbName(WebDatastore db) {
 
 QStringList filterSpawnableDependencies(const QString& deps) {
     /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
-    QStringList allowedToSpawnDeps = getAllowedToSpawnDeps(); /* dependencies allowed to spawn as independent service */
+    QStringList allowedToSpawnDeps = getStandaloneDeps(); /* dependencies allowed to spawn as independent service */
     QStringList appDependencies = deps.split("\n");
     logDebug() << "Filtering dependencies:" << appDependencies << "of size:" << appDependencies.size();
 
@@ -933,9 +933,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     logInfo() << "Creating web-app environment";
     QString servicePath = getServiceDataDir(serviceName);
-    QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAIN_FILE;
+    QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain;
     logDebug() << "Writing domain:" << domain << "to file:" << domainFilePath;
-    writeToFile(domainFilePath, domain);
+    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
 
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     logDebug() << "Current release:" << latestRelease;
