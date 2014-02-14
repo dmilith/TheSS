@@ -12,10 +12,23 @@
 
 SvdService::SvdService(const QString& name) {
     /* setup service */
+
     this->name = name;
+    this->hash = createHash(name);
     this->dependencyServices = QList<SvdService*>();
     this->uptime.invalidate();
     this->networkManager = new QNetworkAccessManager(this);
+}
+
+
+const QString SvdService::createHash(const QString& nme) {
+    /* generate unique sha1 hash from date */
+    auto sha1Hash = new QCryptographicHash(QCryptographicHash::Sha1);
+    auto content = nme + QDateTime::currentDateTime().toString();
+    sha1Hash->addData(content.toUtf8(), content.length());
+    auto aHash = sha1Hash->result().toHex();
+    delete sha1Hash;
+    return aHash;
 }
 
 

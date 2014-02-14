@@ -55,6 +55,8 @@ class SvdService: public QThread {
 
     public:
         SvdService(const QString& name);
+        const QString createHash(const QString& nme);
+        const QString releasePostfix();
         qint64 getUptime();
         bool checkProcessStatus(pid_t pid);
         void stopSitters();
@@ -64,6 +66,7 @@ class SvdService: public QThread {
 
     private:
         QString name;
+        QString hash = "";
         QElapsedTimer uptime;
         QTimer babySitter, cronSitter;
         QList<SvdService*> dependencyServices;
