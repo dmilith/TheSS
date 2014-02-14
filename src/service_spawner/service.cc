@@ -183,9 +183,9 @@ void SvdService::babySitterSlot() {
         return;
     }
     /* look for three required files as indicators of already running services software */
-    bool filesExistance = QFile::exists(config->prefixDir() + "/.domain") && QDir().exists(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR) && QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+    bool filesExistance = QFile::exists(config->prefixDir() + "/.domain") and QDir().exists(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR) and QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE) and not QFile::exists(config->prefixDir() + DEFAULT_HOLD_BABYSITTER_FILE);
     if (not filesExistance) {
-        logDebug() << "Skipping babysitter spawn for service:" << name << ", because no service baby around.";
+        logDebug() << "Skipping babysitter spawn for service:" << name;
         config->deleteLater();
         return;
     } else

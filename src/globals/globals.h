@@ -103,6 +103,7 @@
     #define DEFAULT_SERVICE_RELEASES_HISTORY "/service.releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
 
+    #define DEFAULT_HOLD_BABYSITTER_FILE "/.holdBabySitter" /* if exists, babysitter call will be skipped */
     #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains/"
     #define DEFAULT_SERVICE_LOGS_DIR "/.logs/"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
