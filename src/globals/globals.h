@@ -95,14 +95,19 @@
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
     #define DEFAULT_SERVICE_DEPLOYING_FILE "/.deploying"
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cronWorking"
-    #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"
-    #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
+
     #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
     #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/service.latest-release"
     #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous-release"
     #define DEFAULT_SERVICE_RELEASES_HISTORY "/service.releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
+
+    #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains/"
+    #define DEFAULT_SERVICE_LOGS_DIR "/.logs/"
+    #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
+    #define DEFAULT_SERVICE_ENVS_DIR "/.envs/"
+    #define DEFAULT_SERVICE_PIDS_DIR "/.pids/"
 
     #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
     #define DEFAULT_SSL_CA_FILE "/cacert.pem"
