@@ -445,11 +445,17 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         auto domains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
         if (not domains.isEmpty()) {
             Q_FOREACH(QString domainFP, domains) {
-                // userDomain = domainFP;
-
+                userDomain = domainFP;
             }
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+        } else {
+            userDomain = QHostInfo::localHostName();
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+            touch(domainFilePath + userDomain);
         }
 
+        // TODO: XXX: fixme: support existing domains in domains dir!
+        //
 
         //     /* predefined value of domain from igniter has a higher priority over dynamic one */
         //     if (QFile::exists(domainFilePath + )) {
@@ -535,7 +541,6 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 // ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS); /* replace with user address content */
             }
         } else {
-            logInfo() << "Setting igniter address:" << address;
             ccont = ccont.replace("SERVICE_ADDRESS", address);
         }
 
