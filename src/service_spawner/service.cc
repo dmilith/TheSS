@@ -190,9 +190,11 @@ void SvdService::babySitterSlot() {
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE) or
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE) or
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) or
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_DEPLOYING_FILE) or
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) or
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE)
     ) {
-        logDebug() << "Skipping babysitter, service is busy:" << name;
+        logDebug() << "Skipping babysitter, service:" << name <<"is still busy.";
         config->deleteLater();
         return;
     }
@@ -204,7 +206,7 @@ void SvdService::babySitterSlot() {
         return;
     }
     /* look for three required files as indicators of already running services software */
-    bool filesExistance = QFile::exists(config->prefixDir() + "/.domain") and QDir().exists(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR) and QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE) and not QFile::exists(config->prefixDir() + DEFAULT_HOLD_BABYSITTER_FILE);
+    bool filesExistance = QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
     if (not filesExistance) {
         logDebug() << "Skipping babysitter spawn for service:" << name;
         config->deleteLater();
