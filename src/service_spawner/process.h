@@ -39,7 +39,4 @@ class SvdProcess: public QProcess {
 };
 
 
-QString launchServiceSpawner();
-
-
 #endif

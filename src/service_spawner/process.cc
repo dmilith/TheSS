@@ -8,19 +8,6 @@
 #include "process.h"
 
 
-QString launchServiceSpawner() {
-    uInt uid = getuid();
-    auto prc = new SvdProcess("Thess", uid, false);
-    #ifdef __FreeBSD__
-        prc->spawnProcess("daemon svdss"); /* NOTE: it uses Sofin environment automatically */
-    #else
-        prc->spawnProcess("svdss &"); /* NOTE: it uses Sofin environment automatically */
-    #endif
-    prc->waitForFinished(1);
-    return "Launching ServiceSpawner for " + QString(uid == 0 ? "SuperUser" : "NormalUser") + ": " + getenv("USER"); /* status msg */
-}
-
-
 void SvdProcess::init(const QString& name, uid_t uid) {
     this->uid = uid;
     outputFile = getSoftwareDataDir(uid) + "/" + name + DEFAULT_SERVICE_OUTPUT_FILE;
