@@ -173,6 +173,14 @@ void SvdService::finishedSlot(QNetworkReply* aReply) { /* network check slot */
 }
 
 
+const QString SvdService::releasePostfix() {
+    auto config = new SvdServiceConfig(name);
+    QString rdir = DEFAULT_RELEASES_DIR + hash;
+    config->deleteLater();
+    return rdir;
+}
+
+
 /* baby sitting slot is used to watch service pid */
 void SvdService::babySitterSlot() {
     auto config = new SvdServiceConfig(name);
@@ -412,6 +420,7 @@ void SvdService::installSlot() {
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
     getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
+    getOrCreateDir(config->prefixDir() + releasePostfix());
 
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
