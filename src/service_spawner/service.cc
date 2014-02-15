@@ -175,7 +175,7 @@ void SvdService::finishedSlot(QNetworkReply* aReply) { /* network check slot */
 
 const QString SvdService::releasePostfix() {
     auto config = new SvdServiceConfig(name);
-    QString rdir = DEFAULT_RELEASES_DIR + hash;
+    QString rdir = DEFAULT_RELEASES_DIR + config->releaseName();
     config->deleteLater();
     return rdir;
 }
