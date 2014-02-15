@@ -7,7 +7,7 @@ if [ "$(id -u)" = "0" ]; then
 else
     . $HOME/.profile
 fi
-note "Loaded Sofin environment\n"
+note "Loaded Sofin environment"
 
 build () {
     QMAKE_OPTS=""
@@ -49,26 +49,22 @@ build () {
 
         *)
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
+            (note "Building ss" && make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
 
             (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
+            (note "Building svddeployer" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built notifications system\n") || exit 1
+            (note "Building notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built notifications system\n") || exit 1
 
             (qmake ${QMAKE_OPTS} IRCNotify.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdirc_notify\n") || exit 1
+            (note "Building svdirc_notify" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdirc_notify\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
+            (note "Building svdpanel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
 
             (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
-
-            (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built tests\n") || exit 1
-
+            (note "Building svdcoreginx_helper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
 
             ;;
     esac
