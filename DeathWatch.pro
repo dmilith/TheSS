@@ -9,4 +9,4 @@ include(src/Common.pro)
 TEMPLATE           = subdirs
 SUBDIRS            = src/death_watch
 
-notifications.depends = src/cutelogger
+src/notifications.depends = src/cutelogger

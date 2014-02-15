@@ -9,4 +9,4 @@ include(src/Common.pro)
 TEMPLATE           = subdirs
 SUBDIRS            = src/irc src/irc_notify
 
-irc_notify.depends = src/irc src/cutelogger src/notifications
+src/irc_notify.depends = src/irc src/cutelogger src/notifications

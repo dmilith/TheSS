@@ -9,4 +9,4 @@ include(src/Common.pro)
 TEMPLATE           = subdirs
 SUBDIRS            = src/test
 
-test.depends = src/jsoncpp src/cutelogger src/quazip src/notifications src/service_spawner
+src/test.depends = src/jsoncpp src/cutelogger src/quazip src/notifications src/service_spawner
