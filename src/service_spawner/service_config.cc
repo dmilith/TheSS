@@ -485,6 +485,14 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             ccont = ccont.replace("PARENT_SERVICE_PREFIX", depsFull);
         }
 
+        /* Replace SERVICE_PORT */
+        ccont = ccont.replace("SERVICE_PORT", generatedDefaultPort);
+        for (int indx = 1; indx < portsPool; indx++) {
+            QString additionalPort = prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/" + QString::number(indx);
+            logWarn() << "Defined additional port:" << additionalPort;
+            ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), readFileContents(additionalPort).trimmed());
+        }
+
         /* Replace SERVICE_PREFIX */
         ccont = ccont.replace("SERVICE_PREFIX", prefixDir());
 
