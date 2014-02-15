@@ -1139,7 +1139,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \n echo 'Php app ready' >> SERVICE_PREFIX") + DEFAULT_SERVICE_LOG_FILE + " 2>&1" + "\"}\n}";
 
         } break;
 
