@@ -49,22 +49,25 @@ build () {
 
         *)
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
-            (note "Building ss" && make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
+            (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
+
+            (qmake ${QMAKE_OPTS} DeathWatch.pro) || exit 1
+            (note "Building DeathWatch" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddw\n") || exit 1
 
             (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
-            (note "Building svddeployer" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
+            (note "Building WAD" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
-            (note "Building notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built notifications system\n") || exit 1
+            (note "Building Notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built notifications system\n") || exit 1
 
             (qmake ${QMAKE_OPTS} IRCNotify.pro) || exit 1
-            (note "Building svdirc_notify" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdirc_notify\n") || exit 1
+            (note "Building IrcNotify" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdirc_notify\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
-            (note "Building svdpanel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
+            (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
 
             (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
-            (note "Building svdcoreginx_helper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
+            (note "Building CoreginxHelper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
 
             ;;
     esac
