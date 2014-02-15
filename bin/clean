@@ -1,36 +1,39 @@
 #!/bin/sh
 
+QMAKE_OPTS=""
+MAKE_OPTS="--silent"
 
 if [ "$(uname)" = "Darwin" ]; then
-    qmake -spec darwin-g++ Notifications.pro
-    make distclean
-    qmake -spec darwin-g++ TestSS.pro
-    make distclean
-    qmake -spec darwin-g++ Panel.pro
-    make distclean
-    qmake -spec darwin-g++ TheSS.pro
-    make distclean
-    qmake -spec darwin-g++ IRCNotify.pro
-    make distclean
-    qmake -spec darwin-g++ WAD.pro
-    make distclean
-    qmake -spec darwin-g++ CoreginxHelper.pro
-    make distclean
+    QMAKE_OPTS="-spec darwin-g++"
+    qmake ${QMAKE_OPTS} Notifications.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} TestSS.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} Panel.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} TheSS.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} IRCNotify.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} WAD.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} CoreginxHelper.pro
+    make ${MAKE_OPTS} distclean
 else
-    qmake Notifications.pro
-    make distclean
-    qmake TestSS.pro
-    make distclean
-    qmake Panel.pro
-    make distclean
-    qmake TheSS.pro
-    make distclean
-    qmake IRCNotify.pro
-    make distclean
-    qmake WAD.pro
-    make distclean
-    qmake CoreginxHelper.pro
-    make distclean
+    qmake ${QMAKE_OPTS} Notifications.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} TestSS.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} Panel.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} TheSS.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} IRCNotify.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} WAD.pro
+    make ${MAKE_OPTS} distclean
+    qmake ${QMAKE_OPTS} CoreginxHelper.pro
+    make ${MAKE_OPTS} distclean
 fi
 
 rm -fv src/*.a
