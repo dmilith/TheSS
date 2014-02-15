@@ -16,7 +16,7 @@ build () {
     MAKE_OPTS_BUILD="-j${JOBS} -Q -s"
     case "${SYSTEM_NAME}" in
         Darwin)
-            MAKE_OPTS_BUILD="-j${JOBS} -silent"
+            MAKE_OPTS_BUILD="-j${JOBS} --silent"
             QMAKE_OPTS="-spec darwin-g++"
             ;;
     esac
