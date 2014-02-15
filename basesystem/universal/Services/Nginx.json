@@ -3,7 +3,7 @@
     "schedulerActions": [
         {
             "cronEntry": "0 0/1 * * * ?",
-            "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload"
+            "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_CONF -t && SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload"
         }
     ],
     "install": {
@@ -13,7 +13,7 @@
     "start": {
         "commands": "
 printf 'Launching Nginx\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf && printf 'Nginx started\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG 2>&1
 "
     },
     "afterStop": {
@@ -21,7 +21,7 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf && printf 'Nginx start
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop && printf 'Nginx stopped\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop && printf 'Nginx stopped\n' >> SERVICE_LOG 2>&1
 "
     },
     "configure": {
@@ -48,7 +48,7 @@ http {
     keepalive_timeout 270;
     error_log SERVICE_LOG;
     server {
-        listen SERVICE_ADDRESS:$(cat SERVICE_PREFIX/.ports/0);
+        listen SERVICE_ADDRESS:SERVICE_PORT;
         server_name SERVICE_DOMAIN SERVICE_ADDRESS;
         location / {
             root SERVICE_PREFIX/html;
@@ -56,12 +56,12 @@ http {
         }
     }
 }
-\" > SERVICE_PREFIX/service.conf
+\" > SERVICE_CONF
 "
     },
     "validate": {
         "commands": "
-SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf && printf 'Nginx started\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -t -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG 2>&1
 ",
         "expectOutput": "test is successful"
     },
@@ -69,7 +69,7 @@ SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf && printf 'Nginx st
         "
 commands": "
 printf 'Reloading Nginx\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_LOG 2>&1
 "
     }
 }

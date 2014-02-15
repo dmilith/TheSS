@@ -9,7 +9,7 @@
     "start": {
         "commands": "
 printf 'Launching DNS server\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/named -4 -n 8 -u nobody -c SERVICE_PREFIX/service.conf -g >> SERVICE_LOG 2>&1 &
+SERVICE_ROOT/exports/named -4 -n 8 -u nobody -c SERVICE_CONF -g >> SERVICE_LOG 2>&1 &
 "
     },
     "stop": {
@@ -117,7 +117,7 @@ M.ROOT-SERVERS.NET.      3600000      AAAA  2001:DC3::35
 ; End of File
 ' > SERVICE_ROOT/etc/root.servers
 
-cat > SERVICE_PREFIX/service.conf <<EOF
+cat > SERVICE_CONF <<EOF
 // Default Bind 9 configuration
 
 options {
@@ -141,7 +141,7 @@ EOF
 
 chown nobody SERVICE_PREFIX
 chown nobody SERVICE_LOG
-chown nobody SERVICE_PREFIX/service.conf
+chown nobody SERVICE_CONF
 chown nobody SERVICE_PID
 chown nobody SERVICE_PREFIX/SERVICE_DOMAIN.conf
 chown nobody SERVICE_ROOT/etc/rndc.key

@@ -9,7 +9,7 @@
     "start": {
         "commands": "
 printf 'Launching Coreginx\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF >> SERVICE_LOG 2>&1
 "
     },
     "afterStop": {
@@ -17,7 +17,7 @@ SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf >> S
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s stop >> SERVICE_LOG 2>&1
 "
     },
     "configure": {
@@ -56,7 +56,7 @@ http {
     access_log off;
 
     server {
-        listen $(cat SERVICE_PREFIX/.ports/0);
+        listen SERVICE_PORT;
         server_name www.SERVICE_DOMAIN;
         server_name_in_redirect off;
         location / {
@@ -66,7 +66,7 @@ http {
     }
 
     server {
-        listen $(cat SERVICE_PREFIX/.ports/0);
+        listen SERVICE_PORT;
         server_name *.SERVICE_DOMAIN;
         server_name_in_redirect off;
         location / {
@@ -78,7 +78,7 @@ http {
     include /home/*/SoftwareData/*/proxy.conf;
     include /Users/*/SoftwareData/*/proxy.conf;
 }
-\" > SERVICE_PREFIX/service.conf
+\" > SERVICE_CONF
 
 mv SERVICE_PREFIX/verknowsys /tmp/verknowsys.$(date +%d%m%Y-%H%M%S)
 export REL_ROOT_DIR=/Users/verknowsys/SoftwareData/Verknowsys
@@ -87,14 +87,14 @@ cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest-release)/ S
     },
     "validate": {
         "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -p SERVICE_PREFIX -t
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -p SERVICE_PREFIX -t
 ",
         "expectOutput": "test is successful"
     },
     "reload": {
         "commands": "
 printf 'Reloading Coreginx\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s reload >> SERVICE_LOG 2>&1
 "
     }
 }

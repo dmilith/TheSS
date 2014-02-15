@@ -31,16 +31,16 @@ pptp:
  allow mode direct
 ' > SERVICE_PREFIX/ppp.conf && ln -s SERVICE_PREFIX/ppp.conf /etc/ppp/ppp.conf
 
-test ! -e SERVICE_PREFIX/service.conf && printf '
+test ! -e SERVICE_CONF && printf '
 localip 10.10.0.1
 remoteip 10.10.0.50-250
-' > SERVICE_PREFIX/service.conf
+' > SERVICE_CONF
 "
     },
     "start": {
         "commands": "
 printf 'Launching Pptpd\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/pptpd --conf SERVICE_PREFIX/service.conf --pidfile SERVICE_PID >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/pptpd --conf SERVICE_CONF --pidfile SERVICE_PID >> SERVICE_LOG 2>&1
 "
     }
 }

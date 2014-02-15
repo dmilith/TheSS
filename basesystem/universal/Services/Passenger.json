@@ -7,18 +7,18 @@
     "start": {
         "commands": "
 printf 'Launching Passenger\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF
 "
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop
 "
     },
     "validate": {
         "commands": "
 test ! -d SERVICE_PREFIX/SERVICE_DOMAIN && mkdir -p SERVICE_PREFIX/SERVICE_DOMAIN
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+test ! -f SERVICE_CONF && printf \"
 worker_processes 2;
 events {
     worker_connections 1024;
@@ -35,22 +35,22 @@ http {
     passenger_ruby SERVICE_ROOT/exports/ruby;
 
     server {
-        listen $(cat SERVICE_PREFIX/.ports/0);
+        listen SERVICE_PORT;
         server_name SERVICE_DOMAIN;
         passenger_enabled on;
         rails_env production;
         root SERVICE_PREFIX/SERVICE_DOMAIN/public;
     }
 }
-\" > SERVICE_PREFIX/service.conf
+\" > SERVICE_CONF
 
-SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf",
+SERVICE_ROOT/exports/nginx -t -c SERVICE_CONF",
         "expectOutput": "test is successful"
     },
     "reload": {
         "commands": "
 printf 'Reloading Passenger\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload
 "
     }
 }

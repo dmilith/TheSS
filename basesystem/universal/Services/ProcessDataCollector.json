@@ -12,12 +12,12 @@
         "commands": "
 printf 'Launching ProcessDataCollector(Redis)\n' >> SERVICE_LOG 2>&1
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
-SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf
+SERVICE_ROOT/exports/redis-server SERVICE_CONF
 "
     },
     "validate": {
         "commands": "
-test ! -f SERVICE_PREFIX/service.conf && printf '
+test ! -f SERVICE_CONF && printf '
 # Default Redis service configuration
 port 0
 unixsocket SERVICE_PREFIX/data-collector.sock
@@ -34,7 +34,7 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_LOG' > SERVICE_PREFIX/service.conf
+logfile SERVICE_LOG' > SERVICE_CONF
 "
     },
     "afterStop": {
