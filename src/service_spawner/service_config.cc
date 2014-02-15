@@ -142,6 +142,52 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     try {
         auto defaults = loadDefaultIgniter();
         auto root = loadIgniter(); // NOTE: the question is.. how will this behave ;]
+
+        auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+        QString content = readFileContents(userIgniter()).trimmed();
+        hash->addData(content.toUtf8(), content.length());
+        this->sha = hash->result().toHex();
+        delete hash;
+
+        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
+        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
+        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
+        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
+        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
+        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR);
+
+        /* replace port pool first */
+        portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
+        QString portsDirLocation = prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
+        logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
+        if (portsPool > 1)
+            if (QDir().exists(portsDirLocation))
+                for (int indx = 1; indx < portsPool; indx++) {
+                    QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
+                    if (not QFile::exists(portsDirLocation + QString::number(indx))) {
+                        logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
+                        uint freePort = registerFreeTcpPort();
+                        writeToFile(portFilePath, QString::number(freePort));
+                    }
+                }
+
+        /* then replace main port */
+        staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
+        QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
+        if (staticPort != -1) { /* defined static port */
+            logTrace() << "Set static port:" << staticPort << "for service" << name;
+            writeToFile(portFilePath, QString::number(staticPort));
+            generatedDefaultPort = QString::number(staticPort);
+        } else {
+            if (not QFile::exists(portFilePath)) {
+                generatedDefaultPort = QString::number(registerFreeTcpPort());
+                logTrace() << "Set random free port:" << generatedDefaultPort << "for service" << name;
+                writeToFile(portFilePath, generatedDefaultPort);
+            } else
+                generatedDefaultPort = readFileContents(portFilePath).trimmed();
+        }
+        Q_ASSERT(not generatedDefaultPort.isEmpty()); /* XXX: temporary, but it's that important */
+
         if (not defaults) {
             QString msg = "Igniters defaults must be always valid. Cannot continue.";
             notification(msg, FATAL);
@@ -161,8 +207,6 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         watchUdpPort = root->get("watchUdpPort", (*defaults)["watchUdpPort"]).asBool();
         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
         resolveDomain = root->get("resolveDomain", (*defaults)["resolveDomain"]).asBool();
-        staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
-        portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
         minimumRequiredDiskSpace = root->get("minimumRequiredDiskSpace", (*defaults)["minimumRequiredDiskSpace"]).asInt();
         repository = root->get("repository", (*defaults)["repository"]).asCString();
         parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
@@ -365,6 +409,11 @@ const QString SvdServiceConfig::prefixDir() {
 }
 
 
+const QString SvdServiceConfig::releaseName() {
+    return sha.right(20) + "." + generatedDefaultPort; /* that's enough (?) */
+}
+
+
 const QString SvdServiceConfig::defaultTemplateFile() {
     /* pick of two possible locations: /SystemUsers/Igniters and ~/Igniters */
 
@@ -438,6 +487,15 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
 
         /* Replace SERVICE_PREFIX */
         ccont = ccont.replace("SERVICE_PREFIX", prefixDir());
+
+        /* Replace SERVICE_RELEASE and related values */
+        ccont = ccont.replace("SERVICE_RELEASE", releaseName() + generatedDefaultPort);
+
+        // todo: add SERVICE_CONFIG,
+        ccont = ccont.replace("SERVICE_CONF", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR + releaseName()) + DEFAULT_SERVICE_CONF_FILE);
+        ccont = ccont.replace("SERVICE_LOG", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR + releaseName()) + DEFAULT_SERVICE_LOG_FILE);
+        ccont = ccont.replace("SERVICE_ENV", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR + releaseName()) + DEFAULT_SERVICE_ENV_FILE);
+        ccont = ccont.replace("SERVICE_PID", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR + releaseName()) + DEFAULT_SERVICE_PID_FILE);
 
         /* Replace SERVICE_DOMAIN */
         QStringList userDomains; // QHostInfo::localHostName();
@@ -528,35 +586,6 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             }
         } else {
             ccont = ccont.replace("SERVICE_ADDRESS", address);
-        }
-
-        /* sanity check for legacy .ports file */
-        QString portsDirLocation = prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
-
-        /* replace port pool first */
-        logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
-        if (portsPool > 1)
-            if (QDir().exists(portsDirLocation))
-                for (int indx = 1; indx < portsPool; indx++) {
-                    QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
-                    if (not QFile::exists(portsDirLocation + QString::number(indx))) {
-                        logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
-                        uint freePort = registerFreeTcpPort();
-                        writeToFile(portFilePath, QString::number(freePort));
-                    }
-                }
-
-        /* then replace main port */
-        QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
-        if (staticPort != -1) { /* defined static port */
-            logTrace() << "Set static port:" << staticPort << "for service" << name;
-            writeToFile(portFilePath, QString::number(staticPort));
-        } else {
-            if (not QFile::exists(portFilePath)) {
-                QString freePort = QString::number(registerFreeTcpPort());
-                logTrace() << "Set random free port:" << freePort << "for service" << name;
-                writeToFile(portFilePath, freePort);
-            }
         }
 
         return ccont;
