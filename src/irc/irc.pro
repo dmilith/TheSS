@@ -10,6 +10,8 @@ TARGET = ../irc
 TEMPLATE = lib
 CONFIG += staticlib
 
+QMAKE_CXXFLAGS += -w
+
 HEADERS   += irc.h
 
 SOURCES   += irc.cc
