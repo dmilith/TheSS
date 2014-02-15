@@ -1,6 +1,8 @@
 #!/bin/sh
 
 readonly BEGIN_TIMER=$(date +%s)
+readonly JOBS="12"
+
 . /etc/sofin.conf.sh
 if [ "$(id -u)" = "0" ]; then
     . /etc/profile_sofin
@@ -11,8 +13,7 @@ note "Loaded Sofin environment"
 
 build () {
     QMAKE_OPTS=""
-    JOBS="12"
-    MAKE_OPTS_BUILD="-j${JOBS} -Q"
+    MAKE_OPTS_BUILD="-j${JOBS} -Q -s"
     case "${SYSTEM_NAME}" in
         Darwin)
             MAKE_OPTS_BUILD="-j${JOBS} -silent"
