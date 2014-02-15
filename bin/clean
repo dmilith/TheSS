@@ -5,35 +5,15 @@ MAKE_OPTS="--silent"
 
 if [ "$(uname)" = "Darwin" ]; then
     QMAKE_OPTS="-spec darwin-g++"
-    qmake ${QMAKE_OPTS} Notifications.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} TestSS.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} Panel.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} TheSS.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} IRCNotify.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} WAD.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} CoreginxHelper.pro
-    make ${MAKE_OPTS} distclean
+    for i in Notifications TestSS Panel TheSS IRCNotify WAD CoreginxHelper DeathWatch; do
+        qmake ${QMAKE_OPTS} ${i}.pro
+        make ${MAKE_OPTS} distclean
+    done
 else
-    qmake ${QMAKE_OPTS} Notifications.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} TestSS.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} Panel.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} TheSS.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} IRCNotify.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} WAD.pro
-    make ${MAKE_OPTS} distclean
-    qmake ${QMAKE_OPTS} CoreginxHelper.pro
-    make ${MAKE_OPTS} distclean
+    for i in Notifications TestSS Panel TheSS IRCNotify WAD CoreginxHelper DeathWatch; do
+        qmake ${QMAKE_OPTS} ${i}.pro
+        make ${MAKE_OPTS} distclean
+    done
 fi
 
 rm -fv src/*.a
