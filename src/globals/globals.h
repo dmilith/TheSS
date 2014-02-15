@@ -110,6 +110,7 @@
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
     #define DEFAULT_SERVICE_ENVS_DIR "/.envs/"
     #define DEFAULT_SERVICE_PIDS_DIR "/.pids/"
+    #define DEFAULT_SERVICE_CONFS_DIR "/.confs/"
 
     #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
     #define DEFAULT_SSL_CA_FILE "/cacert.pem"
