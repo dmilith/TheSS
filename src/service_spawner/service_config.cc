@@ -196,6 +196,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
             QString msg = "Error loading igniter for service: " + serviceName + "! Loading default igniter instead.";
             notification(msg, ERROR);
             root = loadDefaultIgniter();
+            return;
         }
         softwareName = root->get("softwareName", (*defaults)["softwareName"]).asCString();
         autoStart = root->get("autoStart", (*defaults)["autoStart"]).asBool();
