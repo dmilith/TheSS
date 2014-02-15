@@ -6,7 +6,7 @@
     },
     "start": {
         "commands": "
-printf 'Launching Passenger\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Passenger\n' >> SERVICE_LOG 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf
 "
     },
@@ -29,7 +29,7 @@ http {
     default_type application/octet-stream;
     sendfile on;
     keepalive_timeout 270;
-    error_log SERVICE_PREFIX/service.log;
+    error_log SERVICE_LOG;
 
     passenger_root SERVICE_ROOT/lib/passenger;
     passenger_ruby SERVICE_ROOT/exports/ruby;
@@ -49,7 +49,7 @@ SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf",
     },
     "reload": {
         "commands": "
-printf 'Reloading Passenger\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Reloading Passenger\n' >> SERVICE_LOG 2>&1
 SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload
 "
     }

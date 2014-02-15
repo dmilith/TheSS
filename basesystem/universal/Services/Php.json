@@ -6,8 +6,8 @@
     },
     "start": {
         "commands": "
-printf 'Launching Php\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D
+printf 'Launching Php\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PID -D
 "
     },
     "validate": {
@@ -15,7 +15,7 @@ SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_
 test ! -d SERVICE_PREFIX/tmp && mkdir SERVICE_PREFIX/tmp
 test ! -f SERVICE_PREFIX/service.conf && printf \"
 [global]
-    error_log = SERVICE_PREFIX/service.log
+    error_log = SERVICE_LOG
     ;emergency_restart_threshold = 0
     ;emergency_restart_interval = 0
     ;process_control_timeout = 0

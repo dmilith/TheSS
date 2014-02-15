@@ -39,8 +39,8 @@ remoteip 10.10.0.50-250
     },
     "start": {
         "commands": "
-printf 'Launching Pptpd\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/pptpd --conf SERVICE_PREFIX/service.conf --pidfile SERVICE_PREFIX/service.pid >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Pptpd\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/pptpd --conf SERVICE_PREFIX/service.conf --pidfile SERVICE_PID >> SERVICE_LOG 2>&1
 "
     }
 }

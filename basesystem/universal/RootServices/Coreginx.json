@@ -8,16 +8,16 @@
     },
     "start": {
         "commands": "
-printf 'Launching Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Coreginx\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf >> SERVICE_LOG 2>&1
 "
     },
     "afterStop": {
-        "commands": "echo 'Coreginx afterStop' >> SERVICE_PREFIX/service.log"
+        "commands": "echo 'Coreginx afterStop' >> SERVICE_LOG"
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s stop >> SERVICE_LOG 2>&1
 "
     },
     "configure": {
@@ -28,8 +28,8 @@ ln -s SERVICE_PREFIX/verknowsys SERVICE_PREFIX/html
 
 printf \"
 worker_processes 8;
-pid SERVICE_PREFIX/service.pid;
-error_log SERVICE_PREFIX/service.log;
+pid SERVICE_PID;
+error_log SERVICE_LOG;
 events {
     worker_connections 1024;
 }
@@ -82,7 +82,7 @@ http {
 
 mv SERVICE_PREFIX/verknowsys /tmp/verknowsys.$(date +%d%m%Y-%H%M%S)
 export REL_ROOT_DIR=/Users/verknowsys/SoftwareData/Verknowsys
-cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest-release)/ SERVICE_PREFIX/verknowsys >> SERVICE_PREFIX/service.log 2>&1
+cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest-release)/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG 2>&1
 "
     },
     "validate": {
@@ -93,8 +93,8 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -p SERVICE_PREFIX -t
     },
     "reload": {
         "commands": "
-printf 'Reloading Coreginx\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_PREFIX/service.log 2>&1
+printf 'Reloading Coreginx\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_PREFIX/service.conf -s reload >> SERVICE_LOG 2>&1
 "
     }
 }

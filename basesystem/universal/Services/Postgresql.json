@@ -37,13 +37,13 @@ logging_collector = true
     },
     "start": {
         "commands": "
-printf 'Launching Postgresql\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_PREFIX/service.log -o \"-k SERVICE_PREFIX\" start >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Postgresql\n' >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG 2>&1
 "
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG 2>&1
 "
     },
     "babySitter": {

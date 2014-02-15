@@ -28,7 +28,7 @@ SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
 port $(cat SERVICE_PREFIX/.ports/0)
-pidfile SERVICE_PREFIX/service.pid
+pidfile SERVICE_PID
 dir SERVICE_PREFIX/database
 dbfilename database.rdf
 daemonize yes
@@ -40,6 +40,6 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log\" > SERVICE_PREFIX/service.conf"
+logfile SERVICE_LOG\" > SERVICE_PREFIX/service.conf"
     }
 }

@@ -12,7 +12,7 @@
     },
     "start": {
         "commands": "
-printf 'Launching Redis\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Redis\n' >> SERVICE_LOG 2>&1
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
 SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf
 "
@@ -24,7 +24,7 @@ printf \"
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
 port $(cat SERVICE_PREFIX/.ports/0)
-pidfile SERVICE_PREFIX/service.pid
+pidfile SERVICE_PID
 dir SERVICE_PREFIX/database
 dbfilename database.rdf
 daemonize yes
@@ -36,11 +36,11 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log
+logfile SERVICE_LOG
 \" > SERVICE_PREFIX/service.conf
 printf \"
 REDIS_URL=redis://SERVICE_ADDRESS:$(cat SERVICE_PREFIX/.ports/0)
-\" > SERVICE_PREFIX/service.env
+\" > SERVICE_ENV
 "
     }
 }
