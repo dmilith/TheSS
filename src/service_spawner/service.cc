@@ -417,11 +417,6 @@ void SvdService::installSlot() {
 
     logDebug() << "Checking notification dirs";
     getOrCreateDir(config->prefixDir());
-    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
-    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
-    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
-    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
-    getOrCreateDir(config->prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
     if (config->webApp)
         getOrCreateDir(config->prefixDir() + releasePostfix());
 
