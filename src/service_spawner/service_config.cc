@@ -451,7 +451,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         auto fileDomains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
         if (fileDomains.isEmpty()) {
             userDomains << DEFAULT_SYSTEM_DOMAIN; /* localhost */
-            touch(userDomains.first());
+            touch(domainFilePath + userDomains.first());
             ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain */
         } else {
             /* if any domains found.. */
