@@ -11,9 +11,11 @@ note "Loaded Sofin environment"
 
 build () {
     QMAKE_OPTS=""
-    MAKE_OPTS_BUILD="-j12 --silent"
+    JOBS="12"
+    MAKE_OPTS_BUILD="-j${JOBS} -Q"
     case "${SYSTEM_NAME}" in
         Darwin)
+            MAKE_OPTS_BUILD="-j${JOBS} -silent"
             QMAKE_OPTS="-spec darwin-g++"
             ;;
     esac
