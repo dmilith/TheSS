@@ -939,7 +939,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     logDebug() << "Current release:" << latestRelease;
-    auto latestReleaseDir = servicePath + "/releases/" + latestRelease;
+    auto latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + latestRelease;
     installDependencies(serviceName, latestReleaseDir);
     logDebug() << "Release path:" << latestReleaseDir;
     auto appDetector = new WebAppTypeDetector(latestReleaseDir);
