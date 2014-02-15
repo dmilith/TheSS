@@ -49,7 +49,7 @@ build () {
 
         *)
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
-            (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
+            (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
 
             (qmake ${QMAKE_OPTS} DeathWatch.pro) || exit 1
             (note "Building DeathWatch" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddw\n") || exit 1
@@ -58,7 +58,7 @@ build () {
             (note "Building WAD" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
-            (note "Building Notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built notifications system\n") || exit 1
+            (note "Building Notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built Notifications\n") || exit 1
 
             (qmake ${QMAKE_OPTS} IRCNotify.pro) || exit 1
             (note "Building IrcNotify" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdirc_notify\n") || exit 1

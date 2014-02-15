@@ -11,17 +11,14 @@ HEADERS   += service.h \
              ../notifications/notifications.h \
              ../death_watch/death_watch.h \
              process.h \
-             data_collector.h \
              service_config.h \
              utils.h \
              service_watcher.h \
              user_watcher.h \
              file_events_manager.h \
              cron_entry.h \
-             logger.h \
-             ../notifications/notifications.h
+             logger.h
 SOURCES   += service.cc \
-             data_collector.cc \
              process.cc \
              service_config.cc \
              utils.cc \
