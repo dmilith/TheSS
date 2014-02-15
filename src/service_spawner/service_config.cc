@@ -440,77 +440,63 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         ccont = ccont.replace("SERVICE_PREFIX", prefixDir());
 
         /* Replace SERVICE_DOMAIN */
-        QString userDomain = ""; // QHostInfo::localHostName();
+        QStringList userDomains; // QHostInfo::localHostName();
         QString domainFilePath = prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR;
-        auto domains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
-        if (not domains.isEmpty()) {
-            Q_FOREACH(QString domainFP, domains) {
-                userDomain = domainFP;
-            }
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
+
+        /* touch igniter domains */
+        Q_FOREACH(auto dom, domains)
+            touch(domainFilePath + dom);
+
+        /* check domain files */
+        auto fileDomains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
+        if (fileDomains.isEmpty()) {
+            userDomains << DEFAULT_SYSTEM_DOMAIN; /* localhost */
+            touch(userDomains.first());
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain */
         } else {
-            userDomain = QHostInfo::localHostName();
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
-            touch(domainFilePath + userDomain);
+            /* if any domains found.. */
+            Q_FOREACH(QString domFile, fileDomains) {
+                userDomains << domFile;
+                touch(domainFilePath + domFile);
+            }
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain elem */
         }
-
-        // TODO: XXX: fixme: support existing domains in domains dir!
-        //
-
-        //     /* predefined value of domain from igniter has a higher priority over dynamic one */
-        //     if (QFile::exists(domainFilePath + )) {
-
-        //     } else {
-        //         /* use domain from igniter if domain file doesn't exists */
-        //         logTrace() << "Using igniter domain";
-        //         userDomain = domain;
-        //         // writeToFile(domainFilePath, userDomain);
-        //         touch()
-        //     }
-        //     ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
-        // } else {
-        //     if (not QFile::exists(domainFilePath)) { //(domain.isEmpty()) {
-        //         writeToFile(domainFilePath, userDomain);
-        //     } else {
-        //         QString aDomain = readFileContents(domainFilePath).trimmed();
-        //         userDomain = aDomain;
-        //     }
-        //     ccont = ccont.replace("SERVICE_DOMAIN", userDomain); /* replace with user domain content */
-        // }
 
         /* Replace SERVICE_ADDRESS */
         QString address = QString(DEFAULT_LOCAL_ADDRESS);
         QString userAddress = "";
         QHostInfo info;
-        if (!userDomain.isEmpty()) {
+        if (!userDomains.isEmpty()) {
             if (resolveDomain) { /* by default domain resolve is done for each domain given by user */
-                info = QHostInfo::fromName(QString(userDomain));
-                if (!info.addresses().isEmpty()) {
-                    auto list = info.addresses();
-                    QString replaceWith = "";
-                    Q_FOREACH(QHostAddress value, list) {
-                        logDebug() << "Processing an address:" << value.toString();
-                        userAddress = value.toString();
-                        if (userAddress == DEFAULT_LOCAL_ADDRESS) {
-                            logDebug() << "Ignoring localhost address for domain resolve.";
-                        } else if (userAddress.contains(":")) {
-                            logDebug() << "Ignoring IPV6 address:" << userAddress;
-                        } else {
-                            replaceWith = userAddress;
-                            logDebug() << "Resolved address of domain " << userDomain << " is " << userAddress;
+                Q_FOREACH(auto domdom, userDomains) {
+                    info = QHostInfo::fromName(domdom);
+                    if (!info.addresses().isEmpty()) {
+                        auto list = info.addresses();
+                        QString replaceWith = "";
+                        Q_FOREACH(QHostAddress value, list) {
+                            logDebug() << "Processing an address:" << value.toString();
+                            userAddress = value.toString();
+                            if (userAddress == DEFAULT_LOCAL_ADDRESS) {
+                                logDebug() << "Ignoring localhost address for domain resolve.";
+                            } else if (userAddress.contains(":")) {
+                                logDebug() << "Ignoring IPV6 address:" << userAddress;
+                            } else {
+                                replaceWith = userAddress;
+                                logDebug() << "Resolved address of domain " << domdom << " is " << userAddress;
+                            }
                         }
-                    }
-                    /* replace address */
-                    if (replaceWith.isEmpty()) {
-                        logDebug() << "Fallback to local address for domain:" << userDomain;
-                        ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
+                        /* replace address */
+                        if (replaceWith.isEmpty()) {
+                            logDebug() << "Fallback to local address for domain:" << domdom;
+                            ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
+                        } else {
+                            logDebug() << "Final result of domain resolve is:" << replaceWith;
+                            ccont = ccont.replace("SERVICE_ADDRESS", replaceWith); /* replace with user address content */
+                        }
                     } else {
-                        logDebug() << "Final result of domain resolve is:" << replaceWith;
-                        ccont = ccont.replace("SERVICE_ADDRESS", replaceWith); /* replace with user address content */
+                        logDebug() << "Empty domain resolve of: " << domdom << "for service:" << name << "Setting local address: " << DEFAULT_LOCAL_ADDRESS;
+                        ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
                     }
-                } else {
-                    logDebug() << "Empty domain resolve of: " << userDomain << "for service:" << name << "Setting local address: " << DEFAULT_LOCAL_ADDRESS;
-                    ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
                 }
 
             } else { /* don't resolve domain, just take first address available.. */
@@ -545,7 +531,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         }
 
         /* sanity check for legacy .ports file */
-        QString portsDirLocation = prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR);
+        QString portsDirLocation = prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
 
         /* replace port pool first */
         logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
