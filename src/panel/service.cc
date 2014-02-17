@@ -22,6 +22,7 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     this->panel = panel;
     this->baseDir = baseDir;
     name = baseDir.baseName();
+    auto config = new SvdServiceConfig(name);
     basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
 
     /* security assertions */
@@ -34,10 +35,11 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     }
     this->dir = QDir(basePath);
 
-    this->log = new Tail(this, basePath, DEFAULT_SERVICE_LOG_FILE);
-    this->conf = new Tail(this, basePath, DEFAULT_SERVICE_CONF_FILE);
-    this->env = new Tail(this, basePath, DEFAULT_SERVICE_ENV_FILE);
+    this->log = new Tail(this, basePath + DEFAULT_SERVICE_LOGS_DIR + config->releaseName(), DEFAULT_SERVICE_LOG_FILE);
+    this->conf = new Tail(this, basePath + DEFAULT_SERVICE_CONFS_DIR + config->releaseName(), DEFAULT_SERVICE_CONF_FILE);
+    this->env = new Tail(this, basePath + DEFAULT_SERVICE_ENVS_DIR + config->releaseName(), DEFAULT_SERVICE_ENV_FILE);
 
+    config->deleteLater();
     refresh();
 }
 
