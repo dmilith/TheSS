@@ -56,7 +56,9 @@ void PanelService::refresh(){
     bool se = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE); // XXX: FIXME: no more .errors file!!
     autostart = QFile::exists(basePath + AUTOSTART_TRIGGER_FILE);
 
-    pid = readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).trimmed();
+    auto config = new SvdServiceConfig(name);
+    pid = readFileContents(basePath + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed();
+    config->deleteLater();
 
     auto domains = QDir(basePath + DEFAULT_SERVICE_DOMAINS_DIR).entryList(QDir::Files | QDir::NoDotAndDotDot);
     QString domainsAmount = "(" + QString::number(domains.size()) + ")";
