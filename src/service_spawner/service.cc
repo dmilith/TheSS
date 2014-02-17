@@ -213,7 +213,7 @@ void SvdService::babySitterSlot() {
         return;
     } else
         logDebug() << "Babysitter invoked for:" << name;
-    QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
+    QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
     /* support separated http url check: */
     if (config->watchHttpAddresses.isEmpty()) {
