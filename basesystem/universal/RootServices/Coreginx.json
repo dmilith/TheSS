@@ -81,7 +81,7 @@ http {
 \" > SERVICE_CONF
 
 mv SERVICE_PREFIX/verknowsys /tmp/verknowsys.$(date +%d%m%Y-%H%M%S)
-export REL_ROOT_DIR=/Users/verknowsys/SoftwareData/Verknowsys
+export REL_ROOT_DIR=/Users/dmilith/SoftwareData/Verknowsys
 cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest-release)/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG 2>&1
 "
     },
