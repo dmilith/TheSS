@@ -729,17 +729,17 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
     Q_FOREACH(auto deps, conts.split("\n")) {
         deps[0] = deps.at(0).toUpper(); /* capitalize */
         QString fileBase = QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/";
-        if (not QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) {
+        if (not QFile::exists(fileBase + deps + "/" + deps.toLower() + DEFAULT_SERVICE_INSTALLED_EXT)) {
             installMissing = true;
 
             // XXX: hacks, obviously:
             if (deps.endsWith("magick")) {
                 deps = deps.replace("magick", "Magick");
-                if (QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) installMissing = false;
+                if (QFile::exists(fileBase + deps + "/" + deps.toLower() + DEFAULT_SERVICE_INSTALLED_EXT)) installMissing = false;
             }
             if (deps.endsWith("-usock")) {
                 deps = deps.replace("-usock", "");
-                if (QFile::exists(fileBase + deps + "/" + deps.toLower() + ".installed")) installMissing = false;
+                if (QFile::exists(fileBase + deps + "/" + deps.toLower() + DEFAULT_SERVICE_INSTALLED_EXT)) installMissing = false;
             }
         }
         logInfo() << "Checking installation state of dependency:" << deps;
