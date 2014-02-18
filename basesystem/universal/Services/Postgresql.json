@@ -37,6 +37,8 @@ logging_collector = true
     },
     "start": {
         "commands": "
+printf 'Linking configuration file\n' >> SERVICE_LOG 2>&1
+rm -f SERVICE_CONF ; ln -s SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF
 printf 'Launching Postgresql\n' >> SERVICE_LOG 2>&1
 SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG 2>&1
 "
