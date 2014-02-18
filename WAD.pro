@@ -9,4 +9,4 @@ include(src/Common.pro)
 TEMPLATE           = subdirs
 SUBDIRS            = src/deployer
 
-src/deployer.depends = src/cutelogger src/quazip src/hiredis src/jsoncpp src/notifications src/death_watch src/service_spawner
+deployer.depends = src/cutelogger src/quazip src/hiredis src/jsoncpp src/notifications src/death_watch src/service_spawner
