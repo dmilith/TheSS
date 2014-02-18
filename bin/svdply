@@ -170,8 +170,8 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     if [ -f "${APP_SSL_CERT}" ]; then
         if [ -f "${APP_SSL_KEY}" ]; then
             note "Uploading given SSL CERT: ${APP_SSL_CERT} and KEY: ${APP_SSL_KEY}"
-            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_CERT}" "${APP_USER}@${mirror}:~/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
-            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_KEY}" "${APP_USER}@${mirror}:~/SoftwareData/${APP_NAME}/SSL/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
+            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_CERT}" "${APP_USER}@${mirror}:~/SoftwareData/${APP_NAME}/.ssls/${APP_DOMAIN}.crt" > /dev/null 2>&1 || error "Failed copying certificate!"
+            ${SCP_BIN} ${SCP_OPTIONS} "${APP_SSL_KEY}" "${APP_USER}@${mirror}:~/SoftwareData/${APP_NAME}/.ssls/${APP_DOMAIN}.key" > /dev/null 2>&1 || error "Failed copying key!"
             note "Successfully copied certificate: ${APP_SSL_CERT}, and key: ${APP_SSL_KEY}."
         else
             error "APP_SLL_CERT specified, but APP_SSL_KEY file is missing!"

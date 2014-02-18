@@ -17,8 +17,9 @@ const QStringList getStandaloneDeps() {
 
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
     QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
-    QString sslDir = getOrCreateDir(servicePath + DEFAULT_SSL_DIR);
+    QString sslDir = getOrCreateDir(servicePath + DEFAULT_SERVICE_SSLS_DIR);
     QString appProxyContent = readFileContents(latestReleaseDir + DEFAULT_APP_PROXY_FILE).trimmed();
+    auto svConfig = new SvdServiceConfig(serviceName);
     if (not sslPemPath.isEmpty()) { /* ssl pem file given */
         logWarn() << "NYI";
 
@@ -162,9 +163,9 @@ server { \n\
 
         case PhpSite: {
             QString prefix = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
-writeToFile(prefix + "/service.conf", "[global] \n\
+writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_CONF_FILE, "[global] \n\
     pid = " + prefix + DEFAULT_SERVICE_PID_FILE + " \n\
-    error_log = " + prefix + "/service.log \n\
+    error_log = " + prefix + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " \n\
     ;emergency_restart_threshold = 0 \n\
     ;emergency_restart_interval = 0 \n\
     ;process_control_timeout = 0 \n\
@@ -247,10 +248,10 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     default_socket_timeout = 60 \n\
     cgi.force_redirect = On \n\
 [mysql] \n\
-    mysql.default_socket=\"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
+    mysql.default_socket=\"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
 [Pdo_mysql] \n\
     pdo_mysql.cache_size = 2000 \n\
-    pdo_mysql.default_socket= \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
+    pdo_mysql.default_socket= \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
 [Syslog] \n\
     define_syslog_variables  = Off \n\
 [mail function] \n\
@@ -277,7 +278,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     mysql.max_persistent = -1 \n\
     mysql.max_links = -1 \n\
     mysql.default_port = \n\
-    mysql.default_socket = \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
+    mysql.default_socket = \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
     mysql.default_host = \n\
     mysql.default_user = \n\
     mysql.default_password = \n\
@@ -289,7 +290,7 @@ writeToFile(prefix + "/service.ini", "[PHP] \n\
     mysqli.max_links = -1 \n\
     mysqli.cache_size = 2000 \n\
     mysqli.default_port = 3306 \n\
-    mysqli.default_socket = \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/service.sock\" \n\
+    mysqli.default_socket = \"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
     mysqli.default_host = \n\
     mysqli.default_user = \n\
     mysqli.default_pw = \n\
@@ -458,7 +459,7 @@ void generateDatastoreSetup(QList<WebDatastore> dbs, QString serviceName, QStrin
         case Postgresql: {
             switch (appType) {
                 case RubySite: {
-                    destinationFile = servicePath + "/shared/" + stage + "/config/database.yml";
+                    destinationFile = servicePath + DEFAULT_SHARED_DIR + stage + "/config/database.yml";
                     if (not QFile::exists(destinationFile))
                         writeToFile(destinationFile,
 stage + ": \n\
@@ -467,8 +468,8 @@ stage + ": \n\
   database: " + databaseName + " \n\
   username: " + databaseName + " \n\
   pool: 5 \n\
-  port: <%= File.read(ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/.ports/0\") %> \n\
-  host: <%= ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/\" %> \n");
+  port: <%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + "/.ports/0\") %> \n\
+  host: <%= ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + "/\" %> \n");
                 } break;
                 default: break;
             }
@@ -478,7 +479,7 @@ stage + ": \n\
         case Mysql: {
             switch (appType) {
                 case RubySite: {
-                    destinationFile = servicePath + "/shared/" + stage + "/config/database.yml";
+                    destinationFile = servicePath + DEFAULT_SHARED_DIR + stage + "/config/database.yml";
                     if (not QFile::exists(destinationFile))
                         writeToFile(destinationFile,
 stage + ": \n\
@@ -486,7 +487,7 @@ stage + ": \n\
   encoding: utf8 \n\
   database: " + databaseName + " \n\
   username: " + databaseName + " \n\
-  socket: <%= File.read(ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/service.sock\") %> \n\
+  socket: <%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + DEFAULT_SERVICE_SOCKET_FILE + "\") %> \n\
   host: " + DEFAULT_LOCAL_ADDRESS + " \n");
                 } break;
                 default: break;
@@ -497,7 +498,7 @@ stage + ": \n\
         case Mongo: {
             switch (appType) {
                 case RubySite: {
-                    destinationFile = servicePath + "/shared/" + stage + "/config/mongoid.yml";
+                    destinationFile = servicePath + DEFAULT_SHARED_DIR + stage + "/config/mongoid.yml";
                     if (not QFile::exists(destinationFile))
                         writeToFile(destinationFile,
 stage + ": \n\
@@ -505,7 +506,7 @@ stage + ": \n\
     default: \n\
       database: " + databaseName + " \n\
       hosts: \n\
-        - " + DEFAULT_LOCAL_ADDRESS + ":<%= File.read(ENV['HOME'] + \"/SoftwareData/" + getDbName(db) + "/.ports/0\") %> \n");
+        - " + DEFAULT_LOCAL_ADDRESS + ":<%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + "/.ports/0\") %> \n");
                 } break;
                 default: break;
             }
@@ -525,7 +526,7 @@ stage + ": \n\
         case Sphinx: {
             switch (appType) {
                 case RubySite: {
-                    destinationFile = servicePath + "/shared/" + stage + "/config/sphinx.yml";
+                    destinationFile = servicePath + DEFAULT_SHARED_DIR + stage + "/config/sphinx.yml";
                     if (not QFile::exists(destinationFile))
                         writeToFile(destinationFile,
 stage + ": \n\
@@ -539,7 +540,7 @@ stage + ": \n\
         case NoDB: { /* NoDB fallback to SQLite3 driver */
             switch (appType) {
                 case RubySite: {
-                    destinationFile = servicePath + "/shared/" + stage + "/config/database.yml";
+                    destinationFile = servicePath + DEFAULT_SHARED_DIR + stage + "/config/database.yml";
                     if (not QFile::exists(destinationFile))
                         writeToFile(destinationFile,
 stage + ": \n\
@@ -627,10 +628,10 @@ void prepareHttpProxy(QString& servicePath, WebAppTypes appType, QString& latest
 
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage) {
     logInfo() << "Preparing shared dir for service start";
-    getOrCreateDir(servicePath + "/shared/" + stage + "/public/shared"); /* /public usually exists */
-    getOrCreateDir(servicePath + "/shared/" + stage + "/log");
-    getOrCreateDir(servicePath + "/shared/" + stage + "/tmp");
-    getOrCreateDir(servicePath + "/shared/" + stage + "/config");
+    getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/public/shared"); /* /public usually exists */
+    getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/log");
+    getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/tmp");
+    getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/config");
     getOrCreateDir(latestReleaseDir + "/public");
     logInfo() << "Purging app release /log and /tmp dirs.";
     removeDir(latestReleaseDir + "/log");

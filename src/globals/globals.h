@@ -43,7 +43,6 @@
     #define LOGS_DIR "/Logs"
     #define DEFAULT_PROXY_FILE "/proxy.conf"
     #define DEFAULT_APP_PROXY_FILE "/.proxy.conf" /* addition to proxy from app repo */
-    #define DEFAULT_SSL_DIR "/SSL/"
     #define DEFAULT_PUBLIC_DIR "/Public/"
     #define DEFAULT_HOME_DIR "/Users/"
     #define DEFAULT_USER_APPS_DIR "/Apps"
@@ -105,12 +104,14 @@
 
     #define DEFAULT_STANDALONE_DIR "/standalone/"
     #define DEFAULT_RELEASES_DIR "/releases/"
+    #define DEFAULT_SHARED_DIR "/shared/"
     #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains/"
     #define DEFAULT_SERVICE_LOGS_DIR "/.logs/"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
     #define DEFAULT_SERVICE_ENVS_DIR "/.envs/"
     #define DEFAULT_SERVICE_PIDS_DIR "/.pids/"
     #define DEFAULT_SERVICE_CONFS_DIR "/.confs/"
+    #define DEFAULT_SERVICE_SSLS_DIR "/.ssls/"
 
     #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
     #define DEFAULT_SSL_CA_FILE "/cacert.pem"
