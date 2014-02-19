@@ -951,9 +951,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
     QList<WebDatastore> datastores;
     datastores = detectDatastores(deps, depsFile);
+    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
-    /* pre env */
-    QString preEnvFileAdd = ".pre";
+    QString envFilePath = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + latestRelease) + DEFAULT_SERVICE_ENV_FILE;
 
     switch (appType) {
 
@@ -1053,7 +1053,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies, true) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG 2>&1 &\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG 2>&1 &\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -1065,7 +1065,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (QFile::exists(latestReleaseDir + "/Gemfile")) {
                 logInfo() << "Installing bundle for stage:" << stage << "of Rails Site";
                 getOrCreateDir(servicePath + "/bundle-" + stage);
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, true) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> SERVICE_LOG");
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> SERVICE_LOG");
                 clne->waitForFinished(-1);
             }
 
@@ -1076,8 +1076,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             generateServicePorts(servicePath, 2); /* XXX: 2 ports for node by default */
 
-            /* generate env and write it to service.env file */
-            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            /* write to service env file */
             QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
@@ -1088,7 +1087,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "NODE_DOMAIN=" + domain + "\n";
             envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
             envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENVS_DIR + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
@@ -1099,11 +1097,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies, true) + "bin/app >> SERVICE_LOG 2>&1 &" + "\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &" + "\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
-            clne->spawnProcess("cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies, true) + " npm install >> SERVICE_LOG");
+            clne->spawnProcess("cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG");
             clne->waitForFinished(-1);
 
         } break;
@@ -1124,7 +1122,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult += "\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies, true) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \n echo 'Php app ready' >> SERVICE_LOG\"}\n}";
+            jsonResult += "\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \n echo 'Php app ready' >> SERVICE_LOG\"}\n}";
 
         } break;
 
