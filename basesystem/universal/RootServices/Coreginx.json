@@ -82,7 +82,7 @@ http {
 
 mv SERVICE_PREFIX/verknowsys /tmp/verknowsys.$(date +%d%m%Y-%H%M%S)
 export REL_ROOT_DIR=/Users/dmilith/SoftwareData/Verknowsys
-cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest-release)/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG
+cp -vR ${REL_ROOT_DIR}/releases/SERVICE_RELEASE/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG
 "
     },
     "validate": {
