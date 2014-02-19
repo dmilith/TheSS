@@ -62,13 +62,11 @@ void PanelService::refresh(){
 
     auto domains = QDir(basePath + DEFAULT_SERVICE_DOMAINS_DIR).entryList(QDir::Files | QDir::NoDotAndDotDot);
     QString domainsAmount = "(" + QString::number(domains.size()) + ") ";
-    if (not domains.isEmpty()) {
-        QString df = domains.first();
-        if (df == DEFAULT_LOCAL_ADDRESS and domains.length() > 1)
-            df = domains.at(1);
-        domain = domainsAmount + df;
-    } else
-        domain = domainsAmount + "localhost";
+    if (domains.length() > 1) { /* more than just default localhost */
+        domains.removeAll(DEFAULT_LOCAL_ADDRESS);
+        QFile::remove(basePath + DEFAULT_SERVICE_DOMAINS_DIR + DEFAULT_SYSTEM_DOMAIN);
+    }
+    domain = domainsAmount + domains.first();
 
     port = readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     if (domain.isEmpty()) domain = "-";

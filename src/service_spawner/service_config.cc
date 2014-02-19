@@ -521,7 +521,11 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             touch(domainFilePath + userDomains.first());
             ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain */
         } else {
-            /* if any domains found.. */
+            /* if any domains found, but not prefer localhost if it's already there.. */
+            if (fileDomains.length() > 1) { /* more than just default localhost */
+                fileDomains.removeAll(DEFAULT_LOCAL_ADDRESS);
+                QFile::remove(domainFilePath + DEFAULT_SYSTEM_DOMAIN);
+            }
             Q_FOREACH(QString domFile, fileDomains) {
                 userDomains << domFile;
                 touch(domainFilePath + domFile);
@@ -533,7 +537,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         QString address = QString(DEFAULT_LOCAL_ADDRESS);
         QString userAddress = "";
         QHostInfo info;
-        if (!userDomains.isEmpty()) {
+        if (not userDomains.isEmpty()) {
             if (resolveDomain) { /* by default domain resolve is done for each domain given by user */
                 Q_FOREACH(auto domdom, userDomains) {
                     info = QHostInfo::fromName(domdom);
