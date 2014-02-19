@@ -468,7 +468,7 @@ stage + ": \n\
   database: " + databaseName + " \n\
   username: " + databaseName + " \n\
   pool: 5 \n\
-  port: <%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + "/.ports/0\") %> \n\
+  port: <%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER + "\") %> \n\
   host: <%= ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + "/\" %> \n");
                 } break;
                 default: break;
@@ -506,7 +506,7 @@ stage + ": \n\
     default: \n\
       database: " + databaseName + " \n\
       hosts: \n\
-        - " + DEFAULT_LOCAL_ADDRESS + ":<%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + "/.ports/0\") %> \n");
+        - " + DEFAULT_LOCAL_ADDRESS + ":<%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + getDbName(db) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER + "\") %> \n");
                 } break;
                 default: break;
             }
@@ -756,7 +756,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
         auto clne = new SvdProcess("install_dependencies", getuid(), false);
         auto svConfig = new SvdServiceConfig(serviceName);
         QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
-        clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + serviceLog);
+        clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && sofin dependencies >> " + serviceLog);
         clne->waitForFinished(-1);
         clne->deleteLater();
         svConfig->deleteLater();
@@ -809,7 +809,7 @@ void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QStringList 
     auto svConfig = new SvdServiceConfig(serviceName);
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     logInfo() << "Invoking bin/build of project (if exists)";
-    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build " + stage + " >> " + serviceLog);
+    clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build " + stage + " >> " + serviceLog);
     clne->waitForFinished(-1);
     clne->deleteLater();
     svConfig->deleteLater();
