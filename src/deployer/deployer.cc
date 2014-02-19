@@ -223,6 +223,11 @@ int main(int argc, char *argv[]) {
             logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << "MiB)";
     }
 
+    /* write domain file */
+    auto svConfig = new SvdServiceConfig(serviceName);
+    touch(svConfig->prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR + domain);
+    svConfig->deleteLater();
+
     QString repositoryRootPath = QString(getenv("HOME")) + DEFAULT_GIT_REPOSITORY_DIR;
     getOrCreateDir(repositoryRootPath);
     QString repositoryPath = repositoryRootPath + serviceName + ".git";
