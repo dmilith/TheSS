@@ -772,7 +772,7 @@ void SvdService::stopSlot(bool withDeps) {
         logTrace() << "Loading service igniter" << name;
         process->spawnProcess(config->stop->commands); // invoke igniter stop, and then try to look for service.pid in prefix directory:
 
-        QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
+        QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
         if (QFile::exists(servicePidFile)) {
             uint pid = readFileContents(servicePidFile).toUInt();
             logDebug() << "Service pid found:" << QString::number(pid) << "in file:" << servicePidFile;
