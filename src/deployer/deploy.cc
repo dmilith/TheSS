@@ -648,7 +648,7 @@ void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QStr
     auto svConfig = new SvdServiceConfig(serviceName);
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     logDebug() << "Service log destination:" << serviceLog;
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
+    clne->spawnProcess("cd " + latestReleaseDir + " && test ! -L public/shared && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
     clne->waitForFinished(-1);
     clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " &&\n\
         cd ../../shared/" + stage + "/config/ \n\
