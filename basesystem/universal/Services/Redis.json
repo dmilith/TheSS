@@ -12,7 +12,7 @@
     },
     "start": {
         "commands": "
-printf 'Launching Redis\n' >> SERVICE_LOG 2>&1
+printf 'Launching Redis\n' >> SERVICE_LOG
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
 SERVICE_ROOT/exports/redis-server SERVICE_CONF
 "

@@ -51,9 +51,9 @@ ifconfig-pool-persist SERVICE_PREFIX/ipp.txt 0
     },
     "start": {
         "commands": "
-printf 'Launching Openvpn\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/openvpn --config SERVICE_CONF --writepid SERVICE_PID --nice -3 >> SERVICE_LOG 2>&1
-test -f /etc/pf.conf && service pf reload && printf 'PF reload finished.\n' >> SERVICE_LOG 2>&1
+printf 'Launching Openvpn\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/openvpn --config SERVICE_CONF --writepid SERVICE_PID --nice -3 >> SERVICE_LOG
+test -f /etc/pf.conf && service pf reload && printf 'PF reload finished.\n' >> SERVICE_LOG
 "
     }
 }

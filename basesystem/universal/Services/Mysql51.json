@@ -13,7 +13,7 @@
     },
     "start": {
         "commands": "
-printf 'Launching Mysql51\n' >> SERVICE_LOG 2>&1
+printf 'Launching Mysql51\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_CONF --skip-grant-tables -C utf8 > SERVICE_LOG 2>&1 &
 "
     },

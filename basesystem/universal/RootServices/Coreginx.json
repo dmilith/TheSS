@@ -8,8 +8,8 @@
     },
     "start": {
         "commands": "
-printf 'Launching Coreginx\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF >> SERVICE_LOG 2>&1
+printf 'Launching Coreginx\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF >> SERVICE_LOG
 "
     },
     "afterStop": {
@@ -17,7 +17,7 @@ SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF >> SERVICE_LOG 2>&1
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s stop >> SERVICE_LOG 2>&1
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s stop >> SERVICE_LOG
 "
     },
     "configure": {
@@ -82,7 +82,7 @@ http {
 
 mv SERVICE_PREFIX/verknowsys /tmp/verknowsys.$(date +%d%m%Y-%H%M%S)
 export REL_ROOT_DIR=/Users/dmilith/SoftwareData/Verknowsys
-cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest-release)/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG 2>&1
+cp -vR ${REL_ROOT_DIR}/releases/$(cat ${REL_ROOT_DIR}/service.latest-release)/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG
 "
     },
     "validate": {
@@ -93,8 +93,8 @@ SERVICE_ROOT/exports/nginx -c SERVICE_CONF -p SERVICE_PREFIX -t
     },
     "reload": {
         "commands": "
-printf 'Reloading Coreginx\n' >> SERVICE_LOG 2>&1
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s reload >> SERVICE_LOG 2>&1
+printf 'Reloading Coreginx\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s reload >> SERVICE_LOG
 "
     }
 }

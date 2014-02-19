@@ -34,7 +34,7 @@ test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 7
     },
     "start": {
         "commands": "
-printf 'Launching Mongodb\n' >> SERVICE_LOG 2>&1
+printf 'Launching Mongodb\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/mongod -f SERVICE_CONF
 "
     }

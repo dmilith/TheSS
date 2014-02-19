@@ -7,10 +7,10 @@
         "cronEntry": "*/3 * * * * ?",
         "commands": "
 export DATE=$(date +%d%m%Y-%H%M%S)
-printf \"${DATE} - Updating users..\n\" >> SERVICE_LOG 2>&1
-ttys_updater >> SERVICE_LOG 2>&1
+printf \"${DATE} - Updating users..\n\" >> SERVICE_LOG
+ttys_updater >> SERVICE_LOG
 export AF_DATE=$(date +%d%m%Y-%H%M%S)
-printf \"${AF_DATE} - Update complete.\n\" >> SERVICE_LOG 2>&1
+printf \"${AF_DATE} - Update complete.\n\" >> SERVICE_LOG
 "
     }
     ]

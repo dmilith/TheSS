@@ -4,7 +4,7 @@
 {
     "formatVersion": "0.80",
 
-/* defines name of entry in ~/SoftwareData/ */
+/* defines name of entry in ~/SoftwareData/ and also an Igniter name */
     "name": "No-Name",
 
     "domains": [],

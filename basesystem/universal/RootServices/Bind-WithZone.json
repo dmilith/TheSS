@@ -11,19 +11,19 @@
     },
     "start": {
         "commands": "
-printf 'Launching DNS server\n' >> SERVICE_LOG 2>&1
+printf 'Launching DNS server\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/named -4 -n 8 -u nobody -c SERVICE_CONF -g >> SERVICE_LOG 2>&1 &
 "
     },
     "stop": {
         "commands": "
-printf 'Stopping DNS server\n' >> SERVICE_LOG 2>&1
+printf 'Stopping DNS server\n' >> SERVICE_LOG
 # kill -SIGTERM $(cat SERVICE_PID)
 "
     },
     "configure": {
         "commands": "
-printf \"Configuring DNS server\" >> SERVICE_LOG 2>&1
+printf \"Configuring DNS server\" >> SERVICE_LOG
 test ! -f SERVICE_ROOT/etc/rndc.key && SERVICE_ROOT/exports/rndc-confgen -a >> SERVICE_LOG 2>&1 &
 
 printf '
@@ -177,7 +177,7 @@ chown nobody SERVICE_ROOT/etc/root.servers
     },
     "reload": {
         "commands": "
-printf 'Reloading Bind\n' >> SERVICE_LOG 2>&1
+printf 'Reloading Bind\n' >> SERVICE_LOG
 kill -SIGHUP $(cat SERVICE_PID)
 "
     }

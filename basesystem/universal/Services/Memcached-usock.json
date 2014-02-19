@@ -7,7 +7,7 @@
     },
     "start": {
         "commands": "
-printf 'Launching Memcached\n' >> SERVICE_LOG 2>&1
+printf 'Launching Memcached\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/memcached -s SERVICE_PREFIX/service.sock -P SERVICE_PID -d
 "
     }

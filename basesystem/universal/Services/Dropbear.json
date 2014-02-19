@@ -6,15 +6,15 @@
     },
     "start": {
         "commands": "
-printf 'Launching Dropbear\n' >> SERVICE_LOG 2>&1
-mkdir -p $HOME/.ssh > /dev/null 2>&1
-test ! -f $HOME/.ssh/hostkey.dropbear && dropbearkey -t rsa -f $HOME/.ssh/id_rsa.dropbear >> SERVICE_LOG 2>&1
+printf 'Launching Dropbear\n' >> SERVICE_LOG
+mkdir -p $HOME/.ssh > /dev/null
+test ! -f $HOME/.ssh/hostkey.dropbear && dropbearkey -t rsa -f $HOME/.ssh/id_rsa.dropbear >> SERVICE_LOG
 if [ ! -f $HOME/.ssh/id_rsa.dropbear ]; then
-    printf 'Generating user private key and updating local authorized_keys.\n' >> SERVICE_LOG 2>&1
+    printf 'Generating user private key and updating local authorized_keys.\n' >> SERVICE_LOG
     dropbearkey -t rsa -f $HOME/.ssh/id_rsa.dropbear
     dropbearkey -y -f $HOME/.ssh/id_rsa.dropbear | grep ssh-rsa >> $HOME/.ssh/authorized_keys
 fi
 SERVICE_ROOT/exports/dropbear -F -E -P SERVICE_PID -K 35 -p $(sofin port Dropbear) -r $HOME/.ssh/hostkey.dropbear -s -g -W 524288 2>> SERVICE_LOG &
-test \"$?\" = \"0\" && printf 'Dropbear started\n' >> SERVICE_LOG 2>&1
+test \"$?\" = \"0\" && printf 'Dropbear started\n' >> SERVICE_LOG
 "   }
 }

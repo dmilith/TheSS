@@ -6,7 +6,7 @@
     },
     "start": {
         "commands": "
-printf 'Launching Elasticsearch\n' >> SERVICE_LOG 2>&1
+printf 'Launching Elasticsearch\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/elasticsearch \\
 -p SERVICE_PID \\
 -f -Xmx2g \\

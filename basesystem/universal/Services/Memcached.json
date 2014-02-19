@@ -6,7 +6,7 @@
     },
     "start": {
         "commands": "
-printf 'Launching Memcached\n' >> SERVICE_LOG 2>&1
+printf 'Launching Memcached\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/memcached -l SERVICE_ADDRESS -p SERVICE_PORT -P SERVICE_PID -d
 "
     }
