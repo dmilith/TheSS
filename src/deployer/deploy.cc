@@ -568,13 +568,16 @@ void generateServicePorts(QString servicePath, int amount) {
     getOrCreateDir(portsDir);
     QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
     // if (not QFile::exists(portFilePath)) {
-    int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+    QTime midnight(0, 0, 0);
+    qsrand(midnight.msecsTo(QTime::currentTime()));
+    uint port = registerFreeTcpPort(abs((qrand() + 1024) % 65535));
     logDebug() << "Generated main port:" << QString::number(port);
     writeToFile(portFilePath, QString::number(port));
     // }
     for (int i = 2; i < amount + 1; i++) {
         QString backupPortFilePath = portsDir + QString::number(i - 1);
-        int port = registerFreeTcpPort(abs((rand() + 1024) % 65535));
+        qsrand(midnight.msecsTo(QTime::currentTime()));
+        int port = registerFreeTcpPort(abs((qrand() + 1024) % 65535));
         writeToFile(backupPortFilePath, QString::number(port));
     }
 }
