@@ -498,13 +498,13 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         ccont = ccont.replace("SERVICE_PREFIX", prefixDir());
 
         /* Replace SERVICE_RELEASE and related values */
-        ccont = ccont.replace("SERVICE_RELEASE", releaseName() + generatedDefaultPort);
+        ccont = ccont.replace("SERVICE_RELEASE", releaseName());
 
         // todo: add SERVICE_CONFIG,
-        ccont = ccont.replace("SERVICE_CONF", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR + releaseName() + generatedDefaultPort) + DEFAULT_SERVICE_CONF_FILE);
-        ccont = ccont.replace("SERVICE_LOG", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR + releaseName() + generatedDefaultPort) + DEFAULT_SERVICE_LOG_FILE);
-        ccont = ccont.replace("SERVICE_ENV", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR + releaseName() + generatedDefaultPort) + DEFAULT_SERVICE_ENV_FILE);
-        ccont = ccont.replace("SERVICE_PID", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR + releaseName() + generatedDefaultPort) + DEFAULT_SERVICE_PID_FILE);
+        ccont = ccont.replace("SERVICE_CONF", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR + releaseName()) + DEFAULT_SERVICE_CONF_FILE);
+        ccont = ccont.replace("SERVICE_LOG", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR + releaseName()) + DEFAULT_SERVICE_LOG_FILE);
+        ccont = ccont.replace("SERVICE_ENV", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR + releaseName()) + DEFAULT_SERVICE_ENV_FILE);
+        ccont = ccont.replace("SERVICE_PID", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR + releaseName()) + DEFAULT_SERVICE_PID_FILE);
 
         /* Replace SERVICE_DOMAIN */
         QStringList userDomains; // QHostInfo::localHostName();
