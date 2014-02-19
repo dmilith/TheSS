@@ -75,6 +75,7 @@ void SvdDataCollector::collectorGatherSlot() {
             auto currTime = QDateTime::currentDateTime().toTime_t();
             logTrace() << "CurrTime:" << currTime;
 
+            std::srand(std::time(0));
             redisReply *reply = (redisReply*)redisCommand(context, "HMSET procname-%d:%d:%d cpu %d rss %d ioin %d iout %d", rand() % 24, rand() % 60, rand() % 60, rand() % 100, rand() % 100, rand() % 100, rand() % 100); // XXX: hardcoded PoC
 
             logTrace() << "HMSET REPLY:" << reply->str;
