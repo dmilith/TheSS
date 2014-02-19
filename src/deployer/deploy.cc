@@ -700,17 +700,17 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
     }
 
     auto svConfig = new SvdServiceConfig(serviceName);
-    QString command = QString("export DATE=\"app-$(date +%d%m%Y-%H%M%S)\"") +
+    QString command = QString("export REL=\"" + svConfig->releaseName() + "\"") +
         "&& cd " + servicePath + " > " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
         "&& sofin reload > " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
-        "&& git clone " + sourceRepositoryPath + " releases/${DATE}" + " >> " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
-        "&& cd " + servicePath + "/releases/${DATE} " + " 2>&1 " +
+        "&& git clone " + sourceRepositoryPath + " releases/${REL}" + " >> " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
+        "&& cd " + servicePath + "/releases/${REL} " + " 2>&1 " +
         "&& git checkout -b " + branch + " >> " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " + /* branch might already exists */
         "; git pull origin " + branch + " >> " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 " +
         "; cat " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE + " > " + servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE +
         "; cat " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE + " >> " + servicePath + DEFAULT_SERVICE_RELEASES_HISTORY +
-        "; printf \"${DATE}\n\" > " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE +
-        "&& printf \"Repository update successful in release ${DATE}\" >> " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ";
+        "; printf \"${REL}\n\" > " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE +
+        "&& printf \"Repository update successful in release ${REL}\" >> " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ";
     logDebug() << "COMMAND:" << command;
 
     clne->spawnProcess(command);
