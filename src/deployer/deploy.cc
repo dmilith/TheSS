@@ -164,7 +164,7 @@ server { \n\
         case PhpSite: {
             QString prefix = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
 writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_CONF_FILE, "[global] \n\
-    pid = " + prefix + DEFAULT_SERVICE_PID_FILE + " \n\
+    pid = " + prefix + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE + " \n\
     error_log = " + prefix + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " \n\
     ;emergency_restart_threshold = 0 \n\
     ;emergency_restart_interval = 0 \n\
@@ -761,20 +761,21 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
 }
 
 
-void requestDependenciesRunningOf(const QStringList appDependencies) {
+void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies) {
+    auto svConfig = new SvdServiceConfig(serviceName);
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
         QString location = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + val);
 
         int steps = 0;
-        int aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+        int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
         logInfo() << "Requesting dependency presence:" << val << "with pid:" << QString::number(aPid);
-        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PID_FILE;
+        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
         while (not pidIsAlive(aPid)) {
             QFile::remove(location + START_TRIGGER_FILE);
             touch(location + START_TRIGGER_FILE);
             sleep(1);
-            aPid = readFileContents(location + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+            aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             steps++;
 
             /* check for tcp port of dependency? */
@@ -795,6 +796,7 @@ void requestDependenciesRunningOf(const QStringList appDependencies) {
                 break;
             }
         }
+        svConfig->deleteLater();
     }
 }
 
@@ -840,11 +842,12 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 
 
 QString buildEnv(QString& serviceName, QStringList deps) {
-    QString serviceEnvFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENV_FILE;
+    auto svConfig = new SvdServiceConfig(serviceName);
+    QString serviceEnvFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
     QString result = " ";
 
     Q_FOREACH(QString fragment, deps) {
-        QString serviceDepsFile = getServiceDataDir(fragment) + DEFAULT_SERVICE_ENV_FILE;
+        QString serviceDepsFile = getServiceDataDir(fragment) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
         if (QFile::exists(serviceDepsFile)) {
             QStringList innerContents = readFileContents(serviceDepsFile).trimmed().split('\n');
             logDebug() << "innerCont:" << innerContents;
@@ -861,6 +864,7 @@ QString buildEnv(QString& serviceName, QStringList deps) {
         }
         logDebug() << "Built env string:" << result;
     }
+    svConfig->deleteLater();
     return result;
 }
 
@@ -989,7 +993,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
             /* write to service env file */
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
@@ -1009,10 +1013,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + svConfig->releaseName() + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
             envEntriesString += "RUBY_ENV=" + stage + "\n";
@@ -1045,18 +1049,18 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
                         logDebug() << "Worker entry:" << procfileTail << "on port:" << servPort;
-                        startResultJson += " cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 & "; /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
+                        startResultJson += " cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -p " + servPort + " -P SERVICE_PREFIX" + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 & "; /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
                     } else {
                         logInfo() << "Found an entry:" << procfileHead;
-                        QString procPidFile = procfileHead + ".pid";
+                        QString procPidFile = "/" + procfileHead + ".pid";
 
                         serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
                             /* (start commands, stop commands) : */
-                            "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -P " + servicePath + "/" + procPidFile + " -L " + servicePath + DEFAULT_SERVICE_LOG_FILE + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ",
+                            "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec " + procfileTail + " -P " + servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + procPidFile + " -L " + servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 ",
 
                             /* , stop commands) : */
-                            "svddw $(cat " + servicePath + "/" + procPidFile + ") >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 "
+                            "svddw $(cat " + servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + procPidFile + ") >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 "
 
                         );
                     }
@@ -1078,7 +1082,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p $(sofin port " + serviceName + ") -P SERVICE_PREFIX" + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE + " >> SERVICE_PREFIX" + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1 &" + "\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -1113,7 +1117,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "NODE_DOMAIN=" + domain + "\n";
             envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
             envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
-            QString envFilePath = servicePath + DEFAULT_SERVICE_ENV_FILE;
+            QString envFilePath = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
             writeToFile(envFilePath, envEntriesString);
 
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
@@ -1161,7 +1165,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logDebug() << "Generating igniter:" << igniterFile;
     writeToFile(igniterFile, jsonResult);
 
-    requestDependenciesRunningOf(appDependencies);
+    requestDependenciesRunningOf(serviceName, appDependencies);
     Q_FOREACH(auto datastore, datastores) {
         logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
         switch (datastore) {
