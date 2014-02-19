@@ -644,18 +644,19 @@ void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QStr
     logInfo() << "Symlinking and copying shared directory in current release";
     auto svConfig = new SvdServiceConfig(serviceName);
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
+    logDebug() << "Service log destination:" << serviceLog;
+    clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
     clne->waitForFinished(-1);
-    clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
+    clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " &&\n\
         cd ../../shared/" + stage + "/config/ \n\
         for i in *; do \n\
-            cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + serviceLog + "\n\
+            cp -v $(pwd)/$i " + latestReleaseDir + "/" + svConfig->releaseName() + "/config/$i >> " + serviceLog + "\n\
         done \n\
     ");
     clne->waitForFinished(-1);
-    clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + serviceLog);
+    clne->spawnProcess(" cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && ln -sv ../../shared/" + stage + "/log log >> " + serviceLog);
     clne->waitForFinished(-1);
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + serviceLog);
+    clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + serviceLog);
     clne->waitForFinished(-1);
     clne->deleteLater();
     svConfig->deleteLater();
