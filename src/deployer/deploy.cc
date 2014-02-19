@@ -1016,7 +1016,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString envFilePath = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + svConfig->releaseName() + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
             envEntriesString += "RUBY_ENV=" + stage + "\n";
