@@ -628,7 +628,7 @@ void prepareHttpProxy(QString& servicePath, WebAppTypes appType, QString& latest
 
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage) {
     logInfo() << "Preparing shared dir for service start";
-    getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/public/shared"); /* /public usually exists */
+    getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/public/shared");
     getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/log");
     getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/tmp");
     getOrCreateDir(servicePath + DEFAULT_SHARED_DIR + stage + "/config");
@@ -645,7 +645,7 @@ void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QStr
     auto svConfig = new SvdServiceConfig(serviceName);
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     logDebug() << "Service log destination:" << serviceLog;
-    clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
     clne->waitForFinished(-1);
     clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " &&\n\
         cd ../../shared/" + stage + "/config/ \n\
