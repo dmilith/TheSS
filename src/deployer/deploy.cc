@@ -846,11 +846,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 }
 
 
-QString buildEnv(QString& serviceName, QStringList deps, bool preEnv) {
-    auto svConfig = new SvdServiceConfig(serviceName);
-    auto contentEnv = svConfig->releaseName();
-    if (preEnv)
-        contentEnv = ""; /* transitional environment setup */
+QString buildEnv(QString& serviceName, QStringList deps, QString contentEnv) {
     QString serviceEnvFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + contentEnv + DEFAULT_SERVICE_ENV_FILE;
     QString result = " ";
 
@@ -1040,7 +1036,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             appDependencies = filterSpawnableDependencies(deps);
 
             jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Ruby\", \"webApp\": true, ";
-            QString environment = buildEnv(serviceName, appDependencies, true);
+            QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             // logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             QString startResultJson = ""; /* command that actually launches main app */
@@ -1059,8 +1055,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
-                        logDebug() << "Worker entry:" << procfileTail << "on port:" << servPort;
-                        startResultJson += " cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies, true) + " bundle exec " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID" + " >> SERVICE_LOG"; /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
+                        logDebug() << "Worker entry:" << procfileTail << "on port:" << svPort;
+                        startResultJson += " cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID" + " >> SERVICE_LOG"; /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
                     } else {
                         logInfo() << "Found an entry:" << procfileHead;
                         // QString procPidFile = "/" + procfileHead + ".pid";
@@ -1068,7 +1064,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
                             /* (start commands, stop commands) : */
-                            "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies, true) + " bundle exec " + procfileTail + " -P SERVICE_PID." + procfileHead + " -L SERVICE_LOG" + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
+                            "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID." + procfileHead + " -L SERVICE_LOG" + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
 
                             /* , stop commands) : */
                             "svddw $(cat SERVICE_PID." + procfileHead + ") >> SERVICE_LOG"
@@ -1136,7 +1132,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             appDependencies = filterSpawnableDependencies(deps);
 
             jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Node\", \"webApp\": true, \"portsPool\": 2, ";
-            QString environment = buildEnv(serviceName, appDependencies, true);
+            QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd " + latestReleaseDir + " && \n" + buildEnv(serviceName, appDependencies, true) + "bin/app >> SERVICE_LOG 2>&1 &" + "\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
@@ -1221,17 +1217,17 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (QFile::exists(latestReleaseDir + "/Rakefile")) {
                 logInfo() << "Rakefile found, running database migrations";
                 if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
-                    clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + serviceLog);
+                    clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bundle exec rake db:create >> " + serviceLog);
                     clne->waitForFinished(-1);
                 }
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> " + serviceLog);
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bundle exec rake db:migrate >> " + serviceLog);
                 clne->waitForFinished(-1);
             } else
                 logInfo() << "No Rakefile found. Skipping standard rake tasks";
 
             if (QFile::exists(latestReleaseDir + "/Rakefile") and QDir().exists(latestReleaseDir + "/app/assets")) {
                 logInfo() << "Building assets for web-app:" << serviceName;
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + serviceLog);
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bundle exec rake assets:precompile >> " + serviceLog);
                 clne->waitForFinished(-1);
             }
             break;
