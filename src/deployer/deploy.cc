@@ -374,7 +374,7 @@ fastcgi_param  SERVER_PORT        $server_port; \n\
 fastcgi_param  SERVER_NAME        $server_name; \n\
 fastcgi_param  PHP_ENV            " + stage + "; \n\
 fastcgi_param  PHP_APP_NAME       " + serviceName + "; \n\
-fastcgi_param  PHP_ROOT           " + latestReleaseDir + "; \n\
+# fastcgi_param  PHP_ROOT           " + latestReleaseDir + "; \n\
 fastcgi_param  PHP_PORT           " + port + "; \n\
 fastcgi_param  PHP_DOMAIN         " + domain + "; \n");
             return "\n\
@@ -808,7 +808,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
     QString elmLast = appDependencies.at(appDependencies.size() - 1);
     elmLast[0] = elmLast.at(0).toUpper();
     jsonResult += "\"" + elmLast + "\"], ";
-    jsonResult += QString("\n\n\"configure\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
+    jsonResult += QString("\n\n\"configure_off\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
 
     logDebug() << "DEBUG: jsonResult:" << jsonResult;
     return jsonResult;
@@ -951,7 +951,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
     QList<WebDatastore> datastores;
     datastores = detectDatastores(deps, depsFile);
-    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
     QString envFilePath = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + latestRelease) + DEFAULT_SERVICE_ENV_FILE;
 
@@ -964,6 +963,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             jsonResult += "\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_LOG\"}\n}";
 
             generateServicePorts(servicePath);
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
 
@@ -972,7 +972,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
             envEntriesString += "STATIC_ENV=" + stage + "\n";
             envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
-            envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
+            // envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "STATIC_PORT=" + servPort + "\n";
             envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
             writeToFile(envFilePath, envEntriesString);
@@ -983,6 +983,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case RubySite: {
 
             generateServicePorts(servicePath);
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
             logInfo() << "Building environment for stage:" << stage;
@@ -992,7 +993,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "RAKE_ENV=" + stage + "\n";
             envEntriesString += "RUBY_ENV=" + stage + "\n";
             envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
-            envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
+            // envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "RUBY_PORT=" + servPort + "\n";
             envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
             writeToFile(envFilePath, envEntriesString);
@@ -1003,7 +1004,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             // logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            QString startResultJson = ""; /* command that actually launches main app */
+            // QString startResultJson = ""; /* command that actually launches main app */
+            QString serviceLog = servicePath + DEFAULT_SERVICE_LOGS_DIR + latestRelease + DEFAULT_SERVICE_LOG_FILE;
 
             QMap<QString, QString> serviceWorkers; /* additional workers of service: (startCommands, stopCommands) */
             QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
@@ -1011,16 +1013,25 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 QStringList entries = readFileContents(procFile).trimmed().split("\n");
                 logInfo() << "Proceeding with Procfile entries:" << entries;
 
+                QString svPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
                 Q_FOREACH(QString entry, entries) {
                     QString procfileHead = entry.split(":").at(0);
                     QString procfileTail = entry.split(":").at(1);
-                    QString svPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
                     procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT"); /* replace $PORT value of Procfile if exists */
 
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
                         logDebug() << "Worker entry:" << procfileTail << "on port:" << svPort;
-                        startResultJson += " cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID" + " >> SERVICE_LOG"; /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
+                        // startResultJson += " ";
+                        /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
+
+                        serviceWorkers.insert(
+                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG",
+
+                            /* , stop commands) : */
+                            "svddw $(cat SERVICE_PID) >> SERVICE_LOG"
+                        );
+
                     } else {
                         logInfo() << "Found an entry:" << procfileHead;
                         // QString procPidFile = "/" + procfileHead + ".pid";
@@ -1028,10 +1039,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
                             /* (start commands, stop commands) : */
-                            "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID." + procfileHead + " -L SERVICE_LOG" + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
+                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
 
                             /* , stop commands) : */
-                            "svddw $(cat SERVICE_PID." + procfileHead + ") >> SERVICE_LOG"
+                            "svddw $(cat SERVICE_PID) >> SERVICE_LOG"
 
                         );
                     }
@@ -1042,9 +1053,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 Q_FOREACH(QString part, serviceWorkers.keys()) { /* keys => start commands */
                     jsonResult += part + " &&\n";
                 }
-                jsonResult += startResultJson;
+                jsonResult += " true ;";
                 jsonResult += "\"}, \n\n\"stop\": {\"commands\": \"";
                 Q_FOREACH(QString acmd, serviceWorkers.keys()) {
+                    logDebug() << "ACMD:" << acmd;
                     QString cmd = serviceWorkers.take(acmd);
                     jsonResult += cmd + " ;\n";
                 }
@@ -1053,21 +1065,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG 2>&1 &\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
             logInfo() << "Gathering SSL CA certs from:" << cacertLocation << "if necessary.";
-            clne->spawnProcess("cd " + servicePath + " && test ! -f " + DEFAULT_SSL_CA_FILE + " && curl -C - -L -O " + cacertLocation + " >> SERVICE_LOG");
+            clne->spawnProcess("cd " + servicePath + " && test ! -f " + DEFAULT_SSL_CA_FILE + " && curl -C - -L -O " + cacertLocation + " >> " + serviceLog);
             clne->waitForFinished(-1);
-
-            if (QFile::exists(latestReleaseDir + "/Gemfile")) {
-                logInfo() << "Installing bundle for stage:" << stage << "of Rails Site";
-                getOrCreateDir(servicePath + "/bundle-" + stage);
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> SERVICE_LOG");
-                clne->waitForFinished(-1);
-            }
 
         } break;
 
@@ -1075,13 +1080,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case NodeSite: {
 
             generateServicePorts(servicePath, 2); /* XXX: 2 ports for node by default */
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
             QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
             logInfo() << "Building environment for stage:" << stage;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
-            envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
+            // envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "NODE_ENV=" + stage + "\n";
             envEntriesString += "NODE_PORT=" + servPort + "\n";
             envEntriesString += "NODE_DOMAIN=" + domain + "\n";
@@ -1117,6 +1123,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             #endif
 
             generateServicePorts(servicePath);
+            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString deps = readFileContents(depsFile).trimmed();
@@ -1136,7 +1143,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* ---- the magic barrier after igniter is defined. we'll have stable config->releaseName() ---- */
 
-
     auto svConfig = new SvdServiceConfig(serviceName);
 
     logInfo() << "Writing web-app release current/previous versions";
@@ -1148,6 +1154,57 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     auto moveProcess = new SvdProcess("move_built_web_app", getuid(), false);
     QString oldRD = latestReleaseDir;
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
+
+    // /* now we can generate environment again for destination app */
+    // envEntriesString = "";
+    // QString envFilePathDest = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName()) + DEFAULT_SERVICE_ENV_FILE;
+    // switch (appType) {
+    //     case StaticSite: {
+    //         /* write to service env file */
+    //         logInfo() << "Building environment for stage:" << stage << "in file:" << envFilePathDest;
+    //         envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+    //         envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+    //         envEntriesString += "STATIC_ENV=" + stage + "\n";
+    //         envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
+    //         // envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
+    //         envEntriesString += "STATIC_PORT=" + servPort + "\n";
+    //         envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
+    //         writeToFile(envFilePathDest, envEntriesString);
+
+    //     } break;
+    //     case RubySite: {
+    //         /* write to service env file */
+    //         envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+    //         envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
+    //         envEntriesString += "RAILS_ENV=" + stage + "\n";
+    //         envEntriesString += "RAKE_ENV=" + stage + "\n";
+    //         envEntriesString += "RUBY_ENV=" + stage + "\n";
+    //         envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
+    //         envEntriesString += "RUBY_PORT=" + servPort + "\n";
+    //         envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
+    //         writeToFile(envFilePathDest, envEntriesString);
+
+    //     } break;
+    //     case NodeSite: {
+    //         QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
+    //         /* write to service env file */
+    //         logInfo() << "Building environment for stage:" << stage;
+    //         envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+    //         envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
+    //         envEntriesString += "NODE_ENV=" + stage + "\n";
+    //         envEntriesString += "NODE_PORT=" + servPort + "\n";
+    //         envEntriesString += "NODE_DOMAIN=" + domain + "\n";
+    //         envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
+    //         envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
+    //         writeToFile(envFilePathDest, envEntriesString);
+
+    //     } break;
+    //     case PhpSite: {
+
+    //     } break;
+    // }
+    // logWarn() << "Written bullshit:" << envEntriesString;
+
     moveProcess->spawnProcess("cp -R " + oldRD + "/ " + latestReleaseDir + " ; ");
     moveProcess->waitForFinished(-1);
     logInfo() << "to:" << latestReleaseDir;
@@ -1184,36 +1241,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         }
     }
 
-    /* spawn bin/build */
-    logInfo() << "Invoking bin/build of project if exists";
-    clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && test -x bin/build && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/build " + stage + " >> " + serviceLog);
-    clne->waitForFinished(-1);
-    /* -- */
-
-    /* prepare http proxy */
-    logInfo() << "Generating http proxy configuration for web-app";
-    QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-    QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
-    if (validateNginxEntry(servicePath, contents)) {
-        logDebug() << "Generated proxy contents:" << contents;
-        writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
-    } else {
-        logWarn() << "Web-App proxy autogeneration failed. It might be a failure in generated nginx proxy file or user input. Proxy file generation skipped!";
-    }
-    /* -- */
-
     logDebug() << "Setting configured state for service:" << serviceName;
     touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
 
     logInfo() << "Finalizing environment setup of service:" << serviceName;
-    writeToFile(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE,
-        readFileContents(
-            getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + DEFAULT_SERVICE_ENV_FILE).trimmed());
-    QFile::remove(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + DEFAULT_SERVICE_ENV_FILE);
+    // writeToFile(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE,
+    //     readFileContents(
+    //         getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + DEFAULT_SERVICE_ENV_FILE).trimmed());
+    // QFile::remove(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + DEFAULT_SERVICE_ENV_FILE);
 
     switch (appType) {
         case RubySite:
-
+            if (QFile::exists(latestReleaseDir + "/Gemfile")) {
+                logInfo() << "Installing bundle for stage:" << stage << "of Ruby Site";
+                getOrCreateDir(servicePath + "/bundle-" + stage);
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + serviceLog);
+                clne->waitForFinished(-1);
+            }
             if (QFile::exists(latestReleaseDir + "/Rakefile")) {
                 logInfo() << "Rakefile found, running database migrations";
                 if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
@@ -1240,9 +1284,31 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     }
 
+        /* spawn bin/build */
+    logInfo() << "Invoking bin/build of project if exists";
+    clne->spawnProcess("cd " + latestReleaseDir + "/" + svConfig->releaseName() + " && test -x bin/build && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/build " + stage + " >> " + serviceLog);
+    clne->waitForFinished(-1);
+    /* -- */
+
+    /* prepare http proxy */
+    logInfo() << "Generating http proxy configuration for web-app";
+    QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+    QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
+    if (validateNginxEntry(servicePath, contents)) {
+        logDebug() << "Generated proxy contents:" << contents;
+        writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+    } else {
+        logWarn() << "Web-App proxy autogeneration failed. It might be a failure in generated nginx proxy file or user input. Proxy file generation skipped!";
+    }
+    /* -- */
+
     if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
         touch(servicePath + AUTOSTART_TRIGGER_FILE);
-    startWithoutDependencies(servicePath);
+
+    if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+        touch(servicePath + DEFAULT_SERVICE_RUNNING_FILE);
+
+    // startWithoutDependencies(servicePath);
     clne->deleteLater();
     svConfig->deleteLater();
 }
