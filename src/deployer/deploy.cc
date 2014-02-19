@@ -702,17 +702,16 @@ void cloneRepository(QString& serviceName, QString& branch, QString& domain) {
 
     auto svConfig = new SvdServiceConfig(serviceName);
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
-    QString command = QString("export RELEASE=\"" + svConfig->releaseName() + "\"") +
-        "&& cd " + servicePath +
+    QString command = "cd " + servicePath +
         "&& sofin reload" +
-        "&& git clone " + sourceRepositoryPath + " releases/${RELEASE}" + " >> " + serviceLog +
-        "&& cd " + servicePath + "/releases/${RELEASE} " +
+        "&& git clone " + sourceRepositoryPath + " " + getServiceDataDir(serviceName) + DEFAULT_RELEASES_DIR + svConfig->releaseName() + " >> " + serviceLog +
+        "&& cd " + servicePath + svConfig->releaseName() + " " +
         "&& git checkout -b " + branch + " >> " + serviceLog + /* branch might already exists */
         "; git pull origin " + branch + " >> " + serviceLog +
         "; cat " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE + " > " + servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE +
         "; cat " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE + " >> " + servicePath + DEFAULT_SERVICE_RELEASES_HISTORY +
-        "; printf \"${RELEASE}\n\" > " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE +
-        "&& printf \"Repository update successful in release ${RELEASE}\n\" >> " + serviceLog;
+        "; printf \"" + svConfig->releaseName() + "\n\" > " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE +
+        "&& printf \"Repository update successful in release: " + svConfig->releaseName() + "\n\" >> " + serviceLog;
     logDebug() << "COMMAND:" << command;
 
     clne->spawnProcess(command);
