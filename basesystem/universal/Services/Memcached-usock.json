@@ -1,6 +1,5 @@
 {
     "softwareName": "Memcached",
-    "domain": "localhost",
     "watchPort": false,
     "install": {
         "commands": "sofin get memcached",
