@@ -238,7 +238,7 @@ int main(int argc, char *argv[]) {
     logInfo() << "Deploy successful. Cleaning deploying state.";
     QFile::remove(wadPidFile);
 
-    QString webServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    writeToFile(webServicePidFile + WEB_APP_PID_FILE_POSTFIX_NEXT, readFileContents(webServicePidFile).trimmed());
+    // QString webServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
+    // writeToFile(webServicePidFile + WEB_APP_PID_FILE_POSTFIX_NEXT, readFileContents(webServicePidFile).trimmed());
     return EXIT_SUCCESS;
 }
