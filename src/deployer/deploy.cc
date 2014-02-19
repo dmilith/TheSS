@@ -643,25 +643,29 @@ void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QStr
     auto clne = new SvdProcess("shared_symlinks", getuid(), false);
     logInfo() << "Symlinking and copying shared directory in current release";
     auto svConfig = new SvdServiceConfig(serviceName);
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> SERVICE_LOG");
+    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
     clne->waitForFinished(-1);
     clne->spawnProcess("cd " + latestReleaseDir + " &&\n\
         cd ../../shared/" + stage + "/config/ \n\
         for i in *; do \n\
-            cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> SERVICE_LOG \n\
+            cp -v $(pwd)/$i " + latestReleaseDir + "/config/$i >> " + serviceLog + "\n\
         done \n\
     ");
     clne->waitForFinished(-1);
-    clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> SERVICE_LOG");
+    clne->spawnProcess(" cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/log log >> " + serviceLog);
     clne->waitForFinished(-1);
-    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> SERVICE_LOG");
+    clne->spawnProcess("cd " + latestReleaseDir + " && ln -sv ../../shared/" + stage + "/tmp tmp >> " + serviceLog);
     clne->waitForFinished(-1);
     clne->deleteLater();
     svConfig->deleteLater();
 }
 
 
-void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& domain) {
+void cloneRepository(QString& serviceName, QString& branch, QString& domain) {
+    QString repositoryRootPath = QString(getenv("HOME")) + DEFAULT_GIT_REPOSITORY_DIR;
+    getOrCreateDir(repositoryRootPath);
+    QString sourceRepositoryPath = repositoryRootPath + serviceName + ".git";
     if (not QDir().exists(sourceRepositoryPath)) {
         logError() << "No source git repository found:" << sourceRepositoryPath;
         raise(SIGTERM);
@@ -673,17 +677,13 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
         getOrCreateDir(servicePath);
     }
 
-    /* create "deploying" state */
-    touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
-    logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << "for service:" << serviceName;
-
     logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
     touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
 
-    getOrCreateDir(servicePath + "/releases/");
+    getOrCreateDir(servicePath + DEFAULT_RELEASES_DIR);
 
     logInfo() << "Cleaning old deploys - over count of:" << QString::number(MAX_DEPLOYS_TO_KEEP);
-    QStringList gatheredReleases = QDir(servicePath + "/releases/").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
+    QStringList gatheredReleases = QDir(servicePath + DEFAULT_RELEASES_DIR).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
     QStringList releases;
     if (gatheredReleases.size() > MAX_DEPLOYS_TO_KEEP) {
         for (int i = 0; i < MAX_DEPLOYS_TO_KEEP; i++) {
@@ -692,25 +692,26 @@ void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QStrin
         logDebug() << "Releases left:" << releases;
         Q_FOREACH(QString release, gatheredReleases) {
             if (not releases.contains(release)) {
-                logDebug() << "Removing old release:" << servicePath + "/releases/" + release;
-                clne->spawnProcess("rm -rf " + servicePath + "/releases/" + release);
+                logDebug() << "Removing old release:" << servicePath + DEFAULT_RELEASES_DIR + release;
+                clne->spawnProcess("rm -rf " + servicePath + DEFAULT_RELEASES_DIR + release);
                 clne->waitForFinished(-1);
             }
         }
     }
 
     auto svConfig = new SvdServiceConfig(serviceName);
-    QString command = QString("export DATE=\"app-$(date +%d%m%Y-%H%M%S)\"") +
-        "&& cd " + servicePath + " > SERVICE_LOG" +
-        "&& sofin reload >> SERVICE_LOG" +
-        "&& git clone " + sourceRepositoryPath + " releases/${DATE}" + " >> SERVICE_LOG " +
-        "&& cd " + servicePath + "/releases/${DATE} " + " 2>&1 " +
-        "&& git checkout -b " + branch + " >> SERVICE_LOG" + /* branch might already exists */
-        "; git pull origin " + branch + " >> SERVICE_LOG" +
+    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
+    QString command = QString("export RELEASE=\"" + svConfig->releaseName() + "\"") +
+        "&& cd " + servicePath +
+        "&& sofin reload" +
+        "&& git clone " + sourceRepositoryPath + " releases/${RELEASE}" + " >> " + serviceLog +
+        "&& cd " + servicePath + "/releases/${RELEASE} " +
+        "&& git checkout -b " + branch + " >> " + serviceLog + /* branch might already exists */
+        "; git pull origin " + branch + " >> " + serviceLog +
         "; cat " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE + " > " + servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE +
         "; cat " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE + " >> " + servicePath + DEFAULT_SERVICE_RELEASES_HISTORY +
-        "; printf \"${DATE}\n\" > " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE +
-        "&& printf \"Repository update successful in release ${DATE}\n\" >> SERVICE_LOG";
+        "; printf \"${RELEASE}\n\" > " + servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE +
+        "&& printf \"Repository update successful in release ${RELEASE}\n\" >> " + serviceLog;
     logDebug() << "COMMAND:" << command;
 
     clne->spawnProcess(command);
@@ -753,7 +754,8 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir) {
         logInfo() << "Installing service dependencies:" << conts.replace("\n", ", ");
         auto clne = new SvdProcess("install_dependencies", getuid(), false);
         auto svConfig = new SvdServiceConfig(serviceName);
-        clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> SERVICE_LOG");
+        QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
+        clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + serviceLog);
         clne->waitForFinished(-1);
         clne->deleteLater();
         svConfig->deleteLater();
@@ -804,8 +806,9 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
 void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QStringList appDependencies, QString& stage) {
     auto clne = new SvdProcess("spawn_bin_build", getuid(), false);
     auto svConfig = new SvdServiceConfig(serviceName);
+    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     logInfo() << "Invoking bin/build of project (if exists)";
-    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build " + stage + " >> SERVICE_LOG");
+    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies) + " bin/build " + stage + " >> " + serviceLog);
     clne->waitForFinished(-1);
     clne->deleteLater();
     svConfig->deleteLater();
@@ -950,8 +953,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Creating web-app environment";
     QString servicePath = getServiceDataDir(serviceName);
     QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain;
-    logDebug() << "Writing domain:" << domain << "to file:" << domainFilePath;
+    logInfo() << "Writing domain:" << domain << "to file:" << domainFilePath;
     touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
+
+    /* create "deploying" state */
+    touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
+    logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << "for service:" << serviceName;
 
     auto latestRelease = readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     logDebug() << "Current release:" << latestRelease;
@@ -1169,21 +1176,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* ---- the magic barrier after igniter is defined. we'll have stable config->releaseName() ---- */
 
-    auto svConfig = new SvdServiceConfig(serviceName);
+    cloneRepository(serviceName, branch, domain);
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
     prepareSharedSymlinks(serviceName, latestReleaseDir, stage);
     generateDatastoreSetup(datastores, serviceName, stage, appType);
-
     requestDependenciesRunningOf(serviceName, appDependencies);
+
+    auto svConfig = new SvdServiceConfig(serviceName);
+    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     Q_FOREACH(auto datastore, datastores) {
         logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
         switch (datastore) {
             case Postgresql: {
                 logDebug() << "Creating user:" << databaseName;
-                clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") " + databaseName + " >> SERVICE_LOG");
+                clne->spawnProcess("createuser -s -d -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") " + databaseName + " >> " + serviceLog);
                 clne->waitForFinished(-1);
                 logDebug() << "Creating datastore:" << databaseName;
-                clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") -O " + databaseName + " " + databaseName + " >> SERVICE_LOG");
+                clne->spawnProcess("createdb -h " + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + getDbName(datastore) + " -p $(sofin port " + getDbName(datastore) + ") -O " + databaseName + " " + databaseName + " >> " + serviceLog);
                 clne->waitForFinished(-1);
 
             } break;
@@ -1210,17 +1219,17 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (QFile::exists(latestReleaseDir + "/Rakefile")) {
                 logInfo() << "Rakefile found, running database migrations";
                 if (not datastores.contains(Postgresql)) { /* postgresql db creation is already done before this hook */
-                    clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> SERVICE_LOG");
+                    clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:create >> " + serviceLog);
                     clne->waitForFinished(-1);
                 }
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> SERVICE_LOG");
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake db:migrate >> " + serviceLog);
                 clne->waitForFinished(-1);
             } else
                 logInfo() << "No Rakefile found. Skipping standard rake tasks";
 
             if (QFile::exists(latestReleaseDir + "/Rakefile") and QDir().exists(latestReleaseDir + "/app/assets")) {
                 logInfo() << "Building assets for web-app:" << serviceName;
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> SERVICE_LOG");
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies) + " bundle exec rake assets:precompile >> " + serviceLog);
                 clne->waitForFinished(-1);
             }
             break;

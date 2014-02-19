@@ -38,7 +38,7 @@ void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString&
 void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QString& stage);
 void prepareHttpProxy(QString& servicePath, QString& appType, QString& latestReleaseDir, QString& domain, QString& serviceName, QString& stage);
 void installDependencies(QString& serviceName, QString& latestReleaseDir);
-void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& domain);
+void cloneRepository(QString& serviceName, QString& branch, QString& domain);
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain);
 QString buildEnv(QString& serviceName, QStringList deps, bool preEnv = false);
