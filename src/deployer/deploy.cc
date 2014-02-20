@@ -1066,7 +1066,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX" + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -1104,11 +1104,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &" + "\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
-            clne->spawnProcess("cd SERVICE_PREFIX/SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG");
+            clne->spawnProcess(QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG");
             clne->waitForFinished(-1);
 
         } break;
