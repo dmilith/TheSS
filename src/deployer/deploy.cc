@@ -668,8 +668,8 @@ void cloneRepository(QString& serviceName, QString& branch, QString& domain, QSt
         getOrCreateDir(servicePath);
     }
 
-    logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
-    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
+    // logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
+    // touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain); // XXX
 
     getOrCreateDir(servicePath + DEFAULT_RELEASES_DIR);
 
