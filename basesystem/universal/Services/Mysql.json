@@ -23,11 +23,11 @@ test ! -d SERVICE_PREFIX/tmp && mkdir -p SERVICE_PREFIX/tmp && chmod 700 SERVICE
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
 printf \"
 [mysqld_safe]
-socket = SERVICE_PREFIX/service.sock
+socket = SERVICE_SOCK
 nice = 0
 
 [client]
-socket=SERVICE_PREFIX/service.sock
+socket = SERVICE_SOCK
 
 [mysqld]
 pid-file = SERVICE_PID
@@ -50,7 +50,7 @@ query_cache_size = 16M
 general-log-file = SERVICE_LOG
 expire_logs_days = 10
 max_binlog_size = 100M
-socket = SERVICE_PREFIX/service.sock
+socket = SERVICE_SOCK
 
 [mysqldump]
 quick
