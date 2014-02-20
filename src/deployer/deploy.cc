@@ -653,7 +653,7 @@ void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QStr
 }
 
 
-void cloneRepository(QString& serviceName, QString& branch, QString& domain, QString& releaseName) {
+void cloneRepository(QString& serviceName, QString& branch, QString& releaseName) {
     QString repositoryRootPath = QString(getenv("HOME")) + DEFAULT_GIT_REPOSITORY_DIR;
     getOrCreateDir(repositoryRootPath);
     QString sourceRepositoryPath = repositoryRootPath + serviceName + ".git";
@@ -928,7 +928,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     auto latestRelease = "build-in-progress-" + stage; //readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     auto latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + latestRelease;
-    cloneRepository(serviceName, branch, domain, latestRelease);
+    cloneRepository(serviceName, branch, latestRelease);
     installDependencies(serviceName, latestReleaseDir, latestRelease);
     logDebug() << "Release build in progress files:\n" << QDir(latestReleaseDir).entryList();
     logDebug() << "Release path:" << latestReleaseDir;
@@ -1217,7 +1217,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* move and clean generated environment */
     // TODO
 
-    // cloneRepository(serviceName, branch, domain);
+    // cloneRepository(serviceName, branch, );
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
     prepareSharedSymlinks(serviceName, latestReleaseDir, stage);
     generateDatastoreSetup(datastores, serviceName, stage, appType);
