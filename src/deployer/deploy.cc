@@ -916,8 +916,13 @@ void startWithoutDependencies(const QString& servicePath) {
 
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
 
-    logInfo() << "Creating web-app environment";
     QString servicePath = getServiceDataDir(serviceName);
+    logInfo() << "Writing web-app previous release version";
+    writeToFile(servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE,
+        readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed()
+    );
+
+    logInfo() << "Creating web-app environment";
     QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain;
     logInfo() << "Writing domain:" << domain << "to file:" << domainFilePath;
     touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
@@ -1146,10 +1151,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     auto svConfig = new SvdServiceConfig(serviceName);
 
-    logInfo() << "Writing web-app release current/previous versions";
-    writeToFile(servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE , readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed());
-    writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE , svConfig->releaseName());
     // TODO: keep also history file here
+
+    logInfo() << "Writing web-app current release version";
+    writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
 
     logInfo() << "Moving rebuilt prefix from:" << latestReleaseDir;
     auto moveProcess = new SvdProcess("move_built_web_app", getuid(), false);
