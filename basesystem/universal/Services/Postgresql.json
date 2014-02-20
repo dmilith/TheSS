@@ -3,7 +3,7 @@
     "schedulerActions": [
         {
             "cronEntry": "0 0/3 * * * ?",
-            "commands": "echo 'Postgres myk myk'"
+            "commands": "printf \"Postgres myk myk\n\" >> SERVICE_LOG"
         }
     ],
     "install": {
@@ -45,8 +45,7 @@ SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SE
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG
-"
+SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG"
     },
     "babySitter": {
         "commands": "
