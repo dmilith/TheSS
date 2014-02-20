@@ -690,7 +690,7 @@ void cloneRepository(QString& serviceName, QString& branch, QString& domain, QSt
         }
     }
 
-    QString serviceLog = getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + releaseName) + DEFAULT_SERVICE_LOG_FILE;
+    QString serviceLog = getOrCreateDir(servicePath + DEFAULT_SERVICE_LOGS_DIR + releaseName) + DEFAULT_SERVICE_LOG_FILE;
     QString command = "cd " + servicePath + DEFAULT_RELEASES_DIR +
         "&& sofin reload" +
         "&& git clone " + sourceRepositoryPath + " " + releaseName + " >> " + serviceLog +
@@ -928,8 +928,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     auto latestRelease = "build-in-progress-" + stage; //readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     auto latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + latestRelease;
-    installDependencies(serviceName, latestReleaseDir, latestRelease);
     cloneRepository(serviceName, branch, domain, latestRelease);
+    installDependencies(serviceName, latestReleaseDir, latestRelease);
+    logDebug() << "Release build in progress files:\n" << QDir(latestReleaseDir).entryList();
     logDebug() << "Release path:" << latestReleaseDir;
     auto appDetector = new WebAppTypeDetector(latestReleaseDir);
     auto appType = appDetector->getType();
