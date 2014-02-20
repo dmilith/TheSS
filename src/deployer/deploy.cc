@@ -739,7 +739,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir, QStrin
         logInfo() << "Installing service dependencies:" << conts.replace("\n", ", ");
         auto clne = new SvdProcess("install_dependencies", getuid(), false);
         QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + releaseName + DEFAULT_SERVICE_LOG_FILE;
-        clne->spawnProcess("cd " + latestReleaseDir + "/" + releaseName + " && sofin dependencies >> " + serviceLog);
+        clne->spawnProcess("cd " + latestReleaseDir + " && sofin dependencies >> " + serviceLog);
         clne->waitForFinished(-1);
         clne->deleteLater();
     }
