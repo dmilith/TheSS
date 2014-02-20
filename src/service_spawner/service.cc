@@ -749,6 +749,10 @@ void SvdService::afterStartSlot() {
 
         QFile::remove(indicator);
         logTrace() << "After process afterStart execution:" << name;
+
+        touch(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+        logInfo() << "Marked service running:" << name;
+
         process->deleteLater();
     }
     config->deleteLater();
@@ -863,6 +867,9 @@ void SvdService::afterStopSlot() {
         }
         logTrace() << "After process afterStop execution:" << name;
         process->deleteLater();
+
+        logInfo() << "Removing running indicator for service:" << name;
+        QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
     }
     config->deleteLater();
 }
