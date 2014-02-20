@@ -185,7 +185,7 @@ writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + DEFAU
     ;pm.process_idle_timeout = 10s; \n\
     ;pm.max_requests = 500 \n");
 
-writeToFile(prefix + "/service.ini", "[PHP] \n\
+writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + "/service.ini", "[PHP] \n\
     docref_root = 0 \n\
     docref_ext = 0 \n\
     engine = On \n\
