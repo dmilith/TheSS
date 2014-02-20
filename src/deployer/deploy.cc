@@ -750,7 +750,7 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
     auto svConfig = new SvdServiceConfig(serviceName);
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
-        QString location = getOrCreateDir(QString(getenv("HOME")) + SOFTWARE_DATA_DIR + val);
+        QString location = getOrCreateDir(getServiceDataDir(val));
 
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
