@@ -773,7 +773,7 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
                     break;
             }
 
-            if (steps % 3 == 0) {
+            if (steps % 5 == 0) {
                 logInfo() << "Still waiting for service:" << val << "with pid:" << aPid;
             }
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
