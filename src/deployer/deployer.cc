@@ -217,10 +217,11 @@ int main(int argc, char *argv[]) {
         auto value = diskMap.take(map);
         if (value < MINIMUM_DISK_SPACE_IN_MEGS) {
             logError() << "Insufficient disk space (less than " << QString::number(MINIMUM_DISK_SPACE_IN_MEGS) << "MiB) detected on remote destination machine. Deploy aborted!";
+            QFile::remove(wadPidFile);
             raise(SIGTERM);
 
         } else
-            logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << "MiB)";
+            logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << " of required" << MINIMUM_DISK_SPACE_IN_MEGS << "MiB)";
     }
 
     createEnvironmentFiles(serviceName, domain, stage, branch);
