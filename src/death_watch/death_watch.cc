@@ -11,7 +11,7 @@
 
 void deathWatch(pid_t aPid, uint signal) {
     if (aPid == 0) {
-        logDebug() << "Given pid 0, it usually means that no process to kill, cause it's already dead.";
+        logWarn() << "Given pid 0, it usually means that no process to kill, cause it's already dead.";
         return;
     }
 
