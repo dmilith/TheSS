@@ -668,9 +668,6 @@ void cloneRepository(QString& serviceName, QString& branch, QString& releaseName
         getOrCreateDir(servicePath);
     }
 
-    // logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
-    // touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain); // XXX
-
     getOrCreateDir(servicePath + DEFAULT_RELEASES_DIR);
 
     logInfo() << "Cleaning old deploys - over count of:" << QString::number(MAX_DEPLOYS_TO_KEEP);
@@ -927,7 +924,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed()
     );
 
-    logInfo() << "Creating web-app environment";
+    logDebug() << "Creating web-app environment";
     QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain;
     logInfo() << "Writing domain:" << domain << "to file:" << domainFilePath;
     touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
@@ -939,6 +936,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     auto latestRelease = "build-in-progress-" + stage; //readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
     auto latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + latestRelease;
     cloneRepository(serviceName, branch, latestRelease);
+    logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
+    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain); // XXX
     installDependencies(serviceName, latestReleaseDir, latestRelease);
     logDebug() << "Release build in progress files:\n" << QDir(latestReleaseDir).entryList();
     logDebug() << "Release path:" << latestReleaseDir;
