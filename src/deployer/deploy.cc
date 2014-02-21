@@ -1245,8 +1245,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     requestDependenciesRunningOf(serviceName, appDependencies);
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
-    prepareSharedSymlinks(serviceName, latestReleaseDir, stage);
     generateDatastoreSetup(datastores, serviceName, stage, appType);
+    prepareSharedSymlinks(serviceName, latestReleaseDir, stage);
 
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     Q_FOREACH(auto datastore, datastores) {
