@@ -28,8 +28,9 @@ void Tail::releaseUpdate(const QString& newDirname) {
   dirname = newDirname;
   path = dirname + filename;
   eventsManager->registerFile(dirname);
+  onDirectoryChanged(dirname);
 
-  usleep(5000); /* XXX: to slow things down - a throttle */
+  usleep(4000); /* XXX: to slow things down - a throttle */
 }
 
 
