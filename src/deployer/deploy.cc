@@ -1035,13 +1035,36 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         // startResultJson += " ";
                         /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
 
-                        serviceWorkers.insert(
-                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID -E " + stage + " -D && echo " + domain + " > /Public/" + serviceName + "_" + getenv("USER") + ".web-app",
-                            /*
-                            && export KILL_PREVIOUS=$(cat SERVICE_PREFIX" + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE + ") && sleep 3 && svddw $(cat SERVICE_PREFIX" + DEFAULT_SERVICE_PIDS_DIR + "${KILL_PREVIOUS}" + DEFAULT_SERVICE_PID_FILE + ")
-                             */
+                        /*
+                           XXX: now we need to try to figure out how to launch that app
+                           (which is just fucking stupid, but there's no standard way to launch anything here),
+                           unfortunately Rake and/or Rails teams can't talk with each other to solve different
+                           arguments accepted by both services:
+                           --daemon         vs --daemonize
+                           -D               vs -d
+                           --environment    vs --env
+                           --host           vs --binding
+                           -b               vs -o
+                           So we need to hack it!
+                           Whole <3 goes to Rack/Rails teams!
+                         */
+                        /* Rack is deafault pick */
+                        QString daemOpt = "-D";
+                        QString envOpt = "-E";
+                        QString bindOpt = "-o";
+                        if (procfileTail.toLower().contains("rails")) {
+                            logInfo() << "Rails launcher detected.";
+                            daemOpt = "-d";
+                            envOpt = "-e";
+                            bindOpt = "-b";
+                        } else
+                            logInfo() << "Rack launcher detected.";
 
-                            /* , stop commands) : */
+                        serviceWorkers.insert(
+                            /* start commands: */
+                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1 && echo " + domain + " > /Public/" + serviceName + "_" + getenv("USER") + ".web-app",
+
+                            /* stop commands */
                             "svddw $(cat SERVICE_PID) >> SERVICE_LOG"
                         );
 
