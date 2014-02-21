@@ -919,10 +919,6 @@ void startWithoutDependencies(const QString& servicePath) {
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
 
     QString servicePath = getServiceDataDir(serviceName);
-    logInfo() << "Writing web-app previous release version";
-    writeToFile(servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE,
-        readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed()
-    );
 
     logDebug() << "Creating web-app environment";
     QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain;
@@ -933,7 +929,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
     logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << "for service:" << serviceName;
 
-    auto latestRelease = "build-in-progress-" + stage; //readFileContents(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE).trimmed();
+    auto latestRelease = "build-in-progress-" + stage;
     auto latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + latestRelease;
     cloneRepository(serviceName, branch, latestRelease);
     logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
@@ -1181,16 +1177,18 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     auto svConfig = new SvdServiceConfig(serviceName);
 
-    // TODO: keep also history file here
+    // // TODO: keep also history file here
+    // logInfo() << "Writing web-app previous release pid";
+    // auto conts = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed();
+    // if (conts.length() > 0)
+    //     writeToFile(servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE, conts);
+    // startWithoutDependencies(servicePath);
 
     logDebug() << "Creating .pids, .envs and .confs";
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName());
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName());
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName());
-
-    logInfo() << "Writing web-app current release version";
-    writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
 
     logInfo() << "Moving rebuilt prefix from:" << latestReleaseDir;
     auto moveProcess = new SvdProcess("move_built_web_app", getuid(), false);
@@ -1346,7 +1344,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
         touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
-    startWithoutDependencies(servicePath);
+    // logInfo() << "Writing web-app current release version";
+    // writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
+    startWithoutDependencies(serviceName);
     clne->deleteLater();
     svConfig->deleteLater();
 }

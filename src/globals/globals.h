@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.81.5"
+    #define APP_VERSION "0.81.6"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -98,9 +98,9 @@
 
     #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
-    #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/.service-current-release"
-    #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/.service-previous-release"
-    #define DEFAULT_SERVICE_RELEASES_HISTORY "/.service-releases"
+    // #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/.service-current-release"
+    // #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/.service-previous-release"
+    // #define DEFAULT_SERVICE_RELEASES_HISTORY "/.service-releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
 
     #define DEFAULT_STANDALONE_DIR "/standalone/"
