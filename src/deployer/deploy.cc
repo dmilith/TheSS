@@ -755,10 +755,8 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
         logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
         while (not pidIsAlive(aPid)) {
             if (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
-                QFile::remove(location + STOP_TRIGGER_FILE);
-                touch(location + STOP_TRIGGER_FILE);
-                QFile::remove(location + START_TRIGGER_FILE);
-                touch(location + START_TRIGGER_FILE);
+                QFile::remove(location + RESTART_TRIGGER_FILE);
+                touch(location + RESTART_TRIGGER_FILE);
             }
             sleep(1);
             aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
@@ -776,6 +774,8 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
             }
 
             if (steps % 5 == 0) {
+                QFile::remove(location + RESTART_TRIGGER_FILE);
+                touch(location + RESTART_TRIGGER_FILE);
                 logInfo() << "Still waiting for service:" << val << "with pid:" << aPid;
             }
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
