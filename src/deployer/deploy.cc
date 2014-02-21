@@ -757,14 +757,19 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
         logInfo() << "Requesting dependency presence:" << val << "with pid:" << QString::number(aPid);
         logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
         while (not pidIsAlive(aPid)) {
-            QFile::remove(location + START_TRIGGER_FILE);
-            touch(location + START_TRIGGER_FILE);
-            sleep(1);
+            if (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
+                QFile::remove(location + STOP_TRIGGER_FILE);
+                touch(location + STOP_TRIGGER_FILE);
+                sleep(1);
+                QFile::remove(location + START_TRIGGER_FILE);
+                touch(location + START_TRIGGER_FILE);
+            }
             aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             steps++;
 
             /* check for tcp port of dependency? */
             uint dependencyPort = readFileContents(location + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed().toUInt();
+            logDebug() << "Checking depdendency port:" << dependencyPort << "from file:" << location + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER;
             if ((dependencyPort != 0) and
                 ((registerFreeTcpPort(dependencyPort) != dependencyPort) or
                  (registerFreeUdpPort(dependencyPort) != dependencyPort))
