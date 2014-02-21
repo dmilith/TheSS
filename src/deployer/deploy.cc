@@ -810,7 +810,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
     QString elmLast = appDependencies.at(appDependencies.size() - 1);
     elmLast[0] = elmLast.at(0).toUpper();
     jsonResult += "\"" + elmLast + "\"], ";
-    jsonResult += QString("\n\n\"configure_off\": {\"commands\": \"") + "svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
+    // jsonResult += QString("\n\n\"configure\": {\"commands\": \"") + "cd SERVICE_PREFIX" + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE" +  + "\"},"; // ; //"svddeployer -n " + serviceName + " -b " + branch + " -o " + domain + "\"},";
 
     logDebug() << "DEBUG: jsonResult:" << jsonResult;
     return jsonResult;
