@@ -1036,7 +1036,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
 
                         serviceWorkers.insert(
-                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID -E " + stage + " -D >> SERVICE_LOG && export KILL_PREVIOUS=$(cat SERVICE_PREFIX" + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE + ") && sleep 3 && svddw $(cat SERVICE_PREFIX" + DEFAULT_SERVICE_PIDS_DIR + "${KILL_PREVIOUS}" + DEFAULT_SERVICE_PID_FILE + ") >> SERVICE_LOG",
+                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID -E " + stage + " -D && echo " + domain + " > /Public/" + serviceName + "_" + getenv("USER") + ".web-app",
+                            /*
+                            && export KILL_PREVIOUS=$(cat SERVICE_PREFIX" + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE + ") && sleep 3 && svddw $(cat SERVICE_PREFIX" + DEFAULT_SERVICE_PIDS_DIR + "${KILL_PREVIOUS}" + DEFAULT_SERVICE_PID_FILE + ")
+                             */
 
                             /* , stop commands) : */
                             "svddw $(cat SERVICE_PID) >> SERVICE_LOG"
