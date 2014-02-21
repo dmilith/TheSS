@@ -187,8 +187,6 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
 
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${APP_ADDITIONAL_OPTS}" || error "Deploy failed!"
 
-    note "Stopping old web-app workers"
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "export rele=\$(cat ~/SoftwareData/${APP_NAME}/.service-previous-release) && svddw \$(cat ~/SoftwareData/${APP_NAME}/.pids/\${rele}/service.pid)"
 done
 
 note "Web application should be available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
