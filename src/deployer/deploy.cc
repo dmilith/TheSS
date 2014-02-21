@@ -1273,7 +1273,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (QFile::exists(latestReleaseDir + "/Gemfile")) {
                 logInfo() << "Installing bundle for stage:" << stage << "of Ruby Site";
                 getOrCreateDir(servicePath + "/bundle-" + stage);
-                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + serviceLog);
+                clne->spawnProcess("cd " + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bundle install --path " + servicePath + "/bundle-" + stage + " --without test development >> " + serviceLog);
                 clne->waitForFinished(-1);
             }
             if (QFile::exists(latestReleaseDir + "/Rakefile")) {
