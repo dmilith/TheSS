@@ -782,7 +782,8 @@ void SvdService::stopSlot(bool withDeps) {
         if (QFile::exists(servicePidFile)) {
             uint pid = readFileContents(servicePidFile).trimmed().toUInt();
             if (pid != 0) {
-                logDebug() << "Service pid found:" << QString::number(pid) << "in file:" << servicePidFile;
+                logInfo() << "Service pid found:" << QString::number(pid);
+                logDebug() << "\\_in file:" << servicePidFile;
                 deathWatch(pid);
                 QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
                 logDebug() << "Service terminated.";
