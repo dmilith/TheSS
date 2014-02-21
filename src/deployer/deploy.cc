@@ -1259,8 +1259,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     moveProcess->waitForFinished(-1);
     logInfo() << "to:" << latestReleaseDir;
 
-    moveProcess->spawnProcess("rm -r " + oldRD + " ; ");
-    moveProcess->waitForFinished(-1);
+    // moveProcess->spawnProcess("rm -r " + oldRD + " ; ");
+    // moveProcess->waitForFinished(-1);
     moveProcess->deleteLater();
 
     /* move and clean generated environment */
