@@ -57,6 +57,11 @@ void PanelService::refresh(){
     autostart = QFile::exists(basePath + AUTOSTART_TRIGGER_FILE);
 
     auto config = new SvdServiceConfig(name);
+
+    this->log->releaseUpdate(basePath + DEFAULT_SERVICE_LOGS_DIR + config->releaseName());
+    this->conf->releaseUpdate(basePath + DEFAULT_SERVICE_CONFS_DIR + config->releaseName());
+    this->env->releaseUpdate(basePath + DEFAULT_SERVICE_ENVS_DIR + config->releaseName());
+
     pid = readFileContents(basePath + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed();
     config->deleteLater();
 
