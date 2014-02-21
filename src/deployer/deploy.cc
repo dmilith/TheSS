@@ -663,10 +663,10 @@ void cloneRepository(QString& serviceName, QString& branch, QString& releaseName
     }
     auto clne = new SvdProcess("clone_repository", getuid(), false);
     QString servicePath = getServiceDataDir(serviceName);
-    if (not QDir().exists(servicePath)) {
-        logInfo() << "No Web Service dir found:" << servicePath << "Will be created";
-        getOrCreateDir(servicePath);
-    }
+    // if (not QDir(servicePath).exists()) {
+    //     logInfo() << "No Web Service dir found:" << servicePath << "Will be created";
+    //     getOrCreateDir(servicePath);
+    // }
 
     getOrCreateDir(servicePath + DEFAULT_RELEASES_DIR);
 
@@ -1258,13 +1258,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     moveProcess->spawnProcess("cp -R " + oldRD + "/ " + latestReleaseDir + " ; ");
     moveProcess->waitForFinished(-1);
     logInfo() << "to:" << latestReleaseDir;
-
-    // moveProcess->spawnProcess("rm -r " + oldRD + " ; ");
-    // moveProcess->waitForFinished(-1);
     moveProcess->deleteLater();
+    removeDir(oldRD);
 
-    /* move and clean generated environment */
-    // TODO
+    /* TODO: clean generated environment */
 
     requestDependenciesRunningOf(serviceName, appDependencies);
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
