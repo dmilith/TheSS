@@ -1160,6 +1160,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     // TODO: keep also history file here
 
+    logDebug() << "Creating .pids, .envs and .confs";
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName());
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName());
@@ -1173,9 +1174,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QString oldRD = latestReleaseDir;
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
 
-    logDebug() << "Creating .pids, .envs and .confs if necessary";
 
-    // purgeServiceDirs();
+    // TODO: launch garbage collector:
+    // 1. remove all empty .pids, .envs, .confs dirs
+    // 2. remove all non empty .pids .envs .confs from old releases
+
     QString servPort = readFileContents(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
     /* now we can generate environment again for destination app */
@@ -1240,7 +1243,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* move and clean generated environment */
     // TODO
 
-    // cloneRepository(serviceName, branch, );
     requestDependenciesRunningOf(serviceName, appDependencies);
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
     prepareSharedSymlinks(serviceName, latestReleaseDir, stage);
@@ -1267,12 +1269,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     logDebug() << "Setting configured state for service:" << serviceName;
     touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
-
     logInfo() << "Finalizing environment setup of service:" << serviceName;
-    // writeToFile(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE,
-    //     readFileContents(
-    //         getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + DEFAULT_SERVICE_ENV_FILE).trimmed());
-    // QFile::remove(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + DEFAULT_SERVICE_ENV_FILE);
 
     switch (appType) {
         case RubySite:
