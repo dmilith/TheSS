@@ -757,10 +757,10 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
             if (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
                 QFile::remove(location + STOP_TRIGGER_FILE);
                 touch(location + STOP_TRIGGER_FILE);
-                sleep(1);
                 QFile::remove(location + START_TRIGGER_FILE);
                 touch(location + START_TRIGGER_FILE);
             }
+            sleep(1);
             aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             steps++;
 
