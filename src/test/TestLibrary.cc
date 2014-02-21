@@ -282,7 +282,7 @@ void TestLibrary::testStartingRedis() {
     service->startSlot(); // should install and start redis
     QString runningFile = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
     // QString domainFile = config->prefixDir() + DEFAULT_SERVICE_DOMAIN_FILE;
-    QString pidFile = config->prefixDir() + DEFAULT_SERVICE_PID_FILE;
+    QString pidFile = config->prefixDir() + config->releaseName() + DEFAULT_SERVICE_PIDS_DIR +  DEFAULT_SERVICE_PID_FILE;
     QString outputFile = config->prefixDir() + DEFAULT_SERVICE_OUTPUT_FILE;
     QVERIFY(QFile::exists(runningFile));
 
