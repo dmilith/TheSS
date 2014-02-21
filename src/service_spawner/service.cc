@@ -763,6 +763,8 @@ void SvdService::stopSlot(bool withDeps) {
     logDebug() << "Invoked stop slot for service:" << name;
     auto config = new SvdServiceConfig(name);
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
+
+    logDebug() << "Stopping internal baby sitter timer for process:" << name;
     stopSitters();
 
     /* stop main application first, dependencies after it */
@@ -778,11 +780,14 @@ void SvdService::stopSlot(bool withDeps) {
 
         QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
         if (QFile::exists(servicePidFile)) {
-            uint pid = readFileContents(servicePidFile).toUInt();
-            logDebug() << "Service pid found:" << QString::number(pid) << "in file:" << servicePidFile;
-            deathWatch(pid);
-            // QFile::remove(servicePidFile);
-            logDebug() << "Service terminated.";
+            uint pid = readFileContents(servicePidFile).trimmed().toUInt();
+            if (pid != 0) {
+                logDebug() << "Service pid found:" << QString::number(pid) << "in file:" << servicePidFile;
+                deathWatch(pid);
+                QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
+                logDebug() << "Service terminated.";
+            } else
+                logWarn() << "PID of service:" << name << "is zero. (empty pid file?)";
         }
         process->waitForFinished(-1);
         // deathWatch(process->pid());
@@ -826,8 +831,6 @@ void SvdService::stopSlot(bool withDeps) {
             }
         }
     }
-
-    logDebug() << "Stopping internal baby sitter timer for process:" << name;
 
     config->deleteLater();
 
