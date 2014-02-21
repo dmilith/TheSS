@@ -1,76 +1,81 @@
 #!/bin/sh
 
-printf "Loading Sofin environment\n"
+readonly BEGIN_TIMER=$(date +%s)
+readonly JOBS="12"
+
+. /etc/sofin.conf.sh
 if [ "$(id -u)" = "0" ]; then
     . /etc/profile_sofin
 else
     . $HOME/.profile
 fi
+note "Loaded Sofin environment"
 
 build () {
-    SYSTEM_NAME="$(uname)"
     QMAKE_OPTS=""
-    MAKE_OPTS="-j8"
+    MAKE_OPTS_BUILD="-j${JOBS} -Q -s"
     case "${SYSTEM_NAME}" in
         Darwin)
+            MAKE_OPTS_BUILD="-j${JOBS} --silent"
             QMAKE_OPTS="-spec darwin-g++"
             ;;
     esac
 
     (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
-    (make ${MAKE_OPTS} && printf "Successfully built notifications system\n") || exit 1
+    (make ${MAKE_OPTS_BUILD} && note "Successfully built notifications system\n") || exit 1
 
     case "$1" in
         panel|svdpanel)
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built svdpanel\n") || exit 1
+            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
             ;;
 
         ss|svdss)
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built ss\n") || exit 1
+            (make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
             ;;
 
         tests|test)
             (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built tests\n") || exit 1
+            (make ${MAKE_OPTS_BUILD} && note "Successfully built tests\n") || exit 1
             ;;
 
         deployer|deploy|depl|d)
             (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built svddeployer\n") || exit 1
+            (make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
             ;;
 
         coreginx_helper|cgx|c)
             (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built svdcoreginx_helper\n") || exit 1
+            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
             ;;
 
         *)
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built ss\n") || exit 1
+            (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
+
+            (qmake ${QMAKE_OPTS} DeathWatch.pro) || exit 1
+            (note "Building DeathWatch" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddw\n") || exit 1
 
             (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built svddeployer\n") || exit 1
+            (note "Building WAD" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built notifications system\n") || exit 1
+            (note "Building Notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built Notifications\n") || exit 1
 
             (qmake ${QMAKE_OPTS} IRCNotify.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built svdirc_notify\n") || exit 1
+            (note "Building IrcNotify" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdirc_notify\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built svdpanel\n") || exit 1
+            (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
 
             (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built svdcoreginx_helper\n") || exit 1
-
-            (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
-            (make ${MAKE_OPTS} && printf "Successfully built tests\n") || exit 1
-
+            (note "Building CoreginxHelper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
 
             ;;
     esac
 }
 
 build "$1"
+readonly END_TIMER=$(date +%s)
+note "Build completed in $(echo ${END_TIMER} - ${BEGIN_TIMER} | ${BC_BIN}) seconds."

@@ -22,6 +22,7 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     this->panel = panel;
     this->baseDir = baseDir;
     name = baseDir.baseName();
+    auto config = new SvdServiceConfig(name);
     basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
 
     /* security assertions */
@@ -34,10 +35,11 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     }
     this->dir = QDir(basePath);
 
-    this->log = new Tail(this, basePath, DEFAULT_SERVICE_LOG_FILE);
-    this->conf = new Tail(this, basePath, DEFAULT_SERVICE_CONF_FILE);
-    this->env = new Tail(this, basePath, DEFAULT_SERVICE_ENV_FILE);
+    this->log = new Tail(this, basePath + DEFAULT_SERVICE_LOGS_DIR + config->releaseName(), DEFAULT_SERVICE_LOG_FILE);
+    this->conf = new Tail(this, basePath + DEFAULT_SERVICE_CONFS_DIR + config->releaseName(), DEFAULT_SERVICE_CONF_FILE);
+    this->env = new Tail(this, basePath + DEFAULT_SERVICE_ENVS_DIR + config->releaseName(), DEFAULT_SERVICE_ENV_FILE);
 
+    config->deleteLater();
     refresh();
 }
 
@@ -54,8 +56,23 @@ void PanelService::refresh(){
     bool se = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE); // XXX: FIXME: no more .errors file!!
     autostart = QFile::exists(basePath + AUTOSTART_TRIGGER_FILE);
 
-    pid = readFileContents(basePath + DEFAULT_SERVICE_PID_FILE).trimmed();
-    domain = readFileContents(basePath + DEFAULT_SERVICE_DOMAIN_FILE).trimmed();
+    auto config = new SvdServiceConfig(name);
+
+    this->log->releaseUpdate(basePath + DEFAULT_SERVICE_LOGS_DIR + config->releaseName());
+    this->conf->releaseUpdate(basePath + DEFAULT_SERVICE_CONFS_DIR + config->releaseName());
+    this->env->releaseUpdate(basePath + DEFAULT_SERVICE_ENVS_DIR + config->releaseName());
+
+    pid = readFileContents(basePath + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed();
+    config->deleteLater();
+
+    auto domains = QDir(basePath + DEFAULT_SERVICE_DOMAINS_DIR).entryList(QDir::Files | QDir::NoDotAndDotDot);
+    QString domainsAmount = "(" + QString::number(domains.size()) + ") ";
+    if (domains.length() > 1) { /* more than just default localhost */
+        domains.removeAll(DEFAULT_LOCAL_ADDRESS);
+        QFile::remove(basePath + DEFAULT_SERVICE_DOMAINS_DIR + DEFAULT_SYSTEM_DOMAIN);
+    }
+    domain = domainsAmount + domains.first();
+
     port = readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     if (domain.isEmpty()) domain = "-";
     if (port.isEmpty()) port = "-";

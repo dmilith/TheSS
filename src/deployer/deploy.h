@@ -26,24 +26,22 @@
 #define OLD_SERVICE_SHUTDOWN_TIMEOUT 60 /* in seconds */
 
 
-const QStringList getAllowedToSpawnDeps();
+const QStringList getStandaloneDeps();
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath = ""); /* empty sslPemPath means, that default self-signed cert will be created for this entry */
 QString getDbName(WebDatastore db);
 QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile);
 bool validateNginxEntry(QString& servicePath, QString contents);
-void spawnBinBuild(QString& latestReleaseDir, QString& serviceName, QString& servicePath, QStringList appDependencies, QString& stage);
 void generateDatastoreSetup(QList<WebDatastore> dbs, QString serviceName, QString stage, WebAppTypes appType);
 void generateServicePorts(QString servicePath, int amount = 1);
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);
-void prepareSharedSymlinks(QString& latestReleaseDir, QString& servicePath, QString& stage);
-void prepareHttpProxy(QString& servicePath, QString& appType, QString& latestReleaseDir, QString& domain, QString& serviceName, QString& stage);
-void installDependencies(QString& serviceName, QString& latestReleaseDir);
-void cloneRepository(QString& sourceRepositoryPath, QString& serviceName, QString& branch, QString& domain);
+void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QString& stage);
+void installDependencies(QString& serviceName, QString& latestReleaseDir, QString& releaseName);
+void cloneRepository(QString& serviceName, QString& branch, QString& releaseName);
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain);
-QString buildEnv(QString& serviceName, QStringList deps);
+QString buildEnv(QString& serviceName, QStringList deps, QString preEnv);
 QStringList filterSpawnableDependencies(const QString& deps);
 void startWithoutDependencies(const QString& servicePath);
-void requestDependenciesRunningOf(const QStringList appDependencies);
+void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies);
 
 #endif

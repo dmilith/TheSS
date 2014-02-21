@@ -15,8 +15,8 @@ wick3d,10.10.0.4
 ' > SERVICE_PREFIX/ipp.txt
 
 printf \"
-port $(cat SERVICE_PREFIX/.ports/0)
-\" > SERVICE_PREFIX/service.conf && printf '
+port SERVICE_PORT
+\" > SERVICE_CONF && printf '
 daemon
 bind 0.0.0.0
 proto udp
@@ -37,7 +37,7 @@ group nobody
 persist-key
 persist-tun
 status SERVICE_PREFIX/service-status.log
-log-append SERVICE_PREFIX/service.log
+log-append SERVICE_LOG
 comp-lzo
 verb 4
 push \"redirect-gateway def1\"
@@ -46,14 +46,14 @@ push \"dhcp-option DNS 8.8.8.8\"
 push \"domain-name-servers 8.8.8.8\"
 
 ifconfig-pool-persist SERVICE_PREFIX/ipp.txt 0
-' >> SERVICE_PREFIX/service.conf
+' >> SERVICE_CONF
 "
     },
     "start": {
         "commands": "
-printf 'Launching Openvpn\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/openvpn --config SERVICE_PREFIX/service.conf --writepid SERVICE_PREFIX/service.pid --nice -3 >> SERVICE_PREFIX/service.log 2>&1
-test -f /etc/pf.conf && service pf reload && printf 'PF reload finished.\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Openvpn\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/openvpn --config SERVICE_CONF --writepid SERVICE_PID --nice -3 >> SERVICE_LOG
+test -f /etc/pf.conf && service pf reload && printf 'PF reload finished.\n' >> SERVICE_LOG
 "
     }
 }

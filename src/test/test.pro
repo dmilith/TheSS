@@ -21,7 +21,6 @@ HEADERS += TestLibrary.h \
            ../service_spawner/service.h \
            ../service_spawner/process.h \
            ../death_watch/death_watch.h \
-           ../deployer/webapp_deployer.h \
            ../service_spawner/cron_entry.h \
            ../deployer/webapp_types.h \
            ../service_spawner/cron_entry.h

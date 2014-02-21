@@ -23,6 +23,17 @@ Tail::Tail(PanelService * service, const QString& dirname, const QString& filena
 }
 
 
+void Tail::releaseUpdate(const QString& newDirname) {
+  eventsManager->unregisterFile(dirname);
+  dirname = newDirname;
+  path = dirname + filename;
+  eventsManager->registerFile(dirname);
+  onDirectoryChanged(dirname);
+
+  usleep(4000); /* XXX: to slow things down - a throttle */
+}
+
+
 void Tail::onDirectoryChanged(const QString& dir){
     if(dir != dirname || eventsManager == NULL) return;
 

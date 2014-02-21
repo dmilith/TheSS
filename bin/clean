@@ -1,36 +1,21 @@
 #!/bin/sh
 
+readonly JOBS="12"
+QMAKE_OPTS=""
+MAKE_OPTS="-j${JOBS} -Q -s"
 
 if [ "$(uname)" = "Darwin" ]; then
-    qmake -spec darwin-g++ Notifications.pro
-    make distclean
-    qmake -spec darwin-g++ TestSS.pro
-    make distclean
-    qmake -spec darwin-g++ Panel.pro
-    make distclean
-    qmake -spec darwin-g++ TheSS.pro
-    make distclean
-    qmake -spec darwin-g++ IRCNotify.pro
-    make distclean
-    qmake -spec darwin-g++ WAD.pro
-    make distclean
-    qmake -spec darwin-g++ CoreginxHelper.pro
-    make distclean
+    MAKE_OPTS="-j${JOBS} --silent"
+    QMAKE_OPTS="-spec darwin-g++"
+    for i in Notifications TestSS Panel TheSS IRCNotify WAD CoreginxHelper DeathWatch; do
+        qmake ${QMAKE_OPTS} ${i}.pro
+        make ${MAKE_OPTS} distclean
+    done
 else
-    qmake Notifications.pro
-    make distclean
-    qmake TestSS.pro
-    make distclean
-    qmake Panel.pro
-    make distclean
-    qmake TheSS.pro
-    make distclean
-    qmake IRCNotify.pro
-    make distclean
-    qmake WAD.pro
-    make distclean
-    qmake CoreginxHelper.pro
-    make distclean
+    for i in Notifications TestSS Panel TheSS IRCNotify WAD CoreginxHelper DeathWatch; do
+        qmake ${QMAKE_OPTS} ${i}.pro
+        make ${MAKE_OPTS} distclean
+    done
 fi
 
 rm -fv src/*.a

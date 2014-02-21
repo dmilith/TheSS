@@ -1,22 +1,21 @@
 {
     "softwareName": "Php",
-    "domain": "localhost",
     "install": {
         "commands": "sofin get php",
         "expectOutput": "All done"
     },
     "start": {
         "commands": "
-printf 'Launching Php\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_PREFIX/service.conf --pid SERVICE_PREFIX/service.pid -D
+printf 'Launching Php\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF --pid SERVICE_PID -D
 "
     },
     "validate": {
         "commands": "
 test ! -d SERVICE_PREFIX/tmp && mkdir SERVICE_PREFIX/tmp
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+test ! -f SERVICE_CONF && printf \"
 [global]
-    error_log = SERVICE_PREFIX/service.log
+    error_log = SERVICE_LOG
     ;emergency_restart_threshold = 0
     ;emergency_restart_interval = 0
     ;process_control_timeout = 0
@@ -27,7 +26,7 @@ test ! -f SERVICE_PREFIX/service.conf && printf \"
     events.mechanism = kqueue
     ;security.limit_extensions = .php .html .htm .less .js .coffee
 [www]
-    listen = SERVICE_DOMAIN:$(cat SERVICE_PREFIX/.ports/0)
+    listen = SERVICE_DOMAIN:SERVICE_PORT
     pm = dynamic
     pm.max_children = 5
     pm.start_servers = 2
@@ -35,7 +34,7 @@ test ! -f SERVICE_PREFIX/service.conf && printf \"
     pm.max_spare_servers = 3
     ;pm.process_idle_timeout = 10s;
     ;pm.max_requests = 500
-\" > SERVICE_PREFIX/service.conf
+\" > SERVICE_CONF
 
 test ! -f SERVICE_PREFIX/service.ini && printf '
 [PHP]

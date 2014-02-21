@@ -479,10 +479,10 @@ Json::Value* parseJSON(const QString& filename) {
     objectIntFields << "expectOutputTimeout";
     // schedulerFields << "cronEntry" << "commands";
 
-    listOfArrays << "dependencies" << "schedulerActions" << "watchHttpAddresses";
+    listOfArrays << "dependencies" << "schedulerActions" << "watchHttpAddresses" << "domains";
 
     listOfInts << "staticPort" << "portsPool" << "minimumRequiredDiskSpace";
-    listOfStrings << "softwareName" << "repository" << "parentService" << "domain";
+    listOfStrings << "softwareName" << "repository" << "parentService";
     listOfBools << "autoStart" << "reportAllErrors" << "reportAllInfos" << "reportAllDebugs" << "watchPort" << "watchUdpPort" << "alwaysOn" << "resolveDomain" << "webApp";
 
     /* objects */

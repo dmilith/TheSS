@@ -10,7 +10,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.72.7"
+    #define APP_VERSION "0.80.5"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -39,23 +39,23 @@
     #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0"
     #define DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND "ifconfig tap0 destroy"
 
-    #define SOFTWARE_DIR "/Software"
+    #define SOFTWARE_DIR "/Software/"
     #define LOGS_DIR "/Logs"
     #define DEFAULT_PROXY_FILE "/proxy.conf"
     #define DEFAULT_APP_PROXY_FILE "/.proxy.conf" /* addition to proxy from app repo */
-    #define DEFAULT_SSL_DIR "/SSL/"
     #define DEFAULT_PUBLIC_DIR "/Public/"
     #define DEFAULT_HOME_DIR "/Users/"
     #define DEFAULT_USER_APPS_DIR "/Apps"
     #define DEFAULT_WEBAPPS_DIR "/WebApps"
     #define WEB_APP_PID_FILE_POSTFIX "-prev"
     #define WEB_APP_PID_FILE_POSTFIX_NEXT "-next"
-    #define SOFTWARE_DATA_DIR "/SoftwareData"
-    #define SYSTEM_USERS_DIR "/SystemUsers"
+    #define SOFTWARE_DATA_DIR "/SoftwareData/"
+    #define SYSTEM_USERS_DIR "/SystemUsers/"
     #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
-    #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "/Igniters/Default")
-    #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "/Igniters/Services")
+    #define DEFAULT_SERVICE_INSTALLED_EXT ".installed"
+    #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "Igniters/Default")
+    #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "Igniters/Services")
     #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services"
     #define DEFAULT_LOCAL_ADDRESS "127.0.0.1"
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
@@ -95,14 +95,24 @@
     #define DEFAULT_SERVICE_VALIDATING_FILE "/.validating"
     #define DEFAULT_SERVICE_DEPLOYING_FILE "/.deploying"
     #define DEFAULT_SERVICE_CRON_WORKING_FILE "/.cronWorking"
-    #define DEFAULT_SERVICE_DOMAIN_FILE "/.domain"
-    #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
+
     #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
-    #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/service.latest-release"
-    #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/service.previous-release"
-    #define DEFAULT_SERVICE_RELEASES_HISTORY "/service.releases"
+    #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/.service-current-release"
+    #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/.service-previous-release"
+    #define DEFAULT_SERVICE_RELEASES_HISTORY "/.service-releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
+
+    #define DEFAULT_STANDALONE_DIR "/standalone/"
+    #define DEFAULT_RELEASES_DIR "/releases/"
+    #define DEFAULT_SHARED_DIR "/shared/"
+    #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains/"
+    #define DEFAULT_SERVICE_LOGS_DIR "/.logs/"
+    #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
+    #define DEFAULT_SERVICE_ENVS_DIR "/.envs/"
+    #define DEFAULT_SERVICE_PIDS_DIR "/.pids/"
+    #define DEFAULT_SERVICE_CONFS_DIR "/.confs/"
+    #define DEFAULT_SERVICE_SSLS_DIR "/.ssls/"
 
     #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
     #define DEFAULT_SSL_CA_FILE "/cacert.pem"
@@ -112,7 +122,7 @@
     #define NOTIFICATIONS_DATA_DIR "/.notifications/"
     #define NOTIFICATION_MANAGER_LOG_FILE "/.notifications-manager.log"
     #define DEFAULT_SERVICE_PORT_NUMBER "0"
-    #define DEFAULT_SERVICE_OUTPUT_FILE DEFAULT_SERVICE_LOG_FILE
+    #define DEFAULT_SERVICE_OUTPUT_FILE (DEFAULT_SERVICE_LOG_FILE "-stderr.log")
     #define DEFAULT_SS_SHUTDOWN_FILE ".shutdown"
     #define DEFAULT_SS_SHUTDOWN_HOOK_FILE ("/" DEFAULT_SS_SHUTDOWN_FILE)
     #define DEFAULT_SS_GRACEFUL_SHUTDOWN_FILE ".shutdownGracefully"

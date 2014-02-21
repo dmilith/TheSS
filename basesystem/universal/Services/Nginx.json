@@ -3,7 +3,7 @@
     "schedulerActions": [
         {
             "cronEntry": "0 0/1 * * * ?",
-            "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -t && SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload"
+            "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_CONF -t && SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload"
         }
     ],
     "install": {
@@ -12,8 +12,8 @@
     },
     "start": {
         "commands": "
-printf 'Launching Nginx\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf && printf 'Nginx started\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Nginx\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG
 "
     },
     "afterStop": {
@@ -21,14 +21,14 @@ SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf && printf 'Nginx start
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s stop && printf 'Nginx stopped\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop && printf 'Nginx stopped\n' >> SERVICE_LOG
 "
     },
     "configure": {
         "commands": "
 printf \"
 worker_processes 2;
-# pid SERVICE_PREFIX/service.pid;
+# pid SERVICE_PID;
 events {
     worker_connections 1024;
 }
@@ -46,9 +46,9 @@ http {
     gzip_http_version 1.1;
     gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
     keepalive_timeout 270;
-    error_log SERVICE_PREFIX/service.log;
+    error_log SERVICE_LOG;
     server {
-        listen SERVICE_ADDRESS:$(cat SERVICE_PREFIX/.ports/0);
+        listen SERVICE_ADDRESS:SERVICE_PORT;
         server_name SERVICE_DOMAIN SERVICE_ADDRESS;
         location / {
             root SERVICE_PREFIX/html;
@@ -56,20 +56,20 @@ http {
         }
     }
 }
-\" > SERVICE_PREFIX/service.conf
+\" > SERVICE_CONF
 "
     },
     "validate": {
         "commands": "
-SERVICE_ROOT/exports/nginx -t -c SERVICE_PREFIX/service.conf && printf 'Nginx started\n' >> SERVICE_PREFIX/service.log 2>&1
+SERVICE_ROOT/exports/nginx -t -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG
 ",
         "expectOutput": "test is successful"
     },
     "reload": {
         "
 commands": "
-printf 'Reloading Nginx\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/nginx -c SERVICE_PREFIX/service.conf -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Reloading Nginx\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_LOG
 "
     }
 }

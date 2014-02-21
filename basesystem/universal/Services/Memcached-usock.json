@@ -1,6 +1,5 @@
 {
     "softwareName": "Memcached",
-    "domain": "localhost",
     "watchPort": false,
     "install": {
         "commands": "sofin get memcached",
@@ -8,8 +7,8 @@
     },
     "start": {
         "commands": "
-printf 'Launching Memcached\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/memcached -s SERVICE_PREFIX/service.sock -P SERVICE_PREFIX/service.pid -d
+printf 'Launching Memcached\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/memcached -s SERVICE_PREFIX/service.sock -P SERVICE_PID -d
 "
     }
 }

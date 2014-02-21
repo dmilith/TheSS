@@ -24,6 +24,7 @@ public:
     void toggleWrap();
     void resetScroll();
     void destroy();
+    void releaseUpdate(const QString& newDirname);
 
 signals:
     void updated();

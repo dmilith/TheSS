@@ -1,10 +1,9 @@
 {
     "softwareName": "Postgresql",
-    "domain": "localhost",
     "schedulerActions": [
         {
             "cronEntry": "0 0/3 * * * ?",
-            "commands": "echo 'Postgres myk myk'"
+            "commands": "printf \"Postgres myk myk\n\" >> SERVICE_LOG"
         }
     ],
     "install": {
@@ -23,7 +22,7 @@ host all all 0.0.0.0/0 password
 ' > SERVICE_PREFIX/database/pg_hba.conf
 
 printf \"
-port = $(cat SERVICE_PREFIX/.ports/0)
+port = SERVICE_PORT
 max_connections = 100
 checkpoint_segments = 24
 password_encryption = on
@@ -38,14 +37,16 @@ logging_collector = true
     },
     "start": {
         "commands": "
-printf 'Launching Postgresql\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_PREFIX/service.log -o \"-k SERVICE_PREFIX\" start >> SERVICE_PREFIX/service.log 2>&1
+printf 'Linking configuration file\n' >> SERVICE_LOG
+rm -f SERVICE_CONF ; ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG
+printf 'Launching Postgresql\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG
+rm -f SERVICE_PID ; ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG
 "
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_PREFIX/service.log 2>&1
-"
+SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG"
     },
     "babySitter": {
         "commands": "

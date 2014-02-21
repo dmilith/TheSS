@@ -13,18 +13,18 @@ SERVICE_STOP_HOOK
     },
     "start": {
         "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
-SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf"
+SERVICE_ROOT/exports/redis-server SERVICE_CONF"
     },
     "afterStop": {
         "commands": "kongo bongo"
     },
     "validate": {
-        "commands": "test ! -f SERVICE_PREFIX/service.conf && printf \"
+        "commands": "test ! -f SERVICE_CONF && printf \"
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
-port $(cat SERVICE_PREFIX/.ports/0)
-pidfile SERVICE_PREFIX/service.pid
+port SERVICE_PORT
+pidfile SERVICE_PID
 dir SERVICE_PREFIX/database
 dbfilename database.rdf
 daemonize yes
@@ -36,6 +36,6 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log\" > SERVICE_PREFIX/service.conf"
+logfile SERVICE_LOG\" > SERVICE_CONF"
     }
 }

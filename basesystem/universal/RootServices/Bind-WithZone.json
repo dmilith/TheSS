@@ -3,7 +3,7 @@
     "watchPort": false,
     "watchUdpPort": true,
     "staticPort": 53,
-    "domain": "dmilith.dev",
+    "domains": ["dmilith.dev"],
 
     "install": {
         "commands": "sofin get bind",
@@ -11,20 +11,20 @@
     },
     "start": {
         "commands": "
-printf 'Launching DNS server\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/named -4 -n 8 -u nobody -c SERVICE_PREFIX/service.conf -g >> SERVICE_PREFIX/service.log 2>&1 &
+printf 'Launching DNS server\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/named -4 -n 8 -u nobody -c SERVICE_CONF -g >> SERVICE_LOG 2>&1 &
 "
     },
     "stop": {
         "commands": "
-printf 'Stopping DNS server\n' >> SERVICE_PREFIX/service.log 2>&1
-# kill -SIGTERM $(cat SERVICE_PREFIX/service.pid)
+printf 'Stopping DNS server\n' >> SERVICE_LOG
+# kill -SIGTERM $(cat SERVICE_PID)
 "
     },
     "configure": {
         "commands": "
-printf \"Configuring DNS server\" >> SERVICE_PREFIX/service.log 2>&1
-test ! -f SERVICE_ROOT/etc/rndc.key && SERVICE_ROOT/exports/rndc-confgen -a >> SERVICE_PREFIX/service.log 2>&1 &
+printf \"Configuring DNS server\" >> SERVICE_LOG
+test ! -f SERVICE_ROOT/etc/rndc.key && SERVICE_ROOT/exports/rndc-confgen -a >> SERVICE_LOG 2>&1 &
 
 printf '
 
@@ -139,12 +139,12 @@ SERVICE_DOMAIN.    IN      A        SERVICE_ADDRESS
 EOF
 
 
-cat > SERVICE_PREFIX/service.conf <<EOF
+cat > SERVICE_CONF <<EOF
 // Default Bind 9 configuration
 
 options {
   directory \"SERVICE_PREFIX\";
-  pid-file \"SERVICE_PREFIX/service.pid\";
+  pid-file \"SERVICE_PID\";
   version \"go away mon' 2066\";
   auth-nxdomain yes;
 
@@ -166,9 +166,9 @@ zone \"SERVICE_DOMAIN\" in {
 EOF
 
 chown nobody SERVICE_PREFIX
-chown nobody SERVICE_PREFIX/service.log
-chown nobody SERVICE_PREFIX/service.conf
-chown nobody SERVICE_PREFIX/service.pid
+chown nobody SERVICE_LOG
+chown nobody SERVICE_CONF
+chown nobody SERVICE_PID
 chown nobody SERVICE_PREFIX/SERVICE_DOMAIN.conf
 chown nobody SERVICE_ROOT/etc/rndc.key
 chown nobody SERVICE_ROOT/etc/bind.keys
@@ -177,8 +177,8 @@ chown nobody SERVICE_ROOT/etc/root.servers
     },
     "reload": {
         "commands": "
-printf 'Reloading Bind\n' >> SERVICE_PREFIX/service.log 2>&1
-kill -SIGHUP $(cat SERVICE_PREFIX/service.pid)
+printf 'Reloading Bind\n' >> SERVICE_LOG
+kill -SIGHUP $(cat SERVICE_PID)
 "
     }
 }

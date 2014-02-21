@@ -11,21 +11,14 @@ HEADERS   += service.h \
              ../notifications/notifications.h \
              ../death_watch/death_watch.h \
              process.h \
-             data_collector.h \
              service_config.h \
              utils.h \
              service_watcher.h \
              user_watcher.h \
              file_events_manager.h \
-             ../jsoncpp/json/json.h \
-             ../cutelogger/Logger.h \
-             ../cutelogger/ConsoleAppender.h \
-             ../cutelogger/FileAppender.h \
              cron_entry.h \
-             logger.h \
-             ../notifications/notifications.h
+             logger.h
 SOURCES   += service.cc \
-             data_collector.cc \
              process.cc \
              service_config.cc \
              utils.cc \
@@ -36,6 +29,5 @@ SOURCES   += service.cc \
              service_spawner.cc \
              cron_entry.cc \
              logger.cc
-             # ../notifications/notifications.cc
-LIBS      += ../libnotifications.a ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a ../libquazip.a -lz
+LIBS      += -lz ../liblogger.a ../libjsoncpp.a ../libhiredis.a ../libquazip.a ../libnotifications.a
 TARGET    = ../../bin/svdss

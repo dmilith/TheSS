@@ -1,10 +1,9 @@
 {
     "softwareName": "Redis",
-    "domain": "localhost",
     "schedulerActions": [
         {
             "cronEntry": "* * 1 * * ?",
-            "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
+            "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp -v SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup && printf \"Done copy of datastore Redis\n\" >> SERVICE_LOG"
         }
     ],
     "install": {
@@ -13,9 +12,9 @@
     },
     "start": {
         "commands": "
-printf 'Launching Redis\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Redis\n' >> SERVICE_LOG
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
-SERVICE_ROOT/exports/redis-server SERVICE_PREFIX/service.conf
+SERVICE_ROOT/exports/redis-server SERVICE_CONF
 "
     },
     "configure": {
@@ -24,8 +23,8 @@ printf \"
 # Default Redis service configuration
 # bind SERVICE_DOMAIN
 bind SERVICE_ADDRESS
-port $(cat SERVICE_PREFIX/.ports/0)
-pidfile SERVICE_PREFIX/service.pid
+port SERVICE_PORT
+pidfile SERVICE_PID
 dir SERVICE_PREFIX/database
 dbfilename database.rdf
 daemonize yes
@@ -37,11 +36,11 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 loglevel notice
-logfile SERVICE_PREFIX/service.log
-\" > SERVICE_PREFIX/service.conf
+logfile SERVICE_LOG
+\" > SERVICE_CONF
 printf \"
-REDIS_URL=redis://SERVICE_ADDRESS:$(cat SERVICE_PREFIX/.ports/0)
-\" > SERVICE_PREFIX/service.env
+REDIS_URL=redis://SERVICE_ADDRESS:SERVICE_PORT
+\" > SERVICE_ENV
 "
     }
 }

@@ -155,11 +155,6 @@ int main(int argc, char *argv[]) {
 
     /* NOTE: make sure that web-app isn't already in deploying state for user */
     bool ok = false, failed = false;
-    QString oldWebServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    QString oldPid = readFileContents(oldWebServicePidFile).trimmed();
-    writeToFile(oldWebServicePidFile + WEB_APP_PID_FILE_POSTFIX, oldPid);
-    logInfo() << "Storing old worker pid:" << oldPid;
-    // uint oldPid = readFileContents(oldWebServicePidFile).trimmed().toUInt();
 
     QString wadPidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_DEPLOYING_FILE;
     QString aPid = readFileContents(wadPidFile).trimmed();
@@ -217,23 +212,17 @@ int main(int argc, char *argv[]) {
         auto value = diskMap.take(map);
         if (value < MINIMUM_DISK_SPACE_IN_MEGS) {
             logError() << "Insufficient disk space (less than " << QString::number(MINIMUM_DISK_SPACE_IN_MEGS) << "MiB) detected on remote destination machine. Deploy aborted!";
+            QFile::remove(wadPidFile);
             raise(SIGTERM);
 
         } else
-            logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << "MiB)";
+            logInfo() << "Sufficient disk space detected for:" << map << "(" << QString::number(value) << " of required" << MINIMUM_DISK_SPACE_IN_MEGS << "MiB)";
     }
 
-    QString repositoryRootPath = QString(getenv("HOME")) + DEFAULT_GIT_REPOSITORY_DIR;
-    getOrCreateDir(repositoryRootPath);
-    QString repositoryPath = repositoryRootPath + serviceName + ".git";
-
-    cloneRepository(repositoryPath, serviceName, branch, domain);
     createEnvironmentFiles(serviceName, domain, stage, branch);
 
     logInfo() << "Deploy successful. Cleaning deploying state.";
     QFile::remove(wadPidFile);
 
-    QString webServicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PID_FILE;
-    writeToFile(webServicePidFile + "-" + WEB_APP_PID_FILE_POSTFIX_NEXT, readFileContents(webServicePidFile).trimmed());
     return EXIT_SUCCESS;
 }

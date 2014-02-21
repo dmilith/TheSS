@@ -8,14 +8,14 @@
     },
     "start": {
         "commands": "
-printf 'Launching Courier\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Courier\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/courier start && SERVICE_ROOT/exports/authdaemond start && SERVICE_ROOT/exports/imapd-ssl start && SERVICE_ROOT/exports/esmtpd start && SERVICE_ROOT/exports/esmtpd-msa start && SERVICE_ROOT/exports/esmtpd-ssl start && echo 'success'
 ",
         "expectOutput": "success"
     },
     "stop": {
         "commands": "
-printf 'Stopping Courier\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Stopping Courier\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/courier stop && SERVICE_ROOT/exports/authdaemond stop && SERVICE_ROOT/exports/imapd-ssl stop && SERVICE_ROOT/exports/esmtpd stop && SERVICE_ROOT/exports/esmtpd-msa stop && SERVICE_ROOT/exports/esmtpd-ssl stop && echo 'success'
 ",
         "expectOutput": "success"
@@ -23,7 +23,7 @@ SERVICE_ROOT/exports/courier stop && SERVICE_ROOT/exports/authdaemond stop && SE
 
     "reload": {
         "commands": "
-printf 'Reloading Courier\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Reloading Courier\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/makeuserdb && SERVICE_ROOT/exports/makeacceptmailfor && SERVICE_ROOT/exports/makehosteddomains && echo 'success'
 ",
         "expectOutput": "success"

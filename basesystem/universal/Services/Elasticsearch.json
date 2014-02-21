@@ -1,31 +1,35 @@
 {
     "softwareName": "Elasticsearch",
-    "domain": "localhost",
     "install": {
         "commands": "sofin get elasticsearch",
         "expectOutput": "All done"
     },
     "start": {
         "commands": "
-printf 'Launching Elasticsearch\n' >> SERVICE_PREFIX/service.log 2>&1
+printf 'Launching Elasticsearch\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/elasticsearch \\
--p SERVICE_PREFIX/service.pid \\
+-p SERVICE_PID \\
 -f -Xmx2g \\
 -Des.network.host=SERVICE_ADDRESS \\
--Des.http.port=$(cat SERVICE_PREFIX/.ports/0) \\
+-Des.http.port=SERVICE_PORT \\
 -Des.index.storage.type=niofs \\
 -Des.max-open-files=true \\
 -Des.bootstrap.mlockall=true \\
 -Des.cluster.name=$USER \\
--Des.path.home=SERVICE_PREFIX > SERVICE_PREFIX/service.log 2>&1 &
+-Des.gateway.expected_nodes=1 \\
+-Des.discovery.zen.ping.multicast.enabled=false \\
+-Des.path.home=SERVICE_PREFIX > SERVICE_LOG 2>&1 &
 "
     },
-    "validate": {
+    "configure": {
         "commands": "
 test ! -d SERVICE_PREFIX/config && cp -r SERVICE_ROOT/config SERVICE_PREFIX
 test ! -d SERVICE_PREFIX/data && mkdir -p SERVICE_PREFIX/data
 test ! -d SERVICE_PREFIX/work && mkdir -p SERVICE_PREFIX/work
 test ! -d SERVICE_PREFIX/logs && mkdir -p SERVICE_PREFIX/logs
+printf \"
+ELASTICSEARCH_URL=http://SERVICE_ADDRESS:SERVICE_PORT
+\" > SERVICE_ENV
 "
     }
 }

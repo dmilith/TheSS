@@ -1,6 +1,5 @@
 {
     "softwareName": "Mongodb",
-    "domain": "localhost",
     "install": {
         "commands": "sofin get mongodb",
         "expectOutput": "All done"
@@ -8,20 +7,20 @@
     "schedulerActions": [
         {
             "cronEntry": "* * 1 * * ?",
-            "commands": "echo It's first day of the month, so it's time for data dump! ; mkdir -p $HOME/Mongo-dumps ; export work_date=$(date +'%Y-%m-%d--%H%M') && mongodump --host SERVICE_DOMAIN --port $(cat SERVICE_PREFIX/.ports/0) --out $HOME/Mongo-dumps/${work_date} && cd $HOME/Mongo-dumps/ && tar cf ${work_date}.tar.gz ${work_date}/ && rm -rf ${work_date}"
+            "commands": "echo It's first day of the month, so it's time for data dump! ; mkdir -p $HOME/Mongo-dumps ; export work_date=$(date +'%Y-%m-%d--%H%M') && mongodump --host SERVICE_DOMAIN --port SERVICE_PORT --out $HOME/Mongo-dumps/${work_date} && cd $HOME/Mongo-dumps/ && tar cf ${work_date}.tar.gz ${work_date}/ && rm -rf ${work_date}"
         }
     ],
     "configure": {
         "commands": "printf \"
 bind_ip = SERVICE_ADDRESS
-port = $(cat SERVICE_PREFIX/.ports/0)
+port = SERVICE_PORT
 dbpath = SERVICE_PREFIX/database
 logappend = true
-logpath = SERVICE_PREFIX/service.log
-pidfilepath = SERVICE_PREFIX/service.pid
+logpath = SERVICE_LOG
+pidfilepath = SERVICE_PID
 unixSocketPrefix = SERVICE_PREFIX
 fork = true
-\" > SERVICE_PREFIX/service.conf
+\" > SERVICE_CONF
 "
     },
     "validate": {
@@ -31,8 +30,8 @@ test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 7
     },
     "start": {
         "commands": "
-printf 'Launching Mongodb\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/mongod -f SERVICE_PREFIX/service.conf
+printf 'Launching Mongodb\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/mongod -f SERVICE_CONF
 "
     }
 }

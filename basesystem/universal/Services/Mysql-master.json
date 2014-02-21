@@ -13,15 +13,15 @@
     },
     "start": {
         "commands": "
-printf 'Launching Mysql\n' >> SERVICE_PREFIX/service.log 2>&1
-SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_PREFIX/service.conf --skip-grant-tables -C utf8 > SERVICE_PREFIX/service.log 2>&1 &
+printf 'Launching Mysql\n' >> SERVICE_LOG
+SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_CONF --skip-grant-tables -C utf8 > SERVICE_LOG 2>&1 &
 "
     },
     "validate": {
         "commands": "
 test ! -d SERVICE_PREFIX/tmp && mkdir -p SERVICE_PREFIX/tmp && chmod 700 SERVICE_PREFIX/tmp
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
-test ! -f SERVICE_PREFIX/service.conf && printf \"
+test ! -f SERVICE_CONF && printf \"
 [mysqld_safe]
 socket = SERVICE_PREFIX/service.sock
 nice = 0
@@ -30,9 +30,9 @@ nice = 0
 socket=SERVICE_PREFIX/service.sock
 
 [mysqld]
-pid-file = SERVICE_PREFIX/service.pid
+pid-file = SERVICE_PID
 basedir = SERVICE_ROOT
-port = $(cat SERVICE_PREFIX/.ports/0)
+port = SERVICE_PORT
 datadir = SERVICE_PREFIX/database
 tmpdir = SERVICE_PREFIX/tmp
 language = SERVICE_ROOT/share/english
@@ -47,7 +47,7 @@ max_connections = 100
 thread_concurrency = 10
 query_cache_limit = 1M
 query_cache_size = 16M
-general-log-file = SERVICE_PREFIX/service.log
+general-log-file = SERVICE_LOG
 expire_logs_days = 10
 max_binlog_size = 100M
 socket = SERVICE_PREFIX/service.sock
@@ -68,7 +68,7 @@ max_allowed_packet = 16M
 
 [isamchk]
 key_buffer = 16M
-\" > SERVICE_PREFIX/service.conf
+\" > SERVICE_CONF
 "
     }
 }
