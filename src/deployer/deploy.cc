@@ -1173,55 +1173,61 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QString oldRD = latestReleaseDir;
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
 
-    // /* now we can generate environment again for destination app */
-    // envEntriesString = "";
-    // QString envFilePathDest = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName()) + DEFAULT_SERVICE_ENV_FILE;
-    // switch (appType) {
-    //     case StaticSite: {
-    //         /* write to service env file */
-    //         logInfo() << "Building environment for stage:" << stage << "in file:" << envFilePathDest;
-    //         envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-    //         envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
-    //         envEntriesString += "STATIC_ENV=" + stage + "\n";
-    //         envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
-    //         // envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
-    //         envEntriesString += "STATIC_PORT=" + servPort + "\n";
-    //         envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
-    //         writeToFile(envFilePathDest, envEntriesString);
+    logDebug() << "Creating .pids, .envs and .confs if necessary";
 
-    //     } break;
-    //     case RubySite: {
-    //         /* write to service env file */
-    //         envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-    //         envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
-    //         envEntriesString += "RAILS_ENV=" + stage + "\n";
-    //         envEntriesString += "RAKE_ENV=" + stage + "\n";
-    //         envEntriesString += "RUBY_ENV=" + stage + "\n";
-    //         envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
-    //         envEntriesString += "RUBY_PORT=" + servPort + "\n";
-    //         envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
-    //         writeToFile(envFilePathDest, envEntriesString);
+    // purgeServiceDirs();
+    QString servPort = readFileContents(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
-    //     } break;
-    //     case NodeSite: {
-    //         QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
-    //         /* write to service env file */
-    //         logInfo() << "Building environment for stage:" << stage;
-    //         envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-    //         envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
-    //         envEntriesString += "NODE_ENV=" + stage + "\n";
-    //         envEntriesString += "NODE_PORT=" + servPort + "\n";
-    //         envEntriesString += "NODE_DOMAIN=" + domain + "\n";
-    //         envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
-    //         envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
-    //         writeToFile(envFilePathDest, envEntriesString);
+    /* now we can generate environment again for destination app */
+    envEntriesString = "";
+    QString envFilePathDest = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName()) + DEFAULT_SERVICE_ENV_FILE;
+    switch (appType) {
+        case StaticSite: {
+            /* write to service env file */
+            logInfo() << "Building environment for stage:" << stage << "in file:" << envFilePathDest;
+            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "STATIC_ENV=" + stage + "\n";
+            envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
+            envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
+            envEntriesString += "STATIC_PORT=" + servPort + "\n";
+            envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
+            writeToFile(envFilePathDest, envEntriesString);
 
-    //     } break;
-    //     case PhpSite: {
+        } break;
+        case RubySite: {
+            /* write to service env file */
+            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "RAILS_ENV=" + stage + "\n";
+            envEntriesString += "RAKE_ENV=" + stage + "\n";
+            envEntriesString += "RUBY_ENV=" + stage + "\n";
+            envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
+            envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
+            envEntriesString += "RUBY_PORT=" + servPort + "\n";
+            envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
+            writeToFile(envFilePathDest, envEntriesString);
 
-    //     } break;
-    // }
-    // logWarn() << "Written bullshit:" << envEntriesString;
+        } break;
+        case NodeSite: {
+            QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
+            /* write to service env file */
+            logInfo() << "Building environment for stage:" << stage;
+            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
+            envEntriesString += "NODE_ENV=" + stage + "\n";
+            envEntriesString += "NODE_PORT=" + servPort + "\n";
+            envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
+            envEntriesString += "NODE_DOMAIN=" + domain + "\n";
+            envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
+            envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
+            writeToFile(envFilePathDest, envEntriesString);
+
+        } break;
+        case PhpSite: {
+
+        } break;
+    }
 
     moveProcess->spawnProcess("cp -R " + oldRD + "/ " + latestReleaseDir + " ; ");
     moveProcess->waitForFinished(-1);
