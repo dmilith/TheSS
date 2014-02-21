@@ -311,9 +311,9 @@ void writeToFile(const QString& fileName, const QString& contents, bool rotateTh
     if (rotateThisFile)
         rotateFile(fileName);
     QFile file(fileName);
-    if (file.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text | QIODevice::Unbuffered)) {
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
         QTextStream stream(&file);
-        stream << contents << endl;
+        stream << contents << endl << flush;
     }
     file.close();
 }
