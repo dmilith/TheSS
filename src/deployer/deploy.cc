@@ -213,9 +213,9 @@ writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + "/ser
     max_execution_time = 30 \n\
     max_input_time = 60 \n\
     memory_limit = 512M \n\
-    error_reporting = E_ALL & ~E_DEPRECATED \n\
-    display_errors = On \n\
-    display_startup_errors = On \n\
+    error_reporting = E_COMPILE_ERROR|E_RECOVERABLE_ERROR|E_ERROR|E_CORE_ERROR \n\
+    display_errors = Off \n\
+    display_startup_errors = Off \n\
     log_errors = On \n\
     log_errors_max_len = 1024 \n\
     ignore_repeated_errors = On \n\
