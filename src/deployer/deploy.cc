@@ -1174,7 +1174,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logDebug() << "Generating igniter:" << igniterFile;
     writeToFile(igniterFile, jsonResult);
 
-    removeDir(latestReleaseDir);
+    // removeDir(latestReleaseDir);
     /* ---- the magic barrier after igniter is defined. we'll have stable config->releaseName() ---- */
 
     auto svConfig = new SvdServiceConfig(serviceName);
@@ -1196,7 +1196,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Moving rebuilt prefix from:" << latestReleaseDir;
     // auto moveProcess = new SvdProcess("move_built_web_app", getuid(), false);
     QString oldRD = latestReleaseDir;
-    removeDir(oldRD);
+    // removeDir(oldRD);
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
 
 
