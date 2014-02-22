@@ -626,12 +626,10 @@ void SvdService::startSlot(bool withDeps) {
         }
 
         logTrace() << "Launching commands:" << config->start->commands;
-        // touch(indicator);
         auto process = new SvdProcess(name);
         notification("Launching service: " + name, NOTIFY);
         process->spawnProcess(config->start->commands);
         process->waitForFinished(-1);
-
 
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
             QString msg = name + " failed in start hook. exp: '" + config->start->expectOutput + "'";
@@ -655,6 +653,7 @@ void SvdService::startSlot(bool withDeps) {
 
         process->deleteLater();
     }
+    touch(indicator);
     config->deleteLater();
 
     /* invoke after start slot */
