@@ -247,6 +247,7 @@ writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + "/ser
     allow_url_include = Off \n\
     default_socket_timeout = 60 \n\
     cgi.force_redirect = On \n\
+    date.timezone = \"CET\" \n\
 [mysql] \n\
     mysql.default_socket=\"" + QString(getenv("HOME")) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
 [Pdo_mysql] \n\
