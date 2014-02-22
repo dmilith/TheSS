@@ -1329,7 +1329,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         /* spawn bin/build */
     logInfo() << "Invoking bin/build of project if exists";
-    clne->spawnProcess("cd " + latestReleaseDir + " && test -x bin/build && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/build " + stage + " >> " + serviceLog);
+    clne->spawnProcess("cd " + latestReleaseDir + " && test -f bin/build && chmod a+x bin/build && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/build " + stage + " >> " + serviceLog);
     clne->waitForFinished(-1);
     /* -- */
 
