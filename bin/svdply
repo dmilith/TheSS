@@ -185,7 +185,7 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     ${GIT_BIN} remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
     ${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy "${mirror}"
 
-    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${APP_ADDITIONAL_OPTS}" || error "Deploy failed!"
+    ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${APP_ADDITIONAL_OPTS} && touch ~/SoftwareData/${APP_NAME}/.start" || error "Deploy failed!"
 
 done
 

@@ -36,7 +36,7 @@ void generateServicePorts(QString servicePath, int amount = 1);
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);
 void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QString& stage);
 void installDependencies(QString& serviceName, QString& latestReleaseDir, QString& releaseName);
-void cloneRepository(QString& serviceName, QString& branch, QString& releaseName);
+void cloneRepository(QString& serviceName, QString& branch, QString releaseName);
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain);
 QString buildEnv(QString& serviceName, QStringList deps, QString preEnv);

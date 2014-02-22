@@ -653,7 +653,7 @@ void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QStr
 }
 
 
-void cloneRepository(QString& serviceName, QString& branch, QString& releaseName) {
+void cloneRepository(QString& serviceName, QString& branch, QString releaseName) {
     QString repositoryRootPath = QString(getenv("HOME")) + DEFAULT_GIT_REPOSITORY_DIR;
     getOrCreateDir(repositoryRootPath);
     QString sourceRepositoryPath = repositoryRootPath + serviceName + ".git";
@@ -1058,10 +1058,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
                         serviceWorkers.insert(
                             /* start commands: */
-                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1 && echo " + domain + " > /Public/" + serviceName + "_" + getenv("USER") + ".web-app",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1 && echo " + domain + " > /Public/" + serviceName + "_" + getenv("USER") + ".web-app",
 
                             /* stop commands */
-                            "svddw $(cat SERVICE_PID) >> SERVICE_LOG"
+                            "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
                         );
 
                     } else {
@@ -1071,10 +1071,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
                             /* (start commands, stop commands) : */
-                            QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
 
                             /* , stop commands) : */
-                            "svddw $(cat SERVICE_PID) >> SERVICE_LOG"
+                            "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
 
                         );
                     }
@@ -1097,7 +1097,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"") + "cd SERVICE_PREFIX" + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -1135,7 +1135,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
@@ -1161,7 +1161,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult += "\n\n\"start\": {\"commands\": \"" + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \n echo 'Php app ready' >> SERVICE_LOG\"}\n}";
+            jsonResult += "\n\n\"start\": {\"commands\": \"sofin reload && " + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \n echo 'Php app ready' >> SERVICE_LOG\"}\n}";
 
         } break;
 
@@ -1173,9 +1173,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logDebug() << "Generating igniter:" << igniterFile;
     writeToFile(igniterFile, jsonResult);
 
+    removeDir(latestReleaseDir);
     /* ---- the magic barrier after igniter is defined. we'll have stable config->releaseName() ---- */
 
     auto svConfig = new SvdServiceConfig(serviceName);
+    cloneRepository(serviceName, branch, svConfig->releaseName());
 
     // // TODO: keep also history file here
     // logInfo() << "Writing web-app previous release pid";
@@ -1191,8 +1193,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName());
 
     logInfo() << "Moving rebuilt prefix from:" << latestReleaseDir;
-    auto moveProcess = new SvdProcess("move_built_web_app", getuid(), false);
+    // auto moveProcess = new SvdProcess("move_built_web_app", getuid(), false);
     QString oldRD = latestReleaseDir;
+    removeDir(oldRD);
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
 
 
@@ -1253,11 +1256,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
     }
 
-    moveProcess->spawnProcess("cp -R " + oldRD + "/ " + latestReleaseDir + " ; ");
-    moveProcess->waitForFinished(-1);
+    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
+    // moveProcess->spawnProcess("cp -R " + oldRD + "/ " + latestReleaseDir);
+    // moveProcess->waitForFinished(-1);
     logInfo() << "to:" << latestReleaseDir;
-    moveProcess->deleteLater();
-    removeDir(oldRD);
+    // moveProcess->deleteLater();
+    // removeDir(oldRD);
 
     /* TODO: clean generated environment */
 
@@ -1266,7 +1270,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     generateDatastoreSetup(datastores, serviceName, stage, appType);
     prepareSharedSymlinks(serviceName, latestReleaseDir, stage);
 
-    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     Q_FOREACH(auto datastore, datastores) {
         logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
         switch (datastore) {
@@ -1346,7 +1349,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     // logInfo() << "Writing web-app current release version";
     // writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
-    startWithoutDependencies(serviceName);
+    // startWithoutDependencies(serviceName);
     clne->deleteLater();
     svConfig->deleteLater();
 }
