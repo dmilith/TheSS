@@ -129,6 +129,7 @@ first_deploy () {
     note "Creating bare repository from current directory"
     remote_address="$1"
     # TODO: consider support for directories without git repository in it
+    ${RM_BIN} -rf ${APP_NAME}.git > /dev/null 2>&1
     ${GIT_BIN} clone --mirror "${cwd}" ${APP_NAME}.git > /dev/null 2>&1
     ${ZIP_BIN} -m -X -q -0 -r ${APP_ZIP} ${APP_NAME}.git || error "Error creating git repository mirror archive!"
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${remote_address}" "mkdir -p ~/Repos/ ; rm -rf ${APP_NAME}.git"
