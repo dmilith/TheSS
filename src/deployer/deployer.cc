@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
     logInfo() << "Deploy started for service:" << serviceName << "(stage:" << stage << "from branch:" << branch << "destination domain:" << domain << ")";
 
     if (getuid() == 0) {
-        logError() << "Web deployments as root are not allowed a.t.m.";
+        logError() << "Web deployments as root are not allowed a.t.m. for security reasons";
         raise(SIGTERM);
     }
 
