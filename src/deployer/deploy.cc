@@ -9,6 +9,7 @@
 
 
 const QStringList getStandaloneDeps() {
+    // TODO: 2. move to global igniter
     QStringList output; /* XXX: it's hacked hack, but I still have no better solution for this problem.. */
     output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "memcached-usock" << "elasticsearch" << "mongodb";
     return output;
@@ -750,6 +751,16 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
         val[0] = val.at(0).toUpper();
         QString location = getOrCreateDir(getServiceDataDir(val));
 
+        QString homeDr = getenv("HOME");
+        logDebug() << "Validating depdendency igniter existance in service prefix:" << val << "with homedir:" << homeDr;
+        QString igniterFile = homeDr + DEFAULT_USER_IGNITERS_DIR + val + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+        QString igniterFileContent = readFileContents(igniterFile).trimmed();
+        if (igniterFileContent.size() <= 1) {
+            logError() << "No fully qualified igniter found for service:" << val << "Make sure that you have installed default igniters!";
+            continue;
+            // TODO: write igniter from some source
+        }
+
         int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
         logInfo() << "Requesting dependency presence:" << val << "with pid:" << QString::number(aPid);
@@ -1172,10 +1183,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* write igniter to user igniters */
     QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
     logDebug() << "Generating igniter:" << igniterFile;
+    // TODO: check validity of generated igniter. Throw an exception if necessary
     writeToFile(igniterFile, jsonResult);
 
-    // removeDir(latestReleaseDir);
-    /* ---- the magic barrier after igniter is defined. we'll have stable config->releaseName() ---- */
+    /* ---- the magic barrier after igniter is defined. we have stable config->releaseName() since here ---- */
 
     auto svConfig = new SvdServiceConfig(serviceName);
     cloneRepository(serviceName, branch, svConfig->releaseName());
