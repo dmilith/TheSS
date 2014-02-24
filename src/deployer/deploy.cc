@@ -1205,12 +1205,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName());
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName());
 
-    logInfo() << "Moving rebuilt prefix from:" << latestReleaseDir;
-    // auto moveProcess = new SvdProcess("move_built_web_app", getuid(), false);
+    logDebug() << "Moving rebuilt prefix from:" << latestReleaseDir;
     QString oldRD = latestReleaseDir;
-    // removeDir(oldRD);
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
-
+    logDebug() << "to:" << latestReleaseDir;
 
     // TODO: launch garbage collector:
     // 1. remove all empty .pids, .envs, .confs dirs
@@ -1270,11 +1268,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
 
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
-    // moveProcess->spawnProcess("cp -R " + oldRD + "/ " + latestReleaseDir);
-    // moveProcess->waitForFinished(-1);
-    logInfo() << "to:" << latestReleaseDir;
-    // moveProcess->deleteLater();
-    // removeDir(oldRD);
 
     /* TODO: clean generated environment */
 
