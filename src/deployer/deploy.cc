@@ -756,8 +756,9 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
         QString igniterFile = homeDr + DEFAULT_USER_IGNITERS_DIR + "/" + val + DEFAULT_SOFTWARE_TEMPLATE_EXT;
         QString igniterFileContent = readFileContents(igniterFile).trimmed();
         if (igniterFileContent.size() <= 1) {
-            logFatal() << "No fully qualified igniter found for service:" << val << "Make sure that you have installed default igniters!";
-            exit(1);
+            logError() << "No fully qualified igniter found for service:" << val << "Make sure that you have installed default igniters!";
+            raise(SIGINT);
+            raise(SIGTERM);
             // TODO: write igniter from some source
         }
 
