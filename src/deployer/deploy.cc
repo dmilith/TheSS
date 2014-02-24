@@ -753,7 +753,7 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
 
         QString homeDr = getenv("HOME");
         logDebug() << "Validating depdendency igniter existance in service prefix:" << val << "with homedir:" << homeDr;
-        QString igniterFile = homeDr + DEFAULT_USER_IGNITERS_DIR + val + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+        QString igniterFile = homeDr + DEFAULT_USER_IGNITERS_DIR + "/" + val + DEFAULT_SOFTWARE_TEMPLATE_EXT;
         QString igniterFileContent = readFileContents(igniterFile).trimmed();
         if (igniterFileContent.size() <= 1) {
             logFatal() << "No fully qualified igniter found for service:" << val << "Make sure that you have installed default igniters!";
