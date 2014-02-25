@@ -41,18 +41,16 @@ printf 'Linking configuration file\n' >> SERVICE_LOG
 ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG
 printf 'Launching Postgresql\n' >> SERVICE_LOG
 SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG
-ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG
+# ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG
 "
     },
     "stop": {
         "commands": "
-SERVICE_ROOT/exports/pg_ctl -m fast --timeout=60 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG"
+SERVICE_ROOT/exports/pg_ctl -m fast --timeout=45 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG"
     },
-    "babySitter": {
+    "afterStop": {
         "commands": "
-SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database status
-",
-        "expectOutput": "server is running",
-        "expectOutputTimeout": 60
+test -f SERVICE_PREFIX/database/postmaster.pid && rm -f SERVICE_PREFIX/database/postmaster.pid
+        "
     }
 }
