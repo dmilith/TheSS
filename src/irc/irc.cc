@@ -61,7 +61,7 @@ void IrcNotification::start() {
 
 	while (true) {
 		count++;
-		logWarn() << "C:" << count;
+		// logWarn() << "C:" << count;
 		switch (count) {
 			case 3: {
 				//after 3 recives send data to server (as per IRC protacol)
@@ -76,7 +76,7 @@ void IrcNotification::start() {
 				if (getuid() == 0) {
 			        notificationsDir = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + NOTIFICATIONS_DATA_DIR + "/";
 			    }
-			    logInfo() << "Looking for ERROR notifications inside" << notificationsDir;
+			    logDebug() << "Looking for ERROR notifications inside" << notificationsDir;
 
 			    QStringList notifications = QDir(notificationsDir).entryList(QDir::Files | QDir::NoDotAndDotDot, QDir::Time);
 			    logInfo() << "Current list of notifications:" << notifications;
@@ -107,13 +107,13 @@ void IrcNotification::receiveData(char buf[MAXDATASIZE]) {
 	// Recv & print Data
 	numbytes = recv(s, buf, MAXDATASIZE - 1, 0);
 	buf[numbytes] = '\0';
-	logInfo() << QString(buf);
+	logDebug() << QString(buf);
 
 	if (charSearch(QString(buf), "PING"))
 		sendPong(QString(buf));
 
 	if (numbytes == 0) {
-		logInfo() << "----------------------CONNECTION CLOSED---------------------------";
+		logDebug() << "----------------------CONNECTION CLOSED---------------------------";
 		exit(0);
 	}
 }
