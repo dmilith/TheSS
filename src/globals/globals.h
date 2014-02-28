@@ -1,3 +1,8 @@
+
+/* include tokens definitions */
+#include "tokens.h"
+
+
 #ifndef __GLOBALS__
 #define __GLOBALS__
 
@@ -10,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.81.7"
+    #define APP_VERSION "0.83.0"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -102,6 +107,8 @@
     // #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/.service-previous-release"
     // #define DEFAULT_SERVICE_RELEASES_HISTORY "/.service-releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
+    #define NOTIFICATIONS_CHANNEL_NAME "\%23development"
+    #define NOTIFICATIONS_USERNAME "Error-Notification"
 
     #define DEFAULT_STANDALONE_DIR "/standalone/"
     #define DEFAULT_RELEASES_DIR "/releases/"

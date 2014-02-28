@@ -7,12 +7,12 @@ MAKE_OPTS="-j${JOBS} -Q -s"
 if [ "$(uname)" = "Darwin" ]; then
     MAKE_OPTS="-j${JOBS} --silent"
     QMAKE_OPTS="-spec darwin-g++"
-    for i in Notifications TestSS Panel TheSS IRCNotify WAD CoreginxHelper DeathWatch; do
+    for i in Notifications TestSS Panel TheSS WAD CoreginxHelper DeathWatch; do
         qmake ${QMAKE_OPTS} ${i}.pro
         make ${MAKE_OPTS} distclean
     done
 else
-    for i in Notifications TestSS Panel TheSS IRCNotify WAD CoreginxHelper DeathWatch; do
+    for i in Notifications TestSS Panel TheSS WAD CoreginxHelper DeathWatch; do
         qmake ${QMAKE_OPTS} ${i}.pro
         make ${MAKE_OPTS} distclean
     done

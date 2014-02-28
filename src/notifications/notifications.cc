@@ -91,15 +91,29 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     logDebug() << "Notification msg: " << message << " written to:" << QString::number(now) + "_" + notificationFileName;
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
 
-    if (level > WARNING) { /* irc notification only for errors */
-        logInfo() << "Launching IRC notification in background";
-        SvdProcess *proc = new SvdProcess("IRCNotify", getuid(), false);
-        #ifdef __FreeBSD__
-            proc->spawnProcess("daemon svdirc_notify");
-        #else
-            proc->spawnProcess("svdirc_notify &");
-        #endif
-        proc->waitForFinished(1);
+    if (level > WARNING) { /* notification only for errors */
+        logInfo() << "Launching https error notification with message:" << message;
+
+        QSslSocket socket;
+        socket.connectToHostEncrypted("slack.com", 443);
+        if (socket.waitForConnected())
+            logDebug() << "SSL Connected!";
+
+        logDebug() << "SSL Socket state:" << socket.state();
+        socket.waitForEncrypted();
+
+        QByteArray encodedMessage = message.toUtf8();
+        encodedMessage = encodedMessage.toPercentEncoding();
+
+        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + NOTIFICATIONS_USERNAME + " HTTP/1.1\r\n";
+        socket.write(get.toUtf8().data());
+        socket.write("Host: slack.com\r\n");
+        socket.write("Connection: Close\r\n\r\n");
+
+        while (socket.waitForReadyRead())
+            logDebug() << "Notification http response:" << socket.readAll().data();
+
+        socket.close();
     }
 
     moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);

@@ -63,9 +63,6 @@ build () {
             (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
             (note "Building Notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built Notifications\n") || exit 1
 
-            (qmake ${QMAKE_OPTS} IRCNotify.pro) || exit 1
-            (note "Building IrcNotify" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdirc_notify\n") || exit 1
-
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
             (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
 
