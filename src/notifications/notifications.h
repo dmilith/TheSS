@@ -14,6 +14,7 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QSslSocket>
 
 #include "../globals/globals.h"
 #include "../notifications/notifications.h"
