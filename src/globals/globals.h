@@ -111,7 +111,7 @@
     // #define DEFAULT_SERVICE_RELEASES_HISTORY "/.service-releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
     #define NOTIFICATIONS_CHANNEL_NAME "\%23development"
-    #define NOTIFICATIONS_USERNAME "Error-Notification"
+    #define NOTIFICATIONS_USERNAME "Notification"
 
     #define DEFAULT_STANDALONE_DIR "/standalone/"
     #define DEFAULT_RELEASES_DIR "/releases/"

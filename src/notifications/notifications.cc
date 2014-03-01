@@ -44,39 +44,48 @@ void moveOldNotificationsToHistoryAndCleanHistory(const QString& notificationRoo
 
 void notification(const QString& notificationMessage, NotificationLevels level) {
 
-    QString message;
+    QString message, levelStr, icon, postfix;
 
     /* make sure that every notification begins with proper data and time */
     const qint64 now = QDateTime::currentMSecsSinceEpoch();
-    message = QString::number(now) + ": " + notificationMessage;
+    QDateTime timeNow = QDateTime::currentDateTime();
 
     QString notificationRoot = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
     if (getuid() == 0) {
         notificationRoot = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR;
     }
-    QString postfix;
     switch (level) {
         case NOTIFY:
             logInfo() << notificationMessage;
             postfix = ".notice";
+            levelStr = "NOTIFY";
+            icon = ":new:";
             break;
 
         case WARNING:
             logWarn() << notificationMessage;
             postfix = ".warning";
+            levelStr = "WARNING";
+            icon = ":cold_sweat:";
             break;
 
         case ERROR:
             logError() << notificationMessage;
             postfix = ".error";
+            levelStr = "ERROR";
+            icon = ":rage:";
             break;
 
         case FATAL:
             logError() << notificationMessage;
             postfix = ".fatal";
+            levelStr = "FATAL";
+            icon = ":skull:";
             break;
 
     }
+    message = timeNow.toString("hh:mm:ss.zzz") + "     " + levelStr + " @ " + QHostInfo::localHostName() +
+                            "\n\t\t\t\t\t\t\t\t    " + notificationMessage;
 
     QString historyRoot = notificationRoot + NOTIFICATIONS_HISTORY_DATA_DIR;
     notificationRoot += NOTIFICATIONS_DATA_DIR;
@@ -91,7 +100,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     logDebug() << "Notification msg: " << message << " written to:" << QString::number(now) + "_" + notificationFileName;
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
 
-    if (level > WARNING) { /* notification only for errors */
+    if (level > NOTIFY) { /* notification only for errors */
         logInfo() << "Launching https error notification with message:" << message;
 
         QSslSocket socket;
@@ -113,7 +122,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
         QByteArray encodedMessage = message.toUtf8();
         encodedMessage = encodedMessage.toPercentEncoding();
 
-        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + NOTIFICATIONS_USERNAME + "&icon_emoji=:rage: HTTP/1.1\r\n";
+        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + NOTIFICATIONS_USERNAME + "&icon_emoji=" + icon + " HTTP/1.1\r\n";
         logDebug() << "SSL request:" << get;
         socket.write(get.toUtf8().data());
         get = QString("Host: " + QString(DEFAULT_API_HOST) + "\r\n");
