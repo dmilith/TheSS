@@ -26,8 +26,9 @@ SOURCES   += service.cc \
              user_watcher.cc \
              file_events_manager.cc \
              ../death_watch/death_watch.cc \
+             ../notifications/notifications.cc \
              service_spawner.cc \
              cron_entry.cc \
              logger.cc
-LIBS      += -lz ../liblogger.a ../libjsoncpp.a ../libhiredis.a ../libquazip.a ../libnotifications.a
+LIBS      += -lz ../liblogger.a ../libjsoncpp.a ../libhiredis.a ../libquazip.a
 TARGET    = ../../bin/svdss
