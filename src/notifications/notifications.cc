@@ -113,7 +113,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
         QByteArray encodedMessage = message.toUtf8();
         encodedMessage = encodedMessage.toPercentEncoding();
 
-        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + NOTIFICATIONS_USERNAME + " HTTP/1.1\r\n";
+        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + NOTIFICATIONS_USERNAME + "&icon_emoji=:rage: HTTP/1.1\r\n";
         logDebug() << "SSL request:" << get;
         socket.write(get.toUtf8().data());
         get = QString("Host: " + QString(DEFAULT_API_HOST) + "\r\n");
