@@ -15,7 +15,7 @@
 
 ## Features
 * Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).
-* Supports software igniters written in JSON (+comments support) to generate predefined software configurations on the fly.
+* Supports software igniters written in [JSON](https://en.wikipedia.org/wiki/JSON) (with C/C++ style comments) to generate predefined software configurations on the fly.
 * Supports software hooks. (More in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)). Hook example:
 
 ```json
@@ -71,22 +71,28 @@ reconfigureHook # will execute:
 * Supports software hook expectations with error reporting through built in Notification mechanism.
 * Supports software "baby sitting". By default watches for software pid ("alwaysOn" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
 * Supports TCP/ UDP port checking. ("watchPort" and "watchUdpPort" options in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json))
-* Supports free port checking for TCP services, automatically generates random port for new services, (but also supports "staticPort" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)), to provide static port binding for software. (for example staticPort is 80 for Nginx). By default, service ports are stored in ~/SoftwareData/AppName/.ports and reused on next software start.
+* Supports free port checking for TCP services, automatically generates random port for new services, (but also supports "staticPort" option in [Defaults.json](https://github.com/VerKnowSys/TheSS/blob/master/basesystem/universal/Default.json)), to provide static port binding for software. (for example staticPort is 80 for Nginx). By default, service ports are stored in ~/SoftwareData/AppName/.ports/ and reused on next software start.
 * Supports service autostarting. You need only to touch ~/SoftwareData/MyApp/.autostart file.
 * Is designed to work with user privileges as a little user side daemon.
-* Uses almost no memory: ~5 MiB RSS on 64bit system when working with several services.
+* Uses almost no memory: ~5 MiB RSS on 64bit system when working with dozens of services.
 * Supports super user mode, to support root services (ports: 1-1024). Just run svdss as root and that's it.
 * Supports state files. For example if process is running the lock file is created: ~/SoftwareData/MyApp/.running
-* Supports unified process configuration model. By default ~/SoftwareData/MyApp/service.pid and ~/SoftwareData/MyApp/service.log are created for each software. If service requires configuration, it's by default stored in ~/SoftwareData/MyApp/service.conf
+* Supports unified process configuration model. By default ~/SoftwareData/MyApp/.pids/_release-name_/service.pid and ~/SoftwareData/MyApp/.logs/_release-name_/service.log are created for each software. If service requires configuration, it's by default stored in ~/SoftwareData/MyApp/.confs/_release-name_/service.conf
 * Supports dynamic, live log level change invoked by touch ~/.log-level, where "log-level" is one of: error, info, debug, trace. By default log level is info.
-* Supports auto igniter reload support on hook level. You don't need to update, sync or reload igniters. After change, next hook invoke will use latest version of software igniter by default.
+* Supports auto igniter reload support on hook level. You don't need to update, sync or reload igniters. After igniter file change, next hook invoke will use latest version of software igniter by default.
 * Supports multiple directory sources for igniters. Default order of checking igniters existance for regular user is: ~/Igniters/Services, then /SystemUsers/Igniters/Services. For root it's: /SystemUsers/Igniters/Services.
 * Supports igniter constants, auto filled before invoke of each hook. Currently there are:
 
 ```sh
 SERVICE_PREFIX            # by default: ~/SoftwareData/AppName
 PARENT_SERVICE_PREFIX     # defines prefix of service parent
-SERVICE_DOMAIN            # default host domain name. It's stored in ~/SoftwareData/AppName/.domain file by default.
+SERVICE_PORT              # contains generated service port
+SERVICE_CONF              # contains absolute path to configuration file of current service
+SERVICE_LOG               # contains absolute path to log file of current service
+SERVICE_ENV               # contains absolute path to environment file of current service
+SERVICE_SOCK              # contains absolute path to socket file of current service
+SERVICE_RELEASE           # contains sha1 of igniter of current service with port number. It's used in path to every service conf, log and environment.
+SERVICE_DOMAIN            # default host domain name. It's stored in ~/SoftwareData/AppName/.domains/domain.name file by default.
 SERVICE_ADDRESS           # by default it's default host IP address (resolved from SERVICE_DOMAIN)
 SERVICE_ROOT              # by default: ~/Apps/AppName
 SERVICE_VERSION           # by default taken from Sofin's: ~/Apps/AppName/appname.version
@@ -179,7 +185,7 @@ mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start # (this is an ex
 
 # wait a while, software installation process should work in background.
 # This process should pick random port, generate configuration for Redis,
-# and log output to file: ~/SoftwareData/Redis/service.log.
+# and log output to file: ~/SoftwareData/Redis/.logs/_release-name_/service.log.
 # Service starts it in background after that.
 
 # you may also use built in panel:
