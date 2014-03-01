@@ -95,23 +95,33 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
         logInfo() << "Launching https error notification with message:" << message;
 
         QSslSocket socket;
-        socket.connectToHostEncrypted("slack.com", 443);
-        if (socket.waitForConnected())
-            logDebug() << "SSL Connected!";
+        #ifdef __FreeBSD__
+            if (not QFile::exists(DEFAULT_SSL_CA_CERT)) {
+                logWarn() << "No default SSL ROOT CA Certificates found in:" << DEFAULT_SSL_CA_CERT;
+            } else {
+                QSslSocket::addDefaultCaCertificates(DEFAULT_SSL_CA_CERT);
+                socket.addCaCertificates(DEFAULT_SSL_CA_CERT);
+                logTrace() << "CA certificates:" << socket.caCertificates();
+            }
+        #endif
+        socket.connectToHostEncrypted(DEFAULT_API_HOST, DEFAULT_SSL_PORT);
+        if (socket.waitForEncrypted())
+            logDebug() << "Connected to SSL host:" << DEFAULT_API_HOST;
 
         logDebug() << "SSL Socket state:" << socket.state();
-        socket.waitForEncrypted();
 
         QByteArray encodedMessage = message.toUtf8();
         encodedMessage = encodedMessage.toPercentEncoding();
 
         QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + NOTIFICATIONS_USERNAME + " HTTP/1.1\r\n";
+        logDebug() << "SSL request:" << get;
         socket.write(get.toUtf8().data());
-        socket.write("Host: slack.com\r\n");
+        get = QString("Host: " + QString(DEFAULT_API_HOST) + "\r\n");
+        socket.write(get.toUtf8().data());
         socket.write("Connection: Close\r\n\r\n");
 
-        while (socket.waitForReadyRead())
-            logDebug() << "Notification http response:" << socket.readAll().data();
+        while (socket.waitForBytesWritten())
+            logInfo() << "Notification http response:" << socket.readAll().data();
 
         socket.close();
     }
