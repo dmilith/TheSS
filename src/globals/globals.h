@@ -15,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.83.1"
+    #define APP_VERSION "0.83.2"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */

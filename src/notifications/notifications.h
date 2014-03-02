@@ -35,7 +35,7 @@ struct Notification {
 enum NotificationLevels {NOTIFY, WARNING, ERROR, FATAL};
 
 
-void notification(const QString& notificationMessage, NotificationLevels level = ERROR);
+void notification(const QString& notificationMessage, NotificationLevels level = NOTIFY);
 
 
 #endif

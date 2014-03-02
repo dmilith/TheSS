@@ -100,7 +100,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     logDebug() << "Notification msg: " << message << " written to:" << QString::number(now) + "_" + notificationFileName;
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
 
-    if (level > NOTIFY) { /* notification only for errors */
+    // if (level > NOTIFY) { /* notification only for errors */
         logInfo() << "Launching https error notification with message:" << message;
 
         QSslSocket socket;
@@ -133,7 +133,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
             logInfo() << "Notification http response:" << socket.readAll().data();
 
         socket.close();
-    }
+    // }
 
     moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
 }
