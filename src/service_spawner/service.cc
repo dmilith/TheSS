@@ -453,7 +453,7 @@ void SvdService::installSlot() {
 
 
 void SvdService::reConfigureSlot(bool withDeps) {
-    notification("Performing reconfiguration and restart of service: " + name, NOTIFY);
+    notification("Performing reconfiguration and restart of service: " + name);
     auto config = new SvdServiceConfig(name);
     QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE;
     QFile::remove(configuredIndicator);
@@ -481,7 +481,7 @@ void SvdService::configureSlot() {
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
     } else if (QFile::exists(configuredIndicator)) {
-        notification("Service already configured: " + name, NOTIFY);
+        notification("Service already configured: " + name);
     } else {
         logInfo() << "Configuring service:" << name;
         touch(indicator);
@@ -627,7 +627,7 @@ void SvdService::startSlot(bool withDeps) {
 
         logTrace() << "Launching commands:" << config->start->commands;
         auto process = new SvdProcess(name);
-        notification("Launching service: " + name, NOTIFY);
+        notification("Launching service: " + name);
         process->spawnProcess(config->start->commands);
         process->waitForFinished(-1);
 
@@ -791,7 +791,7 @@ void SvdService::stopSlot(bool withDeps) {
         }
         process->waitForFinished(-1);
         // deathWatch(process->pid());
-        notification("Terminating service: " + name, NOTIFY);
+        notification("Terminating service: " + name);
         if (not expect(readFileContents(process->outputFile), config->stop->expectOutput)) {
             QString msg = name + " failed in stop hook. exp: '" + config->stop->expectOutput + "'";
             notification(msg, ERROR);
@@ -824,7 +824,7 @@ void SvdService::stopSlot(bool withDeps) {
     if (withDeps) {
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
             if (depService) {
-                notification("Terminating " + depService->name + " - dependency of service: " + name, NOTIFY);
+                notification("Terminating " + depService->name + " - dependency of service: " + name);
                 logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
                 depService->stopSlot();
                 depService->exit();

@@ -108,6 +108,7 @@ int main(int argc, char *argv[]) {
 
     signal(SIGINT, unixSignalHandler);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
+    notification("Launching TheSS v" + QString(APP_VERSION) + " on host: " + QHostInfo::localHostName());
 
     if (uid == 0) {
         logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));

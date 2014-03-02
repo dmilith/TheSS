@@ -157,7 +157,7 @@ void SvdUserWatcher::shutdownSlot() {
 void SvdUserWatcher::checkUserControlTriggers() {
     if (QFile::exists(homeDir + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE)) {
         QString msg = "Invoked graceful shutdown trigger. Sending SS down with services.";
-        notification(msg, NOTIFY);
+        notification(msg);
         QFile::remove(homeDir + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         if (getuid() == 0) {
@@ -170,7 +170,7 @@ void SvdUserWatcher::checkUserControlTriggers() {
     }
     if (QFile::exists(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE)) {
         QString msg = "Invoked shutdown trigger. Sending SS down.";
-        notification(msg, NOTIFY);
+        notification(msg);
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         if (getuid() == 0) {
