@@ -20,8 +20,19 @@ HEADERS   += ../notifications/notifications.h \
              ../deployer/deploy.h \
              public_watcher.h
 
-SOURCES   += public_watcher.cc \
+SOURCES   += ../service_spawner/process.cc \
+             ../service_spawner/utils.cc \
+             ../death_watch/death_watch.cc \
+             ../service_spawner/logger.cc \
+             ../notifications/notifications.cc \
+             ../service_spawner/file_events_manager.cc \
+             ../deployer/webapp_types.cc \
+             ../deployer/deploy.cc \
+             ../service_spawner/cron_entry.cc \
+             ../service_spawner/service_config.cc \
+             ../service_spawner/service.cc \
+             public_watcher.cc \
              coreginx_helper.cc
 
-LIBS      += -lz ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a ../service_spawner/.obj/cron_entry.o ../service_spawner/.obj/logger.o ../service_spawner/.obj/utils.o ../service_spawner/.obj/process.o ../service_spawner/.obj/service_config.o ../service_spawner/.obj/service.o ../notifications/.obj/notifications.o ../death_watch/.obj/death_watch.o ../deployer/.obj/webapp_types.o ../deployer/.obj/deploy.o ../service_spawner/.obj/file_events_manager.o
+LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../bin/svdcoreginx_helper
