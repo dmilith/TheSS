@@ -19,12 +19,7 @@ HEADERS   += ../service_spawner/utils.h \
              gui.h \
              service.h
 
-SOURCES   += ../service_spawner/utils.cc \
-             ../service_spawner/logger.cc \
-             ../service_spawner/process.cc \
-             ../service_spawner/file_events_manager.cc \
-             ../service_spawner/service_config.cc \
-             main.cc \
+SOURCES   += main.cc \
              panel.cc \
              gui.cc \
              scroll_list.cc \
@@ -33,8 +28,8 @@ SOURCES   += ../service_spawner/utils.cc \
              ansi.cc
 
 mac {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncurses
+      LIBS      += -lz -lncurses ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a ../service_spawner/.obj/utils.o ../service_spawner/.obj/logger.o ../service_spawner/.obj/process.o ../service_spawner/.obj/file_events_manager.o ../service_spawner/.obj/service_config.o
 } else {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncursesw
+      LIBS      += -lz -lncursesw ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a ../service_spawner/.obj/utils.o ../service_spawner/.obj/logger.o ../service_spawner/.obj/process.o ../service_spawner/.obj/file_events_manager.o ../service_spawner/.obj/service_config.o
 }
 TARGET    = ../../bin/svdpanel

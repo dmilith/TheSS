@@ -18,16 +18,8 @@ HEADERS   += ../notifications/notifications.h \
              ../service_spawner/service.h \
              webapp_types.h \
              deploy.h
-SOURCES   += ../service_spawner/process.cc \
-             ../service_spawner/utils.cc \
-             ../death_watch/death_watch.cc \
-             ../service_spawner/logger.cc \
-             ../notifications/notifications.cc \
-             ../service_spawner/cron_entry.cc \
-             ../service_spawner/service_config.cc \
-             ../service_spawner/service.cc \
-             webapp_types.cc \
+SOURCES   += webapp_types.cc \
              deploy.cc \
              deployer.cc
-LIBS      += -lz ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a
+LIBS      += -lz ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a ../service_spawner/.obj/cron_entry.o ../service_spawner/.obj/logger.o ../service_spawner/.obj/utils.o ../service_spawner/.obj/process.o ../service_spawner/.obj/service_config.o ../service_spawner/.obj/service.o ../notifications/.obj/notifications.o ../death_watch/.obj/death_watch.o
 TARGET    = ../../bin/svddeployer
