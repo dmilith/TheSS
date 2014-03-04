@@ -26,7 +26,7 @@
 #define OLD_SERVICE_SHUTDOWN_TIMEOUT 60 /* in seconds */
 
 
-const QStringList getStandaloneDeps();
+// const QStringList getStandaloneDeps();
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath = ""); /* empty sslPemPath means, that default self-signed cert will be created for this entry */
 QString getDbName(WebDatastore db);
 QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile);

@@ -8,12 +8,12 @@
 #include "deploy.h"
 
 
-const QStringList getStandaloneDeps() {
-    // TODO: 2. move to global igniter
-    QStringList output; /* XXX: it's hacked hack, but I still have no better solution for this problem.. */
-    output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "memcached-usock" << "elasticsearch" << "mongodb";
-    return output;
-}
+// const QStringList getStandaloneDeps() {
+//     // TODO: 2. move to global igniter
+//     QStringList output; /* XXX: it's hacked hack, but I still have no better solution for this problem.. */
+//     output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "memcached-usock" << "elasticsearch" << "mongodb";
+//     return output;
+// }
 
 
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
@@ -901,7 +901,10 @@ QString getDbName(WebDatastore db) {
 
 QStringList filterSpawnableDependencies(const QString& deps) {
     /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
-    QStringList allowedToSpawnDeps = getStandaloneDeps(); /* dependencies allowed to spawn as independent service */
+    auto defaultIgn = new SvdServiceConfig();
+    QStringList allowedToSpawnDeps = defaultIgn->standaloneDependencies; /* dependencies allowed to spawn as independent service */
+    logInfo() << "Spawnable dependencies defined:" << allowedToSpawnDeps.join(", ");
+    defaultIgn->deleteLater();
     QStringList appDependencies = deps.split("\n");
     logDebug() << "Filtering dependencies:" << appDependencies << "of size:" << appDependencies.size();
 
