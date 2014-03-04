@@ -135,7 +135,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
 
         socket.close();
     #else
-        logWarn() << "Your Slack notifications token wasn't set. Set NOTIFICATIONS_AUTH_TOKEN to enable it."
+        logWarn() << "Your Slack notifications token wasn't set. Set NOTIFICATIONS_AUTH_TOKEN to enable them.";
     #endif
     /* slack API auth */
 
