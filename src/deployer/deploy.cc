@@ -8,14 +8,6 @@
 #include "deploy.h"
 
 
-// const QStringList getStandaloneDeps() {
-//     // TODO: 2. move to global igniter
-//     QStringList output; /* XXX: it's hacked hack, but I still have no better solution for this problem.. */
-//     output << "postgresql" << "mysql" << "redis" << "redis-usock" << "nginx" << "passenger" << "sphinx" << "memcached" << "memcached-usock" << "elasticsearch" << "mongodb";
-//     return output;
-// }
-
-
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
     QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
     QString sslDir = getOrCreateDir(servicePath + DEFAULT_SERVICE_SSLS_DIR);

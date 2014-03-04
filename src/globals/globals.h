@@ -106,11 +106,12 @@
 
     #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
-    // #define DEFAULT_SERVICE_LATEST_RELEASE_FILE "/.service-current-release"
-    // #define DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE "/.service-previous-release"
-    // #define DEFAULT_SERVICE_RELEASES_HISTORY "/.service-releases"
     #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
-    #define NOTIFICATIONS_CHANNEL_NAME "\%23status"
+    #ifdef QT_DEBUG
+        #define NOTIFICATIONS_CHANNEL_NAME "\%23dev-status"
+    #else
+        #define NOTIFICATIONS_CHANNEL_NAME "\%23status"
+    #endif
 
     #define DEFAULT_STANDALONE_DIR "/standalone/"
     #define DEFAULT_RELEASES_DIR "/releases/"
