@@ -2,7 +2,7 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.80",
+    "formatVersion": "0.84",
 
 /* defines name of entry in ~/SoftwareData/ and also an Igniter name */
     "name": "No-Name",
@@ -47,6 +47,10 @@
 
     /* by default igniter is working as non web-app  */
     "webApp": false,
+
+    "standaloneDeps": [
+        "postgresql", "mysql", "mysql51", "mysql-usock", "redis", "redis-usock", "nginx", "passenger", "passenger19", "sphinx", "memcached", "memcached-usock", "elasticsearch", "mongodb"
+    ],
 
     "reportAllErrors": true,
     "reportAllInfos": false,
