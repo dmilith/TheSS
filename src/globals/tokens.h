@@ -2,7 +2,7 @@
 #define __TOKENS__
 
 
-#define NOTIFICATIONS_AUTH_TOKEN "your-api-auth-token" /* for now only Slack is supported */
+// #define NOTIFICATIONS_SLACK_AUTH_TOKEN "your-SLACK-API-token" /* for now only Slack is supported */
 
 
 #endif

@@ -100,6 +100,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     logDebug() << "Notification msg: " << message << " written to:" << QString::number(now) + "_" + notificationFileName;
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
 
+    #ifdef NOTIFICATIONS_SLACK_AUTH_TOKEN
     // if (level > NOTIFY) { /* notification only for errors */
         logInfo() << "Launching https error notification with message:" << message;
 
@@ -122,7 +123,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
         QByteArray encodedMessage = message.toUtf8();
         encodedMessage = encodedMessage.toPercentEncoding();
 
-        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + levelStr + "&icon_emoji=" + icon + "&parse=full" + " HTTP/1.1\r\n";
+        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_SLACK_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + levelStr + "&icon_emoji=" + icon + "&parse=full" + " HTTP/1.1\r\n";
         logDebug() << "SSL request:" << get;
         socket.write(get.toUtf8().data());
         get = QString("Host: " + QString(DEFAULT_API_HOST) + "\r\n");
@@ -133,7 +134,10 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
             logInfo() << "Notification http response:" << socket.readAll().data();
 
         socket.close();
-    // }
+    #else
+        logWarn() << "Your Slack notifications token wasn't set. Set NOTIFICATIONS_AUTH_TOKEN to enable it."
+    #endif
+    /* slack API auth */
 
     moveOldNotificationsToHistoryAndCleanHistory(notificationRoot, historyRoot);
 }
