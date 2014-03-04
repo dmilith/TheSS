@@ -903,7 +903,11 @@ QStringList filterSpawnableDependencies(const QString& deps) {
     /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
     auto defaultIgn = new SvdServiceConfig();
     QStringList allowedToSpawnDeps = defaultIgn->standaloneDependencies; /* dependencies allowed to spawn as independent service */
-    logInfo() << "Spawnable dependencies defined:" << allowedToSpawnDeps.join(", ");
+    if (allowedToSpawnDeps.size() == 0) {
+        logWarn() << "No spawnable dependencies found! It probably means that something is wrong with user igniters for uid:" << QString::number(getuid());
+    } else
+        logInfo() << "Spawnable dependencies defined:" << allowedToSpawnDeps.join(", ");
+
     defaultIgn->deleteLater();
     QStringList appDependencies = deps.split("\n");
     logDebug() << "Filtering dependencies:" << appDependencies << "of size:" << appDependencies.size();
