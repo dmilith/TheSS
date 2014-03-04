@@ -48,6 +48,20 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         configureOrder = (*defaults)["configureOrder"].asInt();
         startOrder = (*defaults)["startOrder"].asInt();
 
+        /* load predefined standalone dependencies */
+        for (uint index = 0; index < (*defaults)["standaloneDeps"].size(); ++index ) {
+            try {
+                auto element = (*defaults)["standaloneDeps"][index];
+                if (element.isString())
+                    standaloneDependencies.push_back(element.asCString());
+                else
+                    logError() << "Invalid JSON Type for standaloneDependencies. They all should be Strings";
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing default standaloneDependencies of" << name;
+            }
+        }
+        logDebug() << "Defined standaloneDependencies:" << name << "list:" << standaloneDependencies;
+
         /* load default service domains */
         for (uint index = 0; index < (*defaults)["domains"].size(); ++index ) {
             try {
@@ -213,6 +227,20 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
         configureOrder = root->get("configureOrder", (*defaults)["configureOrder"]).asInt();
         startOrder = root->get("startOrder", (*defaults)["startOrder"]).asInt();
+
+        /* load predefined standalone dependencies */
+        for (uint index = 0; index < (*root)["standaloneDeps"].size(); ++index ) {
+            try {
+                auto element = (*root)["standaloneDeps"][index];
+                if (element.isString())
+                    standaloneDependencies.push_back(element.asCString());
+                else
+                    logError() << "Invalid JSON Type for standaloneDependencies. They all should be Strings";
+            } catch (std::exception &e) {
+                logDebug() << "Exception while parsing default standaloneDependencies of" << name;
+            }
+        }
+        logDebug() << "Defined standaloneDependencies:" << name << "list:" << standaloneDependencies;
 
         /* load default service domains */
         for (uint index = 0; index < (*root)["domains"].size(); ++index ) {
