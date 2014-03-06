@@ -2,7 +2,7 @@
 /* This is default definition used as base for all igniters */
 
 {
-    "formatVersion": "0.84",
+    "formatVersion": "0.84.2",
 
 /* defines name of entry in ~/SoftwareData/ and also an Igniter name */
     "name": "No-Name",
@@ -52,9 +52,8 @@
         "postgresql", "mysql", "mysql51", "mysql-usock", "redis", "redis-usock", "nginx", "passenger", "passenger19", "sphinx", "memcached", "memcached-usock", "elasticsearch", "mongodb"
     ],
 
-    "reportAllErrors": true,
-    "reportAllInfos": false,
-    "reportAllDebugs": false,
+    /* default notification levels: NOTIFY => 0, WARNING => 1, ERROR => 2, FATAL => 3 */
+    "notificationLevel": 0,
 
     /* service with lower order value is higher on the dependency list */
     "configureOrder": 10,

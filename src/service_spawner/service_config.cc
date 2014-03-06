@@ -32,10 +32,8 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         }
         softwareName = (*defaults)["softwareName"].asCString();
         autoStart = (*defaults)["autoStart"].asBool();
-        reportAllErrors = (*defaults)["reportAllErrors"].asBool();
+        notificationLevel = (*defaults)["notificationLevel"].asInt();
         webApp = (*defaults)["webApp"].asBool();
-        reportAllInfos = (*defaults)["reportAllInfos"].asBool();
-        reportAllDebugs = (*defaults)["reportAllDebugs"].asBool();
         watchPort = (*defaults)["watchPort"].asBool();
         watchUdpPort = (*defaults)["watchUdpPort"].asBool();
         alwaysOn = (*defaults)["alwaysOn"].asBool();
@@ -214,9 +212,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         }
         softwareName = root->get("softwareName", (*defaults)["softwareName"]).asCString();
         autoStart = root->get("autoStart", (*defaults)["autoStart"]).asBool();
-        reportAllErrors = root->get("reportAllErrors", (*defaults)["reportAllErrors"]).asBool();
-        reportAllInfos = root->get("reportAllInfos", (*defaults)["reportAllInfos"]).asBool();
-        reportAllDebugs = root->get("reportAllDebugs", (*defaults)["reportAllDebugs"]).asBool();
+        notificationLevel = root->get("notificationLevel", (*defaults)["notificationLevel"]).asInt();
         webApp = root->get("webApp", (*defaults)["webApp"]).asBool();
         watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
         watchUdpPort = root->get("watchUdpPort", (*defaults)["watchUdpPort"]).asBool();
