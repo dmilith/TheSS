@@ -22,9 +22,10 @@
 #include <sys/ioctl.h>
 
 
-#define NOTIFICATION_LEVEL_ERROR    0
+#define NOTIFICATION_LEVEL_FATAL    3
+#define NOTIFICATION_LEVEL_ERROR    2
 #define NOTIFICATION_LEVEL_WARNING  1
-#define NOTIFICATION_LEVEL_NOTICE   2
+#define NOTIFICATION_LEVEL_NOTICE   0
 
 struct Notification {
     int level;
@@ -32,7 +33,7 @@ struct Notification {
     qint64 time;
 };
 
-enum NotificationLevels {NOTIFY, WARNING, ERROR, FATAL};
+enum NotificationLevels {NOTIFY = 0, WARNING, ERROR, FATAL};
 
 
 void notification(const QString& notificationMessage, NotificationLevels level = NOTIFY);
