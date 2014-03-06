@@ -59,6 +59,8 @@ class SvdService: public QThread {
         const QString releasePostfix();
         qint64 getUptime();
         bool checkProcessStatus(pid_t pid);
+        void notificationSend(const QString& notificationMessage);
+        void notificationSend(const QString& notificationMessage, NotificationLevels level);
         void stopSitters();
 
     protected:

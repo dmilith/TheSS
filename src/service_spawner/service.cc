@@ -10,6 +10,23 @@
 #include "process.h"
 
 
+void SvdService::notificationSend(const QString& notificationMessage, NotificationLevels level) {
+    auto config = new SvdServiceConfig(name);
+    if (level >= config->notificationLevel) {
+        logDebug() << "Allowed notification with level:" << QString::number(level) << "vs" << QString::number(config->notificationLevel);
+        notification(notificationMessage, level);
+    } else {
+        logDebug() << "Discarded notification with level:" << QString::number(level) << "vs" << QString::number(config->notificationLevel);
+    }
+    config->deleteLater();
+}
+
+
+void SvdService::notificationSend(const QString& notificationMessage) {
+    notificationSend(notificationMessage, NOTIFY);
+}
+
+
 SvdService::SvdService(const QString& name) {
     /* setup service */
 
@@ -166,7 +183,7 @@ void SvdService::finishedSlot(QNetworkReply* aReply) { /* network check slot */
         logDebug() << "Http check passed for url:" << aReply->url();
     } else {
         logError() << "Failed to contact one of http url:" << aReply->url() << "! Error:" << aReply->errorString();
-        notification("Http url of service: " + name + ", failed to respond: " + aReply->url().toString() + ". Service will be restarted.", ERROR);
+        notificationSend("Http url of service: " + name + ", failed to respond: " + aReply->url().toString() + ". Service will be restarted.", ERROR);
         emit restartSlot();
     }
     aReply->deleteLater();
@@ -245,21 +262,21 @@ void SvdService::babySitterSlot() {
                             logDebug() << "Service:" << name << "seems to be alive and kicking.";
                         } else {
                             QString msg = "Something is wrong with system status of service: " + name + " It will be restarted";
-                            notification(msg, ERROR);
+                            notificationSend(msg, ERROR);
                             emit restartSlot();
                             config->deleteLater();
                             return;
                         }
                     } else {
                         QString msg = "Service: " + name + " seems to be down. Performing restart.";
-                        notification(msg, ERROR);
+                        notificationSend(msg, ERROR);
                         emit restartSlot();
                         config->deleteLater();
                         return;
                     }
                 } else {
                     QString msg = "Pid file is damaged or doesn't contains valid pid. File will be removed: " + servicePidFile;
-                    notification(msg, ERROR);
+                    notificationSend(msg, ERROR);
                     QFile::remove(servicePidFile);
                     emit restartSlot();
                     config->deleteLater();
@@ -280,7 +297,7 @@ void SvdService::babySitterSlot() {
                     if (port == config->staticPort) {
                         /* if port is equal then it implies that nothing is listening on that port */
                         QString msg = "Babysitter has found unoccupied static port: " + QString::number(config->staticPort) + " registered for service " + name;
-                        notification(msg, ERROR);
+                        notificationSend(msg, ERROR);
                         emit restartSlot();
                         config->deleteLater();
                         return;
@@ -298,14 +315,14 @@ void SvdService::babySitterSlot() {
                             /* if port is equal then it implies that nothing is listening on that port */
                             // if (config->webApp) {
                             //     QString msg = "Babysitter has found unoccupied web-app port: " + QString::number(currentPort) + " registered for service: " + name + ". Emitting startSlot just in case";
-                            //     notification(msg, NOTIFY);
+                            //     notificationSend(msg, NOTIFY);
                             //     QFile::remove(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE);
                             //     emit startWithoutDepsSlot();
                             //     config->deleteLater();
                             //     return;
                             // } else {
                                 QString msg = "Babysitter has found unoccupied dynamic port: " + QString::number(currentPort) + " registered for service: " + name;
-                                notification(msg, ERROR);
+                                notificationSend(msg, ERROR);
                                 emit restartSlot();
                                 config->deleteLater();
                                 return;
@@ -313,7 +330,7 @@ void SvdService::babySitterSlot() {
                         }
                     } else {
                         QString msg = "Babysitter hasn't found port file for service: " + name;
-                        notification(msg, ERROR);
+                        notificationSend(msg, ERROR);
                         config->deleteLater();
                         return;
                     }
@@ -330,7 +347,7 @@ void SvdService::babySitterSlot() {
                     if (port == config->staticPort) {
                         /* if port is equal then it implies that nothing is listening on that port */
                         QString msg = "Babysitter has found unoccupied static UDP port: " + QString::number(config->staticPort) + " registered for service " + name;
-                        notification(msg, ERROR);
+                        notificationSend(msg, ERROR);
                         emit restartSlot();
                         config->deleteLater();
                         return;
@@ -347,14 +364,14 @@ void SvdService::babySitterSlot() {
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
                             QString msg = "Babysitter has found unoccupied dynamic UDP port: " + QString::number(currentPort) + " registered for service: " + name;
-                            notification(msg, ERROR);
+                            notificationSend(msg, ERROR);
                             emit restartSlot();
                             config->deleteLater();
                             return;
                         }
                     } else {
                         QString msg = "Babysitter hasn't found port file for service: " + name;
-                        notification(msg, ERROR);
+                        notificationSend(msg, ERROR);
                         config->deleteLater();
                         return;
                     }
@@ -373,7 +390,7 @@ void SvdService::babySitterSlot() {
             logDebug() << "Checking contents of file:" << babySit->outputFile;
             if (not expect(readFileContents(babySit->outputFile), config->babySitter->expectOutput)) {
                 QString msg = name + " failed in babySitter slot: " + config->babySitter->expectOutput;
-                notification(msg, ERROR);
+                notificationSend(msg, ERROR);
                 emit restartSlot();
                 config->deleteLater();
                 babySit->deleteLater();
@@ -434,7 +451,7 @@ void SvdService::installSlot() {
         QFile::remove(indicator); // this indicates finish of installing process
         if (not expect(readFileContents(process->outputFile), config->install->expectOutput)) {
             QString msg = name + " failed in install slot: " + config->babySitter->expectOutput;
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
         }
 
         /* inform output about some kind of a problem */
@@ -442,7 +459,7 @@ void SvdService::installSlot() {
         //     logDebug() << "Found installed file indicator of software:" << config->softwareName << ", which is base for service:" << name;
         // } else { /* software wasn't installed, generate error */
         //     QString msg = "Installation failed for service: " + name;
-        //     notification(msg, ERROR);
+        //     notificationSend(msg, ERROR);
         // }
 
         logTrace() << "After proc install execution:" << name;
@@ -453,7 +470,7 @@ void SvdService::installSlot() {
 
 
 void SvdService::reConfigureSlot(bool withDeps) {
-    notification("Performing reconfiguration and restart of service: " + name);
+    notificationSend("Performing reconfiguration and restart of service: " + name);
     auto config = new SvdServiceConfig(name);
     QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE;
     QFile::remove(configuredIndicator);
@@ -481,7 +498,7 @@ void SvdService::configureSlot() {
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
     } else if (QFile::exists(configuredIndicator)) {
-        notification("Service already configured: " + name);
+        notificationSend("Service already configured: " + name);
     } else {
         logInfo() << "Configuring service:" << name;
         touch(indicator);
@@ -494,7 +511,7 @@ void SvdService::configureSlot() {
         logInfo() << "Service configured:" << name;
         if (not expect(readFileContents(process->outputFile), config->configure->expectOutput)) {
             QString msg = name + " failed in configure hook. exp: '" + config->configure->expectOutput + "'";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
         } else
             touch(config->prefixDir() + DEFAULT_SERVICE_CONFIGURED_FILE);
 
@@ -539,7 +556,7 @@ void SvdService::startSlot(bool withDeps) {
         logDebug() << "Free disk space in service directory:" << value << "->" << map[value];
         if (map[value] <= config->minimumRequiredDiskSpace) {
             QString msg = "Insufficient disk space for service: " + config->name + " on domains: " + config->domains.join(", ") + ". Expected disk space amount (MiB): " + QString::number(config->minimumRequiredDiskSpace) + " but disk: " + value + " has only: " + map[value] + "!";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
             config->deleteLater();
             return;
         }
@@ -619,7 +636,7 @@ void SvdService::startSlot(bool withDeps) {
 
         if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE)) {
             QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
             config->deleteLater();
             /* NOTE: don't try to retry. Notification is enough */
             return;
@@ -627,13 +644,13 @@ void SvdService::startSlot(bool withDeps) {
 
         logTrace() << "Launching commands:" << config->start->commands;
         auto process = new SvdProcess(name);
-        notification("Launching service: " + name);
+        notificationSend("Launching service: " + name);
         process->spawnProcess(config->start->commands);
         process->waitForFinished(-1);
 
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
             QString msg = name + " failed in start hook. exp: '" + config->start->expectOutput + "'";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
         } else {
             logInfo() << "Launching cron and baby sitters for service:" << name;
 
@@ -742,7 +759,7 @@ void SvdService::afterStartSlot() {
         process->waitForFinished(-1);
         if (not expect(readFileContents(process->outputFile), config->afterStart->expectOutput)) {
             QString msg = name + " failed in afterStart hook. exp: '" + config->afterStart->expectOutput + "'";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
 
         }
 
@@ -791,10 +808,10 @@ void SvdService::stopSlot(bool withDeps) {
         }
         process->waitForFinished(-1);
         // deathWatch(process->pid());
-        notification("Terminating service: " + name);
+        notificationSend("Terminating service: " + name);
         if (not expect(readFileContents(process->outputFile), config->stop->expectOutput)) {
             QString msg = name + " failed in stop hook. exp: '" + config->stop->expectOutput + "'";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
         }
 
         // /* remove any other states on stop in case of any kinds of failure /killed ss */
@@ -824,7 +841,7 @@ void SvdService::stopSlot(bool withDeps) {
     if (withDeps) {
         Q_FOREACH(SvdService *depService, this->dependencyServices) {
             if (depService) {
-                notification("Terminating " + depService->name + " - dependency of service: " + name);
+                notificationSend("Terminating " + depService->name + " - dependency of service: " + name);
                 logDebug() << "Invoking stop slot of service dependency:" << depService->name << "with uptime:" << toHMS(depService->getUptime());
                 depService->stopSlot();
                 depService->exit();
@@ -866,7 +883,7 @@ void SvdService::afterStopSlot() {
         QFile::remove(indicator);
         if (not expect(readFileContents(process->outputFile), config->afterStop->expectOutput)) {
             QString msg = name + " failed in afterStop hook. exp: '" + config->afterStop->expectOutput + "'";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
         }
         logTrace() << "After process afterStop execution:" << name;
         process->deleteLater();
@@ -918,7 +935,7 @@ void SvdService::reloadSlot() {
         // deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile), config->reload->expectOutput)) {
             QString msg = name + " failed in reload hook. exp: '" + config->reload->expectOutput + "'";
-            notification(msg, ERROR);
+            notificationSend(msg, ERROR);
         }
 
         QFile::remove(indicator);
@@ -952,7 +969,7 @@ void SvdService::validateSlot() {
             // deathWatch(process->pid());
             if (not expect(readFileContents(process->outputFile), config->validate->expectOutput)) {
                 QString msg = name + " failed in validate hook. exp: '" + config->validate->expectOutput + "'";
-                notification(msg, ERROR);
+                notificationSend(msg, ERROR);
             }
 
             QFile::remove(indicator);
