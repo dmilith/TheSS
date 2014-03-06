@@ -84,7 +84,8 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
             break;
 
     }
-    message = timeNow.toString("hh:mm:ss.zzz") + "     " + levelStr + " @ " + QHostInfo::localHostName() +
+    auto stringTime = timeNow.toString("hh:mm:ss.zzz");
+    message = stringTime + "     " + levelStr + " @ " + QHostInfo::localHostName() +
                             "\n\t\t\t\t\t\t\t\t    " + notificationMessage;
 
     QString historyRoot = notificationRoot + NOTIFICATIONS_HISTORY_DATA_DIR;
@@ -97,12 +98,12 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     hash->addData(content.toUtf8(), content.length());
     QString notificationFileName = hash->result().toHex() + postfix;
     delete hash;
-    logDebug() << "Notification msg: " << message << " written to:" << QString::number(now) + "_" + notificationFileName;
-    writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, message);
+    logDebug() << "Notification msg:" << notificationMessage << "written to:" << QString::number(now) + "_" + notificationFileName;
+    writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, stringTime + " " + notificationMessage);
 
     #ifdef NOTIFICATIONS_SLACK_AUTH_TOKEN
     // if (level > NOTIFY) { /* notification only for errors */
-        logInfo() << "Launching https error notification with message:" << message;
+        logInfo() << "Launching https error notification with message:" << notificationMessage;
 
         QSslSocket socket;
         #ifdef __FreeBSD__
