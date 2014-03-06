@@ -57,8 +57,8 @@
     "reportAllDebugs": false,
 
     /* service with lower order value is higher on the dependency list */
-    "configureOrder": 0,
-    "startOrder": 0,
+    "configureOrder": 10,
+    "startOrder": 10,
 
 /* a list of igniters required to launch this software */
     "dependencies": [
