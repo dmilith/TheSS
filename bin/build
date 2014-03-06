@@ -21,8 +21,6 @@ build () {
             ;;
     esac
 
-    (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
-    (make ${MAKE_OPTS_BUILD} && note "Successfully built notifications system\n") || exit 1
 
     case "$1" in
         panel|svdpanel)

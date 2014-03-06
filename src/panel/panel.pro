@@ -14,6 +14,7 @@ HEADERS   += ../service_spawner/utils.h \
              ../service_spawner/logger.h \
              ../service_spawner/service_config.h \
              ../service_spawner/process.h \
+             ../notifications/notifications.h \
              tail.h \
              panel.h \
              gui.h \
@@ -24,6 +25,7 @@ SOURCES   += ../service_spawner/utils.cc \
              ../service_spawner/process.cc \
              ../service_spawner/file_events_manager.cc \
              ../service_spawner/service_config.cc \
+             ../notifications/notifications.cc \
              main.cc \
              panel.cc \
              gui.cc \
@@ -33,8 +35,8 @@ SOURCES   += ../service_spawner/utils.cc \
              ansi.cc
 
 mac {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncurses
+      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncurses
 } else {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a ../libnotifications.a -lz -lncursesw
+      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncursesw
 }
 TARGET    = ../../bin/svdpanel

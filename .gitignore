@@ -28,3 +28,5 @@ releases/
 .obj/*
 /TheSS.sublime-project
 /TheSS.sublime-workspace
+
+/bin/svdnotify
