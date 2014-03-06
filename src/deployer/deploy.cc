@@ -664,22 +664,21 @@ void cloneRepository(QString& serviceName, QString& branch, QString releaseName)
 
     getOrCreateDir(servicePath + DEFAULT_RELEASES_DIR);
 
-    // logInfo() << "Cleaning old deploys - over count of:" << QString::number(MAX_DEPLOYS_TO_KEEP);
-    // QStringList gatheredReleases = QDir(servicePath + DEFAULT_RELEASES_DIR).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
-    // QStringList releases;
-    // if (gatheredReleases.size() > MAX_DEPLOYS_TO_KEEP) {
-    //     for (int i = 0; i < MAX_DEPLOYS_TO_KEEP; i++) {
-    //         releases << gatheredReleases.at(i);
-    //     }
-    //     logDebug() << "Releases left:" << releases;
-    //     Q_FOREACH(QString release, gatheredReleases) {
-    //         if (not releases.contains(release)) {
-    //             logDebug() << "Removing old release:" << servicePath + DEFAULT_RELEASES_DIR + release;
-    //             clne->spawnProcess("rm -rf " + servicePath + DEFAULT_RELEASES_DIR + release);
-    //             clne->waitForFinished(-1);
-    //         }
-    //     }
-    // }
+    QStringList gatheredReleases = QDir(servicePath + DEFAULT_RELEASES_DIR).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
+    if (gatheredReleases.size() > MAX_DEPLOYS_TO_KEEP) {
+        QStringList releases;
+        logInfo() << "Cleaning old deploys - over count of:" << QString::number(MAX_DEPLOYS_TO_KEEP);
+        for (int i = 0; i < MAX_DEPLOYS_TO_KEEP; i++) {
+            releases << gatheredReleases.at(i);
+        }
+        logDebug() << "Releases left:" << releases;
+        Q_FOREACH(QString release, gatheredReleases) {
+            if (not releases.contains(release)) {
+                logInfo() << "Removing old release:" << servicePath + DEFAULT_RELEASES_DIR + release;
+                removeDir(servicePath + DEFAULT_RELEASES_DIR + release, true);
+            }
+        }
+    }
 
     QString serviceLog = getOrCreateDir(servicePath + DEFAULT_SERVICE_LOGS_DIR + releaseName) + DEFAULT_SERVICE_LOG_FILE;
     QString command = "cd " + servicePath + DEFAULT_RELEASES_DIR +
