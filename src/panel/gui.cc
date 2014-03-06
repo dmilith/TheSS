@@ -70,9 +70,10 @@ void PanelGui::gatherNotifications() {
                 Notification n;
                 QString ext = file.suffix();
 
-                if (ext == "error")         n.level = NOTIFICATION_LEVEL_ERROR;
-                else if (ext == "warning")  n.level = NOTIFICATION_LEVEL_WARNING;
-                else if(ext == "notice")    n.level = NOTIFICATION_LEVEL_NOTICE;
+                if (ext == "fatal")         n.level = FATAL;
+                else if (ext == "error")    n.level = ERROR;
+                else if (ext == "warning")  n.level = WARNING;
+                else if(ext == "notice")    n.level = NOTIFY;
 
                 n.content = readFileContents(file.absoluteFilePath()).trimmed();
                 n.time = file.created().toMSecsSinceEpoch();
@@ -105,13 +106,16 @@ void PanelGui::gatherNotifications() {
     for(; i<stop; i++){
         Notification n = notifications.at(i+start);
         switch(n.level){
-            case NOTIFICATION_LEVEL_ERROR:
+            case FATAL:
+                wattron(notificationWindow, C_NOTIFICATION_FATAL);
+                break;
+            case ERROR:
                 wattron(notificationWindow, C_NOTIFICATION_ERROR);
                 break;
-            case NOTIFICATION_LEVEL_WARNING:
+            case WARNING:
                 wattron(notificationWindow, C_NOTIFICATION_WARNING);
                 break;
-            case NOTIFICATION_LEVEL_NOTICE:
+            case NOTIFY:
                 wattron(notificationWindow, C_NOTIFICATION_NOTICE);
                 break;
         }
