@@ -1069,7 +1069,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
                         serviceWorkers.insert(
                             /* start commands: */
-                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1 && echo " + domain + " > /Public/" + serviceName + "_" + getenv("USER") + ".web-app",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
 
                             /* stop commands */
                             "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
@@ -1343,6 +1343,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     if (validateNginxEntry(servicePath, contents)) {
         logDebug() << "Generated proxy contents:" << contents;
         writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
+        logInfo() << "Triggering Coreginx reload for domain:" << domain;
+        writeToFile(QString(DEFAULT_PUBLIC_DIR) + serviceName + "_" + getenv("USER") + WEB_APP_PUBLIC_EXT, domain);
+
     } else {
         logWarn() << "Web-App proxy autogeneration failed. It might be a failure in generated nginx proxy file or user input. Proxy file generation skipped!";
     }

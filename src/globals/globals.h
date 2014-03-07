@@ -124,6 +124,8 @@
     #define DEFAULT_SERVICE_CONFS_DIR "/.confs/"
     #define DEFAULT_SERVICE_SSLS_DIR "/.ssls/"
 
+    #define WEB_APP_PUBLIC_EXT ".web-app"
+
     #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
     #define DEFAULT_SSL_CA_FILE "/cacert.pem"
 
