@@ -1293,7 +1293,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
 
     logDebug() << "Setting configured state for service:" << serviceName;
-    touch(servicePath + DEFAULT_SERVICE_CONFIGURED_FILE);
+    touch(servicePath + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
     logInfo() << "Finalizing environment setup of service:" << serviceName;
 
     switch (appType) {

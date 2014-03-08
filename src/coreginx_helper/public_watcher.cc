@@ -93,7 +93,9 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     logInfo() << "Validating service:" << serviceName << "for user:" << userName;
     auto root = QString(DEFAULT_HOME_DIR) + userName + SOFTWARE_DATA_DIR;
     auto serviceBase = root + "/" + serviceName;
-    auto aFile = serviceBase + DEFAULT_SERVICE_CONFIGURED_FILE;
+    auto config = new SvdServiceConfig(serviceName);
+    auto aFile = serviceBase + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE;
+    config->deleteLater();
     bool mayProceed = QFile::exists(aFile);
     logDebug() << "Validating existance of:" << aFile << "may proceed?-" << mayProceed;
     auto aPublicFile = QString(DEFAULT_PUBLIC_DIR) + file;
