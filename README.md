@@ -351,3 +351,4 @@ RUBY_DOMAIN                 # value of domain name - what user did specify
 * Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
 * QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)
 * QT4 4.8.x implementation by Trolltech & Nokia (LGPL licensed)
+* JAYL 2.0.x JSON Library by Lloyd Hilaiel
