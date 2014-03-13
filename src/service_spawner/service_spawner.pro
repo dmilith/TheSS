@@ -30,5 +30,5 @@ SOURCES   += service.cc \
              service_spawner.cc \
              cron_entry.cc \
              logger.cc
-LIBS      += -lz ../liblogger.a ../libjsoncpp.a ../libhiredis.a ../libquazip.a
+LIBS      += -lz ../liblogger.a ../libyail.a ../libhiredis.a ../libquazip.a
 TARGET    = ../../bin/svdss
