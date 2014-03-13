@@ -349,6 +349,5 @@ RUBY_DOMAIN                 # value of domain name - what user did specify
 ## Used 3rd party software and licenses info:
 * CuteLogger MT logger implementation by Boris Moiseev (LGPL licensed)
 * Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
-* JSON CPP implementation with JSON comments support by Baptiste Lepilleur (MIT licensed)
 * QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)
 * QT4 4.8.x implementation by Trolltech & Nokia (LGPL licensed)
