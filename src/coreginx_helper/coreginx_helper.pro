@@ -32,5 +32,5 @@ SOURCES   += ../service_spawner/process.cc \
              public_watcher.cc \
              coreginx_helper.cc
 
-LIBS      += ../libjsoncpp.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
+LIBS      += ../libyail.a ../liblogger.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../bin/svdcoreginx_helper
