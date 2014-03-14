@@ -59,13 +59,21 @@ class SvdServiceConfig : public QObject {
         const QString rootIgniter();
         const QString userIgniter();
         const QString releaseName();
+
+        QString getString(const QString element);
+        QStringList getArray(const QString element);
+        bool getBoolean(const QString element);
+        long getInteger(const QString element);
+
+
         bool serviceInstalled();
         bool serviceConfigured();
 
-        Json::Value* loadDefaultIgniter();
-        Json::Value* loadIgniter();
+        QString loadDefaultIgniter();
+        QString loadIgniter();
 
 
+        yajl_val node;
         uint uid; // user uid who loads igniter config
         QString name, softwareName, repository, parentService, sha, generatedDefaultPort;
         bool autoStart, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;

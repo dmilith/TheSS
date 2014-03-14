@@ -21,385 +21,413 @@ SvdSchedulerAction::SvdSchedulerAction(const QString& initialCronEntry, const QS
 }
 
 
+QStringList SvdServiceConfig::getArray(const QString element) {
+    /* building paths */
+    auto input = element.split("/");
+    const char* path[input.size() + 1];
+    int i = 0;
+    Q_FOREACH(QString s, input) {
+        path[i] = s.toLocal8Bit().constData();
+        i++;
+    }
+    path[i] = ZERO_CHAR;
+
+    QStringList buf = QStringList();
+    yajl_val v = yajl_tree_get(node, path, yajl_t_array);
+    if (v) {
+        if (YAJL_IS_ARRAY(v)) {
+            int len = v->u.array.len;
+            for (i = 0; i < len; ++i) {
+                yajl_val obj = v->u.array.values[i];
+                buf << YAJL_GET_STRING(obj);
+            }
+            return buf;
+        } else return buf;
+    } else {
+        logError() << "No such node:" << path[0];
+    }
+    return buf;
+}
+
+
+long SvdServiceConfig::getInteger(const QString element) {
+    /* building paths */
+    auto input = element.split("/");
+    const char* path[input.size() + 1];
+    int i = 0;
+    Q_FOREACH(QString s, input) {
+        path[i] = s.toLocal8Bit().constData();
+        i++;
+    }
+    path[i] = ZERO_CHAR;
+
+    yajl_val v = yajl_tree_get(node, path, yajl_t_any);
+    if (v) {
+        if (YAJL_IS_INTEGER(v)) {
+            return YAJL_GET_INTEGER(v);
+        } else return 0;
+    } else {
+        logError() << "No such node:" << path[0];
+    }
+    return 0;
+}
+
+
+bool SvdServiceConfig::getBoolean(const QString element) {
+    /* building paths */
+    auto input = element.split("/");
+    const char* path[input.size() + 1];
+    int i = 0;
+    Q_FOREACH(QString s, input) {
+        path[i] = s.toLocal8Bit().constData();
+        i++;
+    }
+    path[i] = ZERO_CHAR;
+
+    yajl_val v = yajl_tree_get(node, path, yajl_t_true);
+    if (v) {
+        if (YAJL_IS_TRUE(v) or YAJL_IS_FALSE(v)) {
+            if (YAJL_IS_TRUE(v)) return true;
+                else return false;
+        } else return false; /* false will be default for malformed input */
+    } else {
+        logError() << "No such node:" << path[0];
+    }
+    return false;
+}
+
+
+QString SvdServiceConfig::getString(const QString element) {
+    /* building paths */
+    auto input = element.split("/");
+    const char* path[input.size() + 1];
+    int i = 0;
+    Q_FOREACH(QString s, input) {
+        path[i] = s.toLocal8Bit().constData();
+        i++;
+    }
+    path[i] = ZERO_CHAR;
+
+    yajl_val v = yajl_tree_get(node, path, yajl_t_string);
+    if (v) {
+        if (YAJL_IS_STRING(v)) {
+            return YAJL_GET_STRING(v);
+        } else {
+            return "";
+        }
+    } else {
+        logError() << "No such node:" << path[0];
+    }
+    return "";
+}
+
+
 SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     name = "Default"; // must be declared first
     uid = getuid();
-    try {
-        auto defaults = loadDefaultIgniter();
-        if (not defaults) {
-            QString msg = "Igniters defaults must be always valid. Cannot continue.";
-            notification(msg, FATAL);
-        }
-        softwareName = (*defaults)["softwareName"].asCString();
-        autoStart = (*defaults)["autoStart"].asBool();
-        notificationLevel = (*defaults)["notificationLevel"].asInt();
-        webApp = (*defaults)["webApp"].asBool();
-        watchPort = (*defaults)["watchPort"].asBool();
-        watchUdpPort = (*defaults)["watchUdpPort"].asBool();
-        alwaysOn = (*defaults)["alwaysOn"].asBool();
-        resolveDomain = (*defaults)["resolveDomain"].asBool();
-        staticPort = (*defaults)["staticPort"].asInt();
-        minimumRequiredDiskSpace = (*defaults)["minimumRequiredDiskSpace"].asInt();
-        portsPool = (*defaults)["portsPool"].asInt();
-        repository = (*defaults)["repository"].asCString();
-        parentService = (*defaults)["parentService"].asCString();
-        configureOrder = (*defaults)["configureOrder"].asInt();
-        startOrder = (*defaults)["startOrder"].asInt();
 
-        /* load predefined standalone dependencies */
-        for (uint index = 0; index < (*defaults)["standaloneDeps"].size(); ++index ) {
-            try {
-                auto element = (*defaults)["standaloneDeps"][index];
-                if (element.isString())
-                    standaloneDependencies.push_back(element.asCString());
-                else
-                    logError() << "Invalid JSON Type for standaloneDependencies. They all should be Strings";
-            } catch (std::exception &e) {
-                logDebug() << "Exception while parsing default standaloneDependencies of" << name;
-            }
-        }
-        logDebug() << "Defined standaloneDependencies:" << name << "list:" << standaloneDependencies;
-
-        /* load default service domains */
-        for (uint index = 0; index < (*defaults)["domains"].size(); ++index ) {
-            try {
-                auto element = (*defaults)["domains"][index];
-                if (element.isString())
-                    domains.push_back(element.asCString());
-                else
-                    logError() << "Invalid JSON Type for domains. They all should be Strings";
-            } catch (std::exception &e) {
-                logDebug() << "Exception while parsing default domains of" << name;
-            }
-        }
-        logDebug() << "Defined domains:" << name << "list:" << domains;
-
-        /* load http addresses to check */
-        for (uint index = 0; index < (*defaults)["watchHttp"].size(); ++index ) {
-            try {
-                auto element = (*defaults)["watchHttp"][index];
-                if (element.isString())
-                    watchHttpAddresses.push_back(element.asCString());
-                else
-                    logError() << "Invalid JSON Type for watchHttpAddresses list. They all should be http url strings";
-            } catch (std::exception &e) {
-                logDebug() << "Exception while parsing default watchHttpAddresses of" << name;
-            }
-        }
-
-        /* load default service dependencies */
-        for (uint index = 0; index < (*defaults)["dependencies"].size(); ++index ) {
-            try {
-                auto element = (*defaults)["dependencies"][index];
-                if (element.isString())
-                    dependencies.push_back(element.asCString());
-                else
-                    logError() << "Invalid JSON Type for dependencies. They all should be Strings";
-            } catch (std::exception &e) {
-                logDebug() << "Exception while parsing default dependencies of" << name;
-            }
-        }
-        logDebug() << "Defined dependencies:" << name << "list:" << dependencies;
-
-        /* laod service hooks */
-        install = new SvdShellOperations(
-            (*defaults)["install"]["commands"].asCString(),
-            (*defaults)["install"]["expectOutput"].asCString());
-
-        configure = new SvdShellOperations(
-            (*defaults)["configure"]["commands"].asCString(),
-            (*defaults)["configure"]["expectOutput"].asCString());
-
-        start = new SvdShellOperations(
-            (*defaults)["start"]["commands"].asCString(),
-            (*defaults)["start"]["expectOutput"].asCString());
-
-        afterStart = new SvdShellOperations(
-            (*defaults)["afterStart"]["commands"].asCString(),
-            (*defaults)["afterStart"]["expectOutput"].asCString());
-
-        stop = new SvdShellOperations(
-            (*defaults)["stop"]["commands"].asCString(),
-            (*defaults)["stop"]["expectOutput"].asCString());
-
-        afterStop = new SvdShellOperations(
-            (*defaults)["afterStop"]["commands"].asCString(),
-            (*defaults)["afterStop"]["expectOutput"].asCString());
-
-        reload = new SvdShellOperations(
-            (*defaults)["reload"]["commands"].asCString(),
-            (*defaults)["reload"]["expectOutput"].asCString());
-
-        validate = new SvdShellOperations(
-            (*defaults)["validate"]["commands"].asCString(),
-            (*defaults)["validate"]["expectOutput"].asCString());
-
-        babySitter = new SvdShellOperations(
-            (*defaults)["babySitter"]["commands"].asCString(),
-            (*defaults)["babySitter"]["expectOutput"].asCString());
-
-        delete defaults;
-
-    } catch (std::exception &e) {
-        QString msg = QString("Thrown Exception: ") + e.what() + " in Default service.";
+    char errbuf[1024];
+    auto defaults = loadDefaultIgniter();
+    if (defaults.isEmpty()) {
+        QString msg = "Igniters defaults must be always valid. Cannot continue with empty default content.";
         notification(msg, FATAL);
-        exit(JSON_FORMAT_EXCEPTION_ERROR);
+        return;
     }
+    node = yajl_tree_parse(defaults.toUtf8().data(), errbuf, sizeof(errbuf));
+    if (node == NULL) {
+        logError() << errbuf;
+        logFatal() << "Failed to load default igniter which is mandatory. Cannot continue";
+        return;
+    }
+
+    softwareName = getString("softwareName");
+    autoStart = getBoolean("autoStart");
+    notificationLevel = getInteger("notificationLevel");
+    webApp = getBoolean("webApp");
+    watchPort = getBoolean("watchPort");
+    watchUdpPort = getBoolean("watchUdpPort");
+    alwaysOn = getBoolean("alwaysOn");
+    resolveDomain = getBoolean("resolveDomain");
+    staticPort = getInteger("staticPort");
+    minimumRequiredDiskSpace = getInteger("minimumRequiredDiskSpace");
+    portsPool = getInteger("portsPool");
+    repository = getString("repository");
+    parentService = getString("parentService");
+    configureOrder = getInteger("configureOrder");
+    startOrder = getInteger("startOrder");
+
+    dependencies = getArray("dependencies");
+    standaloneDependencies = getArray("standaloneDeps");
+    domains = getArray("domains");
+    watchHttpAddresses = getArray("watchHttp");
+
+    /* laod service hooks */
+    install = new SvdShellOperations(getString("install/commands"), getString("install/expectOutput"));
+    configure = new SvdShellOperations(getString("configure/commands"), getString("configure/expectOutput"));
+    start = new SvdShellOperations(getString("start/commands"), getString("start/expectOutput"));
+    afterStart = new SvdShellOperations(getString("afterStart/commands"), getString("afterStart/expectOutput"));
+    stop = new SvdShellOperations(getString("stop/commands"), getString("stop/expectOutput"));
+    afterStop = new SvdShellOperations(getString("afterStop/commands"), getString("afterStop/expectOutput"));
+    reload = new SvdShellOperations(getString("reload/commands"), getString("reload/expectOutput"));
+    validate = new SvdShellOperations(getString("validate/commands"), getString("validate/expectOutput"));
+    babySitter = new SvdShellOperations(getString("babySitter/commands"), getString("babySitter/expectOutput"));
+
 }
 
 
 SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
-    name = serviceName; // this must be declared first!
-    uid = getuid();
-    try {
-        auto defaults = loadDefaultIgniter();
-        auto root = loadIgniter(); // NOTE: the question is.. how will this behave ;]
+    SvdServiceConfig();
+//     name = serviceName; // this must be declared first!
+//     uid = getuid();
+//     try {
+//         auto defaults = loadDefaultIgniter();
+//         auto root = loadIgniter(); // NOTE: the question is.. how will this behave ;]
 
-        auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
-        QString content = readFileContents(userIgniter()).trimmed();
-        hash->addData(content.toUtf8(), content.length());
-        this->sha = hash->result().toHex();
-        delete hash;
+//         auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+//         QString content = readFileContents(userIgniter()).trimmed();
+//         hash->addData(content.toUtf8(), content.length());
+//         this->sha = hash->result().toHex();
+//         delete hash;
 
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR);
+//         getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
+//         getOrCreateDir(prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
+//         getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
+//         getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
+//         getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
+//         getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR);
 
-        /* replace port pool first */
-        portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
-        QString portsDirLocation = prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
-        logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
-        if (portsPool > 1)
-            if (QDir().exists(portsDirLocation))
-                for (int indx = 1; indx < portsPool; indx++) {
-                    QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
-                    if (not QFile::exists(portsDirLocation + QString::number(indx))) {
-                        logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
-                        uint freePort = registerFreeTcpPort();
-                        writeToFile(portFilePath, QString::number(freePort));
-                    }
-                }
+//         /* replace port pool first */
+//         portsPool = root->get("portsPool", (*defaults)["portsPool"]).asInt();
+//         QString portsDirLocation = prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
+//         logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
+//         if (portsPool > 1)
+//             if (QDir().exists(portsDirLocation))
+//                 for (int indx = 1; indx < portsPool; indx++) {
+//                     QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
+//                     if (not QFile::exists(portsDirLocation + QString::number(indx))) {
+//                         logDebug() << "Creating port file:" << portsDirLocation + QString::number(indx);
+//                         uint freePort = registerFreeTcpPort();
+//                         writeToFile(portFilePath, QString::number(freePort));
+//                     }
+//                 }
 
-        /* then replace main port */
-        staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
-        QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
-        if (staticPort != -1) { /* defined static port */
-            logTrace() << "Set static port:" << staticPort << "for service" << name;
-            writeToFile(portFilePath, QString::number(staticPort));
-            generatedDefaultPort = QString::number(staticPort);
-        } else {
-            if (not QFile::exists(portFilePath)) {
-                generatedDefaultPort = QString::number(registerFreeTcpPort());
-                logTrace() << "Set random free port:" << generatedDefaultPort << "for service" << name;
-                writeToFile(portFilePath, generatedDefaultPort);
-            } else
-                generatedDefaultPort = readFileContents(portFilePath).trimmed();
-        }
-        Q_ASSERT(not generatedDefaultPort.isEmpty()); /* XXX: temporary, but it's that important */
+//         /* then replace main port */
+//         staticPort = root->get("staticPort", (*defaults)["staticPort"]).asInt();
+//         QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
+//         if (staticPort != -1) { /* defined static port */
+//             logTrace() << "Set static port:" << staticPort << "for service" << name;
+//             writeToFile(portFilePath, QString::number(staticPort));
+//             generatedDefaultPort = QString::number(staticPort);
+//         } else {
+//             if (not QFile::exists(portFilePath)) {
+//                 generatedDefaultPort = QString::number(registerFreeTcpPort());
+//                 logTrace() << "Set random free port:" << generatedDefaultPort << "for service" << name;
+//                 writeToFile(portFilePath, generatedDefaultPort);
+//             } else
+//                 generatedDefaultPort = readFileContents(portFilePath).trimmed();
+//         }
+//         Q_ASSERT(not generatedDefaultPort.isEmpty()); /* XXX: temporary, but it's that important */
 
-        if (not defaults) {
-            QString msg = "Igniters defaults must be always valid. Cannot continue.";
-            notification(msg, FATAL);
-        }
-        if (not root) {
-            QString msg = "Error loading igniter for service: " + serviceName + "! Loading default igniter instead.";
-            notification(msg, ERROR);
-            root = loadDefaultIgniter();
-            return;
-        }
-        softwareName = root->get("softwareName", (*defaults)["softwareName"]).asCString();
-        autoStart = root->get("autoStart", (*defaults)["autoStart"]).asBool();
-        notificationLevel = root->get("notificationLevel", (*defaults)["notificationLevel"]).asInt();
-        webApp = root->get("webApp", (*defaults)["webApp"]).asBool();
-        watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
-        watchUdpPort = root->get("watchUdpPort", (*defaults)["watchUdpPort"]).asBool();
-        alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
-        resolveDomain = root->get("resolveDomain", (*defaults)["resolveDomain"]).asBool();
-        minimumRequiredDiskSpace = root->get("minimumRequiredDiskSpace", (*defaults)["minimumRequiredDiskSpace"]).asInt();
-        repository = root->get("repository", (*defaults)["repository"]).asCString();
-        parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
-        configureOrder = root->get("configureOrder", (*defaults)["configureOrder"]).asInt();
-        startOrder = root->get("startOrder", (*defaults)["startOrder"]).asInt();
+//         if (not defaults) {
+//             QString msg = "Igniters defaults must be always valid. Cannot continue.";
+//             notification(msg, FATAL);
+//         }
+//         if (not root) {
+//             QString msg = "Error loading igniter for service: " + serviceName + "! Loading default igniter instead.";
+//             notification(msg, ERROR);
+//             root = loadDefaultIgniter();
+//             return;
+//         }
+//         softwareName = root->get("softwareName", (*defaults)["softwareName"]).asCString();
+//         autoStart = root->get("autoStart", (*defaults)["autoStart"]).asBool();
+//         notificationLevel = root->get("notificationLevel", (*defaults)["notificationLevel"]).asInt();
+//         webApp = root->get("webApp", (*defaults)["webApp"]).asBool();
+//         watchPort = root->get("watchPort", (*defaults)["watchPort"]).asBool();
+//         watchUdpPort = root->get("watchUdpPort", (*defaults)["watchUdpPort"]).asBool();
+//         alwaysOn = root->get("alwaysOn", (*defaults)["alwaysOn"]).asBool();
+//         resolveDomain = root->get("resolveDomain", (*defaults)["resolveDomain"]).asBool();
+//         minimumRequiredDiskSpace = root->get("minimumRequiredDiskSpace", (*defaults)["minimumRequiredDiskSpace"]).asInt();
+//         repository = root->get("repository", (*defaults)["repository"]).asCString();
+//         parentService = root->get("parentService", (*defaults)["parentService"]).asCString();
+//         configureOrder = root->get("configureOrder", (*defaults)["configureOrder"]).asInt();
+//         startOrder = root->get("startOrder", (*defaults)["startOrder"]).asInt();
 
-        /* load predefined standalone dependencies */
-        for (uint index = 0; index < (*root)["standaloneDeps"].size(); ++index ) {
-            try {
-                auto element = (*root)["standaloneDeps"][index];
-                if (element.isString())
-                    standaloneDependencies.push_back(element.asCString());
-                else
-                    logError() << "Invalid JSON Type for standaloneDependencies. They all should be Strings";
-            } catch (std::exception &e) {
-                logDebug() << "Exception while parsing default standaloneDependencies of" << name;
-            }
-        }
-        logDebug() << "Defined standaloneDependencies:" << name << "list:" << standaloneDependencies;
+//         /* load predefined standalone dependencies */
+//         for (uint index = 0; index < (*root)["standaloneDeps"].size(); ++index ) {
+//             try {
+//                 auto element = (*root)["standaloneDeps"][index];
+//                 if (element.isString())
+//                     standaloneDependencies.push_back(element.asCString());
+//                 else
+//                     logError() << "Invalid JSON Type for standaloneDependencies. They all should be Strings";
+//             } catch (std::exception &e) {
+//                 logDebug() << "Exception while parsing default standaloneDependencies of" << name;
+//             }
+//         }
+//         logDebug() << "Defined standaloneDependencies:" << name << "list:" << standaloneDependencies;
 
-        /* load default service domains */
-        for (uint index = 0; index < (*root)["domains"].size(); ++index ) {
-            try {
-                auto element = (*root)["domains"][index];
-                if (element.isString())
-                    domains.push_back(element.asCString());
-                else
-                    logError() << "Invalid JSON Type for domains. They all should be Strings";
-            } catch (std::exception &e) {
-                logDebug() << "Exception while parsing default domains of" << name;
-            }
-        }
-        logDebug() << "Defined domains:" << name << "list:" << domains;
+//         /* load default service domains */
+//         for (uint index = 0; index < (*root)["domains"].size(); ++index ) {
+//             try {
+//                 auto element = (*root)["domains"][index];
+//                 if (element.isString())
+//                     domains.push_back(element.asCString());
+//                 else
+//                     logError() << "Invalid JSON Type for domains. They all should be Strings";
+//             } catch (std::exception &e) {
+//                 logDebug() << "Exception while parsing default domains of" << name;
+//             }
+//         }
+//         logDebug() << "Defined domains:" << name << "list:" << domains;
 
-        /* load http addresses to check */
-        for (uint index = 0; index < (*root)["watchHttp"].size(); ++index ) {
-            try {
-                auto element = (*root)["watchHttp"][index];
-                if (element.isString())
-                    watchHttpAddresses.push_back(element.asCString());
-                else
-                    logError() << "Invalid JSON Type for watchHttpAddresses list. They all should be http url strings";
-            } catch (std::exception &e) {
-                logDebug() << "Exception while parsing default watchHttpAddresses of" << name;
-            }
-        }
+//         /* load http addresses to check */
+//         for (uint index = 0; index < (*root)["watchHttp"].size(); ++index ) {
+//             try {
+//                 auto element = (*root)["watchHttp"][index];
+//                 if (element.isString())
+//                     watchHttpAddresses.push_back(element.asCString());
+//                 else
+//                     logError() << "Invalid JSON Type for watchHttpAddresses list. They all should be http url strings";
+//             } catch (std::exception &e) {
+//                 logDebug() << "Exception while parsing default watchHttpAddresses of" << name;
+//             }
+//         }
 
-        /* load service dependencies data */
-        for (uint index = 0; index < (*root)["dependencies"].size(); ++index ) {
-            try {
-                dependencies.push_back((*root)["dependencies"][index].asCString());
-            } catch (std::exception &e) {
-                QString msg = "Exception while parsing dependencies of service: " + name;
-                notification(msg, ERROR);
-            }
-        }
-        logTrace() << "Defined dependencies for igniter of:" << name << "list:" << dependencies;
+//         /* load service dependencies data */
+//         for (uint index = 0; index < (*root)["dependencies"].size(); ++index ) {
+//             try {
+//                 dependencies.push_back((*root)["dependencies"][index].asCString());
+//             } catch (std::exception &e) {
+//                 QString msg = "Exception while parsing dependencies of service: " + name;
+//                 notification(msg, ERROR);
+//             }
+//         }
+//         logTrace() << "Defined dependencies for igniter of:" << name << "list:" << dependencies;
 
-        /* load service scheduler data */
-        for (uint index = 0; index < (*root)["schedulerActions"].size(); ++index ) {
-            try {
-                auto object = (*root)["schedulerActions"][index].get("cronEntry", DEFAULT_CRON_ENTRY);
-                auto object2 = (*root)["schedulerActions"][index].get("commands", "true");
-                if (object.isString() and object2.isString()) {
-                    schedulerActions.push_back(
-                        new SvdSchedulerAction(
-                            object.asCString(), replaceAllSpecialsIn(object2.asCString())
-                        ));
-                } else {
-                    if (not object2.isString()) {
-                        QString msg = "JSON Type: Array - Failed parsing scheduler actions in igniter: " + name + " field: commands";
-                        notification(msg, ERROR);
-                    } else {
-                        QString msg = "JSON Type: Array - Failed parsing scheduler actions in igniter:" + name + " field: cronEntry";
-                        notification(msg, ERROR);
-                    }
-                }
-            } catch (std::exception &e) {
-                QString msg = QString("Exception while parsing scheduler actions of service: ") + name + " - " + e.what();
-                notification(msg, ERROR);
-            }
-        }
+//         /* load service scheduler data */
+//         for (uint index = 0; index < (*root)["schedulerActions"].size(); ++index ) {
+//             try {
+//                 auto object = (*root)["schedulerActions"][index].get("cronEntry", DEFAULT_CRON_ENTRY);
+//                 auto object2 = (*root)["schedulerActions"][index].get("commands", "true");
+//                 if (object.isString() and object2.isString()) {
+//                     schedulerActions.push_back(
+//                         new SvdSchedulerAction(
+//                             object.asCString(), replaceAllSpecialsIn(object2.asCString())
+//                         ));
+//                 } else {
+//                     if (not object2.isString()) {
+//                         QString msg = "JSON Type: Array - Failed parsing scheduler actions in igniter: " + name + " field: commands";
+//                         notification(msg, ERROR);
+//                     } else {
+//                         QString msg = "JSON Type: Array - Failed parsing scheduler actions in igniter:" + name + " field: cronEntry";
+//                         notification(msg, ERROR);
+//                     }
+//                 }
+//             } catch (std::exception &e) {
+//                 QString msg = QString("Exception while parsing scheduler actions of service: ") + name + " - " + e.what();
+//                 notification(msg, ERROR);
+//             }
+//         }
 
-        /* laod service hooks */
-        install = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["install"].get("commands", (*defaults)["install"]["commands"]).asCString()),
-            replaceAllSpecialsIn((*root)["install"].get("expectOutput", (*defaults)["install"]["expectOutput"]).asCString()));
+//         /* laod service hooks */
+//         install = new SvdShellOperations(
+//             replaceAllSpecialsIn((*root)["install"].get("commands", (*defaults)["install"]["commands"]).asCString()),
+//             replaceAllSpecialsIn((*root)["install"].get("expectOutput", (*defaults)["install"]["expectOutput"]).asCString()));
 
-        configure = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["configure"].get("commands", (*defaults)["configure"]["commands"]).asCString()),
-            replaceAllSpecialsIn((*root)["configure"].get("expectOutput", (*defaults)["configure"]["expectOutput"]).asCString()));
+//         configure = new SvdShellOperations(
+//             replaceAllSpecialsIn((*root)["configure"].get("commands", (*defaults)["configure"]["commands"]).asCString()),
+//             replaceAllSpecialsIn((*root)["configure"].get("expectOutput", (*defaults)["configure"]["expectOutput"]).asCString()));
 
-        start = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["start"].get("commands", (*defaults)["start"]["commands"]).asCString()),
-            replaceAllSpecialsIn((*root)["start"].get("expectOutput", (*defaults)["start"]["expectOutput"]).asCString()));
+//         start = new SvdShellOperations(
+//             replaceAllSpecialsIn((*root)["start"].get("commands", (*defaults)["start"]["commands"]).asCString()),
+//             replaceAllSpecialsIn((*root)["start"].get("expectOutput", (*defaults)["start"]["expectOutput"]).asCString()));
 
-        afterStart = new SvdShellOperations(
-            replaceAllSpecialsIn(
-                QString((*root)["afterStart"].get("commands", Json::Value("")).asCString()) + QString((*defaults)["afterStart"]["commands"].asCString())), /* merge with value from Default */
-            replaceAllSpecialsIn((*root)["afterStart"].get("expectOutput", (*defaults)["afterStart"]["expectOutput"]).asCString()));
+//         afterStart = new SvdShellOperations(
+//             replaceAllSpecialsIn(
+//                 QString((*root)["afterStart"].get("commands", Json::Value("")).asCString()) + QString((*defaults)["afterStart"]["commands"].asCString())), /* merge with value from Default */
+//             replaceAllSpecialsIn((*root)["afterStart"].get("expectOutput", (*defaults)["afterStart"]["expectOutput"]).asCString()));
 
-        stop = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["stop"].get("commands", (*defaults)["stop"]["commands"]).asCString()),
-            replaceAllSpecialsIn((*root)["stop"].get("expectOutput", (*defaults)["stop"]["expectOutput"]).asCString()));
+//         stop = new SvdShellOperations(
+//             replaceAllSpecialsIn((*root)["stop"].get("commands", (*defaults)["stop"]["commands"]).asCString()),
+//             replaceAllSpecialsIn((*root)["stop"].get("expectOutput", (*defaults)["stop"]["expectOutput"]).asCString()));
 
-        afterStop = new SvdShellOperations(
-            replaceAllSpecialsIn(
-                QString((*root)["afterStop"].get("commands", Json::Value("")).asCString()) + QString((*defaults)["afterStop"]["commands"].asCString())), /* merge with value from Default */
-            replaceAllSpecialsIn((*root)["afterStop"].get("expectOutput", (*defaults)["afterStop"]["expectOutput"]).asCString()));
+//         afterStop = new SvdShellOperations(
+//             replaceAllSpecialsIn(
+//                 QString((*root)["afterStop"].get("commands", Json::Value("")).asCString()) + QString((*defaults)["afterStop"]["commands"].asCString())), /* merge with value from Default */
+//             replaceAllSpecialsIn((*root)["afterStop"].get("expectOutput", (*defaults)["afterStop"]["expectOutput"]).asCString()));
 
-        reload = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["reload"].get("commands", (*defaults)["reload"]["commands"]).asCString()),
-            replaceAllSpecialsIn((*root)["reload"].get("expectOutput", (*defaults)["reload"]["expectOutput"]).asCString()));
+//         reload = new SvdShellOperations(
+//             replaceAllSpecialsIn((*root)["reload"].get("commands", (*defaults)["reload"]["commands"]).asCString()),
+//             replaceAllSpecialsIn((*root)["reload"].get("expectOutput", (*defaults)["reload"]["expectOutput"]).asCString()));
 
-        validate = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["validate"].get("commands", (*defaults)["validate"]["commands"]).asCString()),
-            replaceAllSpecialsIn((*root)["validate"].get("expectOutput", (*defaults)["validate"]["expectOutput"]).asCString()));
+//         validate = new SvdShellOperations(
+//             replaceAllSpecialsIn((*root)["validate"].get("commands", (*defaults)["validate"]["commands"]).asCString()),
+//             replaceAllSpecialsIn((*root)["validate"].get("expectOutput", (*defaults)["validate"]["expectOutput"]).asCString()));
 
-        babySitter = new SvdShellOperations(
-            replaceAllSpecialsIn((*root)["babySitter"].get("commands", (*defaults)["babySitter"]["commands"]).asCString()),
-            replaceAllSpecialsIn((*root)["babySitter"].get("expectOutput", (*defaults)["babySitter"]["expectOutput"]).asCString()));
+//         babySitter = new SvdShellOperations(
+//             replaceAllSpecialsIn((*root)["babySitter"].get("commands", (*defaults)["babySitter"]["commands"]).asCString()),
+//             replaceAllSpecialsIn((*root)["babySitter"].get("expectOutput", (*defaults)["babySitter"]["expectOutput"]).asCString()));
 
 
-        /* on this stage, we want to replace these igniter constants: */
-        QMap<QString, QString> injectHooks;
-        injectHooks["SERVICE_INSTALL_HOOK"] = install->commands;
-        injectHooks["SERVICE_START_HOOK"] = start->commands;
-        injectHooks["SERVICE_STOP_HOOK"] = stop->commands;
-        injectHooks["SERVICE_AFTERSTART_HOOK"] = afterStart->commands;
-        injectHooks["SERVICE_AFTERSTOP_HOOK"] = afterStop->commands;
-        injectHooks["SERVICE_CONFIGURE_HOOK"] = configure->commands;
-        injectHooks["SERVICE_BABYSITTER_HOOK"] = babySitter->commands;
-        injectHooks["SERVICE_VALIDATE_HOOK"] = validate->commands;
+//         /* on this stage, we want to replace these igniter constants: */
+//         QMap<QString, QString> injectHooks;
+//         injectHooks["SERVICE_INSTALL_HOOK"] = install->commands;
+//         injectHooks["SERVICE_START_HOOK"] = start->commands;
+//         injectHooks["SERVICE_STOP_HOOK"] = stop->commands;
+//         injectHooks["SERVICE_AFTERSTART_HOOK"] = afterStart->commands;
+//         injectHooks["SERVICE_AFTERSTOP_HOOK"] = afterStop->commands;
+//         injectHooks["SERVICE_CONFIGURE_HOOK"] = configure->commands;
+//         injectHooks["SERVICE_BABYSITTER_HOOK"] = babySitter->commands;
+//         injectHooks["SERVICE_VALIDATE_HOOK"] = validate->commands;
 
-        QList<SvdShellOperations*> operations;
-        operations << install << start << stop << afterStart << afterStop << configure << babySitter << validate;
-        Q_FOREACH(auto operation, operations) { /* for each operation, do hook injection */
-            Q_FOREACH(QString hook, injectHooks.keys()) {
-                QString old_commds = operation->commands;
-                operation->commands = operation->commands.replace(hook, injectHooks.value(hook));
-                if (operation->commands != old_commds) {
-                    logDebug() << "Performing igniter injections of hook:" << hook << "in service:" << name;
-                    logTrace() << hook << "- injecting content:" << injectHooks.value(hook) << " - COMMANDS: " << operation->commands;
-                    logDebug() << "OLD value:" << old_commds;
-                    logDebug() << "NEW value:" << operation->commands;
-                }
-            }
-        }
+//         QList<SvdShellOperations*> operations;
+//         operations << install << start << stop << afterStart << afterStop << configure << babySitter << validate;
+//         Q_FOREACH(auto operation, operations) { /* for each operation, do hook injection */
+//             Q_FOREACH(QString hook, injectHooks.keys()) {
+//                 QString old_commds = operation->commands;
+//                 operation->commands = operation->commands.replace(hook, injectHooks.value(hook));
+//                 if (operation->commands != old_commds) {
+//                     logDebug() << "Performing igniter injections of hook:" << hook << "in service:" << name;
+//                     logTrace() << hook << "- injecting content:" << injectHooks.value(hook) << " - COMMANDS: " << operation->commands;
+//                     logDebug() << "OLD value:" << old_commds;
+//                     logDebug() << "NEW value:" << operation->commands;
+//                 }
+//             }
+//         }
 
-        QString serviceDataDir = getOrCreateDir(getServiceDataDir(name));
-        QString autoStFile = serviceDataDir + AUTOSTART_TRIGGER_FILE;
-        if (autoStart and not QFile::exists(autoStFile)) {
-            logInfo() << "Autostart predefined on igniter side (has highest priority): Autostart state set for service:" << name;
-            logDebug() << "Touching:" << autoStFile;
-            touch(autoStFile);
-        }
+//         QString serviceDataDir = getOrCreateDir(getServiceDataDir(name));
+//         QString autoStFile = serviceDataDir + AUTOSTART_TRIGGER_FILE;
+//         if (autoStart and not QFile::exists(autoStFile)) {
+//             logInfo() << "Autostart predefined on igniter side (has highest priority): Autostart state set for service:" << name;
+//             logDebug() << "Touching:" << autoStFile;
+//             touch(autoStFile);
+//         }
 
-        delete defaults;
-        delete root;
+//         delete defaults;
+//         delete root;
 
-    } catch (std::exception &e) {
-        QString msg = QString("Thrown Exception: ") + e.what() + " in " + serviceName + " service.";
-        notification(msg, ERROR);
-    }
-}
+//     } catch (std::exception &e) {
+//         QString msg = QString("Thrown Exception: ") + e.what() + " in " + serviceName + " service.";
+//         notification(msg, ERROR);
+//     }
+// }
 
 
 /* destructor with memory free - welcome in C++ dmilith */
-SvdServiceConfig::~SvdServiceConfig() {
+// SvdServiceConfig::~SvdServiceConfig() {
 
-    /* laod service hooks */
-    delete install;
-    delete configure;
-    delete start;
-    delete afterStart;
-    delete stop;
-    delete afterStop;
-    delete reload;
-    delete validate;
-    delete babySitter;
-    for (int i = 0; i < schedulerActions.length(); i++)
-        delete schedulerActions.at(i);
+//     /* laod service hooks */
+//     delete install;
+//     delete configure;
+//     delete start;
+//     delete afterStart;
+//     delete stop;
+//     delete afterStop;
+//     delete reload;
+//     delete validate;
+//     delete babySitter;
+//     for (int i = 0; i < schedulerActions.length(); i++)
+//         delete schedulerActions.at(i);
 
 }
 
@@ -634,22 +662,22 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
 /*
  *  Load igniter data in Json.
  */
-Json::Value* SvdServiceConfig::loadDefaultIgniter() {
+QString SvdServiceConfig::loadDefaultIgniter() {
     QFile defaultIgniter(defaultTemplateFile()); /* try loading root igniter as second */
     if(!defaultIgniter.open(QIODevice::ReadOnly)) { /* check file access */
-        logTrace() << "No file: " << defaultTemplateFile();
+        logError() << "NO loadDefaultIgniter: " << defaultTemplateFile();
     } else {
-        return parseJSON(defaultTemplateFile());
+        return readFileContents(defaultTemplateFile());
     }
     defaultIgniter.close();
-    return new Json::Value();
+    return "";
 }
 
 
 /*
  *  Load igniter data in Json.
  */
-Json::Value* SvdServiceConfig::loadIgniter() {
+QString SvdServiceConfig::loadIgniter() {
     // auto result = new Json::Value();
     QFile fileUser(userIgniter()); /* try loading user igniter as first */
     QFile fileRoot(rootIgniter()); /* try loading root igniter as third */
@@ -658,18 +686,18 @@ Json::Value* SvdServiceConfig::loadIgniter() {
         logTrace() << "No file: " << userIgniter();
     } else {
         fileUser.close();
-        return parseJSON(userIgniter());
+        return readFileContents(userIgniter());
     }
     fileUser.close();
 
     if(!fileRoot.open(QIODevice::ReadOnly)) {
         logTrace() << "No file: " << rootIgniter();
         fileRoot.close();
-        return new Json::Value();
+        return "";
     }
     fileRoot.close();
 
-    return parseJSON(rootIgniter());
+    return readFileContents(rootIgniter());
 }
 
 
