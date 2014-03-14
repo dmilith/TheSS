@@ -90,7 +90,31 @@ void TestLibrary::testParseJSONRedis() {
 
 
 void TestLibrary::testParseDefault() {
+    QString testParseDefault = "abc";
+    QVERIFY(testParseDefault.split("/").size() == 1);
+    QVERIFY(testParseDefault.split("b").size() == 2);
+    char errbuf[1024];
+
     auto *config = new SvdServiceConfig(); /* Load default values */
+
+
+    const char* testParse2 = "{\"stefan\": [\"fst\", \"scnd\"]}";
+    auto node = yajl_tree_parse(testParse2, errbuf, sizeof(errbuf));
+    QVERIFY(node != NULL);
+    QVERIFY(config->getArray(node, "stefan").first() == "fst");
+    QVERIFY(config->getArray(node, "stefan").last() == "scnd");
+    QVERIFY(config->getArray(node, "stefan").size() == 2);
+
+    const char* testParse = "{ \"stoo\" : 111, \"abc\": \"oO\", \"ddd\": {\"some\": true, \"zabra\": \"666\", \"abra\": 666}}";
+    node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
+    QVERIFY(node != NULL);
+    QVERIFY(config->getString(node, "abc") == "oO");
+    QVERIFY(config->getBoolean(node, "ddd/some") == true);
+    QVERIFY(config->getBoolean(node, "nothere") == false);
+    QVERIFY(config->getString(node, "ddd/zabra") == "666");
+    QVERIFY(config->getInteger(node, "ddd/abra") == 666);
+    QVERIFY(config->getInteger(node, "stoo") == 111);
+
     QCOMPARE(config->staticPort, -1);
     QVERIFY(config->schedulerActions.length() == 0);
     delete config;
