@@ -10,7 +10,7 @@
 #define __SERVICE_CONFIG__
 
 #include "../globals/globals.h"
-#include "../jsoncpp/json/json.h"
+#include "../yajl/api/yajl_tree.h"
 #include "utils.h"
 #include "cron_entry.h"
 
@@ -21,7 +21,9 @@
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QNetworkInterface>
+#include <iostream>
 
+#define ZERO_CHAR (const char *)0
 
 class SvdSchedulerAction {
 
@@ -61,9 +63,16 @@ class SvdServiceConfig : public QObject {
         const QString releaseName();
 
         QString getString(const QString element);
+        QString getString(yajl_val node, const QString element);
+
         QStringList getArray(const QString element);
+        QStringList getArray(yajl_val node, const QString element);
+
         bool getBoolean(const QString element);
+        bool getBoolean(yajl_val node, const QString element);
+
         long getInteger(const QString element);
+        long getInteger(yajl_val node, const QString element);
 
 
         bool serviceInstalled();
@@ -73,7 +82,8 @@ class SvdServiceConfig : public QObject {
         QString loadIgniter();
 
 
-        yajl_val node;
+        QString defaultsCache = "";
+        yajl_val node_;
         uint uid; // user uid who loads igniter config
         QString name, softwareName, repository, parentService, sha, generatedDefaultPort;
         bool autoStart, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;

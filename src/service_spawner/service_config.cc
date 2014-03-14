@@ -21,13 +21,18 @@ SvdSchedulerAction::SvdSchedulerAction(const QString& initialCronEntry, const QS
 }
 
 
-QStringList SvdServiceConfig::getArray(const QString element) {
+QStringList SvdServiceConfig::getArray(yajl_val node, const QString element) {
     /* building paths */
-    auto input = element.split("/");
-    const char* path[input.size() + 1];
+    QStringList input = element.split("/");
+    logDebug() << "element:" << element;
+    const int size = input.length() + 1;
+    const char *path[size];
+    QString s = "";
     int i = 0;
-    Q_FOREACH(QString s, input) {
-        path[i] = s.toLocal8Bit().constData();
+    foreach (QString s, input) {
+        path[i] = new char[s.length() + 1];
+        strcpy((char*)path[i], s.toUtf8().constData());
+        path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
     path[i] = ZERO_CHAR;
@@ -44,22 +49,33 @@ QStringList SvdServiceConfig::getArray(const QString element) {
             return buf;
         } else return buf;
     } else {
-        logError() << "No such node:" << path[0];
+        logError() << "No such node:" << element;
     }
     return buf;
 }
 
 
-long SvdServiceConfig::getInteger(const QString element) {
+QStringList SvdServiceConfig::getArray(const QString element) {
+    return getArray(node_, element);
+}
+
+
+long SvdServiceConfig::getInteger(yajl_val node, const QString element) {
     /* building paths */
-    auto input = element.split("/");
-    const char* path[input.size() + 1];
+    QStringList input = element.split("/");
+    logDebug() << "element:" << element;
+    logDebug() << "INPUT:" << input;
+    const int size = input.length();
+    const char *path[size];
+    QString s = "";
     int i = 0;
-    Q_FOREACH(QString s, input) {
-        path[i] = s.toLocal8Bit().constData();
+    foreach (QString s, input) {
+        path[i] = new char[s.length() + 1];
+        strcpy((char*)path[i], s.toUtf8().constData());
+        path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
-    path[i] = ZERO_CHAR;
+    // path[size] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(node, path, yajl_t_any);
     if (v) {
@@ -67,19 +83,30 @@ long SvdServiceConfig::getInteger(const QString element) {
             return YAJL_GET_INTEGER(v);
         } else return 0;
     } else {
-        logError() << "No such node:" << path[0];
+        logError() << "No such node:" << element;
     }
     return 0;
 }
 
 
-bool SvdServiceConfig::getBoolean(const QString element) {
+long SvdServiceConfig::getInteger(const QString element) {
+    return getInteger(node_, element);
+}
+
+
+bool SvdServiceConfig::getBoolean(yajl_val node, const QString element) {
     /* building paths */
-    auto input = element.split("/");
-    const char* path[input.size() + 1];
+    QStringList input = element.split("/");
+    logDebug() << "element:" << element;
+    logDebug() << "INPUT:" << input;
+    const int size = input.length() + 1;
+    const char *path[size];
+    QString s = "";
     int i = 0;
-    Q_FOREACH(QString s, input) {
-        path[i] = s.toLocal8Bit().constData();
+    foreach (QString s, input) {
+        path[i] = new char[s.length() + 1];
+        strcpy((char*)path[i], s.toUtf8().constData());
+        path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
     path[i] = ZERO_CHAR;
@@ -91,34 +118,60 @@ bool SvdServiceConfig::getBoolean(const QString element) {
                 else return false;
         } else return false; /* false will be default for malformed input */
     } else {
-        logError() << "No such node:" << path[0];
+        logError() << "No such node:" << element;
     }
     return false;
 }
 
 
-QString SvdServiceConfig::getString(const QString element) {
+bool SvdServiceConfig::getBoolean(const QString element) {
+    return getBoolean(node_, element);
+}
+
+
+QString SvdServiceConfig::getString(yajl_val node, const QString element) {
     /* building paths */
-    auto input = element.split("/");
-    const char* path[input.size() + 1];
+    QStringList input = element.split("/");
+    logDebug() << "element:" << element;
+    logDebug() << "INPUT:" << input;
+    const int size = input.length() + 1;
+    const char *path[size];
+    QString s = "";
     int i = 0;
-    Q_FOREACH(QString s, input) {
-        path[i] = s.toLocal8Bit().constData();
+    foreach (QString s, input) {
+        path[i] = new char[s.length() + 1];
+        strcpy((char*)path[i], s.toUtf8().constData());
+        path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
     path[i] = ZERO_CHAR;
 
+    // for (int j = 0; j < i; j++)
+    //     logDebug() << "Path:" << j << "-" << path[j];
+
     yajl_val v = yajl_tree_get(node, path, yajl_t_string);
     if (v) {
         if (YAJL_IS_STRING(v)) {
+            // yajl_tree_free(v);
+            logDebug() << "Parsed String:" << YAJL_GET_STRING(v);
+            // delete *path;
             return YAJL_GET_STRING(v);
         } else {
+            // yajl_tree_free(v);
             return "";
         }
     } else {
-        logError() << "No such node:" << path[0];
+        // logDebug() << errno;
+            // logDebug() << "PATH" << YAJL_GET_STRING(path[a]);
+        logError() << "Error!";
+        // }
     }
     return "";
+}
+
+
+QString SvdServiceConfig::getString(const QString element) {
+    return getString(node_, element);
 }
 
 
@@ -128,16 +181,24 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
 
     char errbuf[1024];
     auto defaults = loadDefaultIgniter();
-    if (defaults.isEmpty()) {
-        QString msg = "Igniters defaults must be always valid. Cannot continue with empty default content.";
-        notification(msg, FATAL);
-        return;
-    }
-    node = yajl_tree_parse(defaults.toUtf8().data(), errbuf, sizeof(errbuf));
-    if (node == NULL) {
-        logError() << errbuf;
-        logFatal() << "Failed to load default igniter which is mandatory. Cannot continue";
-        return;
+    // if (defaults.isEmpty()) {
+    //     if (defaultsCache.isEmpty()) {
+    //         QString msg = "Igniters defaults must be always valid. Cannot continue with empty default content.";
+    //         notification(msg, FATAL);
+    //         return;
+    //     } else
+    //         defaults = defaultsCache; /* take value from cache */
+    // }
+    node_ = yajl_tree_parse(defaults.toUtf8().constData(), errbuf, sizeof(errbuf));
+    if (defaults.isEmpty() or node_ == NULL) {
+        if (defaultsCache.isEmpty()) {
+            logError() << errbuf;
+            logFatal() << "Failed to load default igniter which is mandatory. Cannot continue";
+            return;
+        } else {
+            logInfo() << "Updating igniter cache";
+            defaultsCache = defaults;
+        }
     }
 
     softwareName = getString("softwareName");
