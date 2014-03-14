@@ -97,12 +97,17 @@ void TestLibrary::testParseDefault() {
     auto *config = new SvdServiceConfig(); /* Load default values */
 
     /* parse arrays test */
-    const char* testParse2 = "{\"stefan\": [\"fst\", \"scnd\"]}";
+    const char* testParse2 = "{\"stefan\": [\"fst\", \"scnd\"], \"some\": {\"internal\": [\"a\",\"b\",\"c\"]}}";
     auto node = yajl_tree_parse(testParse2, errbuf, sizeof(errbuf));
     QVERIFY(node != NULL);
     QVERIFY(config->getArray(node, "stefan").first() == "fst");
     QVERIFY(config->getArray(node, "stefan").last() == "scnd");
     QVERIFY(config->getArray(node, "stefan").size() == 2);
+    QVERIFY(config->getArray(node, "some/internal").contains("a"));
+    QVERIFY(config->getArray(node, "some/internal").contains("b"));
+    QVERIFY(config->getArray(node, "some/internal").contains("c"));
+    QVERIFY(config->getArray(node, "some/internal").size() == 3);
+    yajl_tree_free(node);
 
     /* parse strings, plus additional hierarchy test */
     const char* testParse = "{\"stoo\":\"111\", \"abc\": \"oO\", \"ddd\": {\"some\": true, \"zabra\": \"888\", \"abra\": \"666\", \"zada\": {\"abra\": \"777\"}}}";
@@ -116,6 +121,18 @@ void TestLibrary::testParseDefault() {
     QVERIFY(config->getString(node, "stoo") == "111");
     QVERIFY(config->getString(node, "ddd/abra") == "666");
     QVERIFY(config->getString(node, "ddd/zada/abra") == "777");
+    yajl_tree_free(node);
+
+    /* parse bools, plus additional hierarchy test */
+    testParse = "{\"stoo\":true, \"abc\": false, \"ddd\": {\"some\": false, \"zabra\": true, \"abra\": true, \"zada\": {\"abra\": true}}}";
+    node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
+    logWarn() << errbuf;
+    QVERIFY(node != NULL);
+    QVERIFY(config->getBoolean(node, "abc") == false);
+    QVERIFY(config->getBoolean(node, "ddd/some") == false);
+    QVERIFY(config->getBoolean(node, "ddd/abra") == true);
+    QVERIFY(config->getBoolean(node, "ddd/zada/abra") == true);
+    yajl_tree_free(node);
 
     /* parse numbers, plus additional hierarchy test */
     testParse = "{\"stoo\":111, \"abc\": -1, \"ddd\": {\"some\": 1, \"zabra\": 2, \"abra\": 3, \"zada\": {\"abra\": 4}}}";
@@ -124,8 +141,19 @@ void TestLibrary::testParseDefault() {
     QVERIFY(node != NULL);
     QVERIFY(config->getInteger(node, "abc") == -1);
     QVERIFY(config->getInteger(node, "ddd/some") == 1);
+    QVERIFY(config->getInteger(node, "ddd/abra") == 3);
     QVERIFY(config->getInteger(node, "ddd/zada/abra") == 4);
 
+    for (int o = 0; o < 100/50; o++) {
+        QVERIFY(config->getInteger(node, "ddd/zada/abra") == 4);
+        sleep(1);
+    }
+
+    for (int o = 0; o < 100/50; o++) {
+        config->getInteger(node, "ddd/abra");
+        usleep(1000);
+        sleep(1);
+    }
     yajl_tree_free(node);
 
     delete config;
@@ -208,38 +236,38 @@ void TestLibrary::testFreePortFunctionality() {
 }
 
 
-void TestLibrary::testJSONParse() {
-    const char* fileName = "/tmp/test-file-TestJSONParse.json";
-    QString value = "";
-    int valueInt = -1;
+// void TestLibrary::testJSONParse() {
+//     const char* fileName = "/tmp/test-file-TestJSONParse.json";
+//     QString value = "";
+//     int valueInt = -1;
 
-    writeSampleOf("{\"somekey\": \"somevalue\"}", fileName);
-    QFile file(fileName);
-    if (!file.exists()) {
-        QFAIL("JSON file should exists.");
-    }
-    file.close();
+//     writeSampleOf("{\"somekey\": \"somevalue\"}", fileName);
+//     QFile file(fileName);
+//     if (!file.exists()) {
+//         QFAIL("JSON file should exists.");
+//     }
+//     file.close();
 
-    auto parsed = parseJSON(fileName);
-    value = parsed->get("somekey", "none").asCString();
-    QVERIFY(value == QString("somevalue"));
+//     auto parsed = parseJSON(fileName);
+//     value = parsed->get("somekey", "none").asCString();
+//     QVERIFY(value == QString("somevalue"));
 
-    value = parsed->get("someNOKEY", "none").asCString();
-    QVERIFY(value == QString("none"));
+//     value = parsed->get("someNOKEY", "none").asCString();
+//     QVERIFY(value == QString("none"));
 
-    valueInt = parsed->get("someNOKEY", 12345).asInt();
-    QVERIFY(valueInt == 12345);
+//     valueInt = parsed->get("someNOKEY", 12345).asInt();
+//     QVERIFY(valueInt == 12345);
 
-    try {
-        valueInt = parsed->get("somekey", 12345).asInt();
-        QFAIL("It should throw an exception!");
-    } catch (std::exception &e) {
-        QCOMPARE(e.what(), "Type is not convertible to int");
-    }
-    delete parsed;
+//     try {
+//         valueInt = parsed->get("somekey", 12345).asInt();
+//         QFAIL("It should throw an exception!");
+//     } catch (std::exception &e) {
+//         QCOMPARE(e.what(), "Type is not convertible to int");
+//     }
+//     delete parsed;
 
-    file.deleteLater();
-}
+//     file.deleteLater();
+// }
 
 
 void TestLibrary::testMemoryAllocations() {

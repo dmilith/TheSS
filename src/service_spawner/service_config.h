@@ -23,7 +23,7 @@
 #include <QtNetwork/QNetworkInterface>
 #include <iostream>
 
-#define ZERO_CHAR (const char *)0
+#define ZERO_CHAR (char *)0
 
 class SvdSchedulerAction {
 
