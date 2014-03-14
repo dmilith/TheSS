@@ -71,8 +71,8 @@ class SvdServiceConfig : public QObject {
         bool getBoolean(const QString element);
         bool getBoolean(yajl_val node, const QString element);
 
-        long getInteger(const QString element);
-        long getInteger(yajl_val node, const QString element);
+        long long getInteger(const QString element);
+        long long getInteger(yajl_val node, const QString element);
 
 
         bool serviceInstalled();

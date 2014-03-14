@@ -35,6 +35,7 @@ QStringList SvdServiceConfig::getArray(yajl_val node, const QString element) {
         path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
+    path[i] = new char[1];
     path[i] = ZERO_CHAR;
 
     QStringList buf = QStringList();
@@ -60,11 +61,10 @@ QStringList SvdServiceConfig::getArray(const QString element) {
 }
 
 
-long SvdServiceConfig::getInteger(yajl_val node, const QString element) {
+long long SvdServiceConfig::getInteger(yajl_val node, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logDebug() << "element:" << element;
-    logDebug() << "INPUT:" << input;
     const int size = input.length();
     const char *path[size];
     QString s = "";
@@ -75,7 +75,8 @@ long SvdServiceConfig::getInteger(yajl_val node, const QString element) {
         path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
-    // path[size] = ZERO_CHAR;
+    path[i] = new char[1];
+    path[i] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(node, path, yajl_t_any);
     if (v) {
@@ -89,7 +90,7 @@ long SvdServiceConfig::getInteger(yajl_val node, const QString element) {
 }
 
 
-long SvdServiceConfig::getInteger(const QString element) {
+long long SvdServiceConfig::getInteger(const QString element) {
     return getInteger(node_, element);
 }
 
@@ -98,7 +99,6 @@ bool SvdServiceConfig::getBoolean(yajl_val node, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logDebug() << "element:" << element;
-    logDebug() << "INPUT:" << input;
     const int size = input.length() + 1;
     const char *path[size];
     QString s = "";
@@ -109,6 +109,7 @@ bool SvdServiceConfig::getBoolean(yajl_val node, const QString element) {
         path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
+    path[i] = new char[1];
     path[i] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(node, path, yajl_t_true);
@@ -133,7 +134,6 @@ QString SvdServiceConfig::getString(yajl_val node, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logDebug() << "element:" << element;
-    logDebug() << "INPUT:" << input;
     const int size = input.length() + 1;
     const char *path[size];
     QString s = "";
@@ -144,6 +144,7 @@ QString SvdServiceConfig::getString(yajl_val node, const QString element) {
         path[s.length() + 1] = ZERO_CHAR;
         i++;
     }
+    path[i] = new char[1];
     path[i] = ZERO_CHAR;
 
     // for (int j = 0; j < i; j++)

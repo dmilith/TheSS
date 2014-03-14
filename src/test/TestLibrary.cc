@@ -94,10 +94,9 @@ void TestLibrary::testParseDefault() {
     QVERIFY(testParseDefault.split("/").size() == 1);
     QVERIFY(testParseDefault.split("b").size() == 2);
     char errbuf[1024];
-
     auto *config = new SvdServiceConfig(); /* Load default values */
 
-
+    /* parse arrays test */
     const char* testParse2 = "{\"stefan\": [\"fst\", \"scnd\"]}";
     auto node = yajl_tree_parse(testParse2, errbuf, sizeof(errbuf));
     QVERIFY(node != NULL);
@@ -105,18 +104,30 @@ void TestLibrary::testParseDefault() {
     QVERIFY(config->getArray(node, "stefan").last() == "scnd");
     QVERIFY(config->getArray(node, "stefan").size() == 2);
 
-    const char* testParse = "{ \"stoo\" : 111, \"abc\": \"oO\", \"ddd\": {\"some\": true, \"zabra\": \"666\", \"abra\": 666}}";
+    /* parse strings, plus additional hierarchy test */
+    const char* testParse = "{\"stoo\":\"111\", \"abc\": \"oO\", \"ddd\": {\"some\": true, \"zabra\": \"888\", \"abra\": \"666\", \"zada\": {\"abra\": \"777\"}}}";
     node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
+    logWarn() << errbuf;
     QVERIFY(node != NULL);
     QVERIFY(config->getString(node, "abc") == "oO");
     QVERIFY(config->getBoolean(node, "ddd/some") == true);
     QVERIFY(config->getBoolean(node, "nothere") == false);
-    QVERIFY(config->getString(node, "ddd/zabra") == "666");
-    QVERIFY(config->getInteger(node, "ddd/abra") == 666);
-    QVERIFY(config->getInteger(node, "stoo") == 111);
+    QVERIFY(config->getString(node, "ddd/zabra") == "888");
+    QVERIFY(config->getString(node, "stoo") == "111");
+    QVERIFY(config->getString(node, "ddd/abra") == "666");
+    QVERIFY(config->getString(node, "ddd/zada/abra") == "777");
 
-    QCOMPARE(config->staticPort, -1);
-    QVERIFY(config->schedulerActions.length() == 0);
+    /* parse numbers, plus additional hierarchy test */
+    testParse = "{\"stoo\":111, \"abc\": -1, \"ddd\": {\"some\": 1, \"zabra\": 2, \"abra\": 3, \"zada\": {\"abra\": 4}}}";
+    node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
+    logWarn() << errbuf;
+    QVERIFY(node != NULL);
+    QVERIFY(config->getInteger(node, "abc") == -1);
+    QVERIFY(config->getInteger(node, "ddd/some") == 1);
+    QVERIFY(config->getInteger(node, "ddd/zada/abra") == 4);
+
+    yajl_tree_free(node);
+
     delete config;
 }
 
