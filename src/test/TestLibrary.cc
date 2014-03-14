@@ -22,7 +22,7 @@ TestLibrary::TestLibrary() {
     /* Logger setup */
     consoleAppender = new ConsoleAppender();
     consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c> %m\n");
-    consoleAppender->setDetailsLevel(Logger::Fatal); /* we don't need logger in test suite by default */
+    consoleAppender->setDetailsLevel(Logger::Debug); /* we don't need logger in test suite by default */
     Logger::registerAppender(consoleAppender);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
 
@@ -100,13 +100,16 @@ void TestLibrary::testParseDefault() {
     const char* testParse2 = "{\"stefan\": [\"fst\", \"scnd\"], \"some\": {\"internal\": [\"a\",\"b\",\"c\"]}}";
     auto node = yajl_tree_parse(testParse2, errbuf, sizeof(errbuf));
     QVERIFY(node != NULL);
-    QVERIFY(config->getArray(node, "stefan").first() == "fst");
-    QVERIFY(config->getArray(node, "stefan").last() == "scnd");
-    QVERIFY(config->getArray(node, "stefan").size() == 2);
-    QVERIFY(config->getArray(node, "some/internal").contains("a"));
-    QVERIFY(config->getArray(node, "some/internal").contains("b"));
-    QVERIFY(config->getArray(node, "some/internal").contains("c"));
-    QVERIFY(config->getArray(node, "some/internal").size() == 3);
+    for( int i = 0; i < 1000; i++) {
+        QVERIFY(config->getArray(node, "stefan").first() == "fst");
+        QVERIFY(config->getArray(node, "stefan").last() == "scnd");
+        QVERIFY(config->getArray(node, "stefan").size() == 2);
+        QVERIFY(config->getArray(node, "some/internal").contains("a"));
+        QVERIFY(config->getArray(node, "some/internal").contains("b"));
+        QVERIFY(config->getArray(node, "some/internal").contains("c"));
+        QVERIFY(config->getArray(node, "some/internal").size() == 3);
+        usleep(1000);
+    }
     yajl_tree_free(node);
 
     /* parse strings, plus additional hierarchy test */
@@ -114,13 +117,16 @@ void TestLibrary::testParseDefault() {
     node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
     logWarn() << errbuf;
     QVERIFY(node != NULL);
-    QVERIFY(config->getString(node, "abc") == "oO");
-    QVERIFY(config->getBoolean(node, "ddd/some") == true);
-    QVERIFY(config->getBoolean(node, "nothere") == false);
-    QVERIFY(config->getString(node, "ddd/zabra") == "888");
-    QVERIFY(config->getString(node, "stoo") == "111");
-    QVERIFY(config->getString(node, "ddd/abra") == "666");
-    QVERIFY(config->getString(node, "ddd/zada/abra") == "777");
+    for( int i = 0; i < 1000; i++) {
+        QVERIFY(config->getString(node, "abc") == "oO");
+        QVERIFY(config->getBoolean(node, "ddd/some") == true);
+        QVERIFY(config->getBoolean(node, "nothere") == false);
+        QVERIFY(config->getString(node, "ddd/zabra") == "888");
+        QVERIFY(config->getString(node, "stoo") == "111");
+        QVERIFY(config->getString(node, "ddd/abra") == "666");
+        QVERIFY(config->getString(node, "ddd/zada/abra") == "777");
+        usleep(1000);
+    }
     yajl_tree_free(node);
 
     /* parse bools, plus additional hierarchy test */
@@ -128,10 +134,13 @@ void TestLibrary::testParseDefault() {
     node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
     logWarn() << errbuf;
     QVERIFY(node != NULL);
-    QVERIFY(config->getBoolean(node, "abc") == false);
-    QVERIFY(config->getBoolean(node, "ddd/some") == false);
-    QVERIFY(config->getBoolean(node, "ddd/abra") == true);
-    QVERIFY(config->getBoolean(node, "ddd/zada/abra") == true);
+    for( int i = 0; i < 1000; i++) {
+        QVERIFY(config->getBoolean(node, "abc") == false);
+        QVERIFY(config->getBoolean(node, "ddd/some") == false);
+        QVERIFY(config->getBoolean(node, "ddd/abra") == true);
+        QVERIFY(config->getBoolean(node, "ddd/zada/abra") == true);
+        usleep(1000);
+    }
     yajl_tree_free(node);
 
     /* parse numbers, plus additional hierarchy test */
@@ -144,15 +153,14 @@ void TestLibrary::testParseDefault() {
     QVERIFY(config->getInteger(node, "ddd/abra") == 3);
     QVERIFY(config->getInteger(node, "ddd/zada/abra") == 4);
 
-    for (int o = 0; o < 100/50; o++) {
+    for (int o = 0; o < 1000; o++) {
         QVERIFY(config->getInteger(node, "ddd/zada/abra") == 4);
-        sleep(1);
+        usleep(1000);
     }
 
-    for (int o = 0; o < 100/50; o++) {
+    for (int o = 0; o < 1000; o++) {
         config->getInteger(node, "ddd/abra");
         usleep(1000);
-        sleep(1);
     }
     yajl_tree_free(node);
 
