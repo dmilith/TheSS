@@ -9,7 +9,7 @@
 #define __UTILS_H__
 
 #include "../globals/globals.h"
-#include "../jsoncpp/json/json.h"
+// #include "../yajl/yajl.h"
 #include "../cutelogger/Logger.h"
 #include "../cutelogger/ConsoleAppender.h"
 #include "../cutelogger/FileAppender.h"
@@ -74,7 +74,7 @@ QMap<QString, long> getDiskFree(const QString& path = getenv("HOME")); /* in MiB
 
 uint registerFreeTcpPort(uint specificPort = 0);
 uint registerFreeUdpPort(uint specificPort = 0);
-Json::Value* parseJSON(const QString& filename);
+// Json::Value* parseJSON(const QString& filename);
 
 QString tail(const QString& pathToFile, int lines, int positionModifier = 0);
 const QString toHMS(uint duration);
