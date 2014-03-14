@@ -66,7 +66,7 @@ class SvdServiceConfig : public QObject {
         QString getString(yajl_val node, const QString element);
 
         QStringList getArray(const QString element);
-        QStringList getArray(yajl_val node, const QString element);
+        QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, const QString element);
 
         bool getBoolean(const QString element);
         bool getBoolean(yajl_val node, const QString element);

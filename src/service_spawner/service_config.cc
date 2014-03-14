@@ -10,7 +10,7 @@
 #include "../notifications/notifications.h"
 
 
-SvdSchedulerAction::SvdSchedulerAction(const QString& initialCronEntry, const QString& initialCommands) {
+SvdScheduler::SvdScheduler(const QString& initialCronEntry, const QString& initialCommands) {
     cronEntry = initialCronEntry;
     commands = initialCommands;
     auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
@@ -21,10 +21,10 @@ SvdSchedulerAction::SvdSchedulerAction(const QString& initialCronEntry, const QS
 }
 
 
-QStringList SvdServiceConfig::getArray(yajl_val node, const QString element) {
+QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
-    logDebug() << "element:" << element;
+    logTrace() << "element:" << element;
     int size = input.length();
     char *path[size];
     int i = 0;
@@ -36,34 +36,41 @@ QStringList SvdServiceConfig::getArray(yajl_val node, const QString element) {
     }
     path[i] = ZERO_CHAR;
 
+    /*
+        gather values from given json array.
+     */
     QStringList buf;
-    yajl_val v = yajl_tree_get(node, (const char**)path, yajl_t_array);
+    yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_array);
+    yajl_val w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_array);
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
 
-    if (v) {
-        if (YAJL_IS_ARRAY(v)) {
-            logTrace() << "Parsed Array:" << element;
-            int len = v->u.array.len;
-            for (i = 0; i < len; ++i) {
-                yajl_val obj = v->u.array.values[i];
-                logTrace() << "Parsed Array value:" << YAJL_GET_STRING(obj);
-                buf << YAJL_GET_STRING(obj);
-            }
-            return buf;
-        } else {
-            return buf;
+    if (v and YAJL_IS_ARRAY(v)) {
+        logTrace() << "Default Array:" << element;
+        int len = v->u.array.len;
+        for (i = 0; i < len; ++i) { /* gather default list */
+            yajl_val obj = v->u.array.values[i];
+            logTrace() << "Parsed Default Array value:" << YAJL_GET_STRING(obj);
+            buf << YAJL_GET_STRING(obj);
         }
-    } else {
-        logError() << "No such node:" << element;
+        logTrace() << "Gathered Default Array:" << buf;
+    }
+    if (w and YAJL_IS_ARRAY(w)) {
+        int len = w->u.array.len;
+        for (i = 0; i < len; ++i) { /* gather igniter list */
+            yajl_val obj = w->u.array.values[i];
+            logTrace() << "Parsed Root Array value:" << YAJL_GET_STRING(obj);
+            buf << YAJL_GET_STRING(obj);
+        }
+        logTrace() << "Gathered Root Array:" << buf;
     }
     return buf;
 }
 
 
 QStringList SvdServiceConfig::getArray(const QString element) {
-    return getArray(node_, element);
+    return getArray(nodeDefault_, nodeRoot_, element);
 }
 
 
