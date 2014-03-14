@@ -29,7 +29,7 @@ bool shouldNotExist(const QStringList filesThatShouldNotExist, const QString& pa
 WebAppTypeDetector::WebAppTypeDetector(const QString& path) {
 
     QStringList filesThatShouldExist, filesThatShouldNotExist;
-    for (WebAppTypes i = RubySite; i <= StaticSite; i++) {
+    for (WebAppTypes i = RubySite; i <= StaticSite; i = static_cast<WebAppTypes>(static_cast<int>(i) + 1)) {
         filesThatShouldExist = QStringList();
         filesThatShouldNotExist = QStringList();
 
