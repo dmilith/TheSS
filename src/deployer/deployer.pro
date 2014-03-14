@@ -29,5 +29,5 @@ SOURCES   += ../service_spawner/process.cc \
              webapp_types.cc \
              deploy.cc \
              deployer.cc
-LIBS      += -lz ../libyail.a ../liblogger.a ../libhiredis.a ../libquazip.a
+LIBS      += -lz ../libyajl.a ../liblogger.a ../libhiredis.a ../libquazip.a
 TARGET    = ../../bin/svddeployer

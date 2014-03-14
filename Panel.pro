@@ -9,4 +9,4 @@ include(src/Common.pro)
 TEMPLATE           = subdirs
 SUBDIRS            = src/panel
 
-panel.depends = src/yail src/cutelogger src/quazip src/notifications src/service_spawner
+panel.depends = src/yajl src/cutelogger src/quazip src/notifications src/service_spawner

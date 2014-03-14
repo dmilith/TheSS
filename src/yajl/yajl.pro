@@ -3,7 +3,7 @@
 
 include(../Common.pro)
 
-TARGET = ../yail
+TARGET = ../yajl
 TEMPLATE = lib
 CONFIG += staticlib
 
