@@ -25,20 +25,23 @@ QStringList SvdServiceConfig::getArray(yajl_val node, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logDebug() << "element:" << element;
-    const int size = input.length() + 1;
+    int size = input.length();
     char *path[size];
     int i = 0;
     foreach (QString s, input) {
         path[i] = new char[s.length()];
-        strncpy((char*)path[i], s.toUtf8().data(), s.length() + 1);
-        path[s.length() + 1] = ZERO_CHAR;
+        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        path[s.length()] = ZERO_CHAR;
         i++;
     }
-    path[i] = new char[1];
     path[i] = ZERO_CHAR;
 
-    QStringList buf = QStringList();
+    QStringList buf;
     yajl_val v = yajl_tree_get(node, (const char**)path, yajl_t_array);
+    for (int j = 0; j <= i; j++) {
+        delete[] path[j];
+    }
+
     if (v) {
         if (YAJL_IS_ARRAY(v)) {
             logTrace() << "Parsed Array:" << element;
@@ -48,18 +51,11 @@ QStringList SvdServiceConfig::getArray(yajl_val node, const QString element) {
                 logTrace() << "Parsed Array value:" << YAJL_GET_STRING(obj);
                 buf << YAJL_GET_STRING(obj);
             }
-            // yajl_tree_free(v);
-            // for (int j = 0; j <= i; j++)
-            //     delete[] path[j];
             return buf;
         } else {
-            // for (int j = 0; j <= i; j++)
-            //     delete[] path[j];
             return buf;
         }
     } else {
-        // for (int j = 0; j <= i; j++)
-        //     delete[] path[j];
         logError() << "No such node:" << element;
     }
     return buf;
@@ -75,38 +71,32 @@ long long SvdServiceConfig::getInteger(yajl_val node, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logDebug() << "element:" << element;
-    const int size = input.length();
+    int size = input.length();
     char *path[size];
     int i = 0;
     foreach (QString s, input) {
         path[i] = new char[s.length()];
-        strncpy((char*)path[i], s.toUtf8().data(), s.length() + 1);
-        path[s.length() + 1] = ZERO_CHAR;
+        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        path[s.length()] = ZERO_CHAR;
         i++;
     }
-    path[i] = new char[1];
     path[i] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(node, (const char**)path, yajl_t_any);
+    for (int j = 0; j <= i; j++) {
+        delete[] path[j];
+    }
 
     if (v) {
         if (YAJL_IS_INTEGER(v)) {
             const long long lng = YAJL_GET_INTEGER(v);
             logTrace() << "Parsed Integer:" << QString::number(lng);
-            for (int j = 0; j <= i; j++)
-                delete[] path[j];
-
             return lng;
         } else {
-            logDebug() << "Not a integer:" << element;
-            for (int j = 0; j <= i; j++)
-                delete[] path[j];
+            logTrace() << "Not a integer:" << element;
             return 0;
         }
     } else {
-        for (int j = 0; j <= i; j++)
-            delete[] path[j];
-
         logError() << "No such node:" << element;
     }
     return 0;
@@ -122,35 +112,31 @@ bool SvdServiceConfig::getBoolean(yajl_val node, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logDebug() << "element:" << element;
-    const int size = input.length() + 1;
-    const char *path[size];
+    int size = input.length();
+    char *path[size];
     int i = 0;
     foreach (QString s, input) {
         path[i] = new char[s.length()];
-        strncpy((char*)path[i], s.toUtf8().data(), s.length() + 1);
-        path[s.length() + 1] = ZERO_CHAR;
+        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        path[s.length()] = ZERO_CHAR;
         i++;
     }
-    path[i] = new char[1];
     path[i] = ZERO_CHAR;
 
-    yajl_val v = yajl_tree_get(node, path, yajl_t_any);
+    yajl_val v = yajl_tree_get(node, (const char**)path, yajl_t_any);
+    for (int j = 0; j <= i; j++) {
+        delete[] path[j];
+    }
     if (v) {
         if (YAJL_IS_TRUE(v) or YAJL_IS_FALSE(v)) {
-            logTrace() << "Parsed Boolean:" << YAJL_GET_STRING(v);
+            // logTrace() << "Parsed Boolean:" << YAJL_GET_STRING(v);
             if (YAJL_IS_TRUE(v)) {
-                for (int j = 0; j <= i; j++)
-                    delete[] path[j];
                 return true;
             } else {
-                for (int j = 0; j <= i; j++)
-                    delete[] path[j];
                 return false;
             }
         } else return false; /* false will be default for malformed input */
     } else {
-        for (int j = 0; j <= i; j++)
-            delete[] path[j];
         logError() << "No such node:" << element;
     }
     return false;
@@ -166,31 +152,29 @@ QString SvdServiceConfig::getString(yajl_val node, const QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logDebug() << "element:" << element;
-    const int size = input.length() + 1;
+    int size = input.length();
     char *path[size];
     int i = 0;
     foreach (QString s, input) {
         path[i] = new char[s.length()];
-        strncpy((char*)path[i], s.toUtf8().data(), s.length() + 1);
-        path[s.length() + 1] = ZERO_CHAR;
+        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        path[s.length()] = ZERO_CHAR;
         i++;
     }
-    path[i] = new char[1];
     path[i] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(node, (const char**)path, yajl_t_string);
+    for (int j = 0; j <= i; j++) {
+        delete[] path[j];
+    }
     if (v) {
         if (YAJL_IS_STRING(v)) {
             logTrace() << "Parsed String:" << QString(YAJL_GET_STRING(v));
-            for (int j = 0; j <= i; j++)
-                delete[] path[j];
             return YAJL_GET_STRING(v);
         }
     } else {
         logError() << "Error!";
     }
-    for (int j = 0; j <= i; j++)
-        delete[] path[j];
     return "";
 }
 
@@ -215,13 +199,16 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     //         defaults = defaultsCache; /* take value from cache */
     // }
     node_ = yajl_tree_parse(defaults.toUtf8().data(), errbuf, sizeof(errbuf));
+    if (QString(errbuf).length() > 0) {
+        logWarn() << "ERR:" << errbuf;
+    }
     if (defaults.isEmpty() or node_ == NULL) {
         if (defaultsCache.isEmpty()) {
-            logError() << errbuf;
-            logFatal() << "Failed to load default igniter which is mandatory. Cannot continue";
+            // logError() << errbuf;
+            // logFatal() << "Failed to load default igniter which is mandatory. Cannot continue";
             return;
         } else {
-            logInfo() << "Updating igniter cache";
+            // logInfo() << "Updating igniter cache";
             defaultsCache = defaults;
         }
     }
@@ -258,6 +245,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     validate = new SvdShellOperations(getString("validate/commands"), getString("validate/expectOutput"));
     babySitter = new SvdShellOperations(getString("babySitter/commands"), getString("babySitter/expectOutput"));
 
+    //yajl_tree_free(node_);
 }
 
 
