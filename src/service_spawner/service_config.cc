@@ -726,8 +726,9 @@ QString SvdServiceConfig::loadDefaultIgniter() {
     if(!defaultIgniter.open(QIODevice::ReadOnly)) { /* check file access */
         logError() << "NO loadDefaultIgniter: " << defaultTemplateFile();
     } else {
-        return readFileContents(defaultTemplateFile());
         defaultIgniter.close();
+        QString buffer = readFileContents(defaultTemplateFile()).replace("\\\n", "\\n");
+        return buffer;
     }
     defaultIgniter.close();
     return "";
@@ -746,7 +747,7 @@ QString SvdServiceConfig::loadIgniter() {
         logTrace() << "No file: " << userIgniter();
     } else {
         fileUser.close();
-        QString buffer = readFileContents(userIgniter()).trimmed();
+        QString buffer = readFileContents(userIgniter()).trimmed().replace("\\\n", "\\n");;
         return buffer;
     }
     fileUser.close();
@@ -758,7 +759,7 @@ QString SvdServiceConfig::loadIgniter() {
     }
     fileRoot.close();
 
-    return readFileContents(rootIgniter());
+    return readFileContents(rootIgniter()).trimmed().replace("\\\n", "\\n");;
 }
 
 
