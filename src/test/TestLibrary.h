@@ -24,6 +24,7 @@ class TestLibrary: public QObject {
 
         private slots:
             void testParseDefault();
+            void testJsonValidityOfIgniters();
             // void testParseJSONRedis();
             void testFreePortFunctionality();
             // void testJSONParse();
