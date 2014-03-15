@@ -80,6 +80,7 @@ class SvdServiceConfig : public QObject {
         QString loadDefaultIgniter();
         QString loadIgniter();
 
+        void prettyPrint();
 
         QString defaultsCache = "";
         yajl_val nodeRoot_ = NULL, nodeDefault_ = NULL;

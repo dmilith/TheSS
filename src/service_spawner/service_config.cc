@@ -271,6 +271,42 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     babySitter = new SvdShellOperations(getString("babySitter/commands"), getString("babySitter/expectOutput"));
 
     //yajl_tree_free(node_);
+    prettyPrint();
+}
+
+
+void SvdServiceConfig::prettyPrint() {
+    logInfo() << "Service |                     name:" << name;
+    logInfo() << "        |             softwareName:" << softwareName;
+    logInfo() << "        |                autoStart:" << autoStart;
+    logInfo() << "        |        notificationLevel:" << notificationLevel;
+    logInfo() << "        |                   webApp:" << webApp;
+    logInfo() << "        |                watchPort:" << watchPort;
+    logInfo() << "        |             watchUdpPort:" << watchUdpPort;
+    logInfo() << "        |                 alwaysOn:" << alwaysOn;
+    logInfo() << "        |            resolveDomain:" << resolveDomain;
+    logInfo() << "        |               staticPort:" << staticPort;
+    logInfo() << "        | minimumRequiredDiskSpace:" << minimumRequiredDiskSpace;
+    logInfo() << "        |                portsPool:" << portsPool;
+    logInfo() << "        |               repository:" << repository;
+    logInfo() << "        |            parentService:" << parentService;
+    logInfo() << "        |           configureOrder:" << configureOrder;
+    logInfo() << "        |               startOrder:" << startOrder;
+    logInfo() << "        |             dependencies:" << dependencies;
+    logInfo() << "        |   standaloneDependencies:" << standaloneDependencies;
+    logInfo() << "        |                  domains:" << domains;
+    logInfo() << "        |       watchHttpAddresses:" << watchHttpAddresses;
+    logInfo() << "        |        install->commands:" << install->commands;
+    logInfo() << "        |      configure->commands:" << configure->commands;
+    logInfo() << "        |          start->commands:" << start->commands;
+    logInfo() << "        |     afterStart->commands:" << afterStart->commands;
+    logInfo() << "        |           stop->commands:" << stop->commands;
+    logInfo() << "        |      afterStop->commands:" << afterStop->commands;
+    logInfo() << "        |         reload->commands:" << reload->commands;
+    logInfo() << "        |       validate->commands:" << validate->commands;
+    logInfo() << "        |     babySitter->commands:" << babySitter->commands;
+
+    return;
 }
 
 
