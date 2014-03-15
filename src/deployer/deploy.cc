@@ -797,7 +797,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
     QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
     QString deps = readFileContents(depsFile).trimmed();
     QStringList appDependencies = filterSpawnableDependencies(deps);
-    logDebug() << "Gathered dependencies:" << appDependencies << "of size:" << appDependencies.size();
+    logDebug() << "Gathered dependencies:" << appDependencies << "of service:" << serviceName << "of size:" << appDependencies.size();
     QString jsonResult = "\"dependencies\": [";
 
     if (appDependencies.size() == 0) {
