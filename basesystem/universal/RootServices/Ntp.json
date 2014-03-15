@@ -3,8 +3,9 @@
     "alwaysOn": false,
     "autoStart": true,
     "schedulers": [
-        "*/10 * * * * ?! printf 'Syncing time\n' >> SERVICE_LOG
-ntpdate ntp.nask.pl >> SERVICE_LOG
+        "*/10 * * * * ?! \
+        printf 'Syncing time\n' >> SERVICE_LOG \
+        ntpdate ntp.nask.pl >> SERVICE_LOG \
 "
     ]
 }
