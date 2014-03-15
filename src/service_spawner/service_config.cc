@@ -727,6 +727,7 @@ QString SvdServiceConfig::loadDefaultIgniter() {
         logError() << "NO loadDefaultIgniter: " << defaultTemplateFile();
     } else {
         return readFileContents(defaultTemplateFile());
+        defaultIgniter.close();
     }
     defaultIgniter.close();
     return "";
