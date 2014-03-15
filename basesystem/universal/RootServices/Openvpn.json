@@ -7,53 +7,53 @@
         "expectOutput": "All done"
     },
     "configure": {
-        "commands": "
-test ! -e SERVICE_PREFIX/ipp.txt && printf '
-tallica,10.10.0.2
-dmilith,10.10.0.3
-wick3d,10.10.0.4
-' > SERVICE_PREFIX/ipp.txt
-
-printf \"
-port SERVICE_PORT
-\" > SERVICE_CONF && printf '
-daemon
-bind 0.0.0.0
-proto udp
-dev tap
-
-ca SERVICE_PREFIX/ca.crt
-cert SERVICE_PREFIX/server.crt
-key SERVICE_PREFIX/server.key
-dh SERVICE_PREFIX/dh1024.pem
-
-server 10.10.0.0 255.255.255.0
-
-# this is necessary for clients to reach clients behind the openvpn gateways:
-client-to-client
-keepalive 10 120
-user nobody
-group nobody
-persist-key
-persist-tun
-status SERVICE_PREFIX/service-status.log
-log-append SERVICE_LOG
-comp-lzo
-verb 4
-push \"redirect-gateway def1\"
-push \"no-reply\"
-push \"dhcp-option DNS 8.8.8.8\"
-push \"domain-name-servers 8.8.8.8\"
-
-ifconfig-pool-persist SERVICE_PREFIX/ipp.txt 0
-' >> SERVICE_CONF
+        "commands": " \
+test ! -e SERVICE_PREFIX/ipp.txt && printf ' \
+tallica,10.10.0.2 \
+dmilith,10.10.0.3 \
+wick3d,10.10.0.4 \
+' > SERVICE_PREFIX/ipp.txt \
+ \
+printf \" \
+port SERVICE_PORT \
+\" > SERVICE_CONF && printf ' \
+daemon \
+bind 0.0.0.0 \
+proto udp \
+dev tap \
+ \
+ca SERVICE_PREFIX/ca.crt \
+cert SERVICE_PREFIX/server.crt \
+key SERVICE_PREFIX/server.key \
+dh SERVICE_PREFIX/dh1024.pem \
+ \
+server 10.10.0.0 255.255.255.0 \
+ \
+# this is necessary for clients to reach clients behind the openvpn gateways: \
+client-to-client \
+keepalive 10 120 \
+user nobody \
+group nobody \
+persist-key \
+persist-tun \
+status SERVICE_PREFIX/service-status.log \
+log-append SERVICE_LOG \
+comp-lzo \
+verb 4 \
+push \"redirect-gateway def1\" \
+push \"no-reply\" \
+push \"dhcp-option DNS 8.8.8.8\" \
+push \"domain-name-servers 8.8.8.8\" \
+ \
+ifconfig-pool-persist SERVICE_PREFIX/ipp.txt 0 \
+' >> SERVICE_CONF \
 "
     },
     "start": {
-        "commands": "
-printf 'Launching Openvpn\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/openvpn --config SERVICE_CONF --writepid SERVICE_PID --nice -3 >> SERVICE_LOG
-test -f /etc/pf.conf && service pf reload && printf 'PF reload finished.\n' >> SERVICE_LOG
+        "commands": " \
+printf 'Launching Openvpn\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/openvpn --config SERVICE_CONF --writepid SERVICE_PID --nice -3 >> SERVICE_LOG \
+test -f /etc/pf.conf && service pf reload && printf 'PF reload finished.\n' >> SERVICE_LOG \
 "
     }
 }

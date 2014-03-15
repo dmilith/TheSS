@@ -1,53 +1,51 @@
-{
+{ 
     "softwareName": "Postgresql",
-    "schedulers": [
-        "0 0/3 * * * ?! printf \"Postgres myk myk\n\" >> SERVICE_LOG"
-    ],
     "install": {
         "commands": "sofin get postgresql",
         "expectOutput": "All done"
     },
     "configure": {
-        "commands": "
-test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf
-printf '
-# Default Postgresql service configuration
-local all all trust
-host all all 127.0.0.1/32 trust
-# host all all 0.0.0.0/0 ident
-host all all 0.0.0.0/0 password
-' > SERVICE_PREFIX/database/pg_hba.conf
-
-printf \"
-port = SERVICE_PORT
-max_connections = 100
-checkpoint_segments = 24
-password_encryption = on
-shared_buffers = 64MB
-temp_buffers = 32MB
-work_mem = 16MB
-max_stack_depth = 7MB
-
-logging_collector = true
-\" > SERVICE_PREFIX/database/postgresql.conf && echo listen_addresses=\\'SERVICE_DOMAIN\\' >> SERVICE_PREFIX/database/postgresql.conf
+        "commands": " \
+test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf \
+printf ' \
+# Default Postgresql service configuration \
+local all all trust \
+host all all 127.0.0.1/32 trust \
+# host all all 0.0.0.0/0 ident \
+host all all 0.0.0.0/0 password \
+' > SERVICE_PREFIX/database/pg_hba.conf \
+ \
+printf \" \
+port = SERVICE_PORT \
+max_connections = 100 \
+checkpoint_segments = 24 \
+password_encryption = on \
+shared_buffers = 64MB \
+temp_buffers = 32MB \
+work_mem = 16MB \
+max_stack_depth = 7MB \
+ \
+logging_collector = true \
+\" > SERVICE_PREFIX/database/postgresql.conf && echo listen_addresses=\\'SERVICE_DOMAIN\\' >> SERVICE_PREFIX/database/postgresql.conf \
 "
     },
     "start": {
-        "commands": "
-printf 'Linking configuration file\n' >> SERVICE_LOG
-ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG
-printf 'Launching Postgresql\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG
-# ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG
+        "commands": " \
+printf 'Linking configuration file\n' >> SERVICE_LOG \
+ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG \
+printf 'Launching Postgresql\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG \
+# ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG \
 "
     },
     "stop": {
-        "commands": "
-SERVICE_ROOT/exports/pg_ctl -m fast --timeout=45 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG"
+        "commands": " \
+SERVICE_ROOT/exports/pg_ctl -m fast --timeout=45 -w -D SERVICE_PREFIX/database stop >> SERVICE_LOG \
+"
     },
     "afterStop": {
-        "commands": "
-test -f SERVICE_PREFIX/database/postmaster.pid && rm -f SERVICE_PREFIX/database/postmaster.pid
-        "
+        "commands": " \
+test -f SERVICE_PREFIX/database/postmaster.pid && rm -f SERVICE_PREFIX/database/postmaster.pid \
+"
     }
 }

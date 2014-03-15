@@ -5,30 +5,38 @@
         "expectOutput": "All done"
     },
     "schedulers": [
-        "* * 1 * * ?! echo It's first day of the month, so it's time for data dump! ; mkdir -p $HOME/Mongo-dumps ; export work_date=$(date +'%Y-%m-%d--%H%M') && mongodump --host SERVICE_DOMAIN --port SERVICE_PORT --out $HOME/Mongo-dumps/${work_date} && cd $HOME/Mongo-dumps/ && tar cf ${work_date}.tar.gz ${work_date}/ && rm -rf ${work_date}"
+        "* * 1 * * ?! \
+        echo It's first day of the month, so it's time for data dump! \
+        mkdir -p $HOME/Mongo-dumps \
+        export work_date=$(date +'%Y-%m-%d--%H%M') && \
+        mongodump --host SERVICE_DOMAIN --port SERVICE_PORT --out $HOME/Mongo-dumps/${work_date} && \
+        cd $HOME/Mongo-dumps/ && \
+        tar cf ${work_date}.tar.gz ${work_date}/ && \
+        rm -rf ${work_date} \
+        "
     ],
     "configure": {
-        "commands": "printf \"
-bind_ip = SERVICE_ADDRESS
-port = SERVICE_PORT
-dbpath = SERVICE_PREFIX/database
-logappend = true
-logpath = SERVICE_LOG
-pidfilepath = SERVICE_PID
-unixSocketPrefix = SERVICE_PREFIX
-fork = true
-\" > SERVICE_CONF
+        "commands": "printf \" \
+bind_ip = SERVICE_ADDRESS \
+port = SERVICE_PORT \
+dbpath = SERVICE_PREFIX/database \
+logappend = true \
+logpath = SERVICE_LOG \
+pidfilepath = SERVICE_PID \
+unixSocketPrefix = SERVICE_PREFIX \
+fork = true \
+\" > SERVICE_CONF \
 "
     },
     "validate": {
-        "commands": "
-test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database
+        "commands": " \
+test ! -f SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database && chmod 700 SERVICE_PREFIX/database \
 "
     },
     "start": {
-        "commands": "
-printf 'Launching Mongodb\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/mongod -f SERVICE_CONF
+        "commands": " \
+printf 'Launching Mongodb\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/mongod -f SERVICE_CONF \
 "
     }
 }

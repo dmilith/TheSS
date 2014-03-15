@@ -9,37 +9,37 @@
         "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database"
     },
     "start": {
-        "commands": "
-printf 'Launching ProcessDataCollector(Redis)\n' >> SERVICE_LOG
-test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
-SERVICE_ROOT/exports/redis-server SERVICE_CONF
+        "commands": " \
+printf 'Launching ProcessDataCollector(Redis)\n' >> SERVICE_LOG \
+test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database \
+SERVICE_ROOT/exports/redis-server SERVICE_CONF \
 "
     },
     "validate": {
-        "commands": "
-test ! -f SERVICE_CONF && printf '
-# Default Redis service configuration
-port 0
-unixsocket SERVICE_PREFIX/data-collector.sock
-unixsocketperm 700
-pidfile SERVICE_PID
-dir SERVICE_PREFIX/database
-dbfilename database.rdf
-daemonize yes
-rdbcompression yes
-save 900 1
-save 300 10
-save 60 10000
-appendonly no
-appendfsync everysec
-activerehashing yes
-loglevel notice
-logfile SERVICE_LOG' > SERVICE_CONF
+        "commands": " \
+test ! -f SERVICE_CONF && printf ' \
+# Default Redis service configuration \
+port 0 \
+unixsocket SERVICE_PREFIX/data-collector.sock \
+unixsocketperm 700 \
+pidfile SERVICE_PID \
+dir SERVICE_PREFIX/database \
+dbfilename database.rdf \
+daemonize yes \
+rdbcompression yes \
+save 900 1 \
+save 300 10 \
+save 60 10000 \
+appendonly no \
+appendfsync everysec \
+activerehashing yes \
+loglevel notice \
+logfile SERVICE_LOG' > SERVICE_CONF \
 "
     },
     "afterStop": {
-        "commands": "
-rm -f SERVICE_PREFIX/data-collector.sock
+        "commands": " \
+rm -f SERVICE_PREFIX/data-collector.sock \
 "
     }
 }

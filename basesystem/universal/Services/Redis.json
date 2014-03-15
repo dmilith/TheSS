@@ -1,16 +1,38 @@
 {
     "softwareName": "Redis",
     "schedulers": [
-        "* * 1 * * ?! test -e SERVICE_PREFIX/database/database.rdf && cp -v SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup && printf \"Done copy of datastore Redis\n\" >> SERVICE_LOG"
+        "* * 1 * * ?! \
+        test -e SERVICE_PREFIX/database/database.rdf && \
+        cp -v SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup && \
+        printf \"Done copy of datastore Redis\n\" >> SERVICE_LOG"
     ],
     "install": {
         "commands": "sofin get redis",
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "printf \"Launching Redis\" >> SERVICE_LOG ; test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database ; SERVICE_ROOT/exports/redis-server SERVICE_CONF"
+        "commands": "printf \"Launching Redis\" >> SERVICE_LOG \
+        test ! -d SERVICE_PREFIX/database && \
+        mkdir -p SERVICE_PREFIX/database \
+        SERVICE_ROOT/exports/redis-server SERVICE_CONF"
     },
     "configure": {
-        "commands": "printf \"bind SERVICE_ADDRESS\nport SERVICE_PORT\npidfile SERVICE_PID\ndir SERVICE_PREFIX/database\ndbfilename database.rdf\ndaemonize yes\nrdbcompression yes\nsave 900 1\nsave 300 10\nsave 60 10000\nappendonly no\nappendfsync everysec\nactiverehashing yes\nloglevel notice\nlogfile SERVICE_LOG\n\" > SERVICE_CONF\nprintf \"REDIS_URL=redis://SERVICE_ADDRESS:SERVICE_PORT\" > SERVICE_ENV"
+        "commands": "printf \"bind SERVICE_ADDRESS \
+        port SERVICE_PORT \
+        pidfile SERVICE_PID \
+        dir SERVICE_PREFIX/database \
+        dbfilename database.rdf \
+        daemonize yes \
+        rdbcompression yes \
+        save 900 1 \
+        save 300 10 \
+        save 60 10000 \
+        appendonly no \
+        appendfsync everysec \
+        activerehashing yes \
+        loglevel notice \
+        logfile SERVICE_LOG \
+        \" > SERVICE_CONF \
+        printf \"REDIS_URL=redis://SERVICE_ADDRESS:SERVICE_PORT\" > SERVICE_ENV"
     }
 }
