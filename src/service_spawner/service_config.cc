@@ -178,26 +178,25 @@ QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, con
 
     yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_string);
     yajl_val w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_string);
+
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
 
-    QString finalContent = "";
     /*
         merge default source string with root source string for each String json element
      */
-    if (v and YAJL_IS_STRING(v)) {
-        logTrace() << "Parsed Default String:" << QString(YAJL_GET_STRING(v));
-        finalContent += YAJL_GET_STRING(v);
-    }
     if (w and YAJL_IS_STRING(w)) {
         logTrace() << "Parsed Root String:" << QString(YAJL_GET_STRING(w));
-        finalContent += YAJL_GET_STRING(w);
+        return YAJL_GET_STRING(w);
+    }
+    if (v and YAJL_IS_STRING(v)) {
+        logTrace() << "Parsed Default String:" << QString(YAJL_GET_STRING(v));
+        return YAJL_GET_STRING(v);
     }
 
-    if (finalContent.isEmpty())
-        logError() << "No such string node:" << element << "in igniter:" << name;
-    return finalContent;
+    logError() << "No such string node:" << element << "in igniter:" << name;
+    return "";
 }
 
 
@@ -295,6 +294,7 @@ void SvdServiceConfig::prettyPrint() {
     logInfo() << "        |             dependencies:" << dependencies;
     logInfo() << "        |   standaloneDependencies:" << standaloneDependencies;
     logInfo() << "        |                  domains:" << domains;
+    // logInfo() << "        |               schedulers:" << schedulers;
     logInfo() << "        |       watchHttpAddresses:" << watchHttpAddresses;
     logInfo() << "        |        install->commands:" << install->commands;
     logInfo() << "        |      configure->commands:" << configure->commands;
@@ -323,13 +323,13 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     }
     // if (node_ != NULL)
     //     yajl_tree_free(node_);
-    nodeDefault_ = yajl_tree_parse(defaults.toUtf8().constData(), errbuf, sizeof(errbuf));
-    if (QString(errbuf).length() > 0) {
-        logError() << "Dflt-err of:" << name << "::" << errbuf;
-    }
-    nodeRoot_ = yajl_tree_parse(root.toUtf8().constData(), errbuf, sizeof(errbuf));
+    nodeRoot_ = yajl_tree_parse((const char*)root.toUtf8(), errbuf, sizeof(errbuf));
     if (QString(errbuf).length() > 0) {
         logError() << "Root-err of:" << name << "::" << errbuf;
+    }
+    nodeDefault_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
+    if (QString(errbuf).length() > 0) {
+        logError() << "Dflt-err of:" << name << "::" << errbuf;
     }
     if (nodeDefault_ == NULL) {
         logFatal() << "Json parse failure for Default!";
@@ -745,7 +745,8 @@ QString SvdServiceConfig::loadIgniter() {
         logTrace() << "No file: " << userIgniter();
     } else {
         fileUser.close();
-        return readFileContents(userIgniter());
+        QString buffer = readFileContents(userIgniter()).trimmed();
+        return buffer;
     }
     fileUser.close();
 

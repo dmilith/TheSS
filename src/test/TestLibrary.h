@@ -24,13 +24,14 @@ class TestLibrary: public QObject {
 
         private slots:
             void testParseDefault();
-            void testParseJSONRedis();
+            // void testParseJSONRedis();
             void testFreePortFunctionality();
             // void testJSONParse();
             void testMemoryAllocations();
             void testMultipleConfigsLoading();
             void testNonExistantConfigLoading();
             void testUtils();
+            void testParseExistingIgniter();
             void testSomeRealCraziness();
             void testSanityValueCheck();
             void testStartingRedis();

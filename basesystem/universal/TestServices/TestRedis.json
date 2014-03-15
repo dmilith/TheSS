@@ -13,30 +13,12 @@
         "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database"
     },
     "start": {
-        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database
-SERVICE_ROOT/exports/redis-server SERVICE_CONF"
+        "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database ; SERVICE_ROOT/exports/redis-server SERVICE_CONF"
     },
     "afterStop": {
         "commands": "kongo bongo"
     },
     "validate": {
-        "commands": "test ! -f SERVICE_CONF && printf \"
-# Default Redis service configuration
-# bind SERVICE_DOMAIN
-bind SERVICE_ADDRESS
-port SERVICE_PORT
-pidfile SERVICE_PID
-dir SERVICE_PREFIX/database
-dbfilename database.rdf
-daemonize yes
-rdbcompression yes
-save 900 1
-save 300 10
-save 60 10000
-appendonly no
-appendfsync everysec
-activerehashing yes
-loglevel notice
-logfile SERVICE_LOG\" > SERVICE_CONF"
+        "commands": "test ! -f SERVICE_CONF && printf \"\n# Default Redis service configuration\n# bind SERVICE_DOMAIN\nbind SERVICE_ADDRESS\nport SERVICE_PORT\npidfile SERVICE_PID\ndir SERVICE_PREFIX/database\ndbfilename database.rdf\ndaemonize yes\nrdbcompression yes\nsave 900 1\nsave 300 10\nsave 60 10000\nappendonly no\nappendfsync everysec\nactiverehashing yes\nloglevel notice\nlogfile SERVICE_LOG\" > SERVICE_CONF"
     }
 }
