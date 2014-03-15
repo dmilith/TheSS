@@ -1,10 +1,7 @@
 {
     "softwareName": "Redis",
-    "schedulerActions": [
-        {
-            "cronEntry": "* * 1 * * ?",
-            "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp -v SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup && printf \"Done copy of datastore Redis\n\" >> SERVICE_LOG"
-        }
+    "schedulers": [
+        "* * 1 * * ?! test -e SERVICE_PREFIX/database/database.rdf && cp -v SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup && printf \"Done copy of datastore Redis\n\" >> SERVICE_LOG"
     ],
     "install": {
         "commands": "sofin get redis",

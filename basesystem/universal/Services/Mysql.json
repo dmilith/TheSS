@@ -1,11 +1,8 @@
 {
     "softwareName": "Mysql",
     "watchPort": false,
-    "schedulerActions": [
-        {
-            "cronEntry": "0 9,21 * * * ?",
-            "commands": "printf \"do_mysql_all_dbs_sql_dump\n\" >> SERVICE_LOG"
-        }
+    "schedulers": [
+        "0 9,21 * * * ?! printf \"do_mysql_all_dbs_sql_dump\n\" >> SERVICE_LOG"
     ],
     "install": {
         "commands": "sofin get mysql",

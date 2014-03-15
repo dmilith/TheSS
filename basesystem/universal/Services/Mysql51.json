@@ -1,11 +1,8 @@
 {
     "softwareName": "Mysql51",
     "watchPort": false,
-    "schedulerActions": [
-        {
-            "cronEntry": "0 9,21 * * * ?",
-            "commands": "do_mysql_all_dbs_sql_dump"
-        }
+    "schedulers": [
+        "0 9,21 * * * ?! do_mysql_all_dbs_sql_dump"
     ],
     "install": {
         "commands": "sofin get mysql51",

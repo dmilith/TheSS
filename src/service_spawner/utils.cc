@@ -479,7 +479,7 @@ QString readFileContents(const QString& fileName) {
 //     objectIntFields << "expectOutputTimeout";
 //     // schedulerFields << "cronEntry" << "commands";
 
-//     listOfArrays << "dependencies" << "schedulerActions" << "watchHttpAddresses" << "domains" << "standaloneDependencies";
+//     listOfArrays << "dependencies" << "schedulers" << "watchHttpAddresses" << "domains" << "standaloneDependencies";
 
 //     listOfInts << "staticPort" << "portsPool" << "minimumRequiredDiskSpace" << "notificationLevel";
 //     listOfStrings << "softwareName" << "repository" << "parentService";

@@ -1,8 +1,5 @@
-
-/* This is default definition used as base for all igniters */
-
 {
-    "formatVersion": "0.84.2",
+    "formatVersion": "0.86",
 
 /* defines name of entry in ~/SoftwareData/ and also an Igniter name */
     "name": "No-Name",
@@ -60,20 +57,16 @@
     "startOrder": 10,
 
 /* a list of igniters required to launch this software */
-    "dependencies": [
-    ],
+    "dependencies": [],
 
-/* default schedulerActions format:             */
-/*   "schedulerActions": [                      */
-/*     {                                        */
-/*         "cronEntry": "0 0/10 * * * ?",       */
-/*         "commands": "my shell commands" */
-/*     },                                       */
+/* default schedulers format:             */
+/*   "schedulers": [                      */
+/*     "0 0/10 * * * ?! my shell commands",        */
+/*     "2 * 1 * * ?! sometimes this one"           */
 /*     …                                        */
-/* ],                                           */
+/*   ],                                         */
 
-    "schedulerActions": [
-    ],
+    "schedulers": [],
 
     "install": {
         "commands": "",

@@ -2,13 +2,9 @@
     "watchPort": false,
     "alwaysOn": false,
     "autoStart": true,
-    "schedulerActions": [
-    {
-        "cronEntry": "*/10 * * * * ?",
-        "commands": "
-printf 'Syncing time\n' >> SERVICE_LOG
+    "schedulers": [
+        "*/10 * * * * ?! printf 'Syncing time\n' >> SERVICE_LOG
 ntpdate ntp.nask.pl >> SERVICE_LOG
 "
-    }
     ]
 }

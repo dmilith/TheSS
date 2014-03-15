@@ -25,10 +25,10 @@
 
 #define ZERO_CHAR (char *)0
 
-class SvdSchedulerAction {
+class SvdScheduler {
 
     public:
-        SvdSchedulerAction(const QString& initialCronEntry, const QString& initialCommands);
+        SvdScheduler(const QString& initialCronEntry, const QString& initialCommands);
         QString cronEntry, commands, sha;
 
 };
@@ -90,7 +90,7 @@ class SvdServiceConfig : public QObject {
         bool autoStart, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;
         int staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
         QStringList dependencies, watchHttpAddresses, domains, standaloneDependencies;
-        QList<SvdSchedulerAction*> schedulerActions;
+        QList<SvdScheduler*> schedulers;
         SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;
 
 };

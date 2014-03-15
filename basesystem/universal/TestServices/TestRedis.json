@@ -2,11 +2,8 @@
     "softwareName": "Redis",
     "alwaysOn": false,
     "portsPool": 3,
-    "schedulerActions": [
-        {
-            "cronEntry": "0 0/10 * * * ?",
-            "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
-        }
+    "schedulers": [
+        "0 0/10 * * * ?! test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
     ],
     "install": {
         "commands": "sofin get redis",

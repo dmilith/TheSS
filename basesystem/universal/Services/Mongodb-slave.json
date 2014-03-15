@@ -4,11 +4,8 @@
         "commands": "sofin get mongodb",
         "expectOutput": "All done"
     },
-    "schedulerActions": [
-        {
-            "cronEntry": "* * 1 * * ?",
-            "commands": "echo It's first day of the month, so it's time for data dump! ; mkdir -p $HOME/Mongo-dumps ; export work_date=$(date +'%Y-%m-%d--%H%M') && mongodump --host SERVICE_DOMAIN --port SERVICE_PORT --out $HOME/Mongo-dumps/${work_date} && cd $HOME/Mongo-dumps/ && tar cf ${work_date}.tar.gz ${work_date}/ && rm -rf ${work_date}"
-        }
+    "schedulers": [
+        "* * 1 * * ?! echo It's first day of the month, so it's time for data dump! ; mkdir -p $HOME/Mongo-dumps ; export work_date=$(date +'%Y-%m-%d--%H%M') && mongodump --host SERVICE_DOMAIN --port SERVICE_PORT --out $HOME/Mongo-dumps/${work_date} && cd $HOME/Mongo-dumps/ && tar cf ${work_date}.tar.gz ${work_date}/ && rm -rf ${work_date}"
     ],
     "configure": {
         "commands": "

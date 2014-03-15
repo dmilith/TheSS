@@ -122,7 +122,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
 
     if (indicatorFiles->running->exists()) {
         logInfo() << "Cleaning old crontab indicators for service:" << name;
-        Q_FOREACH(auto entry, config->schedulerActions) {
+        Q_FOREACH(auto entry, config->schedulers) {
             QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
             logDebug() << "Removing old cron indicator:" << indicator;
             QFile::remove(indicator);

@@ -113,15 +113,9 @@ Scheduler example based on Redis igniter:
 
 ```json
 {
-    "schedulerActions": [
-        {
-            "cronEntry": "*/25 10-15 1,3,5,7 * * ?",
-            "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
-        },
-        {
-            "cronEntry": "*/10 * * * * ?",
-            "commands": "for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"
-        }
+    "schedulers": [
+        "*/25 10-15 1,3,5,7 * * ?! test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup",
+        "*/10 * * * * ?! for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"
     ]
 }
 ```

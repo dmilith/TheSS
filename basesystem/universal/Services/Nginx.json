@@ -1,10 +1,7 @@
 {
     "softwareName": "Nginx",
-    "schedulerActions": [
-        {
-            "cronEntry": "0 0/1 * * * ?",
-            "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_CONF -t && SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload"
-        }
+    "schedulers": [
+        "0 0/1 * * * ?! SERVICE_ROOT/exports/nginx -c SERVICE_CONF -t && SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload"
     ],
     "install": {
         "commands": "sofin get nginx",

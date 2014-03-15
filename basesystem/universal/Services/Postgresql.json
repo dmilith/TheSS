@@ -1,10 +1,7 @@
 {
     "softwareName": "Postgresql",
-    "schedulerActions": [
-        {
-            "cronEntry": "0 0/3 * * * ?",
-            "commands": "printf \"Postgres myk myk\n\" >> SERVICE_LOG"
-        }
+    "schedulers": [
+        "0 0/3 * * * ?! printf \"Postgres myk myk\n\" >> SERVICE_LOG"
     ],
     "install": {
         "commands": "sofin get postgresql",
