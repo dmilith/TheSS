@@ -51,7 +51,6 @@ class SvdServiceConfig : public QObject {
     public:
         SvdServiceConfig(); /* Load default values */
         SvdServiceConfig(const QString& serviceName);
-        ~SvdServiceConfig(); /* free allocated objects */
 
         const QString replaceAllSpecialsIn(const QString content);
         const QString userServiceRoot();
