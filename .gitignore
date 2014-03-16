@@ -30,3 +30,7 @@ releases/
 /TheSS.sublime-workspace
 
 /bin/svdnotify
+
+/src/service_spawner/.obj/
+
+/src/coreginx_helper/.obj/
