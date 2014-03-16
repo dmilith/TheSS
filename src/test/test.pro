@@ -7,6 +7,8 @@ QT += network
 TEMPLATE = app
 TARGET = ../../bin/test-app
 
+DEFINES += THESS_TEST_MODE
+
 DEPENDPATH += .
 INCLUDEPATH += .
 

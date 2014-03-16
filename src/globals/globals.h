@@ -29,6 +29,7 @@
 
     #define DEFAULT_STRING_CODEC "utf8"
     #define LOCALE "en_GB.UTF-8"
+    #define DEFAULT_TEST_POSTFIX "-TEST"
 
     #define NOTIFICATIONS_OPTIONS_BAR_HEIGHT 2
     #define NOTIFICATIONS_LAST_SHOWN 11 /* amount of notification before moving to history */

@@ -34,6 +34,8 @@ build () {
             ;;
 
         tests|test)
+            bin/clean
+            bin/build
             (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built tests\n") || exit 1
             ;;

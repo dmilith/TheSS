@@ -250,7 +250,7 @@ void TestLibrary::testJsonValidityOfIgniters() {
     if (getuid() == 0) {
         igniters << "Pptpd" << "Openvpn" << "Ntp" << "LiveUsers" << "Courier" << "Coreginx" << "Bind" << "Bind-WithZone";
     }
-    igniters << "Php" << "Redis" << "Redis-usock" << "Postgresql" << "Passenger" << "Passenger19" << "ProcessDataCollector" << "Mysql" << "Mysql-master" << "Mysql-usock" << "Mysql51" << "Mysql-slave" << "Mosh" << "Mongodb" << "Mongodb-slave" << "Mongodb-master" << "Dropbear" << "Elasticsearch";
+    igniters << "Memcached" << "Php" << "Redis" << "Redis-usock" << "Postgresql" << "Passenger" << "Passenger19" << "ProcessDataCollector" << "Mysql" << "Mysql-master" << "Mysql-usock" << "Mysql51" << "Mysql-slave" << "Mosh" << "Mongodb" << "Mongodb-slave" << "Mongodb-master" << "Dropbear" << "Elasticsearch";
     Q_FOREACH(QString igniter, igniters) {
         auto config = new SvdServiceConfig(igniter);
         QVERIFY(not config->softwareName.isEmpty());

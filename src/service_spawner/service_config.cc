@@ -461,7 +461,13 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         }
     }
 
-    QString serviceDataDir = getOrCreateDir(getServiceDataDir(name));
+    QString serviceDataDir = getOrCreateDir(
+    #ifdef THESS_TEST_MODE
+        getServiceDataDir(name + DEFAULT_TEST_POSTFIX)
+    #else
+        getServiceDataDir(name)
+    #endif
+    );
     QString autoStFile = serviceDataDir + AUTOSTART_TRIGGER_FILE;
     if (autoStart and not QFile::exists(autoStFile)) {
         logInfo() << "Autostart predefined on igniter side (has highest priority): Autostart state set for service:" << name;
@@ -513,10 +519,14 @@ bool SvdServiceConfig::serviceConfigured() {
 
 
 const QString SvdServiceConfig::prefixDir() {
+    QString optionalPostFix = "";
+    #ifdef THESS_TEST_MODE
+        optionalPostFix = DEFAULT_TEST_POSTFIX;
+    #endif
     if (uid == 0) {
-        return QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name;
+        return QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name + optionalPostFix;
     } else {
-        return QString(getenv("HOME")) + SOFTWARE_DATA_DIR + name;
+        return QString(getenv("HOME")) + SOFTWARE_DATA_DIR + name + optionalPostFix;
     }
 }
 
