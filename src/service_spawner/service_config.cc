@@ -270,41 +270,43 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     babySitter = new SvdShellOperations(getString("babySitter/commands"), getString("babySitter/expectOutput"));
 
     //yajl_tree_free(node_);
-    prettyPrint();
+    #ifdef QT_DEBUG
+        prettyPrint();
+    #endif
 }
 
 
 void SvdServiceConfig::prettyPrint() {
-    logInfo() << "Service |                     name:" << name;
-    logInfo() << "        |             softwareName:" << softwareName;
-    logInfo() << "        |                autoStart:" << autoStart;
-    logInfo() << "        |        notificationLevel:" << notificationLevel;
-    logInfo() << "        |                   webApp:" << webApp;
-    logInfo() << "        |                watchPort:" << watchPort;
-    logInfo() << "        |             watchUdpPort:" << watchUdpPort;
-    logInfo() << "        |                 alwaysOn:" << alwaysOn;
-    logInfo() << "        |            resolveDomain:" << resolveDomain;
-    logInfo() << "        |               staticPort:" << staticPort;
-    logInfo() << "        | minimumRequiredDiskSpace:" << minimumRequiredDiskSpace;
-    logInfo() << "        |                portsPool:" << portsPool;
-    logInfo() << "        |               repository:" << repository;
-    logInfo() << "        |            parentService:" << parentService;
-    logInfo() << "        |           configureOrder:" << configureOrder;
-    logInfo() << "        |               startOrder:" << startOrder;
-    logInfo() << "        |             dependencies:" << dependencies;
-    logInfo() << "        |   standaloneDependencies:" << standaloneDependencies;
-    logInfo() << "        |                  domains:" << domains;
-    // logInfo() << "        |               schedulers:" << schedulers;
-    logInfo() << "        |       watchHttpAddresses:" << watchHttpAddresses;
-    logInfo() << "        |        install->commands:" << install->commands;
-    logInfo() << "        |      configure->commands:" << configure->commands;
-    logInfo() << "        |          start->commands:" << start->commands;
-    logInfo() << "        |     afterStart->commands:" << afterStart->commands;
-    logInfo() << "        |           stop->commands:" << stop->commands;
-    logInfo() << "        |      afterStop->commands:" << afterStop->commands;
-    logInfo() << "        |         reload->commands:" << reload->commands;
-    logInfo() << "        |       validate->commands:" << validate->commands;
-    logInfo() << "        |     babySitter->commands:" << babySitter->commands;
+    logDebug() << "Service |                     name:" << name;
+    logDebug() << "        |             softwareName:" << softwareName;
+    logDebug() << "        |                autoStart:" << autoStart;
+    logDebug() << "        |        notificationLevel:" << notificationLevel;
+    logDebug() << "        |                   webApp:" << webApp;
+    logDebug() << "        |                watchPort:" << watchPort;
+    logDebug() << "        |             watchUdpPort:" << watchUdpPort;
+    logDebug() << "        |                 alwaysOn:" << alwaysOn;
+    logDebug() << "        |            resolveDomain:" << resolveDomain;
+    logDebug() << "        |               staticPort:" << staticPort;
+    logDebug() << "        | minimumRequiredDiskSpace:" << minimumRequiredDiskSpace;
+    logDebug() << "        |                portsPool:" << portsPool;
+    logDebug() << "        |               repository:" << repository;
+    logDebug() << "        |            parentService:" << parentService;
+    logDebug() << "        |           configureOrder:" << configureOrder;
+    logDebug() << "        |               startOrder:" << startOrder;
+    logDebug() << "        |             dependencies:" << dependencies;
+    logDebug() << "        |   standaloneDependencies:" << standaloneDependencies;
+    logDebug() << "        |                  domains:" << domains;
+    // logDebug() << "        |               schedulers:" << schedulers;
+    logDebug() << "        |       watchHttpAddresses:" << watchHttpAddresses;
+    logDebug() << "        |        install->commands:" << install->commands;
+    logDebug() << "        |      configure->commands:" << configure->commands;
+    logDebug() << "        |          start->commands:" << start->commands;
+    logDebug() << "        |     afterStart->commands:" << afterStart->commands;
+    logDebug() << "        |           stop->commands:" << stop->commands;
+    logDebug() << "        |      afterStop->commands:" << afterStop->commands;
+    logDebug() << "        |         reload->commands:" << reload->commands;
+    logDebug() << "        |       validate->commands:" << validate->commands;
+    logDebug() << "        |     babySitter->commands:" << babySitter->commands;
 
     return;
 }
@@ -324,15 +326,16 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     // if (node_ != NULL)
     //     yajl_tree_free(node_);
     nodeRoot_ = yajl_tree_parse((const char*)root.toUtf8(), errbuf, sizeof(errbuf));
+    logDebug() << "INSIGHT of igniter:" << name << "::" << root;
     if (QString(errbuf).length() > 0) {
-        logError() << "Root-err of:" << name << "::" << errbuf;
+        logError() << "Error in igniter:" << name << "::" << errbuf;
     }
     nodeDefault_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
     if (QString(errbuf).length() > 0) {
-        logError() << "Dflt-err of:" << name << "::" << errbuf;
+        logError() << "Error in Defaults:" << name << "::" << errbuf;
     }
     if (nodeDefault_ == NULL) {
-        logFatal() << "Json parse failure for Default!";
+        logFatal() << "Json parse failure for Defaults!";
     }
     if (nodeRoot_ == NULL) {
         logError() << "Json parse failure for:" << serviceName;

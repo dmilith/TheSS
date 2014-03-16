@@ -5,9 +5,9 @@
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "
-printf 'Launching Memcached\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/memcached -l SERVICE_ADDRESS -p SERVICE_PORT -P SERVICE_PID -d
+        "commands": " \
+printf 'Launching Memcached\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/memcached -l SERVICE_ADDRESS -p SERVICE_PORT -P SERVICE_PID -d \
 "
     }
 }
