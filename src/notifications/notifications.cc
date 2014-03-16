@@ -132,7 +132,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
         socket.write("Connection: Close\r\n\r\n");
 
         while (socket.waitForBytesWritten())
-            logInfo() << "Notification http response:" << socket.readAll().data();
+            logDebug() << "Notification http response:" << socket.readAll().data();
 
         socket.close();
     #else
