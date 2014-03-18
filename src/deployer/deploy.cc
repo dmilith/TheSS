@@ -1069,7 +1069,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
                         serviceWorkers.insert(
                             /* start commands: */
-                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
 
                             /* stop commands */
                             "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
@@ -1082,7 +1082,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
                             /* (start commands, stop commands) : */
-                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && \n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && \\\n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
 
                             /* , stop commands) : */
                             "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
@@ -1094,21 +1094,21 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 /* generate correct order of application execution after workers */
                 jsonResult += QString("\n\n\"start\": {\"commands\": \"");
                 Q_FOREACH(QString part, serviceWorkers.keys()) { /* keys => start commands */
-                    jsonResult += part + " &&\n";
+                    jsonResult += part + " && \\\n";
                 }
                 jsonResult += " true ;";
                 jsonResult += "\"}, \n\n\"stop\": {\"commands\": \"";
                 Q_FOREACH(QString acmd, serviceWorkers.keys()) {
                     logDebug() << "ACMD:" << acmd;
                     QString cmd = serviceWorkers.take(acmd);
-                    jsonResult += cmd + " ;\n";
+                    jsonResult += cmd + " ; \\\n";
                 }
                 jsonResult += "\"}\n}";
 
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -1146,11 +1146,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
-            clne->spawnProcess(QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \n" + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG");
+            clne->spawnProcess(QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG");
             clne->waitForFinished(-1);
 
         } break;
@@ -1172,7 +1172,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult += "\n\n\"start\": {\"commands\": \"sofin reload && " + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \n echo 'Php app ready' >> SERVICE_LOG\"}\n}";
+            jsonResult += "\n\n\"start\": {\"commands\": \"sofin reload && " + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \\\n echo 'Php app ready' >> SERVICE_LOG\"}\n}";
 
         } break;
 
