@@ -227,11 +227,11 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         } else
             defaults = defaultsCache; /* take value from cache */
     }
-    nodeDefault_ = yajl_tree_parse(defaults.toUtf8().data(), errbuf, sizeof(errbuf));
+    nodeDefault_ = nodeRoot_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
     if (QString(errbuf).length() > 0) {
         logError() << "ERR:" << errbuf;
     }
-    if (defaults.isEmpty() or nodeDefault_ == NULL) {
+    if (not nodeDefault_ or defaults.isEmpty()) {
         if (defaultsCache.isEmpty()) {
             logFatal() << "Failed to load default igniter which is mandatory. Cannot continue";
             return;
@@ -333,7 +333,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     }
     // if (node_ != NULL)
     //     yajl_tree_free(node_);
-    nodeRoot_ = yajl_tree_parse((const char*)root.toUtf8(), errbuf, sizeof(errbuf));
+    nodeRoot_ = yajl_tree_parse(root.toUtf8(), errbuf, sizeof(errbuf));
     logDebug() << "INSIGHT of igniter:" << name << "::" << root;
     if (QString(errbuf).length() > 0) {
         logError() << "Error in igniter:" << name << "::" << errbuf;
