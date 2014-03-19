@@ -23,6 +23,7 @@ class TestLibrary: public QObject {
             ~TestLibrary();
 
         private slots:
+            void testLoadingDefault();
             void testParseDefault();
             void testJsonValidityOfIgniters();
             // void testParseJSONRedis();

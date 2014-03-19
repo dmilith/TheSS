@@ -87,6 +87,24 @@ void TestLibrary::testDirRemoval() {
 // }
 
 
+void TestLibrary::testLoadingDefault() {
+    auto config = new SvdServiceConfig();
+    QStringList input;
+    char *path[0];
+    int i = 0;
+    foreach (QString s, input) {
+        path[i] = new char[s.length()];
+        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        path[s.length()] = ZERO_CHAR;
+        i++;
+    }
+    path[i] = ZERO_CHAR;
+    QVERIFY(config->getBoolean("alwaysOn") == true);
+    QVERIFY(config->getBoolean("stefan") == false);
+    delete config;
+}
+
+
 void TestLibrary::testParseDefault() {
     QString testParseDefault = "ab/cd";
     QVERIFY(testParseDefault.split("2").size() == 1);
