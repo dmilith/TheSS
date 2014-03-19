@@ -41,7 +41,9 @@ QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, 
      */
     QStringList buf;
     yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_array);
-    yajl_val w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_array);
+    yajl_val w = NULL;
+    if (nodeRoot)
+        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_array);
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
@@ -89,7 +91,9 @@ long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, 
     path[i] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_any);
-    yajl_val w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_any);
+    yajl_val w = NULL;
+    if (nodeRoot)
+        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_any);
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
@@ -131,7 +135,9 @@ bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const
     path[i] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_any);
-    yajl_val w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_any);
+    yajl_val w = NULL;
+    if (nodeRoot)
+        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_any);
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
@@ -177,7 +183,9 @@ QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, con
     path[i] = ZERO_CHAR;
 
     yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_string);
-    yajl_val w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_string);
+    yajl_val w = NULL;
+    if (nodeRoot)
+        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_string);
 
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
