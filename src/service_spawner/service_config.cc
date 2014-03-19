@@ -215,7 +215,7 @@ QString SvdServiceConfig::getString(const QString& element) {
 
 SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     name = "Default"; // must be declared first
-    uid = getuid();
+    // uid = getuid();
 
     char errbuf[1024];
     auto defaults = loadDefaultIgniter();
@@ -331,8 +331,6 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     if (root.isEmpty()) {
         logError() << "Empty service config root for:" << serviceName;
     }
-    // if (node_ != NULL)
-    //     yajl_tree_free(node_);
     nodeRoot_ = yajl_tree_parse(root.toUtf8(), errbuf, sizeof(errbuf));
     logDebug() << "INSIGHT of igniter:" << name << "::" << root;
     if (QString(errbuf).length() > 0) {
@@ -342,10 +340,10 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     if (QString(errbuf).length() > 0) {
         logError() << "Error in Defaults:" << name << "::" << errbuf;
     }
-    if (nodeDefault_ == NULL) {
+    if (not nodeDefault_) {
         logFatal() << "Json parse failure for Defaults!";
     }
-    if (nodeRoot_ == NULL) {
+    if (not nodeRoot_) {
         logError() << "Json parse failure for:" << serviceName;
     }
     // if (root.isEmpty()) {
