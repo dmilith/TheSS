@@ -1,5 +1,6 @@
 #!/bin/sh
 
+bin/ignitersinstall
 bin/build test
 bin/test-app -nocrashhandler -random
 rm -rf ${HOME}/SoftwareData/*-TEST
