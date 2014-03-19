@@ -28,7 +28,7 @@ QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, 
     int size = input.length();
     char *path[size];
     int i = 0;
-    foreach (QString s, input) {
+    Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
         strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
@@ -82,7 +82,7 @@ long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, 
     logTrace() << "element:" << element;
     int size = input.length(), i = 0;
     char *path[size];
-    foreach (QString s, input) {
+    Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
         strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
@@ -126,7 +126,7 @@ bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QStri
     int size = input.length();
     char *path[size];
     int i = 0;
-    foreach (QString s, input) {
+    Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
         strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
@@ -174,7 +174,7 @@ QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, QSt
     int size = input.length();
     char *path[size];
     int i = 0;
-    foreach (QString s, input) {
+    Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
         strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
