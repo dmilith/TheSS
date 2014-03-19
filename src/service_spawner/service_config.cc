@@ -21,7 +21,7 @@ SvdScheduler::SvdScheduler(const QString& initialCronEntry, const QString& initi
 }
 
 
-QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, const QString element) {
+QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element) {
     /* building paths */
     QStringList input = element.split("/");
     logTrace() << "element:" << element;
@@ -71,12 +71,12 @@ QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, 
 }
 
 
-QStringList SvdServiceConfig::getArray(const QString element) {
+QStringList SvdServiceConfig::getArray(const QString& element) {
     return getArray(nodeDefault_, nodeRoot_, element);
 }
 
 
-long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const QString element) {
+long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element) {
     /* building paths */
     QStringList input = element.split("/");
     logTrace() << "element:" << element;
@@ -114,12 +114,12 @@ long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, 
 }
 
 
-long long SvdServiceConfig::getInteger(const QString element) {
+long long SvdServiceConfig::getInteger(const QString& element) {
     return getInteger(nodeDefault_, nodeRoot_, element);
 }
 
 
-bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const QString element) {
+bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element) {
     /* building paths */
     QStringList input = element.split("/");
     logTrace() << "element:" << element;
@@ -162,12 +162,12 @@ bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const
 }
 
 
-bool SvdServiceConfig::getBoolean(const QString element) {
+bool SvdServiceConfig::getBoolean(const QString& element) {
     return getBoolean(nodeDefault_, nodeRoot_, element);
 }
 
 
-QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, const QString element) {
+QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element) {
     /* building paths */
     QStringList input = element.split("/");
     logTrace() << "element:" << element;
@@ -208,7 +208,7 @@ QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, con
 }
 
 
-QString SvdServiceConfig::getString(const QString element) {
+QString SvdServiceConfig::getString(const QString& element) {
     return getString(nodeDefault_, nodeRoot_, element);
 }
 

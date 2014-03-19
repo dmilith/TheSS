@@ -61,17 +61,17 @@ class SvdServiceConfig : public QObject {
         const QString userIgniter();
         const QString releaseName();
 
-        QString getString(const QString element);
-        QString getString(yajl_val nodeDefault, yajl_val nodeRoot, const QString element);
+        QString getString(const QString& element);
+        QString getString(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element);
 
-        QStringList getArray(const QString element);
-        QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, const QString element);
+        QStringList getArray(const QString& element);
+        QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element);
 
-        bool getBoolean(const QString element);
-        bool getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const QString element);
+        bool getBoolean(const QString& element);
+        bool getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element);
 
-        long long getInteger(const QString element);
-        long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const QString element);
+        long long getInteger(const QString& element);
+        long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const QString& element);
 
         bool serviceInstalled();
         bool serviceConfigured();
