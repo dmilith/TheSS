@@ -342,11 +342,12 @@ void TestLibrary::testFreePortFunctionality() {
     QVERIFY(takenPort != 22);
     QVERIFY(takenPort != 0);
 
-    uint takenPort2 = registerFreeTcpPort(1000); // some port under 1024 (root port)
-    logDebug() << "Port:" << takenPort2;
-    QVERIFY(takenPort2 != 1000);
-    QVERIFY(takenPort2 != 0);
-
+    if (getuid() > 0) {
+        uint takenPort2 = registerFreeTcpPort(1000); // some port under 1024 (root port)
+        logDebug() << "Port:" << takenPort2;
+        QVERIFY(takenPort2 != 1000);
+        QVERIFY(takenPort2 != 0);
+    }
     // HACK: XXX: cannot be implemented without working SvdService. It should spawn redis server on given port:
     // uint takenPort3 = registerFreeTcpPort(6379); // some port over 6379 (redis default port)
     // logDebug() << "Port:" << takenPort3;
