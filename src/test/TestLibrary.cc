@@ -272,6 +272,7 @@ void TestLibrary::testJsonValidityOfIgniters() {
     Q_FOREACH(QString igniter, igniters) {
         auto config = new SvdServiceConfig(igniter);
         QVERIFY(not config->softwareName.isEmpty());
+        QVERIFY(config->errors().isEmpty());
         delete config;
     }
 }
@@ -289,6 +290,7 @@ void TestLibrary::testMultipleConfigsLoading() {
 
     auto config = new SvdServiceConfig("Redis");
     QCOMPARE(config->name, QString("Redis"));
+    QVERIFY(config->errors().isEmpty());
     // QVERIFY(config->afterStop->commands.contains(".running"));
     // QVERIFY(config->afterStop->commands.contains("service.pid"));
     QVERIFY(config->install->commands == "sofin get redis");
@@ -299,6 +301,7 @@ void TestLibrary::testMultipleConfigsLoading() {
 
     config = new SvdServiceConfig("Mosh");
     QVERIFY(config->name == "Mosh");
+    QVERIFY(config->errors().isEmpty());
     QVERIFY(config->softwareName == "Mosh");
     QVERIFY(config->install->commands == "sofin get mosh");
     QVERIFY(config->watchPort == false);
@@ -310,12 +313,8 @@ void TestLibrary::testMultipleConfigsLoading() {
 
 void TestLibrary::testNonExistantConfigLoading() {
     auto *config = new SvdServiceConfig("PlewisŚmiewis");
+    QVERIFY(config->errors().contains("premature EOF"));
     QVERIFY(config->name == "PlewisŚmiewis");
-    QVERIFY(config->install->commands.length() == 0);
-    QVERIFY(config->configure->commands.length() == 0);
-    QVERIFY(config->watchPort == true);
-    QVERIFY(config->webApp == false);
-    QVERIFY(config->standaloneDependencies.size() > 0);
     delete config;
 }
 
@@ -421,8 +420,8 @@ void TestLibrary::testUtils() {
 
 void TestLibrary::testSomeRealCraziness() {
     auto *config = new SvdServiceConfig("OmgOmgOmg"); /* Load default values */
-    // config->name = "OmgOmgOmg";
     config->loadIgniter();
+    QVERIFY(config->errors().contains("premature EOF"));
     QVERIFY(config->name == "OmgOmgOmg");
     config->name = "";
     config->loadIgniter();
