@@ -24,6 +24,7 @@
 #include <iostream>
 
 #define ZERO_CHAR (char *)0
+#define MAX_DEPTH 64 /* max supported json tree depth */
 
 class SvdScheduler {
 
@@ -61,17 +62,17 @@ class SvdServiceConfig : public QObject {
         const QString userIgniter();
         const QString releaseName();
 
-        QString getString(QString element);
-        QString getString(yajl_val nodeDefault, yajl_val nodeRoot, QString element);
+        QString getString(const char* element);
+        QString getString(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
 
-        QStringList getArray(QString element);
-        QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, QString element);
+        QStringList getArray(const char* element);
+        QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
 
-        bool getBoolean(QString element);
-        bool getBoolean(const yajl_val nodeDefault, const yajl_val nodeRoot, QString element);
+        bool getBoolean(const char* element);
+        bool getBoolean(const yajl_val nodeDefault, const yajl_val nodeRoot, const char* element);
 
-        long long getInteger(QString element);
-        long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, QString element);
+        long long getInteger(const char* element);
+        long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
 
         bool serviceInstalled();
         bool serviceConfigured();
@@ -90,7 +91,7 @@ class SvdServiceConfig : public QObject {
         uint uid; // user uid who loads igniter config
         QString name, softwareName, repository, parentService, sha, generatedDefaultPort;
         bool autoStart, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;
-        int staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
+        long long staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
         QStringList dependencies, watchHttpAddresses, domains, standaloneDependencies;
         QList<SvdScheduler*> schedulers;
         SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;

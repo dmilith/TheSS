@@ -26,18 +26,19 @@ QString SvdServiceConfig::errors() {
 }
 
 
-QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, QString element) {
+QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
     /* building paths */
-    QStringList input = element.split("/");
-    logTrace() << "element:" << element;
-    int size = input.length();
-    char *path[size];
+    char* elem = strdup(element);
+    char* result = NULL;
+    char delims[] = "/";
+    result = strtok(elem, delims);
+    const char *path[MAX_DEPTH];
     int i = 0;
-    Q_FOREACH(QString s, input) {
-        path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8(), s.length() + 1);
-        path[s.length()] = ZERO_CHAR;
-        i++;
+    for (i = 0; result != NULL; i++) {
+        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
+        strncpy((char*)path[i], result, strlen(result) + 1);
+        path[strlen(result)] = ZERO_CHAR;
+        result = strtok( NULL, delims );
     }
     path[i] = ZERO_CHAR;
 
@@ -52,88 +53,92 @@ QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, 
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
+    free(elem);
 
     if (v and YAJL_IS_ARRAY(v)) {
-        logTrace() << "Default Array:" << element;
+        // logTrace() << "Default Array:" << element;
         int len = v->u.array.len;
         for (i = 0; i < len; ++i) { /* gather default list */
             yajl_val obj = v->u.array.values[i];
-            logTrace() << "Parsed Default Array value:" << YAJL_GET_STRING(obj);
+            // logTrace() << "Parsed Default Array value:" << YAJL_GET_STRING(obj);
             buf << YAJL_GET_STRING(obj);
         }
-        logTrace() << "Gathered Default Array:" << buf;
+        // logTrace() << "Gathered Default Array:" << buf;
     }
     if (w and YAJL_IS_ARRAY(w)) {
         int len = w->u.array.len;
         for (i = 0; i < len; ++i) { /* gather igniter list */
             yajl_val obj = w->u.array.values[i];
-            logTrace() << "Parsed Root Array value:" << YAJL_GET_STRING(obj);
+            // logTrace() << "Parsed Root Array value:" << YAJL_GET_STRING(obj);
             buf << YAJL_GET_STRING(obj);
         }
-        logTrace() << "Gathered Root Array:" << buf;
+        // logTrace() << "Gathered Root Array:" << buf;
     }
     return buf;
 }
 
 
-QStringList SvdServiceConfig::getArray(QString element) {
+QStringList SvdServiceConfig::getArray(const char* element) {
     return getArray(nodeDefault_, nodeRoot_, element);
 }
 
 
-long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, QString element) {
+long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
     /* building paths */
-    QStringList input = element.split("/");
-    logTrace() << "element:" << element;
-    int size = input.length(), i = 0;
-    char *path[size];
-    Q_FOREACH(QString s, input) {
-        path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8(), s.length() + 1);
-        path[s.length()] = ZERO_CHAR;
-        i++;
+    char* elem = strdup(element);
+    char* result = NULL;
+    char delims[] = "/";
+    result = strtok(elem, delims);
+    const char *path[MAX_DEPTH];
+    int i = 0;
+    for (i = 0; result != NULL; i++) {
+        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
+        strncpy((char*)path[i], result, strlen(result) + 1);
+        path[strlen(result)] = ZERO_CHAR;
+        result = strtok( NULL, delims );
     }
     path[i] = ZERO_CHAR;
 
-    yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_any);
+    yajl_val v = yajl_tree_get(nodeDefault, path, yajl_t_any);
     yajl_val w = NULL;
     if (nodeRoot)
-        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_any);
+        w = yajl_tree_get(nodeRoot, path, yajl_t_any);
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
+    free(elem);
 
     /* user igniter has priority */
     if (w and YAJL_IS_INTEGER(w)) {
         long long lng = YAJL_GET_INTEGER(w);
-        logTrace() << "Parsed Root Integer:" << QString::number(lng);
+        // logTrace() << "Parsed Root Integer:" << QString::number(lng);
         return lng;
     }
     if (v and YAJL_IS_INTEGER(v)) {
         long long lng = YAJL_GET_INTEGER(v);
-        logTrace() << "Parsed Default Integer:" << QString::number(lng);
+        // logTrace() << "Parsed Default Integer:" << QString::number(lng);
         return lng;
     }
     logError() << "Not a integer:" << element;
-    return 0;
+    return 0L;
 }
 
 
-long long SvdServiceConfig::getInteger(QString element) {
+long long SvdServiceConfig::getInteger(const char* element) {
     return getInteger(nodeDefault_, nodeRoot_, element);
 }
 
 
-bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QString element) {
+bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
     /* building paths */
+    char* elem = strdup(element);
     char* result = NULL;
     char delims[] = "/";
-    result = strtok(element.toUtf8().data(), delims);
-    int size = sizeof(result)/sizeof(char*);
-    const char *path[size];
+    result = strtok(elem, delims);
+    const char *path[MAX_DEPTH];
     int i = 0;
     for (i = 0; result != NULL; i++) {
-        path[i] = new char[strlen(result)];
+        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
         strncpy((char*)path[i], result, strlen(result) + 1);
         path[strlen(result)] = ZERO_CHAR;
         result = strtok( NULL, delims );
@@ -147,6 +152,7 @@ bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QStri
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
+    free(elem);
 
     if (w and (YAJL_IS_TRUE(w) or YAJL_IS_FALSE(w))) {
         if (YAJL_IS_TRUE(w)) {
@@ -168,23 +174,24 @@ bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QStri
 }
 
 
-bool SvdServiceConfig::getBoolean(QString element) {
+bool SvdServiceConfig::getBoolean(const char* element) {
     return getBoolean(nodeDefault_, nodeRoot_, element);
 }
 
 
-QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, QString element) {
+QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
     /* building paths */
-    QStringList input = element.split("/");
-    logTrace() << "element:" << element;
-    int size = input.length();
-    char *path[size];
+    char* elem = strdup(element);
+    char* result = NULL;
+    char delims[] = "/";
+    result = strtok(elem, delims);
+    const char *path[MAX_DEPTH];
     int i = 0;
-    Q_FOREACH(QString s, input) {
-        path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8(), s.length() + 1);
-        path[s.length()] = ZERO_CHAR;
-        i++;
+    for (i = 0; result != NULL; i++) {
+        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
+        strncpy((char*)path[i], result, strlen(result) + 1);
+        path[strlen(result)] = ZERO_CHAR;
+        result = strtok( NULL, delims );
     }
     path[i] = ZERO_CHAR;
 
@@ -196,16 +203,17 @@ QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, QSt
     for (int j = 0; j <= i; j++) {
         delete[] path[j];
     }
+    free(elem);
 
     /*
         merge default source string with root source string for each String json element
      */
     if (w and YAJL_IS_STRING(w)) {
-        logTrace() << "Parsed Root String:" << QString(YAJL_GET_STRING(w));
+        // logTrace() << "Parsed Root String:" << QString(YAJL_GET_STRING(w));
         return YAJL_GET_STRING(w);
     }
     if (v and YAJL_IS_STRING(v)) {
-        logTrace() << "Parsed Default String:" << QString(YAJL_GET_STRING(v));
+        // logTrace() << "Parsed Default String:" << QString(YAJL_GET_STRING(v));
         return YAJL_GET_STRING(v);
     }
 
@@ -214,7 +222,7 @@ QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, QSt
 }
 
 
-QString SvdServiceConfig::getString(QString element) {
+QString SvdServiceConfig::getString(const char* element) {
     return getString(nodeDefault_, nodeRoot_, element);
 }
 
