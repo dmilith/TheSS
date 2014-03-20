@@ -68,7 +68,7 @@ class SvdServiceConfig : public QObject {
         QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, QString element);
 
         bool getBoolean(QString element);
-        bool getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QString element);
+        bool getBoolean(yajl_val& nodeDefault, yajl_val& nodeRoot, QString element);
 
         long long getInteger(QString element);
         long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, QString element);
