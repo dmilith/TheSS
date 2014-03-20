@@ -933,7 +933,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     logDebug() << "Creating web-app environment";
     QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain;
-    logInfo() << "Writing domain:" << domain << "to file:" << domainFilePath;
+    logInfo() << "Writing domain:" << domainFilePath;
     touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
 
     /* create "deploying" state */
@@ -1146,7 +1146,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}\n"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
@@ -1172,7 +1172,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult += "\n\n\"start\": {\"commands\": \"sofin reload && " + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && \\\n echo 'Php app ready' >> SERVICE_LOG\"}\n}";
+            jsonResult += "\n\n\"start\": {\"commands\": \"sofin reload && " + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && echo 'Php app ready' >> SERVICE_LOG\"}\n}\n";
 
         } break;
 
