@@ -80,8 +80,10 @@ class SvdServiceConfig : public QObject {
         QString loadIgniter();
 
         void prettyPrint();
+        QString errors();
 
     // TODO: BASIC SAFETY: private:
+        char errbuf[1024];
         QString defaultsCache = "";
         yajl_val nodeRoot_ = NULL, nodeDefault_ = NULL;
         QString jsonContent_ = "";

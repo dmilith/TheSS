@@ -21,6 +21,11 @@ SvdScheduler::SvdScheduler(const QString& initialCronEntry, const QString& initi
 }
 
 
+QString SvdServiceConfig::errors() {
+    return QString(this->errbuf);
+}
+
+
 QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, QString element) {
     /* building paths */
     QStringList input = element.split("/");
@@ -30,7 +35,7 @@ QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, 
     int i = 0;
     Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        strncpy(path[i], s.toUtf8(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
         i++;
     }
@@ -84,7 +89,7 @@ long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, 
     char *path[size];
     Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        strncpy(path[i], s.toUtf8(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
         i++;
     }
@@ -128,7 +133,7 @@ bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QStri
     int i = 0;
     Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        strncpy(path[i], s.toUtf8(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
         i++;
     }
@@ -176,7 +181,7 @@ QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, QSt
     int i = 0;
     Q_FOREACH(QString s, input) {
         path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
+        strncpy(path[i], s.toUtf8(), s.length() + 1);
         path[s.length()] = ZERO_CHAR;
         i++;
     }
@@ -217,7 +222,6 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     name = "Default"; // must be declared first
     // uid = getuid();
 
-    char errbuf[1024];
     auto defaults = loadDefaultIgniter();
     if (defaults.isEmpty()) {
         if (defaultsCache.isEmpty()) {
@@ -230,6 +234,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     nodeDefault_ = nodeRoot_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
     if (QString(errbuf).length() > 0) {
         logError() << "ERR:" << errbuf;
+        return;
     }
     if (not nodeDefault_ or defaults.isEmpty()) {
         if (defaultsCache.isEmpty()) {
@@ -244,6 +249,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     QString formatVersion = getString("formatVersion");
     if (not QString(APP_VERSION).contains(formatVersion)) {
         logError() << "Outdated igniter format detected. Please update your igniters!";
+        return;
     }
     softwareName = getString("softwareName");
     autoStart = getBoolean("autoStart");
@@ -325,7 +331,6 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     name = serviceName; // this must be declared first!
     uid = getuid();
 
-    char errbuf[1024];
     auto defaults = loadDefaultIgniter();
     auto root = loadIgniter();
     if (root.isEmpty()) {
@@ -335,16 +340,20 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     logDebug() << "INSIGHT of igniter:" << name << "::" << root;
     if (QString(errbuf).length() > 0) {
         logError() << "Error in igniter:" << name << "::" << errbuf;
+        return;
     }
     nodeDefault_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
     if (QString(errbuf).length() > 0) {
         logError() << "Error in Defaults:" << name << "::" << errbuf;
+        return;
     }
     if (not nodeDefault_) {
         logFatal() << "Json parse failure for Defaults!";
+        return;
     }
     if (not nodeRoot_) {
         logError() << "Json parse failure for:" << serviceName;
+        return;
     }
     // if (root.isEmpty()) {
     //     if (defaultsCache.isEmpty()) {
