@@ -51,6 +51,7 @@ class SvdServiceConfig : public QObject {
 
     public:
         SvdServiceConfig(); /* Load default values */
+        ~SvdServiceConfig();
         SvdServiceConfig(const QString& serviceName);
 
         const QString replaceAllSpecialsIn(const QString content);
@@ -86,7 +87,6 @@ class SvdServiceConfig : public QObject {
     // TODO: BASIC SAFETY: private:
         char errbuf[1024];
         QString defaultsCache = "";
-        yajl_val nodeRoot_ = NULL, nodeDefault_ = NULL;
         QString jsonContent_ = "";
         uint uid; // user uid who loads igniter config
         QString name, softwareName, repository, parentService, sha, generatedDefaultPort;
@@ -95,6 +95,9 @@ class SvdServiceConfig : public QObject {
         QStringList dependencies, watchHttpAddresses, domains, standaloneDependencies;
         QList<SvdScheduler*> schedulers;
         SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;
+
+    private:
+        yajl_val nodeRoot_ = NULL, nodeDefault_ = NULL;
 
 };
 

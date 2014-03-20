@@ -507,22 +507,25 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
 }
 
 
-    /* destructor with memory free - welcome in C++ dmilith */
-    // SvdServiceConfig::~SvdServiceConfig() {
+/* destructor with memory free - welcome in C++ dmilith */
+SvdServiceConfig::~SvdServiceConfig() {
 
-    //     /* laod service hooks */
-    //     delete install;
-    //     delete configure;
-    //     delete start;
-    //     delete afterStart;
-    //     delete stop;
-    //     delete afterStop;
-    //     delete reload;
-    //     delete validate;
-    //     delete babySitter;
-    //     for (int i = 0; i < schedulers.length(); i++)
-    //         delete schedulers.at(i);
-    // }
+    /* laod service hooks */
+    delete install;
+    delete configure;
+    delete start;
+    delete afterStart;
+    delete stop;
+    delete afterStop;
+    delete reload;
+    delete validate;
+    delete babySitter;
+    for (int i = 0; i < schedulers.length(); i++)
+        delete schedulers.at(i);
+
+    yajl_tree_free(nodeDefault_);
+    yajl_tree_free(nodeRoot_);
+}
 
 
 const QString SvdServiceConfig::serviceRoot() {
