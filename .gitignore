@@ -25,12 +25,7 @@ releases/
 /bin/svdirc_notify
 /bin/svddeployer
 /bin/svdcoreginx_helper
-.obj/*
+**/.obj/*
 /TheSS.sublime-project
 /TheSS.sublime-workspace
-
 /bin/svdnotify
-
-/src/service_spawner/.obj/
-
-/src/coreginx_helper/.obj/
