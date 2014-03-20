@@ -1,4 +1,5 @@
 {
+    "softwareName": "Builtin",
     "watchPort": false,
     "alwaysOn": false,
     "autoStart": true,
