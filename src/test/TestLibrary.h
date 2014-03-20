@@ -36,7 +36,7 @@ class TestLibrary: public QObject {
             void testParseExistingIgniter();
             void testSomeRealCraziness();
             void testSanityValueCheck();
-            void testStartingRedis();
+            // void testStartingRedis();
             void testInstallingWrongRedis();
             void testWebAppDetection();
             // void testWebAppDeployer();
