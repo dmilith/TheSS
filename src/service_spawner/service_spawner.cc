@@ -110,6 +110,10 @@ int main(int argc, char *argv[]) {
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
     notification("Launching TheSS v" + QString(APP_VERSION) + " on host: " + QHostInfo::localHostName() + " for uid: " + QString::number(uid));
 
+    #ifdef THESS_TEST_MODE
+        logFatal() << "Please rebuild TheSS after tests. Service Spawner can't be running in test mode.";
+    #endif
+
     if (uid == 0) {
         logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
         setPublicDirPriviledges(getOrCreateDir(DEFAULT_PUBLIC_DIR));

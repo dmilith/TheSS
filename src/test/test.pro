@@ -37,4 +37,4 @@ SOURCES += ../service_spawner/service_config.cc \
            ../deployer/webapp_types.cc \
            TestLibrary.cc
 
-LIBS += ../libyajl.a ../liblogger.a ../libquazip.a -lz
+LIBS += -lz ../libhiredis.a ../libyajl.a ../liblogger.a ../libquazip.a
