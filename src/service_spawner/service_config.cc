@@ -231,7 +231,8 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         } else
             defaults = defaultsCache; /* take value from cache */
     }
-    nodeDefault_ = nodeRoot_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
+    nodeDefault_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
+    nodeRoot_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
     if (QString(errbuf).length() > 0) {
         logError() << "ERR:" << errbuf;
         return;
