@@ -124,7 +124,7 @@ long long SvdServiceConfig::getInteger(QString element) {
 }
 
 
-bool SvdServiceConfig::getBoolean(yajl_val& nodeDefault, yajl_val& nodeRoot, QString element) {
+bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QString element) {
     /* building paths */
     QStringList input = element.split("/");
     logTrace() << "element:" << element;

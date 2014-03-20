@@ -135,8 +135,8 @@ void TestLibrary::testParseDefault() {
     QVERIFY(node != NULL);
     for( int i = 0; i < 5; i++) {
         QVERIFY(config->getString(node, NULL, "abc") == "oO");
-        QVERIFY(config->getBoolean(node, node, "ddd/some") == true);
-        QVERIFY(config->getBoolean(node, node, "nothere") == false);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == true);
+        QVERIFY(config->getBoolean(node, NULL, "nothere") == false);
         QVERIFY(config->getString(node, NULL, "ddd/zabra") == "888");
         QVERIFY(config->getString(node, NULL, "stoo") == "111");
         QVERIFY(config->getString(node, NULL, "ddd/abra") == "666");
@@ -151,10 +151,10 @@ void TestLibrary::testParseDefault() {
     logWarn() << errbuf;
     QVERIFY(node != NULL);
     for( int i = 0; i < 100; i++) {
-        QVERIFY(config->getBoolean(node, node, "abc") == false);
-        QVERIFY(config->getBoolean(node, node, "ddd/some") == false);
-        QVERIFY(config->getBoolean(node, node, "ddd/abra") == true);
-        QVERIFY(config->getBoolean(node, node, "ddd/zada/abra") == true);
+        QVERIFY(config->getBoolean(node, NULL, "abc") == false);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == false);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/abra") == true);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/zada/abra") == true);
         usleep(100);
     }
     yajl_tree_free(node);
@@ -214,8 +214,8 @@ void TestLibrary::testParseExistingIgniter() {
     QVERIFY(node != NULL);
     for( int i = 0; i < 5; i++) {
         QVERIFY(config->getString(node, NULL, "abc") == "oO");
-        QVERIFY(config->getBoolean(node, node, "ddd/some") == true);
-        QVERIFY(config->getBoolean(node, node, "nothere") == false);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == true);
+        QVERIFY(config->getBoolean(node, NULL, "nothere") == false);
         QVERIFY(config->getString(node, NULL, "ddd/zabra") == "888");
         QVERIFY(config->getString(node, NULL, "stoo") == "111");
         QVERIFY(config->getString(node, NULL, "ddd/abra") == "666");
@@ -230,10 +230,10 @@ void TestLibrary::testParseExistingIgniter() {
     logWarn() << errbuf;
     QVERIFY(node != NULL);
     for( int i = 0; i < 100; i++) {
-        QVERIFY(config->getBoolean(node, node, "abc") == false);
-        QVERIFY(config->getBoolean(node, node, "ddd/some") == false);
-        QVERIFY(config->getBoolean(node, node, "ddd/abra") == true);
-        QVERIFY(config->getBoolean(node, node, "ddd/zada/abra") == true);
+        QVERIFY(config->getBoolean(node, NULL, "abc") == false);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == false);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/abra") == true);
+        QVERIFY(config->getBoolean(node, NULL, "ddd/zada/abra") == true);
         usleep(100);
     }
     yajl_tree_free(node);
