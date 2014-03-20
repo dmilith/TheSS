@@ -5,6 +5,7 @@ include(../Common.pro)
 
 TARGET = ../yajl
 TEMPLATE = lib
+# DEFINES += YAJL_LEXER_DEBUG
 CONFIG += staticlib
 
 SOURCES += *.c
