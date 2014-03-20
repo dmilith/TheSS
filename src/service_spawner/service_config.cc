@@ -511,21 +511,31 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
 SvdServiceConfig::~SvdServiceConfig() {
 
     /* laod service hooks */
-    delete install;
-    delete configure;
-    delete start;
-    delete afterStart;
-    delete stop;
-    delete afterStop;
-    delete reload;
-    delete validate;
-    delete babySitter;
-    for (int i = 0; i < schedulers.length(); i++)
-        delete schedulers.at(i);
-
-    if (nodeDefault_)
+    if (install != NULL)
+        delete install;
+    if (configure != NULL)
+        delete configure;
+    if (start != NULL)
+        delete start;
+    if (afterStart != NULL)
+        delete afterStart;
+    if (stop != NULL)
+        delete stop;
+    if (afterStop != NULL)
+        delete afterStop;
+    if (reload != NULL)
+        delete reload;
+    if (validate != NULL)
+        delete validate;
+    if (babySitter != NULL)
+        delete babySitter;
+    for (int i = 0; i < schedulers.length(); i++) {
+        if (schedulers.at(i) != NULL)
+            delete schedulers.at(i);
+    }
+    if (nodeDefault_ != NULL)
         yajl_tree_free(nodeDefault_);
-    if (nodeRoot_)
+    if (nodeRoot_ != NULL)
         yajl_tree_free(nodeRoot_);
 }
 

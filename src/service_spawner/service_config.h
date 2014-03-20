@@ -94,7 +94,15 @@ class SvdServiceConfig : public QObject {
         long long staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
         QStringList dependencies, watchHttpAddresses, domains, standaloneDependencies;
         QList<SvdScheduler*> schedulers;
-        SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;
+        SvdShellOperations  *install = NULL,
+                            *configure = NULL,
+                            *start = NULL,
+                            *afterStart = NULL,
+                            *stop = NULL,
+                            *afterStop = NULL,
+                            *reload = NULL,
+                            *validate = NULL,
+                            *babySitter = NULL;
 
     private:
         yajl_val nodeRoot_ = NULL, nodeDefault_ = NULL;
