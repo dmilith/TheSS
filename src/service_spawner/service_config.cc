@@ -523,8 +523,10 @@ SvdServiceConfig::~SvdServiceConfig() {
     for (int i = 0; i < schedulers.length(); i++)
         delete schedulers.at(i);
 
-    yajl_tree_free(nodeDefault_);
-    yajl_tree_free(nodeRoot_);
+    if (nodeDefault_)
+        yajl_tree_free(nodeDefault_);
+    if (nodeRoot_)
+        yajl_tree_free(nodeRoot_);
 }
 
 
