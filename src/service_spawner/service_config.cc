@@ -639,7 +639,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         ccont = ccont.replace("SERVICE_PORT", generatedDefaultPort);
         for (int indx = 1; indx < portsPool; indx++) {
             QString additionalPort = prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/" + QString::number(indx);
-            logWarn() << "Defined additional port:" << additionalPort;
+            logTrace() << "Defined additional port:" << additionalPort;
             ccont = ccont.replace("SERVICE_PORT" + QString::number(indx), readFileContents(additionalPort).trimmed());
         }
 
