@@ -1,6 +1,8 @@
 #include <fcntl.h>
 #include "TestLibrary.h"
 
+#define TEST_LAG 10
+
 
 /* test utilities */
 
@@ -126,7 +128,7 @@ void TestLibrary::testParseDefault() {
         QVERIFY(config->getArray(node, NULL, "some/internal").contains("b"));
         QVERIFY(config->getArray(node, NULL, "some/internal").contains("c"));
         QVERIFY(config->getArray(node, NULL, "some/internal").size() == 3);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
@@ -143,7 +145,7 @@ void TestLibrary::testParseDefault() {
         QVERIFY(config->getString(node, NULL, "stoo") == "111");
         QVERIFY(config->getString(node, NULL, "ddd/abra") == "666");
         QVERIFY(config->getString(node, NULL, "ddd/zada/abra") == "777");
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
@@ -157,7 +159,7 @@ void TestLibrary::testParseDefault() {
         QVERIFY(config->getBoolean(node, NULL, "ddd/some") == false);
         QVERIFY(config->getBoolean(node, NULL, "ddd/abra") == true);
         QVERIFY(config->getBoolean(node, NULL, "ddd/zada/abra") == true);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
@@ -173,12 +175,12 @@ void TestLibrary::testParseDefault() {
 
     for (int o = 0; o < 100; o++) {
         QVERIFY(config->getInteger(node, NULL, "ddd/zada/abra") == 4);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
 
     for (int o = 0; o < 100; o++) {
         QVERIFY(config->getInteger(node, NULL, "ddd/abra") == 3);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
@@ -205,7 +207,7 @@ void TestLibrary::testParseExistingIgniter() {
         QVERIFY(config->getArray(node, NULL, "some/internal").contains("b"));
         QVERIFY(config->getArray(node, NULL, "some/internal").contains("c"));
         QVERIFY(config->getArray(node, NULL, "some/internal").size() == 3);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
@@ -222,7 +224,7 @@ void TestLibrary::testParseExistingIgniter() {
         QVERIFY(config->getString(node, NULL, "stoo") == "111");
         QVERIFY(config->getString(node, NULL, "ddd/abra") == "666");
         QVERIFY(config->getString(node, NULL, "ddd/zada/abra") == "777");
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
@@ -236,7 +238,7 @@ void TestLibrary::testParseExistingIgniter() {
         QVERIFY(config->getBoolean(node, NULL, "ddd/some") == false);
         QVERIFY(config->getBoolean(node, NULL, "ddd/abra") == true);
         QVERIFY(config->getBoolean(node, NULL, "ddd/zada/abra") == true);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
@@ -252,12 +254,12 @@ void TestLibrary::testParseExistingIgniter() {
 
     for (int o = 0; o < 100; o++) {
         QVERIFY(config->getInteger(node, NULL, "ddd/zada/abra") == 4);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
 
     for (int o = 0; o < 100; o++) {
         QVERIFY(config->getInteger(node, NULL, "ddd/abra") == 3);
-        usleep(100);
+        usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
 
