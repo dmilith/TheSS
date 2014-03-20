@@ -126,16 +126,17 @@ long long SvdServiceConfig::getInteger(QString element) {
 
 bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, QString element) {
     /* building paths */
-    QStringList input = element.split("/");
-    logTrace() << "element:" << element;
-    int size = input.length();
-    char *path[size];
+    char* result = NULL;
+    char delims[] = "/";
+    result = strtok(element.toUtf8().data(), delims);
+    int size = sizeof(result)/sizeof(char*);
+    const char *path[size];
     int i = 0;
-    Q_FOREACH(QString s, input) {
-        path[i] = new char[s.length()];
-        strncpy(path[i], s.toUtf8(), s.length() + 1);
-        path[s.length()] = ZERO_CHAR;
-        i++;
+    for (i = 0; result != NULL; i++) {
+        path[i] = new char[strlen(result)];
+        strncpy((char*)path[i], result, strlen(result) + 1);
+        path[strlen(result)] = ZERO_CHAR;
+        result = strtok( NULL, delims );
     }
     path[i] = ZERO_CHAR;
 
