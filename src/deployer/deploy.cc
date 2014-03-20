@@ -932,7 +932,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QString servicePath = getServiceDataDir(serviceName);
 
     logDebug() << "Creating web-app environment";
-    QString domainFilePath = servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain;
+    QString domainFilePath = getOrCreateDir(servicePath + DEFAULT_SERVICE_DOMAINS_DIR) + domain;
     logInfo() << "Writing domain:" << domainFilePath;
     touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
 
