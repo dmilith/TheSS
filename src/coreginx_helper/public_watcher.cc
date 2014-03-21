@@ -90,14 +90,29 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
         raise(SIGTERM);
     }
 
-    logInfo() << "Validating service:" << serviceName << "for user:" << userName;
+    // logInfo() << "Validating service:" << serviceName << "for user:" << userName;
     auto root = QString(DEFAULT_HOME_DIR) + userName + SOFTWARE_DATA_DIR;
     auto serviceBase = root + "/" + serviceName;
-    auto config = new SvdServiceConfig(serviceName);
-    auto aFile = serviceBase + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE;
-    config->deleteLater();
-    bool mayProceed = QFile::exists(aFile);
-    logDebug() << "Validating existance of:" << aFile << "may proceed?-" << mayProceed;
+
+    // /* XXX: it's almost raw service config implementation */
+    // auto ignitersDir = QString(DEFAULT_HOME_DIR) + userName + DEFAULT_USER_IGNITERS_DIR;
+    // auto igniterSourceFile = ignitersDir + "/" + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+    // auto igniterSource = readFileContents(igniterSourceFile).trimmed();
+
+    // auto servicePortsDir = serviceBase + DEFAULT_SERVICE_PORTS_DIR;
+    // auto servicePortFile = servicePortsDir + DEFAULT_SERVICE_PORT_NUMBER;
+    // auto servicePort = readFileContents(servicePortFile).trimmed();
+
+    // auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+    // hash->addData(igniterSource.toUtf8(), igniterSource.length());
+    // auto igniterSha1Hash = hash->result().toHex();
+    // delete hash;
+    // auto sha = igniterSha1Hash.right(20) + "." + servicePort;
+    // auto aFile = serviceBase + DEFAULT_SERVICE_CONFS_DIR + sha + DEFAULT_SERVICE_CONFIGURED_FILE;
+    // bool mayProceed = QFile::exists(aFile);
+
+    // if (mayProceed)
+    //     logInfo() << "Service is configured;" << serviceName;
     auto aPublicFile = QString(DEFAULT_PUBLIC_DIR) + file;
     auto fileContent = readFileContents(aPublicFile).trimmed();
     if (not QFile::exists(aPublicFile)) {
