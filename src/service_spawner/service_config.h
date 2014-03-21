@@ -89,7 +89,8 @@ class SvdServiceConfig : public QObject {
         QString defaultsCache = "";
         QString jsonContent_ = "";
         uint uid; // user uid who loads igniter config
-        QString name, softwareName, repository, parentService, sha, generatedDefaultPort;
+        QString name, softwareName, repository, parentService, sha;
+        int generatedDefaultPort = 0;
         bool autoStart, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;
         long long staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
         QStringList dependencies, watchHttpAddresses, domains, standaloneDependencies;

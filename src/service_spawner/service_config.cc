@@ -408,17 +408,17 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     if (staticPort != -1) { /* defined static port */
         logTrace() << "Set static port:" << staticPort << "for service" << name;
         writeToFile(portFilePath, QString::number(staticPort));
-        generatedDefaultPort = QString::number(staticPort);
+        generatedDefaultPort = staticPort;
     } else {
         if (not QFile::exists(portFilePath)) {
-            generatedDefaultPort = QString::number(registerFreeTcpPort());
-            logTrace() << "Set random free port:" << generatedDefaultPort << "for service" << name;
-            writeToFile(portFilePath, generatedDefaultPort);
+            generatedDefaultPort = registerFreeTcpPort();
+            logTrace() << "Set random free port:" << QString::number(generatedDefaultPort) << "for service" << name;
+            writeToFile(portFilePath, QString::number(generatedDefaultPort));
         } else
-            generatedDefaultPort = readFileContents(portFilePath).trimmed();
+            generatedDefaultPort = readFileContents(portFilePath).trimmed().toInt();
     }
     #ifdef QT_DEBUG
-        Q_ASSERT(not generatedDefaultPort.isEmpty());
+        Q_ASSERT(not QString::number(generatedDefaultPort).isEmpty());
     #endif
 
     softwareName = getString("softwareName");
@@ -575,7 +575,7 @@ const QString SvdServiceConfig::prefixDir() {
 
 
 const QString SvdServiceConfig::releaseName() {
-    return sha.right(20) + "." + generatedDefaultPort; /* that's enough (?) */
+    return sha.right(20) + "." + QString::number(generatedDefaultPort); /* that's enough (?) */
 }
 
 
@@ -651,7 +651,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         }
 
         /* Replace SERVICE_PORT */
-        ccont = ccont.replace("SERVICE_PORT", generatedDefaultPort);
+        ccont = ccont.replace("SERVICE_PORT", QString::number(generatedDefaultPort));
         for (int indx = 1; indx < portsPool; indx++) {
             QString additionalPort = prefixDir() + DEFAULT_SERVICE_PORTS_DIR + "/" + QString::number(indx);
             logTrace() << "Defined additional port:" << additionalPort;
