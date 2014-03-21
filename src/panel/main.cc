@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     // Logger setup - turn it off
     FileAppender *consoleAppender = new FileAppender(logFile);
     Logger::registerAppender(consoleAppender);
-    consoleAppender->setDetailsLevel(Logger::Info);
+    consoleAppender->setDetailsLevel(Logger::Warning);
 
     // Panel setup
     QString user = getenv("USER");
