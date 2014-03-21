@@ -1,75 +1,75 @@
 {
     "softwareName": "Nginx",
-    "schedulerActions": [
-        {
-            "cronEntry": "0 0/1 * * * ?",
-            "commands": "SERVICE_ROOT/exports/nginx -c SERVICE_CONF -t && SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload"
-        }
+    "schedulers": [
+        "0 0/1 * * * ?! \
+        SERVICE_ROOT/exports/nginx -c SERVICE_CONF -t && \
+        SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload \
+        "
     ],
     "install": {
         "commands": "sofin get nginx",
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "
-printf 'Launching Nginx\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/nginx -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG
+        "commands": " \
+printf 'Launching Nginx\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG \
 "
     },
     "afterStop": {
         "commands": ""
     },
     "stop": {
-        "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop && printf 'Nginx stopped\n' >> SERVICE_LOG
+        "commands": " \
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop && printf 'Nginx stopped\n' >> SERVICE_LOG \
 "
     },
     "configure": {
-        "commands": "
-printf \"
-worker_processes 2;
-# pid SERVICE_PID;
-events {
-    worker_connections 1024;
-}
-
-http {
-    include SERVICE_ROOT/conf/mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    gzip on;
-    gzip_disable \"msie6\";
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_comp_level 1;
-    gzip_buffers 16 8k;
-    gzip_http_version 1.1;
-    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
-    keepalive_timeout 270;
-    error_log SERVICE_LOG;
-    server {
-        listen SERVICE_ADDRESS:SERVICE_PORT;
-        server_name SERVICE_DOMAIN SERVICE_ADDRESS;
-        location / {
-            root SERVICE_PREFIX/html;
-            index index.html index.htm;
-        }
-    }
-}
-\" > SERVICE_CONF
+        "commands": " \
+printf \" \
+worker_processes 2; \
+# pid SERVICE_PID; \
+events { \
+    worker_connections 1024; \
+} \
+ \
+http { \
+    include SERVICE_ROOT/conf/mime.types; \
+    default_type application/octet-stream; \
+    sendfile on; \
+    gzip on; \
+    gzip_disable \"msie6\"; \
+    gzip_vary on; \
+    gzip_proxied any; \
+    gzip_comp_level 1; \
+    gzip_buffers 16 8k; \
+    gzip_http_version 1.1; \
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript; \
+    keepalive_timeout 270; \
+    error_log SERVICE_LOG; \
+    server { \
+        listen SERVICE_ADDRESS:SERVICE_PORT; \
+        server_name SERVICE_DOMAIN SERVICE_ADDRESS; \
+        location / { \
+            root SERVICE_PREFIX/html; \
+            index index.html index.htm; \
+        } \
+    } \
+} \
+\" > SERVICE_CONF \
 "
     },
     "validate": {
-        "commands": "
-SERVICE_ROOT/exports/nginx -t -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG
+        "commands": " \
+SERVICE_ROOT/exports/nginx -t -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG \
 ",
         "expectOutput": "test is successful"
     },
     "reload": {
         "
-commands": "
-printf 'Reloading Nginx\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_LOG
+commands": " \
+printf 'Reloading Nginx\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_LOG \
 "
     }
 }

@@ -22,6 +22,13 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     this->panel = panel;
     this->baseDir = baseDir;
     name = baseDir.baseName();
+
+    /* check if volatile service state is initialized. No rush */
+    while (not QFile::exists(getServiceDataDir(name) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER)) {
+        logInfo() << "Waiting for non-volatile service state of service:" << name;
+        usleep(20000);
+    }
+
     auto config = new SvdServiceConfig(name);
     basePath = baseDir.absolutePath() + "/" + baseDir.baseName();
 

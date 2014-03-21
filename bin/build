@@ -49,6 +49,8 @@ build () {
             ;;
 
         *)
+            sed -i '' -e 's/THESS_TEST_MODE/THESS_NORMAL_MODE/' src/Common.pro
+
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
             (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
 

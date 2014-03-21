@@ -113,15 +113,9 @@ Scheduler example based on Redis igniter:
 
 ```json
 {
-    "schedulerActions": [
-        {
-            "cronEntry": "*/25 10-15 1,3,5,7 * * ?",
-            "commands": "test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
-        },
-        {
-            "cronEntry": "*/10 * * * * ?",
-            "commands": "for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"
-        }
+    "schedulers": [
+        "*/25 10-15 1,3,5,7 * * ?! test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup",
+        "*/10 * * * * ?! for i in $HOME/triggers/*; do echo Invoking my magic trigger $i; echo $i; done"
     ]
 }
 ```
@@ -147,7 +141,7 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 * Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set `touch SERVICE_PREFIX/.validationFailure` in hook commands.
 * Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).
 * Supports Web Applications deployment - more about it below (since 0.66.x).
-* Supports Procfile (Heroku-compatible) process list for RubySite deployment. If no Procfile detected in deployed app, default will be used.
+* Supports Procfile (Heroku-compatible) process list for RubySite deployment. For example "web: rails s" in Procfile, will launch one web worker of rails. If no Procfile detected in deployed app, default will be used.
 * Supports SRV domains entry: `_served-node._tcp.DOMAIN.COM` (since 0.72.x) for default deployer secure port placeholder (default ssh port is 22).
 * Partially supports distributed web-app deployment model (0.72.x)
 
@@ -191,7 +185,7 @@ mkdir ~/SoftwareData/Redis && touch ~/SoftwareData/Redis/.start # (this is an ex
 # you may also use built in panel:
 bin/svdpanel
 # then launch svdss in background by pressing F10 (if it's not already running)
-# in panel, hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above.
+# in svdpanel, hit F7, type "Red", hit Enter, hit "S", and you just did the same as descibed above. Hit "A" and your service will be autostarted on each system reboot.
 ```
 
 
@@ -349,6 +343,6 @@ RUBY_DOMAIN                 # value of domain name - what user did specify
 ## Used 3rd party software and licenses info:
 * CuteLogger MT logger implementation by Boris Moiseev (LGPL licensed)
 * Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
-* JSON CPP implementation with JSON comments support by Baptiste Lepilleur (MIT licensed)
 * QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)
 * QT4 4.8.x implementation by Trolltech & Nokia (LGPL licensed)
+* JAYL 2.0.x JSON Library by Lloyd Hilaiel

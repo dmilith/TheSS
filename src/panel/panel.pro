@@ -35,8 +35,8 @@ SOURCES   += ../service_spawner/utils.cc \
              ansi.cc
 
 mac {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncurses
+      LIBS      += ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncurses
 } else {
-      LIBS      += ../liblogger.a ../libquazip.a ../libjsoncpp.a -lz -lncursesw
+      LIBS      += ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncursesw
 }
 TARGET    = ../../bin/svdpanel

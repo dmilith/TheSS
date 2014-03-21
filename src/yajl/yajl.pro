@@ -3,12 +3,10 @@
 
 include(../Common.pro)
 
-TARGET = ../jsoncpp
+TARGET = ../yajl
 TEMPLATE = lib
+# DEFINES += YAJL_LEXER_DEBUG
 CONFIG += staticlib
 
-QMAKE_CXXFLAGS += -w
-
-SOURCES += *.cpp
-
-HEADERS += json/*.h
+SOURCES += *.c
+HEADERS += *.h api/*.h

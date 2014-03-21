@@ -1,7 +1,7 @@
 #ifndef __JSON_TEST_CONFIG__
 #define __JSON_TEST_CONFIG__
 
-#include "../jsoncpp/json/json.h"
+#include "../yajl/api/yajl_tree.h"
 #include "../service_spawner/service_config.h"
 #include "../service_spawner/utils.h"
 #include "../service_spawner/service.h"
@@ -23,17 +23,20 @@ class TestLibrary: public QObject {
             ~TestLibrary();
 
         private slots:
+            void testLoadingDefault();
             void testParseDefault();
-            void testParseJSONRedis();
+            void testJsonValidityOfIgniters();
+            // void testParseJSONRedis();
             void testFreePortFunctionality();
-            void testJSONParse();
+            // void testJSONParse();
             void testMemoryAllocations();
             void testMultipleConfigsLoading();
             void testNonExistantConfigLoading();
             void testUtils();
+            void testParseExistingIgniter();
             void testSomeRealCraziness();
             void testSanityValueCheck();
-            void testStartingRedis();
+            // void testStartingRedis();
             void testInstallingWrongRedis();
             void testWebAppDetection();
             // void testWebAppDeployer();

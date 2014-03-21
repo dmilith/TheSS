@@ -10,7 +10,7 @@
 #define __SERVICE_CONFIG__
 
 #include "../globals/globals.h"
-#include "../jsoncpp/json/json.h"
+#include "../yajl/api/yajl_tree.h"
 #include "utils.h"
 #include "cron_entry.h"
 
@@ -21,12 +21,15 @@
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QNetworkInterface>
+#include <iostream>
 
+#define ZERO_CHAR (char *)0
+#define MAX_DEPTH 64 /* max supported json tree depth */
 
-class SvdSchedulerAction {
+class SvdScheduler {
 
     public:
-        SvdSchedulerAction(const QString& initialCronEntry, const QString& initialCommands);
+        SvdScheduler(const QString& initialCronEntry, const QString& initialCommands);
         QString cronEntry, commands, sha;
 
 };
@@ -48,8 +51,8 @@ class SvdServiceConfig : public QObject {
 
     public:
         SvdServiceConfig(); /* Load default values */
+        ~SvdServiceConfig();
         SvdServiceConfig(const QString& serviceName);
-        ~SvdServiceConfig(); /* free allocated objects */
 
         const QString replaceAllSpecialsIn(const QString content);
         const QString userServiceRoot();
@@ -59,20 +62,51 @@ class SvdServiceConfig : public QObject {
         const QString rootIgniter();
         const QString userIgniter();
         const QString releaseName();
+
+        QString getString(const char* element);
+        QString getString(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
+
+        QStringList getArray(const char* element);
+        QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
+
+        bool getBoolean(const char* element);
+        bool getBoolean(const yajl_val nodeDefault, const yajl_val nodeRoot, const char* element);
+
+        long long getInteger(const char* element);
+        long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
+
         bool serviceInstalled();
         bool serviceConfigured();
 
-        Json::Value* loadDefaultIgniter();
-        Json::Value* loadIgniter();
+        QString loadDefaultIgniter();
+        QString loadIgniter();
 
+        void prettyPrint();
+        QString errors();
 
+    // TODO: BASIC SAFETY: private:
+        char errbuf[1024];
+        QString defaultsCache = "";
+        QString jsonContent_ = "";
         uint uid; // user uid who loads igniter config
-        QString name, softwareName, repository, parentService, sha, generatedDefaultPort;
+        QString name, softwareName, repository, parentService, sha;
+        int generatedDefaultPort = 0;
         bool autoStart, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;
-        int staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
+        long long staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
         QStringList dependencies, watchHttpAddresses, domains, standaloneDependencies;
-        QList<SvdSchedulerAction*> schedulerActions;
-        SvdShellOperations *install, *configure, *start, *afterStart, *stop, *afterStop, *reload, *validate, *babySitter;
+        QList<SvdScheduler*> schedulers;
+        SvdShellOperations  *install = NULL,
+                            *configure = NULL,
+                            *start = NULL,
+                            *afterStart = NULL,
+                            *stop = NULL,
+                            *afterStop = NULL,
+                            *reload = NULL,
+                            *validate = NULL,
+                            *babySitter = NULL;
+
+    private:
+        yajl_val nodeRoot_ = NULL, nodeDefault_ = NULL;
 
 };
 

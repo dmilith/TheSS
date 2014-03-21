@@ -102,6 +102,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, stringTime + " " + notificationMessage);
 
     #ifdef NOTIFICATIONS_SLACK_AUTH_TOKEN
+    #ifndef THESS_TEST_MODE /* don't launch notifications while testing */
     // if (level > NOTIFY) { /* notification only for errors */
         logInfo() << "Launching https error notification with message:" << notificationMessage;
 
@@ -132,9 +133,10 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
         socket.write("Connection: Close\r\n\r\n");
 
         while (socket.waitForBytesWritten())
-            logInfo() << "Notification http response:" << socket.readAll().data();
+            logDebug() << "Notification http response:" << socket.readAll().data();
 
         socket.close();
+    #endif
     #else
         logWarn() << "Your Slack notifications token wasn't set. Set NOTIFICATIONS_AUTH_TOKEN to enable them.";
     #endif

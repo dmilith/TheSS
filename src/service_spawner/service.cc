@@ -659,8 +659,8 @@ void SvdService::startSlot(bool withDeps) {
                 babySitter.start();
             }
 
-            if (config->schedulerActions.size() > 0) {
-                logDebug() << "Initializing cronSitter for" << config->schedulerActions.size() << "scheduler tasks.";
+            if (config->schedulers.size() > 0) {
+                logDebug() << "Initializing cronSitter for" << config->schedulers.size() << "scheduler tasks.";
 
                 logDebug() << "Bounding cron to service:" << name;
                 if (not cronSitter.isActive())
@@ -702,7 +702,7 @@ void SvdService::cronSitterSlot() {
         return;
     }
 
-    Q_FOREACH(auto entry, config->schedulerActions) {
+    Q_FOREACH(auto entry, config->schedulers) {
 
         QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
 
@@ -827,7 +827,7 @@ void SvdService::stopSlot(bool withDeps) {
         QFile::remove(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE);
 
         logInfo() << "Cleaning crontab indicators for service:" << config->name;
-        Q_FOREACH(auto entry, config->schedulerActions) {
+        Q_FOREACH(auto entry, config->schedulers) {
             QString indicator = config->prefixDir() + DEFAULT_SERVICE_CRON_WORKING_FILE + "-" + entry->sha;
             logDebug() << "Removing old cron indicator:" << indicator;
             QFile::remove(indicator);

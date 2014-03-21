@@ -15,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.84.3"
+    #define APP_VERSION "0.86.5"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -29,6 +29,7 @@
 
     #define DEFAULT_STRING_CODEC "utf8"
     #define LOCALE "en_GB.UTF-8"
+    #define DEFAULT_TEST_POSTFIX "-TEST"
 
     #define NOTIFICATIONS_OPTIONS_BAR_HEIGHT 2
     #define NOTIFICATIONS_LAST_SHOWN 11 /* amount of notification before moving to history */

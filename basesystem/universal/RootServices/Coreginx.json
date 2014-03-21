@@ -7,94 +7,94 @@
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "
-printf 'Launching Coreginx\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF >> SERVICE_LOG
+        "commands": " \
+printf 'Launching Coreginx\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF >> SERVICE_LOG \
 "
     },
     "afterStop": {
         "commands": "echo 'Coreginx afterStop' >> SERVICE_LOG"
     },
     "stop": {
-        "commands": "
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s stop >> SERVICE_LOG
+        "commands": " \
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s stop >> SERVICE_LOG \
 "
     },
     "configure": {
-        "commands": "
-test ! -d SERVICE_PREFIX/logs && mkdir SERVICE_PREFIX/logs
-rm -rf SERVICE_PREFIX/html
-ln -s SERVICE_PREFIX/verknowsys SERVICE_PREFIX/html
-
-printf \"
-worker_processes 8;
-pid SERVICE_PID;
-error_log SERVICE_LOG;
-events {
-    worker_connections 1024;
-}
-
-http {
-    include SERVICE_ROOT/conf/mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    gzip on;
-    gzip_disable \"msie6\";
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_comp_level 1;
-    gzip_buffers 16 8k;
-    gzip_http_version 1.1;
-    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
-
-    keepalive_timeout 270;
-    server_names_hash_bucket_size 64;
-
-    fastcgi_buffers 8 16k;
-    fastcgi_buffer_size 32k;
-
-    access_log off;
-
-    server {
-        listen SERVICE_PORT;
-        server_name www.SERVICE_DOMAIN;
-        server_name_in_redirect off;
-        location / {
-            root SERVICE_PREFIX/verknowsys;
-            index index.html;
-        }
-    }
-
-    server {
-        listen SERVICE_PORT;
-        server_name *.SERVICE_DOMAIN;
-        server_name_in_redirect off;
-        location / {
-            root SERVICE_PREFIX/verknowsys;
-            index error.html;
-        }
-    }
-
-    include /home/*/SoftwareData/*/proxy.conf;
-    include /Users/*/SoftwareData/*/proxy.conf;
-}
-\" > SERVICE_CONF
-
-mv SERVICE_PREFIX/verknowsys /tmp/verknowsys.$(date +%d%m%Y-%H%M%S)
-export REL_ROOT_DIR=/Users/dmilith/SoftwareData/Verknowsys
-cp -vR ${REL_ROOT_DIR}/releases/SERVICE_RELEASE/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG
+        "commands": " \
+test ! -d SERVICE_PREFIX/logs && mkdir SERVICE_PREFIX/logs \
+rm -rf SERVICE_PREFIX/html \
+ln -s SERVICE_PREFIX/verknowsys SERVICE_PREFIX/html \
+ \
+printf \" \
+worker_processes 8; \
+pid SERVICE_PID; \
+error_log SERVICE_LOG; \
+events { \
+    worker_connections 1024; \
+} \
+ \
+http { \
+    include SERVICE_ROOT/conf/mime.types; \
+    default_type application/octet-stream; \
+    sendfile on; \
+    gzip on; \
+    gzip_disable \"msie6\"; \
+    gzip_vary on; \
+    gzip_proxied any; \
+    gzip_comp_level 1; \
+    gzip_buffers 16 8k; \
+    gzip_http_version 1.1; \
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript; \
+ \
+    keepalive_timeout 270; \
+    server_names_hash_bucket_size 64; \
+ \
+    fastcgi_buffers 8 16k; \
+    fastcgi_buffer_size 32k; \
+ \
+    access_log off; \
+ \
+    server { \
+        listen SERVICE_PORT; \
+        server_name www.SERVICE_DOMAIN; \
+        server_name_in_redirect off; \
+        location / { \
+            root SERVICE_PREFIX/verknowsys; \
+            index index.html; \
+        } \
+    } \
+ \
+    server { \
+        listen SERVICE_PORT; \
+        server_name *.SERVICE_DOMAIN; \
+        server_name_in_redirect off; \
+        location / { \
+            root SERVICE_PREFIX/verknowsys; \
+            index error.html; \
+        } \
+    } \
+ \
+    include /home/*/SoftwareData/*/proxy.conf; \
+    include /Users/*/SoftwareData/*/proxy.conf; \
+} \
+\" > SERVICE_CONF \
+ \
+mv SERVICE_PREFIX/verknowsys /tmp/verknowsys.$(date +%d%m%Y-%H%M%S) \
+export REL_ROOT_DIR=/Users/dmilith/SoftwareData/Verknowsys \
+cp -vR ${REL_ROOT_DIR}/releases/SERVICE_RELEASE/ SERVICE_PREFIX/verknowsys >> SERVICE_LOG \
 "
     },
     "validate": {
-        "commands": "
-SERVICE_ROOT/exports/nginx -c SERVICE_CONF -p SERVICE_PREFIX -t
+        "commands": " \
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -p SERVICE_PREFIX -t \
 ",
         "expectOutput": "test is successful"
     },
     "reload": {
-        "commands": "
-printf 'Reloading Coreginx\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s reload >> SERVICE_LOG
+        "commands": " \
+printf 'Reloading Coreginx\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s reload >> SERVICE_LOG \
 "
     }
 }

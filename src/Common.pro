@@ -12,6 +12,7 @@ QMAKE_CC = clang
 QMAKE_CPP = clang++ -E
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
+DEFINES += THESS_NORMAL_MODE
 
 mac {
 

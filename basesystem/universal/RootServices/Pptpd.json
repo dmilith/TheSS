@@ -6,41 +6,41 @@
         "expectOutput": "All done"
     },
     "validate": {
-        "commands": "
-test ! -L /etc/ppp/ppp.secret && rm -f /etc/ppp/ppp.secret && printf '
-guest   somepass    10.10.0.51
-' > SERVICE_PREFIX/ppp.secret && ln -s SERVICE_PREFIX/ppp.secret /etc/ppp/ppp.secret
-
-test ! -L /etc/ppp/ppp.conf && rm -f /etc/ppp/ppp.conf && printf '
-default:
- set timeout 0
- set log Phase Chat LCP IPCP CCP TUN Command Connect
- disable vjcomp deflate pred1
-
-pptp:
- set device localhost:pptp
- # Server IP address, Range for Clients, and Netmask
- set ifaddr 10.10.0.1 10.10.0.50-10.10.0.250 255.255.255.0
- set server SERVICE_PREFIX/pptp_ppp_%%d \"\" 0700
- enable MSChapV2
- enable mppe
- set mppe 128 stateless
- disable pap
- enable proxy
- disable ipv6cp
- allow mode direct
-' > SERVICE_PREFIX/ppp.conf && ln -s SERVICE_PREFIX/ppp.conf /etc/ppp/ppp.conf
-
-test ! -e SERVICE_CONF && printf '
-localip 10.10.0.1
-remoteip 10.10.0.50-250
-' > SERVICE_CONF
+        "commands": " \
+test ! -L /etc/ppp/ppp.secret && rm -f /etc/ppp/ppp.secret && printf ' \
+guest   somepass    10.10.0.51 \
+' > SERVICE_PREFIX/ppp.secret && ln -s SERVICE_PREFIX/ppp.secret /etc/ppp/ppp.secret \
+ \
+test ! -L /etc/ppp/ppp.conf && rm -f /etc/ppp/ppp.conf && printf ' \
+default: \
+ set timeout 0 \
+ set log Phase Chat LCP IPCP CCP TUN Command Connect \
+ disable vjcomp deflate pred1 \
+ \
+pptp: \
+ set device localhost:pptp \
+ # Server IP address, Range for Clients, and Netmask \
+ set ifaddr 10.10.0.1 10.10.0.50-10.10.0.250 255.255.255.0 \
+ set server SERVICE_PREFIX/pptp_ppp_%%d \"\" 0700 \
+ enable MSChapV2 \
+ enable mppe \
+ set mppe 128 stateless \
+ disable pap \
+ enable proxy \
+ disable ipv6cp \
+ allow mode direct \
+' > SERVICE_PREFIX/ppp.conf && ln -s SERVICE_PREFIX/ppp.conf /etc/ppp/ppp.conf \
+ \
+test ! -e SERVICE_CONF && printf ' \
+localip 10.10.0.1 \
+remoteip 10.10.0.50-250 \
+' > SERVICE_CONF \
 "
     },
     "start": {
-        "commands": "
-printf 'Launching Pptpd\n' >> SERVICE_LOG
-SERVICE_ROOT/exports/pptpd --conf SERVICE_CONF --pidfile SERVICE_PID >> SERVICE_LOG
+        "commands": " \
+printf 'Launching Pptpd\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/pptpd --conf SERVICE_CONF --pidfile SERVICE_PID >> SERVICE_LOG \
 "
     }
 }

@@ -1,7 +1,7 @@
 /**
  *  @author dmilith
  *
- *   © 2013 - VerKnowSys
+ *   © 2013-2014 - VerKnowSys
  *
  */
 
@@ -27,14 +27,14 @@
 
 
 // const QStringList getStandaloneDeps();
-QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath = ""); /* empty sslPemPath means, that default self-signed cert will be created for this entry */
+QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, SvdServiceConfig* svConfig, QString sslPemPath = ""); /* empty sslPemPath means, that default self-signed cert will be created for this entry */
 QString getDbName(WebDatastore db);
 QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile);
 bool validateNginxEntry(QString& servicePath, QString contents);
 void generateDatastoreSetup(QList<WebDatastore> dbs, QString serviceName, QString stage, WebAppTypes appType);
 void generateServicePorts(QString servicePath, int amount = 1);
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);
-void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QString& stage);
+void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QString& stage, SvdServiceConfig* svConfig);
 void installDependencies(QString& serviceName, QString& latestReleaseDir, QString& releaseName);
 void cloneRepository(QString& serviceName, QString& branch, QString releaseName);
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch);
@@ -42,6 +42,6 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 QString buildEnv(QString& serviceName, QStringList deps, QString preEnv);
 QStringList filterSpawnableDependencies(const QString& deps);
 void startWithoutDependencies(const QString& servicePath);
-void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies);
+void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies, SvdServiceConfig* svConfig);
 
 #endif
