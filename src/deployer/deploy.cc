@@ -7,12 +7,14 @@
 
 #include "deploy.h"
 
+// TODO: fix issue with not invoked install for dependencies that might not exist on given node. example: for php apps there should be defined installSlot with 'sofin get php'.
+// TODO: perform configuration file existance for depdendencies. for example for Mysql
+//
 
-QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, QString sslPemPath) {
+QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, SvdServiceConfig* svConfig, QString sslPemPath) {
     QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
     QString sslDir = getOrCreateDir(servicePath + DEFAULT_SERVICE_SSLS_DIR);
     QString appProxyContent = readFileContents(latestReleaseDir + DEFAULT_APP_PROXY_FILE).trimmed();
-    auto svConfig = new SvdServiceConfig(serviceName);
     if (not sslPemPath.isEmpty()) { /* ssl pem file given */
         logWarn() << "NYI";
 
@@ -623,10 +625,10 @@ void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString&
 }
 
 
-void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QString& stage) {
+void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QString& stage, SvdServiceConfig* svConfig) {
     auto clne = new SvdProcess("shared_symlinks", getuid(), false);
     logInfo() << "Symlinking and copying shared directory in current release";
-    auto svConfig = new SvdServiceConfig(serviceName);
+
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     logDebug() << "Service log destination:" << serviceLog;
     clne->spawnProcess("cd " + latestReleaseDir + " && test ! -L public/shared && ln -sv ../../../shared/" + stage + "/public/shared public/shared >> " + serviceLog);
@@ -736,8 +738,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir, QStrin
 }
 
 
-void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies) {
-    auto svConfig = new SvdServiceConfig(serviceName);
+void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies, SvdServiceConfig* svConfig) {
     Q_FOREACH(auto val, appDependencies) {
         val[0] = val.at(0).toUpper();
         QString location = getOrCreateDir(getServiceDataDir(val));
@@ -1027,14 +1028,22 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QMap<QString, QString> serviceWorkers; /* additional workers of service: (startCommands, stopCommands) */
             QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
             if (QFile::exists(procFile)) {
+                uint entryPosition = 0;
                 QStringList entries = readFileContents(procFile).trimmed().split("\n");
                 logInfo() << "Proceeding with Procfile entries:" << entries;
 
-                QString svPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
                 Q_FOREACH(QString entry, entries) {
+                    /*
+                        Pick port number, based on amount of workers defined in Procfile
+                     */
+                    int portFileNum = QString(DEFAULT_SERVICE_PORT_NUMBER).toInt() + entryPosition;
+                    QString svPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + QString::number(portFileNum)).trimmed();
                     QString procfileHead = entry.split(":").at(0);
                     QString procfileTail = entry.split(":").at(1);
-                    procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT"); /* replace $PORT value of Procfile if exists */
+                    if (entryPosition == 0)
+                        procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT"); /* replace $PORT value of Procfile if exists */
+                    else
+                        procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT" + QString::number(entryPosition));
 
                     if (procfileHead == "web") { /* web worker is defined here */
                         logInfo() << "Found web worker:" << procfileHead;
@@ -1067,9 +1076,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         } else
                             logInfo() << "Rack launcher detected.";
 
+                        QString portStr = "SERVICE_PORT";
+                        if (entryPosition > 0)
+                            portStr = "SERVICE_PORT" + QString::number(entryPosition);
                         serviceWorkers.insert(
                             /* start commands: */
-                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p SERVICE_PORT -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p " + portStr + " -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
 
                             /* stop commands */
                             "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
@@ -1079,16 +1091,24 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                         logInfo() << "Found an entry:" << procfileHead;
                         // QString procPidFile = "/" + procfileHead + ".pid";
 
+                        QString portStr = "SERVICE_PORT";
+                        if (entryPosition > 0)
+                            portStr = "SERVICE_PORT" + QString::number(entryPosition);
+
                         serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
                             /* (start commands, stop commands) : */
-                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && \\\n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -p " + portStr + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && \\\n echo 'Started worker " + procfileHead + "' >> SERVICE_LOG",
 
                             /* , stop commands) : */
                             "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
 
                         );
                     }
+                    /*
+                        Increment position in Procfile entries to generate ports for multiple workers (multiple ports)
+                     */
+                    entryPosition++;
                 }
 
                 /* generate correct order of application execution after workers */
@@ -1197,12 +1217,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     //     writeToFile(servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE, conts);
     // startWithoutDependencies(servicePath);
 
-    logDebug() << "Creating .pids, .envs and .confs";
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName());
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName());
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName());
-
     logDebug() << "Moving rebuilt prefix from:" << latestReleaseDir;
     QString oldRD = latestReleaseDir;
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
@@ -1216,7 +1230,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* now we can generate environment again for destination app */
     envEntriesString = "";
-    QString envFilePathDest = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName()) + DEFAULT_SERVICE_ENV_FILE;
+    QString envFilePathDest = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
+
+    logDebug() << "Creating .pids, .envs and .confs";
+    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
+    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName());
+    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName());
+    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName());
+
     switch (appType) {
         case StaticSite: {
             /* write to service env file */
@@ -1269,10 +1290,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* TODO: clean generated environment */
 
-    requestDependenciesRunningOf(serviceName, appDependencies);
+    requestDependenciesRunningOf(serviceName, appDependencies, svConfig);
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
     generateDatastoreSetup(datastores, serviceName, stage, appType);
-    prepareSharedSymlinks(serviceName, latestReleaseDir, stage);
+    prepareSharedSymlinks(serviceName, latestReleaseDir, stage, svConfig);
 
     Q_FOREACH(auto datastore, datastores) {
         logInfo() << "Running datastore setup for engine:" << getDbName(datastore);
@@ -1339,7 +1360,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* prepare http proxy */
     logInfo() << "Generating http proxy configuration for web-app";
     QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-    QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port);
+    QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port, svConfig);
     if (validateNginxEntry(servicePath, contents)) {
         logDebug() << "Generated proxy contents:" << contents;
         writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
