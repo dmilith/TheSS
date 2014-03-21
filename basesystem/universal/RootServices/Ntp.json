@@ -1,5 +1,5 @@
 {
-    "softwareName": "Builtin",
+    "softwareName": "Ntp",
     "watchPort": false,
     "alwaysOn": false,
     "autoStart": true,
