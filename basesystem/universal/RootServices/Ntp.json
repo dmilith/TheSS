@@ -5,7 +5,7 @@
     "autoStart": true,
     "schedulers": [
         "*/10 * * * * ?! \
-        printf 'Syncing time\n' >> SERVICE_LOG \
+        echo 'Syncing time' >> SERVICE_LOG \
         ntpdate ntp.nask.pl >> SERVICE_LOG \
 "
     ]
