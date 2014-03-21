@@ -121,7 +121,7 @@ void AvailableServicesList::displayEmptyItem(int i){
 
 
 void ServicesList::displayHeader(){
-    mvwprintw(win, 3, 0, " # Address:Port                               PID Name                  Status        Flags");
+    mvwprintw(win, 3, 0, " # Address:Port                               PID Name            Status        Flags");
 }
 
 void ServicesList::displayItem(PanelService * service, int i, int num, bool current){
@@ -179,7 +179,7 @@ void ServicesList::displayItem(PanelService * service, int i, int num, bool curr
 
     /* domain:port */
     mvwprintw(win, y, x, " %-21s", service->name.toUtf8().data());
-    x += 22;
+    x += 16;
 
     /* flags & status */
     mvwprintw(win, y, x, " %-14s", status.toUtf8().data());
