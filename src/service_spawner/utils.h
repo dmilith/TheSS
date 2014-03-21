@@ -81,9 +81,9 @@ const QString toHMS(uint duration);
 const QString getOrCreateDir(const QString& path);
 const QString getHomeDir();
 const QString getSoftwareDataDir();
-const QString getServiceDataDir(const QString& name);
 const QString getHomeDir(uid_t uid);
 const QString getSoftwareDataDir(uid_t uid);
+const QString getServiceDataDir(const QString& name);
 const QString getServiceDataDir(uid_t uid, const QString& name);
 
 #endif

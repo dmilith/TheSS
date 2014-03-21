@@ -23,6 +23,7 @@ class TestLibrary: public QObject {
             ~TestLibrary();
 
         private slots:
+            void testConfigDryRun();
             void testLoadingDefault();
             void testParseDefault();
             void testJsonValidityOfIgniters();

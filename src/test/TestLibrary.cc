@@ -188,6 +188,15 @@ void TestLibrary::testParseDefault() {
 }
 
 
+void TestLibrary::testConfigDryRun() {
+    auto config = new SvdServiceConfig("TestRedis", true); /* dry run */
+    QVERIFY(config->install->commands == "sofin get redis");
+    QVERIFY(config->softwareName == "Redis");
+    QVERIFY(not QDir().exists(getServiceDataDir(config->name)));
+    delete config;
+}
+
+
 void TestLibrary::testParseExistingIgniter() {
     QString testParseDefault = "ab/cd";
     QVERIFY(testParseDefault.split("2").size() == 1);
