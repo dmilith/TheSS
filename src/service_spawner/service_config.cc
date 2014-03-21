@@ -376,7 +376,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     // }
 
     auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
-    QString content = readFileContents(userIgniter()).trimmed();
+    QString content = readFileContents(root).trimmed();
     hash->addData(content.toUtf8(), content.length());
     this->sha = hash->result().toHex();
     delete hash;
