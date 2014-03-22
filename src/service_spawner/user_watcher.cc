@@ -100,23 +100,26 @@ void SvdUserWatcher::collectServices() {
     logDebug() << "Current list of services:" << services;
 
     Q_FOREACH(QString name, services) {
-        if (not oldServices.contains(name) and not name.endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX) and not (name == "Default")) {
-            logInfo() << "Initializing watchers for data dir of service:" << name;
+        if (QFile::exists(homeDir + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT)) {
+            logDebug() << "Found igniter for service:" << name;
+            if (not oldServices.contains(name) and not name.endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX)) {
+                logInfo() << "Initializing watchers for data dir of service:" << name;
 
-            /* detect user watcher */
-            if (this->serviceWatchers.length() == 0) {
-                logDebug() << "Adding new service watcher:" << name;
-                this->serviceWatchers << new SvdServiceWatcher(name);
-            } else {
-                for (int ind = 0; ind < this->serviceWatchers.length(); ind++) {
-                    logDebug() << "Comparing:" << serviceWatchers.at(ind)->name() << "and" << name;
-                    if (name == serviceWatchers.at(ind)->name()) {
-                        logDebug() << "Found old user watcher! Replacing!";
-                        serviceWatchers.at(ind)->deleteLater();
-                        this->serviceWatchers.removeAt(ind);
+                /* detect user watcher */
+                if (this->serviceWatchers.length() == 0) {
+                    logDebug() << "Adding new service watcher:" << name;
+                    this->serviceWatchers << new SvdServiceWatcher(name);
+                } else {
+                    for (int ind = 0; ind < this->serviceWatchers.length(); ind++) {
+                        logDebug() << "Comparing:" << serviceWatchers.at(ind)->name() << "and" << name;
+                        if (name == serviceWatchers.at(ind)->name()) {
+                            logDebug() << "Found old user watcher! Replacing!";
+                            serviceWatchers.at(ind)->deleteLater();
+                            this->serviceWatchers.removeAt(ind);
+                        }
                     }
+                    this->serviceWatchers << new SvdServiceWatcher(name);
                 }
-                this->serviceWatchers << new SvdServiceWatcher(name);
             }
         }
     }

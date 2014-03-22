@@ -49,18 +49,20 @@ void Panel::refreshServicesList() {
     QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoDot);
 
     Q_FOREACH(auto f, list){
-        bool found = false;
-        Q_FOREACH(auto s, services){
-            if(s->baseDir == f){
-                found = true;
-                break;
+        if (QFile::exists(home.absolutePath() + DEFAULT_USER_IGNITERS_DIR + f.fileName() + DEFAULT_SOFTWARE_TEMPLATE_EXT)) {
+            bool found = false;
+            Q_FOREACH(auto s, services){
+                if(s->baseDir == f){
+                    found = true;
+                    break;
+                }
             }
-        }
 
-        if(!found){
-            logDebug() << "Found new service" << f.absoluteFilePath();
-            if (not f.absoluteFilePath().endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX))
-                services << new PanelService(this, f);
+            if(!found){
+                logDebug() << "Found new service" << f.absoluteFilePath();
+                if (not f.absoluteFilePath().endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX))
+                    services << new PanelService(this, f);
+            }
         }
     }
 
