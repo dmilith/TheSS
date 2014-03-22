@@ -15,11 +15,11 @@ void SvdService::loadServiceConfig(const QString& nme) {
     if (testConf->valid()) {
         if (config != NULL)
             config->deleteLater();
-        config = testConf;
+        config = new SvdServiceConfig(nme);
         if (configCache != NULL)
             configCache->deleteLater();
-        configCache = testConf;
-    } else {
+        configCache = new SvdServiceConfig(nme);
+    } else { /* use cached values only in case of validation error */
         if (configCache == NULL) {
             if (config != NULL)
                 config->deleteLater();
@@ -27,6 +27,7 @@ void SvdService::loadServiceConfig(const QString& nme) {
         } else
             config = configCache;
     }
+    testConf->deleteLater();
 }
 
 
