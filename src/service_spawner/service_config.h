@@ -86,8 +86,8 @@ class SvdServiceConfig : public QObject {
 
     // TODO: BASIC SAFETY: private:
         char errbuf[1024];
-        QString defaultsCache = "";
-        QString jsonContent_ = "";
+        // QString defaultIgniterCache = "";
+        // QString userIgniterCache = "";
         uint uid; // user uid who loads igniter config
         QString name, softwareName, repository, parentService, sha;
         int generatedDefaultPort = 0;
