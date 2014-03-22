@@ -85,7 +85,6 @@ class SvdServiceConfig : public QObject {
         QString errors();
 
     // TODO: BASIC SAFETY: private:
-        char errbuf[1024];
         // QString defaultIgniterCache = "";
         // QString userIgniterCache = "";
         uint uid; // user uid who loads igniter config
@@ -106,6 +105,7 @@ class SvdServiceConfig : public QObject {
                             *babySitter = NULL;
 
     private:
+        char errbuf[1024];
         yajl_val nodeRoot_ = NULL, nodeDefault_ = NULL;
 
 };

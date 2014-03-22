@@ -342,10 +342,15 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     nodeRoot_ = yajl_tree_parse(root.toUtf8(), errbuf, sizeof(errbuf));
     logDebug() << "INSIGHT of igniter:" << name << "::" << root;
     if (QString(errbuf).length() > 0) {
-        QString msg = "Error loading igniter: " + name + " :: " + errbuf;
-        notification(msg, FATAL);
-        writeToFile(getOrCreateDir(getHomeDir() + DEFAULT_USER_IGNITERS_DIR) + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT + ".error", root);
-        QFile::remove(getHomeDir() + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT);
+        auto source = getHomeDir() + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+        auto dest = getOrCreateDir(getHomeDir() + DEFAULT_USER_IGNITERS_DIR) + "/../" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT + ".error";
+        if (QFile::exists(source)) {
+            QFile::rename(source, dest);
+            QFile::remove(source);
+            QString msg = "Error loading igniter: " + name + " :: " + errbuf;
+            notification(msg, FATAL);
+        }
+        return;
     }
     nodeDefault_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
     if (QString(errbuf).length() > 0) {
