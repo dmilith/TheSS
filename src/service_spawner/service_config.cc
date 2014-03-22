@@ -347,6 +347,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         if (QFile::exists(source)) {
             QFile::rename(source, dest);
             QFile::remove(source);
+            copyPath(getSoftwareDataDir() + "/" + name, getSoftwareDataDir() + "/" + name + DEFAULT_SERVICE_DISABLED_POSTFIX);
             QString msg = "Error loading igniter: " + name + " :: " + errbuf;
             notification(msg, FATAL);
         }
