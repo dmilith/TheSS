@@ -1,7 +1,7 @@
 /**
  *  @author tallica
  *
- *   © 2013 - VerKnowSys
+ *   © 2013-2014 - VerKnowSys
  *
  */
 
@@ -62,6 +62,7 @@ class SvdService: public QThread {
         void notificationSend(const QString& notificationMessage);
         void notificationSend(const QString& notificationMessage, NotificationLevels level);
         void stopSitters();
+        void loadServiceConfig(const QString& nme);
 
     protected:
         void run();
@@ -73,6 +74,8 @@ class SvdService: public QThread {
         QTimer babySitter, cronSitter;
         QList<SvdService*> dependencyServices;
         QNetworkAccessManager* networkManager = NULL;
+        SvdServiceConfig* config = NULL;
+        SvdServiceConfig* configCache = NULL;
 
     public slots:
         void cronSitterSlot();

@@ -2,7 +2,7 @@
  *  @author dmilith
  *
  *   Software config loader for json igniters.
- *   © 2013 - VerKnowSys
+ *   © 2013-2014 - VerKnowSys
  *
  */
 
@@ -83,6 +83,8 @@ class SvdServiceConfig : public QObject {
 
         void prettyPrint();
         QString errors();
+
+        bool valid();
 
     // TODO: BASIC SAFETY: private:
         // QString defaultIgniterCache = "";

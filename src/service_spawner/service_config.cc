@@ -1,7 +1,7 @@
 /**
  *  @author dmilith
  *
- *   © 2013 - VerKnowSys
+ *   © 2013-2014 - VerKnowSys
  *
  */
 
@@ -23,6 +23,44 @@ SvdScheduler::SvdScheduler(const QString& initialCronEntry, const QString& initi
 
 QString SvdServiceConfig::errors() {
     return QString(this->errbuf);
+}
+
+
+bool SvdServiceConfig::valid() {
+    /* if any errors found in buffer => validation failed */
+    if (not errors().isEmpty())
+        return false;
+
+    /* validate shell operations */
+    if ((not install) or
+        (not configure) or
+        (not start) or
+        (not afterStart) or
+        (not stop) or
+        (not afterStop) or
+        (not reload) or
+        (not validate) or
+        (not babySitter))
+            return false;
+
+    /* validate schedulers */
+    if (not schedulers.isEmpty()) {
+        Q_FOREACH(auto sched, schedulers) {
+            if (sched == NULL)
+                return false;
+        }
+    }
+
+    /* validate some more requirements */
+    if (name.isEmpty())
+        return false;
+
+    if (nodeDefault_ == NULL)
+        return false;
+    if (nodeRoot_ == NULL)
+        return false;
+
+    return true;
 }
 
 
@@ -251,7 +289,11 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     }
 
     QString formatVersion = getString("formatVersion");
-    if (not QString(APP_VERSION).contains(formatVersion)) {
+    auto spt = QString(APP_VERSION).split(".");
+    double appVerVal = (spt.at(0) + "." + spt.at(1)).toDouble();
+    double formatVersionVal = QString(formatVersion).toDouble();
+    logTrace() << "IGN-VER:" << QString::number(formatVersionVal) << "APP-VER:" << QString::number(appVerVal) << "difference:" << QString::number(appVerVal - formatVersionVal);
+    if (appVerVal - formatVersionVal > 0.1) {
         logError() << "Outdated igniter format detected. Please update your igniters!";
         return;
     }
@@ -337,7 +379,10 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     auto defaults = loadDefaultIgniter();
     auto root = loadIgniter();
     if (root.isEmpty()) {
-        logError() << "Empty service config root for:" << serviceName;
+        logError() << "Empty service config for:" << serviceName;
+        auto serviceLoc = getSoftwareDataDir() + "/" + name;
+        if (QFile::exists(serviceLoc + DEFAULT_SERVICE_RUNNING_FILE))
+            touch(serviceLoc + STOP_TRIGGER_FILE);
     }
     nodeRoot_ = yajl_tree_parse(root.toUtf8(), errbuf, sizeof(errbuf));
     logDebug() << "INSIGHT of igniter:" << name << "::" << root;
@@ -347,6 +392,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         if (QFile::exists(source)) {
             QFile::rename(source, dest);
             QFile::remove(source);
+            // copyPath(getSoftwareDataDir() + "/" + name, getSoftwareDataDir() + "/" + name + DEFAULT_SERVICE_DISABLED_POSTFIX);
             QString msg = "Error loading igniter: " + name + " :: " + errbuf;
             notification(msg, FATAL);
         }

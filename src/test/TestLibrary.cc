@@ -105,6 +105,7 @@ void TestLibrary::testLoadingDefault() {
     path[i] = ZERO_CHAR;
     QVERIFY(config->getBoolean("alwaysOn") == true);
     QVERIFY(config->getBoolean("stefan") == false);
+    QVERIFY(config->valid());
     delete config;
 }
 
@@ -115,6 +116,7 @@ void TestLibrary::testParseDefault() {
     QVERIFY(testParseDefault.split("/").size() == 2);
     char errbuf[1024];
     auto config = new SvdServiceConfig(); /* Load default values */
+    QVERIFY(config->valid());
 
     /* parse arrays test */
     const char* testParse2 = "{\"stefan\": [\"fst\", \"scnd\"], \"some\": {\"internal\": [\"a\",\"b\",\"c\"]}}";
@@ -193,6 +195,7 @@ void TestLibrary::testConfigDryRun() {
     QVERIFY(config->install->commands == "sofin get redis");
     QVERIFY(config->softwareName == "Redis");
     QVERIFY(not QDir().exists(getServiceDataDir(config->name)));
+    QVERIFY(config->valid());
     delete config;
 }
 
@@ -203,6 +206,7 @@ void TestLibrary::testParseExistingIgniter() {
     QVERIFY(testParseDefault.split("/").size() == 2);
     char errbuf[1024];
     auto config = new SvdServiceConfig("Redis"); /* Load Redis igniter values */
+    QVERIFY(config->valid());
 
     /* parse arrays test */
     const char* testParse2 = "{\"stefan\": [\"fst\", \"scnd\"], \"some\": {\"internal\": [\"a\",\"b\",\"c\"]}}";
@@ -285,7 +289,7 @@ void TestLibrary::testJsonValidityOfIgniters() {
     Q_FOREACH(QString igniter, igniters) {
         auto config = new SvdServiceConfig(igniter);
         QVERIFY(not config->softwareName.isEmpty());
-        QVERIFY(config->errors().isEmpty());
+        QVERIFY(config->valid());
         delete config;
     }
 }
@@ -303,7 +307,7 @@ void TestLibrary::testMultipleConfigsLoading() {
 
     auto config = new SvdServiceConfig("Redis");
     QCOMPARE(config->name, QString("Redis"));
-    QVERIFY(config->errors().isEmpty());
+    QVERIFY(config->valid());
     // QVERIFY(config->afterStop->commands.contains(".running"));
     // QVERIFY(config->afterStop->commands.contains("service.pid"));
     QVERIFY(config->install->commands == "sofin get redis");
@@ -314,7 +318,7 @@ void TestLibrary::testMultipleConfigsLoading() {
 
     config = new SvdServiceConfig("Mosh");
     QVERIFY(config->name == "Mosh");
-    QVERIFY(config->errors().isEmpty());
+    QVERIFY(config->valid());
     QVERIFY(config->softwareName == "Mosh");
     QVERIFY(config->install->commands == "sofin get mosh");
     QVERIFY(config->watchPort == false);
@@ -408,6 +412,7 @@ void TestLibrary::testMemoryAllocations() {
     logDebug() << "Beginning" << amount << "loops of allocation test.";
     for (int i = 0; i < amount; ++i) {
         SvdServiceConfig *config = new SvdServiceConfig("Redis"); /* Load app specific values */
+        QVERIFY(config->valid());
         usleep(10000); // 1000000 - 1s
         delete config;
     }
@@ -437,6 +442,7 @@ void TestLibrary::testSomeRealCraziness() {
     config->loadIgniter();
     QVERIFY(config->errors().contains("premature EOF"));
     QVERIFY(config->name == "OmgOmgOmg");
+    QVERIFY(config->valid() == false);
     config->name = "";
     config->loadIgniter();
     QVERIFY(config->name == "");
@@ -446,7 +452,7 @@ void TestLibrary::testSomeRealCraziness() {
 
 void TestLibrary::testSanityValueCheck() {
     auto *config = new SvdServiceConfig("Redis");
-
+    QVERIFY(config->valid());
     QVERIFY(config->userServiceRoot().contains(getenv("HOME")));
     #ifndef __linux__
         QVERIFY(config->userServiceRoot().contains("Users"));
@@ -529,6 +535,7 @@ void TestLibrary::testSanityValueCheck() {
 void TestLibrary::testInstallingWrongRedis() {
     QString name = "TestWrongRedis";
     auto config = new SvdServiceConfig(name);
+    QVERIFY(config->valid());
     auto service = new SvdService(name);
     service->start();
     service->installSlot();
