@@ -233,12 +233,9 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
 
     auto defaults = loadDefaultIgniter();
     if (defaults.isEmpty()) {
-        if (defaultsCache.isEmpty()) {
-            QString msg = "Igniters defaults must be always valid. Cannot continue with empty default content.";
-            notification(msg, FATAL);
-            return;
-        } else
-            defaults = defaultsCache; /* take value from cache */
+        QString msg = "Default igniter must be always valid and not empty. Cannot continue.";
+        notification(msg, FATAL);
+        return;
     }
     nodeDefault_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
     nodeRoot_ = yajl_tree_parse(defaults.toUtf8(), errbuf, sizeof(errbuf));
@@ -246,14 +243,11 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         logError() << "ERR:" << errbuf;
         return;
     }
-    if (not nodeDefault_ or defaults.isEmpty()) {
-        if (defaultsCache.isEmpty()) {
-            logFatal() << "Failed to load default igniter which is mandatory. Cannot continue";
-            return;
-        } else {
-            logInfo() << "Updating igniter cache";
-            defaultsCache = defaults;
-        }
+    if (not nodeDefault_) {
+        QString msg = "Failed to parse default igniter which is mandatory. Cannot continue";
+        notification(msg, FATAL);
+        logFatal() << msg;
+        return;
     }
 
     QString formatVersion = getString("formatVersion");
@@ -337,7 +331,6 @@ void SvdServiceConfig::prettyPrint() {
 
 
 SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
-    // SvdServiceConfig();
     name = serviceName; // this must be declared first!
     uid = getuid();
 
@@ -367,6 +360,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         logError() << "Json parse failure for:" << serviceName;
         return;
     }
+
     // if (root.isEmpty()) {
     //     if (defaultsCache.isEmpty()) {
     //         logFatal() << "Failed to load mandatory" << name << "igniter. Cannot continue.";
@@ -512,7 +506,9 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         }
     }
 
-    prettyPrint();
+    #ifdef QT_DEBUG
+        prettyPrint();
+    #endif
 }
 
 
