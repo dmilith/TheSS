@@ -16,13 +16,13 @@ void copyPath(QString src, QString dst) {
         return;
     }
 
-    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden)) {
         QString dst_path = dst + QDir::separator() + d;
         dir.mkpath(dst_path);
         copyPath(src + QDir::separator() + d, dst_path);
     }
 
-    foreach (QString f, dir.entryList(QDir::Files)) {
+    foreach (QString f, dir.entryList(QDir::Files | QDir::Hidden)) {
         QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
     }
 }
