@@ -66,7 +66,7 @@
     #define DEFAULT_SERVICE_DISABLED_POSTFIX ".disabled"
     #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "Igniters/Default")
     #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "Igniters/Services")
-    #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services"
+    #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services/"
     #define DEFAULT_LOCAL_ADDRESS "127.0.0.1"
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
     #define DEFAULT_SYSTEM_DOMAIN "localhost"

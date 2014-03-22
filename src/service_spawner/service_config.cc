@@ -387,7 +387,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     nodeRoot_ = yajl_tree_parse(root.toUtf8(), errbuf, sizeof(errbuf));
     logDebug() << "INSIGHT of igniter:" << name << "::" << root;
     if (QString(errbuf).length() > 0) {
-        auto source = getHomeDir() + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+        auto source = getHomeDir() + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
         auto dest = getOrCreateDir(getHomeDir() + DEFAULT_USER_IGNITERS_DIR) + "/../" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT + ".error";
         if (QFile::exists(source)) {
             QFile::rename(source, dest);

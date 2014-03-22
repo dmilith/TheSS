@@ -427,9 +427,9 @@ void PanelGui::key(int ch){
             QString name = servicesList->currentItem()->name;
 
             if (getuid() == 0)
-                system(QString("vim " + QString(SYSTEM_USERS_DIR) + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
+                system(QString("vim " + QString(SYSTEM_USERS_DIR) + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
             else
-                system(QString("vim " + QString(getenv("HOME")) + "/" + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
+                system(QString("vim " + QString(getenv("HOME")) + "/" + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
 
             initscr();
             status = "I've came back from the underground!";
