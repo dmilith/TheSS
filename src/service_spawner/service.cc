@@ -23,8 +23,9 @@ void SvdService::loadServiceConfig(const QString& nme) {
         configCache = new SvdServiceConfig(nme);
     } else { /* use cached values only in case of validation error */
         if (configCache == NULL) {
-            if (config != NULL)
-                config->deleteLater();
+            if (config)
+                delete config;
+
             config = new SvdServiceConfig(); /* fill with default config */
         } else
             config = configCache;
