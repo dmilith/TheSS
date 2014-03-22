@@ -375,7 +375,10 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     auto defaults = loadDefaultIgniter();
     auto root = loadIgniter();
     if (root.isEmpty()) {
-        logError() << "Empty service config root for:" << serviceName;
+        logError() << "Empty service config for:" << serviceName;
+        auto serviceLoc = getSoftwareDataDir() + "/" + name;
+        if (QFile::exists(serviceLoc + DEFAULT_SERVICE_RUNNING_FILE))
+            touch(serviceLoc + STOP_TRIGGER_FILE);
     }
     nodeRoot_ = yajl_tree_parse(root.toUtf8(), errbuf, sizeof(errbuf));
     logDebug() << "INSIGHT of igniter:" << name << "::" << root;
@@ -385,7 +388,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         if (QFile::exists(source)) {
             QFile::rename(source, dest);
             QFile::remove(source);
-            copyPath(getSoftwareDataDir() + "/" + name, getSoftwareDataDir() + "/" + name + DEFAULT_SERVICE_DISABLED_POSTFIX);
+            // copyPath(getSoftwareDataDir() + "/" + name, getSoftwareDataDir() + "/" + name + DEFAULT_SERVICE_DISABLED_POSTFIX);
             QString msg = "Error loading igniter: " + name + " :: " + errbuf;
             notification(msg, FATAL);
         }
