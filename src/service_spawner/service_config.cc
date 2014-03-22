@@ -1,7 +1,7 @@
 /**
  *  @author dmilith
  *
- *   © 2013 - VerKnowSys
+ *   © 2013-2014 - VerKnowSys
  *
  */
 
@@ -23,6 +23,44 @@ SvdScheduler::SvdScheduler(const QString& initialCronEntry, const QString& initi
 
 QString SvdServiceConfig::errors() {
     return QString(this->errbuf);
+}
+
+
+bool SvdServiceConfig::valid() {
+    /* if any errors found in buffer => validation failed */
+    if (not errors().isEmpty())
+        return false;
+
+    /* validate shell operations */
+    if ((not install) or
+        (not configure) or
+        (not start) or
+        (not afterStart) or
+        (not stop) or
+        (not afterStop) or
+        (not reload) or
+        (not validate) or
+        (not babySitter))
+            return false;
+
+    /* validate schedulers */
+    if (not schedulers.isEmpty()) {
+        Q_FOREACH(auto sched, schedulers) {
+            if (sched == NULL)
+                return false;
+        }
+    }
+
+    /* validate some more requirements */
+    if (name.isEmpty())
+        return false;
+
+    if (nodeDefault_ == NULL)
+        return false;
+    if (nodeRoot_ == NULL)
+        return false;
+
+    return true;
 }
 
 
