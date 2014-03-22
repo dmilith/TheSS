@@ -100,7 +100,7 @@ void SvdUserWatcher::collectServices() {
     logDebug() << "Current list of services:" << services;
 
     Q_FOREACH(QString name, services) {
-        if (not oldServices.contains(name)) {
+        if (not oldServices.contains(name) and not name.endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX)) {
             logInfo() << "Initializing watchers for data dir of service:" << name;
 
             /* detect user watcher */

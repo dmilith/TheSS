@@ -15,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.86.6"
+    #define APP_VERSION "0.86.7"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
@@ -63,6 +63,7 @@
     #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
     #define DEFAULT_SERVICE_INSTALLED_EXT ".installed"
+    #define DEFAULT_SERVICE_DISABLED_POSTFIX ".disabled"
     #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "Igniters/Default")
     #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "Igniters/Services")
     #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services"
