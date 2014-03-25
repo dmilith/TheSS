@@ -12,8 +12,8 @@
     },
     "start": {
         "commands": " \
-printf 'Launching Nginx\n' >> SERVICE_LOG \
-SERVICE_ROOT/exports/nginx -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG \
+echo 'Launching Nginx' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF && echo 'Nginx started' >> SERVICE_LOG \
 "
     },
     "afterStop": {
@@ -21,7 +21,7 @@ SERVICE_ROOT/exports/nginx -c SERVICE_CONF && printf 'Nginx started\n' >> SERVIC
     },
     "stop": {
         "commands": " \
-SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop && printf 'Nginx stopped\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop && echo 'Nginx stopped' >> SERVICE_LOG \
 "
     },
     "configure": {
@@ -61,15 +61,14 @@ http { \
     },
     "validate": {
         "commands": " \
-SERVICE_ROOT/exports/nginx -t -c SERVICE_CONF && printf 'Nginx started\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -t -c SERVICE_CONF && echo 'Nginx started' >> SERVICE_LOG \
 ",
         "expectOutput": "test is successful"
     },
     "reload": {
-        "
-commands": " \
-printf 'Reloading Nginx\n' >> SERVICE_LOG \
-SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload && printf 'Nginx reloaded successfully\n' >> SERVICE_LOG \
+        "commands": " \
+echo 'Reloading Nginx' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s reload && echo 'Nginx reloaded successfully' >> SERVICE_LOG \
 "
     }
 }
