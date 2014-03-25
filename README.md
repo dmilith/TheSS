@@ -144,6 +144,7 @@ X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are
 * Supports Procfile (Heroku-compatible) process list for RubySite deployment. For example "web: rails s" in Procfile, will launch one web worker of rails. If no Procfile detected in deployed app, default will be used.
 * Supports SRV domains entry: `_served-node._tcp.DOMAIN.COM` (since 0.72.x) for default deployer secure port placeholder (default ssh port is 22).
 * Partially supports distributed web-app deployment model (0.72.x)
+* Supports JSON validation and basic error handling.
 
 
 ## Igniter examples:

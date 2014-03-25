@@ -21,7 +21,6 @@
     /* default BSD case: */
     #define DEFAULT_SSL_PORT 443
     #define DEFAULT_SSL_CA_CERT "/etc/ssl/cacert.pem"
-    #define DEFAULT_API_HOST "slack.com"
     #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh" // "/bin/svdshell" //
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
