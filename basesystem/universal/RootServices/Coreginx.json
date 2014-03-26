@@ -94,6 +94,7 @@ SERVICE_ROOT/exports/nginx -c SERVICE_CONF -p SERVICE_PREFIX -t \
     "reload": {
         "commands": " \
 printf 'Reloading Coreginx\n' >> SERVICE_LOG \
+SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -t >> SERVICE_LOG 2>&1 && \
 SERVICE_ROOT/exports/nginx -p SERVICE_PREFIX -c SERVICE_CONF -s reload >> SERVICE_LOG \
 "
     }
