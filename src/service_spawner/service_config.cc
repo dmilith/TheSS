@@ -504,15 +504,15 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     }
 
     /* laod service hooks */
-    install = new SvdShellOperations(replaceAllSpecialsIn(getString("install/commands")), getString("install/expectOutput"));
-    configure = new SvdShellOperations(replaceAllSpecialsIn(getString("configure/commands")), getString("configure/expectOutput"));
-    start = new SvdShellOperations(replaceAllSpecialsIn(getString("start/commands")), getString("start/expectOutput"));
-    afterStart = new SvdShellOperations(replaceAllSpecialsIn(getString("afterStart/commands")), getString("afterStart/expectOutput"));
-    stop = new SvdShellOperations(replaceAllSpecialsIn(getString("stop/commands")), getString("stop/expectOutput"));
-    afterStop = new SvdShellOperations(replaceAllSpecialsIn(getString("afterStop/commands")), getString("afterStop/expectOutput"));
-    reload = new SvdShellOperations(replaceAllSpecialsIn(getString("reload/commands")), getString("reload/expectOutput"));
-    validate = new SvdShellOperations(replaceAllSpecialsIn(getString("validate/commands")), getString("validate/expectOutput"));
-    babySitter = new SvdShellOperations(replaceAllSpecialsIn(getString("babySitter/commands")), getString("babySitter/expectOutput"));
+    install = new SvdShellOperations(replaceAllSpecialsIn(getString("install/commands")), replaceAllSpecialsIn(getString("install/expectOutput")));
+    configure = new SvdShellOperations(replaceAllSpecialsIn(getString("configure/commands")), replaceAllSpecialsIn(getString("configure/expectOutput")));
+    start = new SvdShellOperations(replaceAllSpecialsIn(getString("start/commands")), replaceAllSpecialsIn(getString("start/expectOutput")));
+    afterStart = new SvdShellOperations(replaceAllSpecialsIn(getString("afterStart/commands")), replaceAllSpecialsIn(getString("afterStart/expectOutput")));
+    stop = new SvdShellOperations(replaceAllSpecialsIn(getString("stop/commands")), replaceAllSpecialsIn(getString("stop/expectOutput")));
+    afterStop = new SvdShellOperations(replaceAllSpecialsIn(getString("afterStop/commands")), replaceAllSpecialsIn(getString("afterStop/expectOutput")));
+    reload = new SvdShellOperations(replaceAllSpecialsIn(getString("reload/commands")), replaceAllSpecialsIn(getString("reload/expectOutput")));
+    validate = new SvdShellOperations(replaceAllSpecialsIn(getString("validate/commands")), replaceAllSpecialsIn(getString("validate/expectOutput")));
+    babySitter = new SvdShellOperations(replaceAllSpecialsIn(getString("babySitter/commands")), replaceAllSpecialsIn(getString("babySitter/expectOutput")));
 
 
     /* on this stage, we want to replace these igniter constants: */
