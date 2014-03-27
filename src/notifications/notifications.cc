@@ -56,28 +56,28 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     }
     switch (level) {
         case NOTIFY:
-            logInfo() << notificationMessage;
+            logInfo() << "NOTIFY:" << notificationMessage;
             postfix = ".notice";
             levelStr = "NOTIFY";
             icon = ":bulb:";
             break;
 
         case WARNING:
-            logWarn() << notificationMessage;
+            logWarn() << "NOTIFY:" << notificationMessage;
             postfix = ".warning";
             levelStr = "WARNING";
             icon = ":cold_sweat:";
             break;
 
         case ERROR:
-            logError() << notificationMessage;
+            logError() << "NOTIFY:" << notificationMessage;
             postfix = ".error";
             levelStr = "ERROR";
             icon = ":rage:";
             break;
 
         case FATAL:
-            logError() << notificationMessage;
+            logError() << "NOTIFY:" << notificationMessage;
             postfix = ".fatal";
             levelStr = "FATAL";
             icon = ":skull:";
@@ -104,7 +104,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     #ifdef NOTIFICATIONS_SLACK_AUTH_TOKEN
     #ifndef THESS_TEST_MODE /* don't launch notifications while testing */
     // if (level > NOTIFY) { /* notification only for errors */
-        logInfo() << "Launching https error notification with message:" << notificationMessage;
+        logDebug() << "Launching https error notification with message:" << notificationMessage;
 
         QSslSocket socket;
         #ifdef __FreeBSD__
