@@ -95,7 +95,7 @@ void PanelService::refresh(){
             uint __port = registerFreeTcpPort(port.toUInt());
             if (port.toUInt() == __port) {
                 // status = SERVICE_STATUS_WORKING;
-                pid = "SCHD"; /* scheduler mode, means it's running and doing own jobs but isn't working in foreground all the time */
+                pid = " SCHD"; /* scheduler mode, means it's running and doing own jobs but isn't working in foreground all the time */
             } else {
                 pid = " AUTO"; /* pid managment on service side */
             }
