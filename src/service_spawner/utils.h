@@ -50,6 +50,9 @@
 
 using namespace std;
 
+#ifdef __FreeBSD__
+    #define DEFAULT_VPN_SPAWN_SHELL "/Software/Zsh/exports/zsh"
+#endif
 
 QList<int> gatherUserUids();
 
