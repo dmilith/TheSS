@@ -1,6 +1,6 @@
 {
     "softwareName": "Mysql",
-    "watchPort": false,
+    "watchPort": true,
     "schedulers": [
         "0 9,21 * * * ?! \
         printf \"do_mysql_all_dbs_sql_dump\n\" >> SERVICE_LOG \
