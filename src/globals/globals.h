@@ -15,13 +15,12 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.88.3"
+    #define APP_VERSION "0.90.0"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
 
     /* default BSD case: */
     #define DEFAULT_SSL_PORT 443
     #define DEFAULT_SSL_CA_CERT "/etc/ssl/cacert.pem"
-    #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh" // "/bin/svdshell" //
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
     #define DEFAULT_BEHAVIORS_RAW "/output_raw_processes.raw.input"

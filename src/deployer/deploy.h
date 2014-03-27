@@ -24,7 +24,7 @@
 #define MAX_DEPLOYS_TO_KEEP 3 /* keep 5 deploys in releases */
 #define MINIMUM_DISK_SPACE_IN_MEGS 2048 /* 2 GiB */
 #define OLD_SERVICE_SHUTDOWN_TIMEOUT 60 /* in seconds */
-
+#define DEFAULT_DEPLOYER_SHELL "/Software/Zsh/exports/zsh"
 
 // const QStringList getStandaloneDeps();
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, SvdServiceConfig* svConfig, QString sslPemPath = ""); /* empty sslPemPath means, that default self-signed cert will be created for this entry */

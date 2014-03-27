@@ -1,5 +1,6 @@
 {
     "softwareName": "Redis",
+    "shell": "/bin/bash",
     "domains": [
         "ene", "due", "rabe"
     ],

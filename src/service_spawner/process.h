@@ -24,8 +24,7 @@ class SvdProcess: public QProcess {
         SvdProcess(const QString& name);
         SvdProcess(const QString& name, uid_t uid);
         SvdProcess(const QString& name, uid_t uid, bool redirectOutput);
-        void spawnDefaultShell();
-        void spawnProcess(const QString& command);
+        void spawnProcess(const QString& command, const QString& shell, const QStringList& args = QStringList("-s"));
         QString outputFile;
 
     protected:

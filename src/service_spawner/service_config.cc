@@ -297,6 +297,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         logError() << "Outdated igniter format detected. Please update your igniters!";
         return;
     }
+    shell = getString("shell");
     softwareName = getString("softwareName");
     autoStart = getBoolean("autoStart");
     notificationLevel = getInteger("notificationLevel");
@@ -338,6 +339,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
 
 void SvdServiceConfig::prettyPrint() {
     logDebug() << "Service |                     name:" << name;
+    logDebug() << "        |                    shell:" << shell;
     logDebug() << "        |             softwareName:" << softwareName;
     logDebug() << "        |                autoStart:" << autoStart;
     logDebug() << "        |        notificationLevel:" << notificationLevel;
@@ -473,6 +475,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         Q_ASSERT(not QString::number(generatedDefaultPort).isEmpty());
     #endif
 
+    shell = getString("shell");
     softwareName = getString("softwareName");
     autoStart = getBoolean("autoStart");
     notificationLevel = getInteger("notificationLevel");

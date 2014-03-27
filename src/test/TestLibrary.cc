@@ -105,6 +105,7 @@ void TestLibrary::testLoadingDefault() {
     path[i] = ZERO_CHAR;
     QVERIFY(config->getBoolean("alwaysOn") == true);
     QVERIFY(config->getBoolean("stefan") == false);
+    QVERIFY(not config->shell.isEmpty());
     QVERIFY(config->valid());
     delete config;
 }
@@ -194,6 +195,8 @@ void TestLibrary::testConfigDryRun() {
     auto config = new SvdServiceConfig("TestRedis", true); /* dry run */
     QVERIFY(config->install->commands == "sofin get redis");
     QVERIFY(config->softwareName == "Redis");
+    QVERIFY(not config->shell.isEmpty());
+    QVERIFY(config->shell == "/bin/bash");
     QVERIFY(not config->domains.contains("localhost"));
     QVERIFY(config->domains.contains("ene"));
     QVERIFY(config->domains.contains("due"));

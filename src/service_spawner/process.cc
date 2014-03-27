@@ -43,19 +43,11 @@ SvdProcess::SvdProcess(const QString& name) {
 }
 
 
-void SvdProcess::spawnDefaultShell() {
-    logTrace() << "Spawning default shell.";
-    start(QString(DEFAULT_SHELL_COMMAND), QStringList("-s"));
-}
-
-
-void SvdProcess::spawnProcess(const QString& command) {
-    spawnDefaultShell();
+void SvdProcess::spawnProcess(const QString& command, const QString& shell, const QStringList& args) {
+    start(shell, args);
     logTrace() << "Spawning command:" << QString(command);
     write(command.toUtf8());
     write("\nexit\n");
-    // closeWriteChannel();
-    // stop();
 }
 
 

@@ -1,5 +1,7 @@
 {
-    "formatVersion": "0.86",
+    "formatVersion": "0.90",
+
+    "shell": "/Software/Zsh/exports/zsh",
 
 /* defines name of entry in ~/SoftwareData/ and also an Igniter name */
     "name": "No-Name",
