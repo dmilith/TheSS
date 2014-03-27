@@ -1,5 +1,7 @@
 #!/bin/sh
 
+reset
+
 bin/clean && \
 bin/ignitersinstall && \
 sed -i '' -e 's/THESS_NORMAL_MODE/THESS_TEST_MODE/' src/Common.pro && \
