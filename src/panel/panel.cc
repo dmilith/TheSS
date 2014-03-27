@@ -60,7 +60,8 @@ void Panel::refreshServicesList() {
 
             if(!found){
                 logDebug() << "Found new service" << f.absoluteFilePath();
-                if (not f.absoluteFilePath().endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX))
+                if (not f.absoluteFilePath().endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX) and
+                    not f.absoluteFilePath().endsWith(DEFAULT_TEST_POSTFIX))
                     services << new PanelService(this, f);
             }
         }
