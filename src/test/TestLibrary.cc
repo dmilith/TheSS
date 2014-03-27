@@ -194,6 +194,12 @@ void TestLibrary::testConfigDryRun() {
     auto config = new SvdServiceConfig("TestRedis", true); /* dry run */
     QVERIFY(config->install->commands == "sofin get redis");
     QVERIFY(config->softwareName == "Redis");
+    QVERIFY(not config->domains.contains("localhost"));
+    QVERIFY(config->domains.contains("ene"));
+    QVERIFY(config->domains.contains("due"));
+    QVERIFY(config->domains.contains("rabe"));
+    QVERIFY(config->afterStart->expectOutput == config->afterStart->commands);
+    QVERIFY(config->afterStart->commands.contains("ene due rabe"));
     QVERIFY(not QDir().exists(getServiceDataDir(config->name)));
     QVERIFY(config->valid());
     delete config;

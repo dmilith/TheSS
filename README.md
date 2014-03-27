@@ -92,7 +92,8 @@ SERVICE_LOG               # contains absolute path to log file of current servic
 SERVICE_ENV               # contains absolute path to environment file of current service
 SERVICE_SOCK              # contains absolute path to socket file of current service
 SERVICE_RELEASE           # contains sha1 of igniter of current service with port number. It's used in path to every service conf, log and environment.
-SERVICE_DOMAIN            # default host domain name. It's stored in ~/SoftwareData/AppName/.domains/domain.name file by default.
+SERVICE_DOMAIN            # by default contains first domain name (NOTE: localhost is a default value of domain in case when domain wasn't provided. TheSS will ignore localhost domain entry where there're more than one domain file). All domain files are stored in ~/SoftwareData/AppName/.domains/domain.name.tld file by default.
+SERVICE_DOMAINS           # contains space separated list of domains defined for service
 SERVICE_ADDRESS           # by default it's default host IP address (resolved from SERVICE_DOMAIN)
 SERVICE_ROOT              # by default: ~/Apps/AppName
 SERVICE_VERSION           # by default taken from Sofin's: ~/Apps/AppName/appname.version

@@ -49,7 +49,7 @@ http { \
     error_log SERVICE_LOG; \
     server { \
         listen SERVICE_ADDRESS:SERVICE_PORT; \
-        server_name SERVICE_DOMAIN SERVICE_ADDRESS; \
+        server_name SERVICE_DOMAINS SERVICE_ADDRESS; \
         location / { \
             root SERVICE_PREFIX/html; \
             index index.html index.htm; \

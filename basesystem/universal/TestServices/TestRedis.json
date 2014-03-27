@@ -1,5 +1,12 @@
 {
     "softwareName": "Redis",
+    "domains": [
+        "ene", "due", "rabe"
+    ],
+    "afterStart": {
+        "commands": "SERVICE_DOMAINS",
+        "expectOutput": "SERVICE_DOMAINS"
+    },
     "alwaysOn": false,
     "portsPool": 3,
     "schedulers": [
