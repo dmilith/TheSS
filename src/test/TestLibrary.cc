@@ -103,6 +103,8 @@ void TestLibrary::testLoadingDefault() {
         i++;
     }
     path[i] = ZERO_CHAR;
+    QVERIFY(config->getDouble("formatVersion") != 0);
+    QVERIFY(config->getDouble("formatVersion") > 0.88);
     QVERIFY(config->getBoolean("alwaysOn") == true);
     QVERIFY(config->getBoolean("stefan") == false);
     QVERIFY(not config->shell.isEmpty());
