@@ -64,6 +64,33 @@ bool SvdServiceConfig::valid() {
 }
 
 
+void SvdServiceConfig::getTreeNode(yajl_val nodeDefault, yajl_val nodeRoot, const char* element, yajl_val* v, yajl_val* w) {
+    /* building paths */
+    char* elem = strdup(element);
+    char* result = NULL;
+    char delims[] = "/";
+    result = strtok(elem, delims);
+    const char *path[MAX_DEPTH];
+    int i = 0;
+    for (i = 0; result != NULL; i++) {
+        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
+        strncpy((char*)path[i], result, strlen(result) + 1);
+        path[strlen(result)] = ZERO_CHAR;
+        result = strtok( NULL, delims );
+    }
+    path[i] = ZERO_CHAR;
+
+    *v = yajl_tree_get(nodeDefault, path, yajl_t_any);
+    *w = NULL;
+    if (nodeRoot)
+        *w = yajl_tree_get(nodeRoot, path, yajl_t_any);
+    for (int j = 0; j <= i; j++) {
+        delete[] path[j];
+    }
+    free(elem);
+}
+
+
 QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
     /* building paths */
     char* elem = strdup(element);
@@ -121,30 +148,32 @@ QStringList SvdServiceConfig::getArray(const char* element) {
 }
 
 
-long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    /* building paths */
-    char* elem = strdup(element);
-    char* result = NULL;
-    char delims[] = "/";
-    result = strtok(elem, delims);
-    const char *path[MAX_DEPTH];
-    int i = 0;
-    for (i = 0; result != NULL; i++) {
-        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
-        strncpy((char*)path[i], result, strlen(result) + 1);
-        path[strlen(result)] = ZERO_CHAR;
-        result = strtok( NULL, delims );
-    }
-    path[i] = ZERO_CHAR;
+double SvdServiceConfig::getDouble(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
+    yajl_val v, w;
+    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
 
-    yajl_val v = yajl_tree_get(nodeDefault, path, yajl_t_any);
-    yajl_val w = NULL;
-    if (nodeRoot)
-        w = yajl_tree_get(nodeRoot, path, yajl_t_any);
-    for (int j = 0; j <= i; j++) {
-        delete[] path[j];
+    /* user igniter has priority */
+    if (w and YAJL_IS_DOUBLE(w)) {
+        double lng = YAJL_GET_DOUBLE(w);
+        return lng;
     }
-    free(elem);
+    if (v and YAJL_IS_DOUBLE(v)) {
+        double lng = YAJL_GET_DOUBLE(v);
+        return lng;
+    }
+    logError() << "Not a double:" << element;
+    return 0.0;
+}
+
+
+double SvdServiceConfig::getDouble(const char* element) {
+    return getDouble(nodeDefault_, nodeRoot_, element);
+}
+
+
+long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
+    yajl_val v, w;
+    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
 
     /* user igniter has priority */
     if (w and YAJL_IS_INTEGER(w)) {
@@ -168,29 +197,8 @@ long long SvdServiceConfig::getInteger(const char* element) {
 
 
 bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    /* building paths */
-    char* elem = strdup(element);
-    char* result = NULL;
-    char delims[] = "/";
-    result = strtok(elem, delims);
-    const char *path[MAX_DEPTH];
-    int i = 0;
-    for (i = 0; result != NULL; i++) {
-        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
-        strncpy((char*)path[i], result, strlen(result) + 1);
-        path[strlen(result)] = ZERO_CHAR;
-        result = strtok( NULL, delims );
-    }
-    path[i] = ZERO_CHAR;
-
-    yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_any);
-    yajl_val w = NULL;
-    if (nodeRoot)
-        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_any);
-    for (int j = 0; j <= i; j++) {
-        delete[] path[j];
-    }
-    free(elem);
+    yajl_val v, w;
+    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
 
     if (w and (YAJL_IS_TRUE(w) or YAJL_IS_FALSE(w))) {
         if (YAJL_IS_TRUE(w)) {
@@ -218,40 +226,13 @@ bool SvdServiceConfig::getBoolean(const char* element) {
 
 
 QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    /* building paths */
-    char* elem = strdup(element);
-    char* result = NULL;
-    char delims[] = "/";
-    result = strtok(elem, delims);
-    const char *path[MAX_DEPTH];
-    int i = 0;
-    for (i = 0; result != NULL; i++) {
-        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
-        strncpy((char*)path[i], result, strlen(result) + 1);
-        path[strlen(result)] = ZERO_CHAR;
-        result = strtok( NULL, delims );
-    }
-    path[i] = ZERO_CHAR;
+    yajl_val v, w;
+    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
 
-    yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_string);
-    yajl_val w = NULL;
-    if (nodeRoot)
-        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_string);
-
-    for (int j = 0; j <= i; j++) {
-        delete[] path[j];
-    }
-    free(elem);
-
-    /*
-        merge default source string with root source string for each String json element
-     */
     if (w and YAJL_IS_STRING(w)) {
-        // logTrace() << "Parsed Root String:" << QString(YAJL_GET_STRING(w));
         return YAJL_GET_STRING(w);
     }
     if (v and YAJL_IS_STRING(v)) {
-        // logTrace() << "Parsed Default String:" << QString(YAJL_GET_STRING(v));
         return YAJL_GET_STRING(v);
     }
 
@@ -288,10 +269,9 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         return;
     }
 
-    QString formatVersion = getString("formatVersion");
-    auto spt = QString(APP_VERSION).split(".");
-    double appVerVal = (spt.at(0) + "." + spt.at(1)).toDouble();
-    double formatVersionVal = QString(formatVersion).toDouble();
+    auto spt = QString(APP_VERSION).split("."); /* XXX: provide double value */
+    auto appVerVal = (spt.at(0) + "." + spt.at(1)).toDouble();
+    auto formatVersionVal = getDouble("formatVersion");
     logTrace() << "IGN-VER:" << QString::number(formatVersionVal) << "APP-VER:" << QString::number(appVerVal) << "difference:" << QString::number(appVerVal - formatVersionVal);
     if (appVerVal - formatVersionVal > 0.1) {
         logError() << "Outdated igniter format detected. Please update your igniters!";
