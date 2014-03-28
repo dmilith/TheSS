@@ -332,10 +332,9 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
         return;
     }
 
-    QString formatVersion = getString("formatVersion");
-    auto spt = QString(APP_VERSION).split(".");
-    double appVerVal = (spt.at(0) + "." + spt.at(1)).toDouble();
-    double formatVersionVal = QString(formatVersion).toDouble();
+    auto spt = QString(APP_VERSION).split("."); /* XXX: provide double value */
+    auto appVerVal = (spt.at(0) + "." + spt.at(1)).toDouble();
+    auto formatVersionVal = getDouble("formatVersion");
     logTrace() << "IGN-VER:" << QString::number(formatVersionVal) << "APP-VER:" << QString::number(appVerVal) << "difference:" << QString::number(appVerVal - formatVersionVal);
     if (appVerVal - formatVersionVal > 0.1) {
         logError() << "Outdated igniter format detected. Please update your igniters!";
