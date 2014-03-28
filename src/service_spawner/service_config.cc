@@ -92,52 +92,23 @@ void SvdServiceConfig::getTreeNode(yajl_val nodeDefault, yajl_val nodeRoot, cons
 
 
 QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    /* building paths */
-    char* elem = strdup(element);
-    char* result = NULL;
-    char delims[] = "/";
-    result = strtok(elem, delims);
-    const char *path[MAX_DEPTH];
-    int i = 0;
-    for (i = 0; result != NULL; i++) {
-        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
-        strncpy((char*)path[i], result, strlen(result) + 1);
-        path[strlen(result)] = ZERO_CHAR;
-        result = strtok( NULL, delims );
-    }
-    path[i] = ZERO_CHAR;
-
-    /*
-        gather values from given json array.
-     */
+    yajl_val v, w;
+    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
     QStringList buf;
-    yajl_val v = yajl_tree_get(nodeDefault, (const char**)path, yajl_t_array);
-    yajl_val w = NULL;
-    if (nodeRoot)
-        w = yajl_tree_get(nodeRoot, (const char**)path, yajl_t_array);
-    for (int j = 0; j <= i; j++) {
-        delete[] path[j];
-    }
-    free(elem);
 
     if (v and YAJL_IS_ARRAY(v)) {
-        // logTrace() << "Default Array:" << element;
         int len = v->u.array.len;
-        for (i = 0; i < len; ++i) { /* gather default list */
+        for (int i = 0; i < len; ++i) { /* gather default list */
             yajl_val obj = v->u.array.values[i];
-            // logTrace() << "Parsed Default Array value:" << YAJL_GET_STRING(obj);
             buf << YAJL_GET_STRING(obj);
         }
-        // logTrace() << "Gathered Default Array:" << buf;
     }
     if (w and YAJL_IS_ARRAY(w)) {
         int len = w->u.array.len;
-        for (i = 0; i < len; ++i) { /* gather igniter list */
+        for (int i = 0; i < len; ++i) { /* gather igniter list */
             yajl_val obj = w->u.array.values[i];
-            // logTrace() << "Parsed Root Array value:" << YAJL_GET_STRING(obj);
             buf << YAJL_GET_STRING(obj);
         }
-        // logTrace() << "Gathered Root Array:" << buf;
     }
     return buf;
 }
