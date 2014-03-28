@@ -1,0 +1,9 @@
+#!/bin/sh
+
+reset
+
+bin/build test && \
+for elm in $*; do
+    bin/test-app -nocrashhandler -v1 -random $elm
+done
+rm -rf ${HOME}/SoftwareData/*-TEST
