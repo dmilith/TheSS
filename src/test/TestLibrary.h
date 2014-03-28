@@ -51,6 +51,8 @@ class TestLibrary: public QObject {
 };
 
 QTEST_APPLESS_MAIN(TestLibrary)
+#ifdef THESS_TEST_MODE
 #include "moc_TestLibrary.cpp"
+#endif
 
 #endif
