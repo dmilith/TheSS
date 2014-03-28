@@ -6,4 +6,7 @@ bin/build test && \
 for elm in $*; do
     bin/test-app -nocrashhandler -v1 -random $elm
 done
+if [ -z "$*" ]; then
+    bin/test-app -nocrashhandler -v1 -random
+fi
 rm -rf ${HOME}/SoftwareData/*-TEST
