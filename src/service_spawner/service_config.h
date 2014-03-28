@@ -75,6 +75,9 @@ class SvdServiceConfig : public QObject {
         long long getInteger(const char* element);
         long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
 
+        double getDouble(const char* element);
+        double getDouble(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
+
         bool serviceInstalled();
         bool serviceConfigured();
 

@@ -121,6 +121,50 @@ QStringList SvdServiceConfig::getArray(const char* element) {
 }
 
 
+double SvdServiceConfig::getDouble(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
+    /* building paths */
+    char* elem = strdup(element);
+    char* result = NULL;
+    char delims[] = "/";
+    result = strtok(elem, delims);
+    const char *path[MAX_DEPTH];
+    int i = 0;
+    for (i = 0; result != NULL; i++) {
+        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
+        strncpy((char*)path[i], result, strlen(result) + 1);
+        path[strlen(result)] = ZERO_CHAR;
+        result = strtok( NULL, delims );
+    }
+    path[i] = ZERO_CHAR;
+
+    yajl_val v = yajl_tree_get(nodeDefault, path, yajl_t_any);
+    yajl_val w = NULL;
+    if (nodeRoot)
+        w = yajl_tree_get(nodeRoot, path, yajl_t_any);
+    for (int j = 0; j <= i; j++) {
+        delete[] path[j];
+    }
+    free(elem);
+
+    /* user igniter has priority */
+    if (w and YAJL_IS_DOUBLE(w)) {
+        double lng = YAJL_GET_DOUBLE(w);
+        return lng;
+    }
+    if (v and YAJL_IS_DOUBLE(v)) {
+        double lng = YAJL_GET_DOUBLE(v);
+        return lng;
+    }
+    logError() << "Not a double:" << element;
+    return 0.0;
+}
+
+
+double SvdServiceConfig::getDouble(const char* element) {
+    return getDouble(nodeDefault_, nodeRoot_, element);
+}
+
+
 long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
     /* building paths */
     char* elem = strdup(element);
