@@ -63,6 +63,8 @@ class SvdServiceConfig : public QObject {
         const QString userIgniter();
         const QString releaseName();
 
+        void getTreeNode(yajl_val nodeDefault, yajl_val nodeRoot, const char* element, yajl_val* v, yajl_val* w);
+
         QString getString(const char* element);
         QString getString(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
 
