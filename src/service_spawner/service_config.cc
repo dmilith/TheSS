@@ -6,8 +6,6 @@
  */
 
 #include "service_config.h"
-#include "cron_entry.h"
-#include "../notifications/notifications.h"
 
 
 SvdScheduler::SvdScheduler(const QString& initialCronEntry, const QString& initialCommands) {
@@ -23,6 +21,31 @@ SvdScheduler::SvdScheduler(const QString& initialCronEntry, const QString& initi
 
 QString SvdServiceConfig::errors() {
     return QString(this->errbuf);
+}
+
+
+QStringList SvdServiceConfig::getArray(const char* element) {
+    return JSONAPI::getArray(nodeDefault_, nodeRoot_, element);
+}
+
+
+QString SvdServiceConfig::getString(const char* element) {
+    return JSONAPI::getString(nodeDefault_, nodeRoot_, element);
+}
+
+
+bool SvdServiceConfig::getBoolean(const char* element) {
+    return JSONAPI::getBoolean(nodeDefault_, nodeRoot_, element);
+}
+
+
+long long SvdServiceConfig::getInteger(const char* element) {
+    return JSONAPI::getInteger(nodeDefault_, nodeRoot_, element);
+}
+
+
+double SvdServiceConfig::getDouble(const char* element) {
+    return JSONAPI::getDouble(nodeDefault_, nodeRoot_, element);
 }
 
 
@@ -61,159 +84,6 @@ bool SvdServiceConfig::valid() {
         return false;
 
     return true;
-}
-
-
-void SvdServiceConfig::getTreeNode(yajl_val nodeDefault, yajl_val nodeRoot, const char* element, yajl_val* v, yajl_val* w) {
-    /* building paths */
-    char* elem = strdup(element);
-    char* result = NULL;
-    char delims[] = "/";
-    result = strtok(elem, delims);
-    const char *path[MAX_DEPTH];
-    int i = 0;
-    for (i = 0; result != NULL; i++) {
-        path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
-        strncpy((char*)path[i], result, strlen(result) + 1);
-        path[strlen(result)] = ZERO_CHAR;
-        result = strtok( NULL, delims );
-    }
-    path[i] = ZERO_CHAR;
-
-    *v = yajl_tree_get(nodeDefault, path, yajl_t_any);
-    *w = NULL;
-    if (nodeRoot)
-        *w = yajl_tree_get(nodeRoot, path, yajl_t_any);
-    for (int j = 0; j <= i; j++) {
-        delete[] path[j];
-    }
-    free(elem);
-}
-
-
-QStringList SvdServiceConfig::getArray(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    yajl_val v, w;
-    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
-    QStringList buf;
-
-    if (v and YAJL_IS_ARRAY(v)) {
-        int len = v->u.array.len;
-        for (int i = 0; i < len; ++i) { /* gather default list */
-            yajl_val obj = v->u.array.values[i];
-            buf << YAJL_GET_STRING(obj);
-        }
-    }
-    if (w and YAJL_IS_ARRAY(w)) {
-        int len = w->u.array.len;
-        for (int i = 0; i < len; ++i) { /* gather igniter list */
-            yajl_val obj = w->u.array.values[i];
-            buf << YAJL_GET_STRING(obj);
-        }
-    }
-    return buf;
-}
-
-
-QStringList SvdServiceConfig::getArray(const char* element) {
-    return getArray(nodeDefault_, nodeRoot_, element);
-}
-
-
-double SvdServiceConfig::getDouble(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    yajl_val v, w;
-    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
-
-    /* user igniter has priority */
-    if (w and YAJL_IS_DOUBLE(w)) {
-        double lng = YAJL_GET_DOUBLE(w);
-        return lng;
-    }
-    if (v and YAJL_IS_DOUBLE(v)) {
-        double lng = YAJL_GET_DOUBLE(v);
-        return lng;
-    }
-    logError() << "Not a double:" << element;
-    return 0.0;
-}
-
-
-double SvdServiceConfig::getDouble(const char* element) {
-    return getDouble(nodeDefault_, nodeRoot_, element);
-}
-
-
-long long SvdServiceConfig::getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    yajl_val v, w;
-    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
-
-    /* user igniter has priority */
-    if (w and YAJL_IS_INTEGER(w)) {
-        long long lng = YAJL_GET_INTEGER(w);
-        // logTrace() << "Parsed Root Integer:" << QString::number(lng);
-        return lng;
-    }
-    if (v and YAJL_IS_INTEGER(v)) {
-        long long lng = YAJL_GET_INTEGER(v);
-        // logTrace() << "Parsed Default Integer:" << QString::number(lng);
-        return lng;
-    }
-    logError() << "Not a integer:" << element;
-    return 0L;
-}
-
-
-long long SvdServiceConfig::getInteger(const char* element) {
-    return getInteger(nodeDefault_, nodeRoot_, element);
-}
-
-
-bool SvdServiceConfig::getBoolean(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    yajl_val v, w;
-    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
-
-    if (w and (YAJL_IS_TRUE(w) or YAJL_IS_FALSE(w))) {
-        if (YAJL_IS_TRUE(w)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    if (v and (YAJL_IS_TRUE(v) or YAJL_IS_FALSE(v))) {
-        if (YAJL_IS_TRUE(v)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    logError() << "No such boolean node:" << element << "in igniter:" << name;
-    return false;
-}
-
-
-bool SvdServiceConfig::getBoolean(const char* element) {
-    return getBoolean(nodeDefault_, nodeRoot_, element);
-}
-
-
-QString SvdServiceConfig::getString(yajl_val nodeDefault, yajl_val nodeRoot, const char* element) {
-    yajl_val v, w;
-    getTreeNode(nodeDefault, nodeRoot, element, &v, &w);
-
-    if (w and YAJL_IS_STRING(w)) {
-        return YAJL_GET_STRING(w);
-    }
-    if (v and YAJL_IS_STRING(v)) {
-        return YAJL_GET_STRING(v);
-    }
-
-    logError() << "No such string node:" << element << "in igniter:" << name;
-    return "";
-}
-
-
-QString SvdServiceConfig::getString(const char* element) {
-    return getString(nodeDefault_, nodeRoot_, element);
 }
 
 
@@ -266,6 +136,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     startOrder = getInteger("startOrder");
 
     dependencies = getArray("dependencies");
+
     standaloneDependencies = getArray("standaloneDeps");
     domains = getArray("domains");
     watchHttpAddresses = getArray("watchHttp");

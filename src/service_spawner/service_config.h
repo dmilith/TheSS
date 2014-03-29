@@ -11,8 +11,10 @@
 
 #include "../globals/globals.h"
 #include "../yajl/api/yajl_tree.h"
+#include "../notifications/notifications.h"
 #include "utils.h"
 #include "cron_entry.h"
+#include "json_api.h"
 
 #include <QObject>
 #include <QTextStream>
@@ -23,8 +25,6 @@
 #include <QtNetwork/QNetworkInterface>
 #include <iostream>
 
-#define ZERO_CHAR (char *)0
-#define MAX_DEPTH 64 /* max supported json tree depth */
 
 class SvdScheduler {
 
@@ -63,22 +63,13 @@ class SvdServiceConfig : public QObject {
         const QString userIgniter();
         const QString releaseName();
 
-        void getTreeNode(yajl_val nodeDefault, yajl_val nodeRoot, const char* element, yajl_val* v, yajl_val* w);
-
+        /* internal service config API. Uses shared JSON loader */
         QString getString(const char* element);
-        QString getString(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
-
         QStringList getArray(const char* element);
-        QStringList getArray(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
-
         bool getBoolean(const char* element);
-        bool getBoolean(const yajl_val nodeDefault, const yajl_val nodeRoot, const char* element);
-
         long long getInteger(const char* element);
-        long long getInteger(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
-
         double getDouble(const char* element);
-        double getDouble(yajl_val nodeDefault, yajl_val nodeRoot, const char* element);
+        /* end of service JSON API */
 
         bool serviceInstalled();
         bool serviceConfigured();
