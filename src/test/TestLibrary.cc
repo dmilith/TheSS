@@ -126,13 +126,13 @@ void TestLibrary::testParseDefault() {
     auto node = yajl_tree_parse(testParse2, errbuf, sizeof(errbuf));
     QVERIFY(node != NULL);
     for( int i = 0; i < 100; i++) {
-        QVERIFY(config->getArray(node, NULL, "stefan").first() == "fst");
-        QVERIFY(config->getArray(node, NULL, "stefan").last() == "scnd");
-        QVERIFY(config->getArray(node, NULL, "stefan").size() == 2);
-        QVERIFY(config->getArray(node, NULL, "some/internal").contains("a"));
-        QVERIFY(config->getArray(node, NULL, "some/internal").contains("b"));
-        QVERIFY(config->getArray(node, NULL, "some/internal").contains("c"));
-        QVERIFY(config->getArray(node, NULL, "some/internal").size() == 3);
+        QVERIFY(JSONAPI::getArray(node, NULL, "stefan").first() == "fst");
+        QVERIFY(JSONAPI::getArray(node, NULL, "stefan").last() == "scnd");
+        QVERIFY(JSONAPI::getArray(node, NULL, "stefan").size() == 2);
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").contains("a"));
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").contains("b"));
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").contains("c"));
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").size() == 3);
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
@@ -143,13 +143,13 @@ void TestLibrary::testParseDefault() {
     logWarn() << errbuf;
     QVERIFY(node != NULL);
     for( int i = 0; i < 5; i++) {
-        QVERIFY(config->getString(node, NULL, "abc") == "oO");
-        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == true);
-        QVERIFY(config->getBoolean(node, NULL, "nothere") == false);
-        QVERIFY(config->getString(node, NULL, "ddd/zabra") == "888");
-        QVERIFY(config->getString(node, NULL, "stoo") == "111");
-        QVERIFY(config->getString(node, NULL, "ddd/abra") == "666");
-        QVERIFY(config->getString(node, NULL, "ddd/zada/abra") == "777");
+        QVERIFY(JSONAPI::getString(node, NULL, "abc") == "oO");
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/some") == true);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "nothere") == false);
+        QVERIFY(JSONAPI::getString(node, NULL, "ddd/zabra") == "888");
+        QVERIFY(JSONAPI::getString(node, NULL, "stoo") == "111");
+        QVERIFY(JSONAPI::getString(node, NULL, "ddd/abra") == "666");
+        QVERIFY(JSONAPI::getString(node, NULL, "ddd/zada/abra") == "777");
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
@@ -160,10 +160,10 @@ void TestLibrary::testParseDefault() {
     logWarn() << errbuf;
     QVERIFY(node != NULL);
     for( int i = 0; i < 100; i++) {
-        QVERIFY(config->getBoolean(node, NULL, "abc") == false);
-        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == false);
-        QVERIFY(config->getBoolean(node, NULL, "ddd/abra") == true);
-        QVERIFY(config->getBoolean(node, NULL, "ddd/zada/abra") == true);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "abc") == false);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/some") == false);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/abra") == true);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/zada/abra") == true);
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
@@ -173,18 +173,18 @@ void TestLibrary::testParseDefault() {
     node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
     logWarn() << errbuf;
     QVERIFY(node != NULL);
-    QVERIFY(config->getInteger(node, NULL, "abc") == -1);
-    QVERIFY(config->getInteger(node, NULL, "ddd/some") == 1);
-    QVERIFY(config->getInteger(node, NULL, "ddd/abra") == 3);
-    QVERIFY(config->getInteger(node, NULL, "ddd/zada/abra") == 4);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "abc") == -1);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/some") == 1);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/abra") == 3);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/zada/abra") == 4);
 
     for (int o = 0; o < 100; o++) {
-        QVERIFY(config->getInteger(node, NULL, "ddd/zada/abra") == 4);
+        QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/zada/abra") == 4);
         usleep(100 * TEST_LAG);
     }
 
     for (int o = 0; o < 100; o++) {
-        QVERIFY(config->getInteger(node, NULL, "ddd/abra") == 3);
+        QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/abra") == 3);
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
@@ -224,13 +224,13 @@ void TestLibrary::testParseExistingIgniter() {
     auto node = yajl_tree_parse(testParse2, errbuf, sizeof(errbuf));
     QVERIFY(node != NULL);
     for( int i = 0; i < 100; i++) {
-        QVERIFY(config->getArray(node, NULL, "stefan").first() == "fst");
-        QVERIFY(config->getArray(node, NULL, "stefan").last() == "scnd");
-        QVERIFY(config->getArray(node, NULL, "stefan").size() == 2);
-        QVERIFY(config->getArray(node, NULL, "some/internal").contains("a"));
-        QVERIFY(config->getArray(node, NULL, "some/internal").contains("b"));
-        QVERIFY(config->getArray(node, NULL, "some/internal").contains("c"));
-        QVERIFY(config->getArray(node, NULL, "some/internal").size() == 3);
+        QVERIFY(JSONAPI::getArray(node, NULL, "stefan").first() == "fst");
+        QVERIFY(JSONAPI::getArray(node, NULL, "stefan").last() == "scnd");
+        QVERIFY(JSONAPI::getArray(node, NULL, "stefan").size() == 2);
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").contains("a"));
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").contains("b"));
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").contains("c"));
+        QVERIFY(JSONAPI::getArray(node, NULL, "some/internal").size() == 3);
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
@@ -241,13 +241,13 @@ void TestLibrary::testParseExistingIgniter() {
     logWarn() << errbuf;
     QVERIFY(node != NULL);
     for( int i = 0; i < 5; i++) {
-        QVERIFY(config->getString(node, NULL, "abc") == "oO");
-        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == true);
-        QVERIFY(config->getBoolean(node, NULL, "nothere") == false);
-        QVERIFY(config->getString(node, NULL, "ddd/zabra") == "888");
-        QVERIFY(config->getString(node, NULL, "stoo") == "111");
-        QVERIFY(config->getString(node, NULL, "ddd/abra") == "666");
-        QVERIFY(config->getString(node, NULL, "ddd/zada/abra") == "777");
+        QVERIFY(JSONAPI::getString(node, NULL, "abc") == "oO");
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/some") == true);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "nothere") == false);
+        QVERIFY(JSONAPI::getString(node, NULL, "ddd/zabra") == "888");
+        QVERIFY(JSONAPI::getString(node, NULL, "stoo") == "111");
+        QVERIFY(JSONAPI::getString(node, NULL, "ddd/abra") == "666");
+        QVERIFY(JSONAPI::getString(node, NULL, "ddd/zada/abra") == "777");
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
@@ -258,10 +258,10 @@ void TestLibrary::testParseExistingIgniter() {
     logWarn() << errbuf;
     QVERIFY(node != NULL);
     for( int i = 0; i < 100; i++) {
-        QVERIFY(config->getBoolean(node, NULL, "abc") == false);
-        QVERIFY(config->getBoolean(node, NULL, "ddd/some") == false);
-        QVERIFY(config->getBoolean(node, NULL, "ddd/abra") == true);
-        QVERIFY(config->getBoolean(node, NULL, "ddd/zada/abra") == true);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "abc") == false);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/some") == false);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/abra") == true);
+        QVERIFY(JSONAPI::getBoolean(node, NULL, "ddd/zada/abra") == true);
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);
@@ -271,18 +271,18 @@ void TestLibrary::testParseExistingIgniter() {
     node = yajl_tree_parse(testParse, errbuf, sizeof(errbuf));
     logWarn() << errbuf;
     QVERIFY(node != NULL);
-    QVERIFY(config->getInteger(node, NULL, "abc") == -1);
-    QVERIFY(config->getInteger(node, NULL, "ddd/some") == 1);
-    QVERIFY(config->getInteger(node, NULL, "ddd/abra") == 3);
-    QVERIFY(config->getInteger(node, NULL, "ddd/zada/abra") == 4);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "abc") == -1);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/some") == 1);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/abra") == 3);
+    QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/zada/abra") == 4);
 
     for (int o = 0; o < 100; o++) {
-        QVERIFY(config->getInteger(node, NULL, "ddd/zada/abra") == 4);
+        QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/zada/abra") == 4);
         usleep(100 * TEST_LAG);
     }
 
     for (int o = 0; o < 100; o++) {
-        QVERIFY(config->getInteger(node, NULL, "ddd/abra") == 3);
+        QVERIFY(JSONAPI::getInteger(node, NULL, "ddd/abra") == 3);
         usleep(100 * TEST_LAG);
     }
     yajl_tree_free(node);

@@ -13,6 +13,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 HEADERS += TestLibrary.h \
+           ../service_spawner/json_api.h \
            ../yajl/api/yajl_tree.h \
            ../globals/globals.h \
            ../service_spawner/service_config.h \
@@ -27,7 +28,8 @@ HEADERS += TestLibrary.h \
            ../service_spawner/cron_entry.h \
            ../deployer/webapp_types.h \
            ../service_spawner/cron_entry.h
-SOURCES += ../service_spawner/service_config.cc \
+SOURCES += ../service_spawner/json_api.cc \
+           ../service_spawner/service_config.cc \
            ../service_spawner/utils.cc \
            ../service_spawner/process.cc \
            ../service_spawner/service.cc \
