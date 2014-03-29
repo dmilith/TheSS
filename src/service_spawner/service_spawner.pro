@@ -7,7 +7,8 @@
 include(../Common.pro)
 
 QT += network
-HEADERS   += service.h \
+HEADERS   += json_api.h \
+             service.h \
              ../notifications/notifications.h \
              ../death_watch/death_watch.h \
              process.h \
@@ -18,7 +19,8 @@ HEADERS   += service.h \
              file_events_manager.h \
              cron_entry.h \
              logger.h
-SOURCES   += service.cc \
+SOURCES   += json_api.cc \
+             service.cc \
              process.cc \
              service_config.cc \
              utils.cc \

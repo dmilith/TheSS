@@ -7,7 +7,8 @@
 include(../Common.pro)
 
 QT += network
-HEADERS   += ../notifications/notifications.h \
+HEADERS   += ../service_spawner/json_api.h \
+             ../notifications/notifications.h \
              ../service_spawner/process.h \
              ../death_watch/death_watch.h \
              ../service_spawner/utils.h \
@@ -18,7 +19,8 @@ HEADERS   += ../notifications/notifications.h \
              ../service_spawner/service.h \
              webapp_types.h \
              deploy.h
-SOURCES   += ../service_spawner/process.cc \
+SOURCES   += ../service_spawner/json_api.cc \
+             ../service_spawner/process.cc \
              ../service_spawner/utils.cc \
              ../death_watch/death_watch.cc \
              ../service_spawner/logger.cc \
