@@ -140,8 +140,8 @@
     #define DEFAULT_SS_GRACEFUL_SHUTDOWN_FILE ".shutdownGracefully"
     #define DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE ("/" DEFAULT_SS_GRACEFUL_SHUTDOWN_FILE)
     #define DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE "/.data-collector"
-    #define DEFAULT_SS_LOG_FILE "/.ss.log"
-    #define CONTROL_PANEL_LOG_FILE "/.control-panel.log"
+    #define DEFAULT_SS_LOG_FILE "/.thess.log"
+    #define CONTROL_PANEL_LOG_FILE "/.thess-panel.log"
     #define DEFAULT_CRON_ENTRY "0 4 * * * ?" /* exactly 4am */
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
