@@ -17,8 +17,6 @@ DEFINES += THESS_NORMAL_MODE
 mac {
 
   QMAKE_CXX = ccache clang++ -w
-  QMAKE_CC = ccache clang
-  QMAKE_CPP = ccache clang++ -E
 
   # development opts:
   QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -w -gline-tables-only
