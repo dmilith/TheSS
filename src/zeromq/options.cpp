@@ -21,7 +21,7 @@
 
 #include "options.hpp"
 #include "err.hpp"
-#include "../include/zmq_utils.h"
+#include "zmq_utils.h"
 
 zmq::options_t::options_t () :
     sndhwm (1000),

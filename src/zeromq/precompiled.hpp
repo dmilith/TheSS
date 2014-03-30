@@ -39,7 +39,7 @@
 #include <vector>
 
 // 0MQ definitions and exported functions
-#include "../include/zmq.h"
+#include "zmq.h"
 
 #endif // _MSC_VER
 

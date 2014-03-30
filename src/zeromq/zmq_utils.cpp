@@ -23,7 +23,7 @@
 #include "err.hpp"
 #include "thread.hpp"
 #include <assert.h>
-#include "../include/zmq_utils.h"
+#include "zmq_utils.h"
 
 #if !defined ZMQ_HAVE_WINDOWS
 #include <unistd.h>

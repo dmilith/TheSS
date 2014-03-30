@@ -51,7 +51,7 @@
 #include "err.hpp"
 
 // zmq.h must be included *after* poll.h for AIX to build properly
-#include "../include/zmq.h"
+#include "zmq.h"
 
 
 int zmq::proxy (

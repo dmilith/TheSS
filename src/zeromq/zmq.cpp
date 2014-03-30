@@ -44,7 +44,7 @@
 #endif
 
 // zmq.h must be included *after* poll.h for AIX to build properly
-#include "../include/zmq.h"
+#include "zmq.h"
 
 #if defined ZMQ_HAVE_WINDOWS
 #include "windows.hpp"

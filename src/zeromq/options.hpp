@@ -26,7 +26,7 @@
 #include "stddef.h"
 #include "stdint.hpp"
 #include "tcp_address.hpp"
-#include "../include/zmq.h"
+#include "zmq.h"
 
 //  Normal base 256 key is 32 bytes
 #define CURVE_KEYSIZE       32
