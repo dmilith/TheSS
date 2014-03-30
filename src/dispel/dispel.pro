@@ -14,14 +14,14 @@ DEFINES += NZMQT_LIB
 
 HEADERS += \
         nzmqt/*.hpp \
-        ../service_spawner/utils.h \
+        ../core/utils.h \
         ../notifications/notifications.h \
         ../quazip/quazip.h \
         ../cutelogger/AbstractAppender.h \
         *.h
 
 SOURCES += \
-        ../service_spawner/utils.cc \
+        ../core/utils.cc \
         ../notifications/notifications.cc \
         nzmqt/*.cpp \
         dispel_core.cc \
