@@ -7,14 +7,18 @@
 
 QT -= gui
 
-QMAKE_CXX = clang++
-QMAKE_CC = clang
-QMAKE_CPP = clang++ -E
+QMAKE_CXX = ccache clang++
+QMAKE_CC = ccache clang
+QMAKE_CPP = ccache clang++ -E
 OBJECTS_DIR = ../.obj
 MOC_DIR = ../.moc
 DEFINES += THESS_NORMAL_MODE
 
 mac {
+
+  QMAKE_CXX = ccache clang++ -w
+  QMAKE_CC = ccache clang
+  QMAKE_CPP = ccache clang++ -E
 
   # development opts:
   QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -w -gline-tables-only
