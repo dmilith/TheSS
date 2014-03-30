@@ -23,6 +23,11 @@ build () {
 
 
     case "$1" in
+        shell|svdshell)
+            (qmake ${QMAKE_OPTS} Shell.pro) || exit 1
+            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1
+            ;;
+
         panel|svdpanel)
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
@@ -50,6 +55,9 @@ build () {
 
         *)
             sed -i '' -e 's/THESS_TEST_MODE/THESS_NORMAL_MODE/' src/Common.pro
+
+            (qmake ${QMAKE_OPTS} Shell.pro) || exit 1
+            (note "Building Shell" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1
 
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
             (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
