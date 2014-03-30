@@ -23,6 +23,8 @@ SOURCES += nzmqt/*.cpp \
       dispel_subscriber.cc \
       dispel.cc
 
+QMAKE_CXXFLAGS += -w
+
 LIBS += ../libzeromq.a \
       ../liblogger.a
 
