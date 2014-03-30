@@ -124,7 +124,8 @@ int zmq::ipc_listener_t::set_address (const char *addr_)
 
     //  Allow wildcard file
     if (addr[0] == '*') {
-        char *tmpstr = tempnam (NULL, NULL);
+        // char *tmpstr = tempnam (NULL, NULL); /* dmilith */
+        char *tmpstr = mktemp(NULL); /* dmilith */
         addr.assign (tmpstr);
         free (tmpstr);
     }
