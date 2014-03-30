@@ -12,19 +12,27 @@ TARGET = ../../bin/svddispel
 
 DEFINES += NZMQT_LIB
 
-HEADERS += nzmqt/*.hpp \
-      ../quazip/quazip.h \
-      ../cutelogger/AbstractAppender.h \
-      *.h
+HEADERS += \
+        nzmqt/*.hpp \
+        ../service_spawner/utils.h \
+        ../notifications/notifications.h \
+        ../quazip/quazip.h \
+        ../cutelogger/AbstractAppender.h \
+        *.h
 
-SOURCES += nzmqt/*.cpp \
-      dispel_core.cc \
-      dispel_publisher.cc \
-      dispel_subscriber.cc \
-      dispel.cc
+SOURCES += \
+        ../service_spawner/utils.cc \
+        ../notifications/notifications.cc \
+        nzmqt/*.cpp \
+        dispel_core.cc \
+        dispel_publisher.cc \
+        dispel_subscriber.cc \
+        dispel.cc
 
 QMAKE_CXXFLAGS += -w
 
-LIBS += ../libzeromq.a \
-      ../liblogger.a
-
+LIBS += \
+        ../libzeromq.a \
+        ../liblogger.a \
+        ../libquazip.a \
+        -lz

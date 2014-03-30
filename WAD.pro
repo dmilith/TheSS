@@ -8,5 +8,6 @@ include(src/Common.pro)
 
 TEMPLATE           = subdirs
 SUBDIRS            = src/deployer
+CONFIG += ordered
 
 deployer.depends = src/cutelogger src/quazip src/hiredis src/yajl src/notifications src/death_watch src/service_spawner
