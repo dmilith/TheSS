@@ -349,3 +349,4 @@ RUBY_DOMAIN                 # value of domain name - what user did specify
 * QT4 4.8.x implementation by Trolltech & Nokia (LGPL licensed)
 * JAYL 2.0.x JSON Library by Lloyd Hilaiel (BSD-like license)
 * Zeromq4 by iMatix Corporation (LGPL / MPLv2 license)
+* nzmqt - A lightweight C++ Qt binding for 0mq, by Johann Duscher (BSD licensed)
