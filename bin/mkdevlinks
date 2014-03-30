@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for i in bin/svdss bin/svdpanel bin/ttys_updater bin/svddw bin/svdirc_notify bin/svdply bin/svdcoreginx_helper bin/svddeployer; do
+for i in bin/svdshell bin/svddispel bin/svdss bin/svdpanel bin/ttys_updater bin/svddw bin/svdirc_notify bin/svdply bin/svdcoreginx_helper bin/svddeployer; do
     echo "Linking ${i} -> /${i}"
     rm -f "/${i}"
     ln -s "$(pwd)/${i}" "/${i}"
