@@ -147,7 +147,7 @@ void SvdUserWatcher::shutdownSlot() {
         //     logDebug() << "Removing lock file:" << lockName;
         //     QFile::remove(lockName);
         // }
-        shutdownDefaultVPNNetwork();
+        SvdService::shutdownDefaultVPNNetwork();
     }
     logDebug() << "Removing lock file:" << lockName;
     QFile::remove(lockName);
@@ -165,7 +165,7 @@ void SvdUserWatcher::checkUserControlTriggers() {
         /* and remove pid file */
         if (getuid() == 0) {
             QFile::remove(homeDir + "/.root.pid");
-            shutdownDefaultVPNNetwork();
+            SvdService::shutdownDefaultVPNNetwork();
         } else
             QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
 
@@ -177,7 +177,7 @@ void SvdUserWatcher::checkUserControlTriggers() {
         QFile::remove(homeDir + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
         /* and remove pid file */
         if (getuid() == 0) {
-            shutdownDefaultVPNNetwork();
+            SvdService::shutdownDefaultVPNNetwork();
             QFile::remove(homeDir + "/.root.pid");
         } else
             QFile::remove(homeDir + "/." + getenv("USER") + ".pid");

@@ -50,10 +50,6 @@
 #include <QtNetwork/QNetworkReply>
 
 
-void setupDefaultVPNNetwork();
-void shutdownDefaultVPNNetwork();
-
-
 class SvdService: public QThread {
     Q_OBJECT
 
@@ -67,6 +63,9 @@ class SvdService: public QThread {
         void notificationSend(const QString& notificationMessage, NotificationLevels level);
         void stopSitters();
         void loadServiceConfig(const QString& nme);
+
+        static void setupDefaultVPNNetwork();
+        static void shutdownDefaultVPNNetwork();
 
     protected:
         void run();

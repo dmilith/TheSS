@@ -10,7 +10,7 @@
 #include "process.h"
 
 
-void setupDefaultVPNNetwork() {
+void SvdService::SvdService::setupDefaultVPNNetwork() {
     #ifdef __FreeBSD__
         logInfo() << "Launching VPN Network Setup";
         auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
@@ -21,7 +21,7 @@ void setupDefaultVPNNetwork() {
 }
 
 
-void shutdownDefaultVPNNetwork() {
+void SvdService::SvdService::shutdownDefaultVPNNetwork() {
     #ifdef __FreeBSD__
         logInfo() << "Shutting down VPN Network Setup";
         auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
