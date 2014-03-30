@@ -11,7 +11,7 @@
  *
  *   This function is a temporary proxy to get owner of given file
  */
-int getOwner(char* path) {
+int CORE::getOwner(char* path) {
     struct stat st;
     if (stat(path, &st) == 0) {
         return st.st_uid;
@@ -24,7 +24,7 @@ int getOwner(char* path) {
 /*
  *  @author tallica
  */
-int adjustSystemTime(double offset) {
+int CORE::adjustSystemTime(double offset) {
     #ifdef __APPLE__
         mach_timespec_t ts;
         clock_get_time(REALTIME_CLOCK, &ts);
@@ -52,7 +52,26 @@ int adjustSystemTime(double offset) {
 }
 
 
-// extern std::string escapeJsonString(const std::string& input);
+std::string CORE::escapeJsonString(const std::string& input) {
+    std::ostringstream ss;
+    // C++11:
+    // for (auto iter = input.cbegin(); iter != input.cend(); iter++) {
+    // C++98/03:
+    for (std::string::const_iterator iter = input.begin(); iter != input.end(); iter++) {
+        switch (*iter) {
+            case '\\': ss << "\\\\"; break;
+            case '"': ss << "\\\""; break;
+            // case '/': ss << "\\/"; break;
+            case '\b': ss << "\\b"; break;
+            case '\f': ss << "\\f"; break;
+            case '\n': ss << "\\n"; break;
+            case '\r': ss << "\\r"; break;
+            case '\t': ss << "\\t"; break;
+            default: ss << *iter; break;
+        }
+    }
+    return ss.str();
+}
 
 
 #ifdef __APPLE__
@@ -61,7 +80,7 @@ int adjustSystemTime(double offset) {
 typedef struct kinfo_proc kinfo_proc;
 
 
-int GetBSDProcessList(kinfo_proc **procList, size_t *procCount) {
+int CORE::GetBSDProcessList(kinfo_proc **procList, size_t *procCount) {
     int                 err;
     kinfo_proc *        result;
     bool                done;
@@ -133,7 +152,7 @@ int GetBSDProcessList(kinfo_proc **procList, size_t *procCount) {
 }
 
 
-const char* processDataToLearn(int uid) {
+const char* CORE::processDataToLearn(int uid) {
 
     string output;
     // const int pagesize = getpagesize();
@@ -163,7 +182,7 @@ const char* processDataToLearn(int uid) {
 }
 
 
-const char* getProcessUsage(int uid, bool consoleOutput) {
+const char* CORE::getProcessUsage(int uid, bool consoleOutput) {
     stringstream out;
     mach_timespec_t ts;
     clock_get_time(REALTIME_CLOCK, &ts);
@@ -172,9 +191,6 @@ const char* getProcessUsage(int uid, bool consoleOutput) {
 }
 
 #else
-
-
-#define ord(c) ((int)(unsigned char)(c))
 
 
 const char* addr_to_string(struct sockaddr_storage *ss) {
@@ -276,7 +292,7 @@ const char* procstat_files(struct procstat *procstat, struct kinfo_proc *kipp) {
 }
 
 
-const char* getProcessUsage(int uid, bool consoleOutput) {
+const char* CORE::getProcessUsage(int uid, bool consoleOutput) {
 
     int count = 0;
     char** args = NULL;
@@ -386,7 +402,7 @@ const char* getProcessUsage(int uid, bool consoleOutput) {
 }
 
 
-const char* processDataToLearn(int uid) {
+const char* CORE::processDataToLearn(int uid) {
 
     int count = 0;
     char** args = NULL;

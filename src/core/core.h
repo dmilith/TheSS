@@ -41,6 +41,7 @@
     #include <sys/capability.h>
     #include <libprocstat.h>
     #include <libutil.h>
+    #define ord(c) ((int)(unsigned char)(c))
 #endif
 
 #ifdef __APPLE__
@@ -58,17 +59,25 @@
     #include <sys/ioctl.h>
 #endif
 
-
-
 #define NS 1000000000
 #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh"
 
 using namespace std;
 
 
-int getOwner(char* path);
-const char* getProcessUsage(int uid, bool consoleOutput = false);
-const char* processDataToLearn(int uid);
+class CORE {
 
+    public:
+        static int getOwner(char* path);
+        static const char* getProcessUsage(int uid, bool consoleOutput = false);
+        static const char* processDataToLearn(int uid);
+        static std::string escapeJsonString(const std::string& input);
+        static int adjustSystemTime(double offset);
+
+    #ifdef __APPLE__
+        static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount);
+    #endif
+
+};
 
 #endif
