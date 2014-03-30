@@ -1,7 +1,7 @@
 /**
- *  @author tallica
+ *  @author tallica, dmilith
  *
- *   © 2013 - VerKnowSys
+ *   © 2013-2014 - VerKnowSys
  *
  */
 
@@ -11,7 +11,6 @@
 #include "file_events_manager.h"
 #include "service_config.h"
 #include "service_watcher.h"
-// #include "webapp_watcher.h"
 #include "service.h"
 #include "data_collector.h"
 

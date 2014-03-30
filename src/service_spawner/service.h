@@ -50,6 +50,10 @@
 #include <QtNetwork/QNetworkReply>
 
 
+void setupDefaultVPNNetwork();
+void shutdownDefaultVPNNetwork();
+
+
 class SvdService: public QThread {
     Q_OBJECT
 

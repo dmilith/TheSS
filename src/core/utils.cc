@@ -54,28 +54,6 @@ QString tail(const QString& absoluteFileName, int lines, int positionModifier) {
 }
 
 
-void setupDefaultVPNNetwork() {
-    #ifdef __FreeBSD__
-        logInfo() << "Launching VPN Network Setup";
-        auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
-        proc->spawnProcess(DEFAULT_VPN_INTERFACE_SETUP_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
-        proc->waitForFinished(-1);
-        proc->deleteLater();
-    #endif
-}
-
-
-void shutdownDefaultVPNNetwork() {
-    #ifdef __FreeBSD__
-        logInfo() << "Shutting down VPN Network Setup";
-        auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
-        proc->spawnProcess(DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
-        proc->waitForFinished(-1);
-        proc->deleteLater();
-    #endif
-}
-
-
 QList<int> gatherUserUids() {
     auto userDirs = QDir(getenv("HOME") + QString("/..")).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
     QList<int> dirs;
