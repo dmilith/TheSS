@@ -9,7 +9,7 @@
 #define __PROCESS_H__
 
 #include "../globals/globals.h"
-#include "utils.h"
+#include "../core/utils.h"
 
 #ifdef __linux__
     #include <unistd.h>

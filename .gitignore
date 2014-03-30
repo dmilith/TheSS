@@ -33,3 +33,6 @@ releases/
 /bin/svdshell
 
 /bin/svddispel
+
+/.tags_sorted_by_file
+/.tags

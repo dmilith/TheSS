@@ -7,7 +7,7 @@
 
 
 #include "cron_entry.h"
-#include "utils.h"
+#include "../core/utils.h"
 
 
 SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {

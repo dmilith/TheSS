@@ -1,7 +1,7 @@
 /**
  *  @author tallica, dmilith
  *
- *   © 2013 - VerKnowSys
+ *   © 2013-2014 - VerKnowSys
  *
  */
 

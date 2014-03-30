@@ -10,7 +10,7 @@
 #define __DEATH_WATCH_H__
 
 #include "../globals/globals.h"
-#include "../service_spawner/utils.h"
+#include "../core/utils.h"
 
 #include <QtCore>
 

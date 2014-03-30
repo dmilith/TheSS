@@ -12,9 +12,9 @@
 #include "../globals/globals.h"
 #include "../yajl/api/yajl_tree.h"
 #include "../notifications/notifications.h"
-#include "utils.h"
+#include "../core/utils.h"
 #include "cron_entry.h"
-#include "json_api.h"
+#include "../core/json_api.h"
 
 #include <QObject>
 #include <QTextStream>

@@ -12,10 +12,10 @@
 #include <QtCore>
 
 #include "../globals/globals.h"
-#include "../service_spawner/utils.h"
+#include "../core/utils.h"
 #include "../notifications/notifications.h"
-#include "../service_spawner/logger.h"
-#include "../service_spawner/utils.h"
+#include "../core/logger.h"
+#include "../core/utils.h"
 #include "../service_spawner/process.h"
 #include "../service_spawner/service_config.h"
 #include "webapp_types.h"

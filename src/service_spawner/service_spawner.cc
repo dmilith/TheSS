@@ -10,11 +10,11 @@
 
 #include "../globals/globals.h"
 #include "../notifications/notifications.h"
-#include "logger.h"
+#include "../core/logger.h"
 #include "service_config.h"
 #include "service_watcher.h"
 #include "user_watcher.h"
-#include "utils.h"
+#include "../core/utils.h"
 
 
 int main(int argc, char *argv[]) {
