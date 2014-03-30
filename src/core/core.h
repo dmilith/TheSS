@@ -76,6 +76,8 @@ class CORE {
 
     #ifdef __APPLE__
         static int GetBSDProcessList(kinfo_proc **procList, size_t *procCount);
+    #else
+        static const char* procstat_files(struct procstat *procstat, struct kinfo_proc *kipp);
     #endif
 
 };

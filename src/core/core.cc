@@ -256,7 +256,7 @@ static const char* protocol_to_string(int domain, int type, int protocol) {
 }
 
 
-const char* procstat_files(struct procstat *procstat, struct kinfo_proc *kipp) {
+const char* CORE::procstat_files(struct procstat *procstat, struct kinfo_proc *kipp) {
     struct sockstat sock;
     struct filestat_list *head;
     struct filestat *fst;
