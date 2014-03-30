@@ -1,0 +1,48 @@
+/* This is default Job message format */
+{
+
+    "pver": "0.2.0", /* protocol version.
+                        WARNING: jobs will work only for nodes
+                        with exact same protocol version! */
+
+
+    /*
+        Job message protocol
+    */
+    "job": {
+
+
+        /*
+            Job request content
+        */
+        "req": {
+
+            /*
+                NOTE: This is where node request object data is injected for current
+                    node with given uuid.
+            */
+
+        },
+
+
+        /*
+            Replies from all nodes merged into list of node objects
+        */
+        "reps": [
+
+            {
+                "given-Node-Uuid": {
+
+                    /*
+                        NOTE: This is where node reply object data is injected for current
+                            node with given uuid.
+                    */
+
+                }
+            }
+
+        ] /* eof: reps */
+
+    } /* eof: job */
+
+}

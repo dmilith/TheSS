@@ -1,0 +1,166 @@
+/* This is default Job message format */
+{
+
+    "pver": "0.1.3", /* protocol version.
+                        WARNING: jobs will work only for nodes
+                        with exact same protocol version! */
+
+
+    /*
+        Job message protocol
+    */
+    "job": {
+
+
+        /*
+            Job request content
+        */
+        "req": {
+
+            /*
+                Job uuid - generated on message creation.
+                It's immutable for each job
+            */
+            "juuid": "",
+
+
+            /*
+                One of node "role types":
+                  "normal" - regular node, with available
+                            file system replication feature.
+                            role optimized for cpu intensive
+                            multithreaded applications.
+
+                  "database" - database node, with file system
+                            replication unavailable.
+                            this role is optimized for
+                            maximum IO performance.
+
+                  "backup" - backup node, only takes requests
+                            for backing up user applications
+                            and data from database nodes.
+            */
+            "role": "normal",
+
+
+            /*
+                Microseconds from 1970 on job message request creation
+            */
+            "tstamp": -1,
+
+
+            /*
+                API call by name
+            */
+            "apicall": "",
+
+
+            /*
+                API call arguments
+            */
+            "apiparams": {
+
+                /*
+                    "paramName": "paramValue",
+                */
+
+            },
+
+
+            /* list of user names to seek for on remote nodes (blind publish) */
+            "forusers": [
+                /*
+                    "mike", "roger", "ksawery", "stefan"
+                */
+            ],
+
+        },
+
+
+        /*
+            Replies from all nodes merged into list of node objects
+        */
+        "reps": [
+
+            {
+
+                /*
+                    Node reply data
+                    NOTE: Published job request, initially contains
+                    reply data for current node. Job should be already
+                    done on node before publishing.
+                */
+                "some-Node-Uuid": {
+
+
+                    /*
+                        XXX: Node role information might be useful in reply
+                    */
+                    "role": "normal",
+
+
+                    /*
+                        "Finished job" state. Distributed Job is done on current node.
+                        NOTE: When it's true, for all replies, the distributed job is done.
+                    */
+                    "fjob": false,
+
+
+                    /*
+                        Microseconds from 1970 (of response creation)
+                    */
+                    "tstamp": -1,
+
+
+                    /*
+                        Distributed instances. default: 1
+                    */
+                    "inst": 1, /* XXX: I'm not sure where it should be placed in structure */
+
+
+                    /*
+                        System load data - used to pick new node (for scalability)
+                    */
+                    "sysload": {
+
+                        /*
+                            CPU usage
+                        */
+                        "cpu": "",
+
+
+                        /*
+                            Mem usage
+                        */
+                        "mem": "",
+
+
+                        /*
+                            Disk IO usage
+                        */
+                        "dio": "",
+
+
+                        /*
+                            Network IO usage
+                        */
+                        "nio": ""
+
+                    },
+
+
+                    /*
+                        Content returned by API as response
+                    */
+                    "api_response": {
+
+                    },
+
+                } /* eod: node named "uuid" */
+
+            },
+
+        ] /* eof: reps */
+
+    } /* eof: job */
+}

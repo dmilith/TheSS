@@ -1,0 +1,62 @@
+/* This is node request data format */
+
+{
+
+    /*
+        Job uuid - generated on message creation.
+        It's immutable for each job
+    */
+    "juuid": "",
+
+
+    /*
+        One of node "role types":
+          "normal" - regular node, with available
+                    file system replication feature.
+                    role optimized for cpu intensive
+                    multithreaded applications.
+
+          "database" - database node, with file system
+                    replication unavailable.
+                    this role is optimized for
+                    maximum IO performance.
+
+          "backup" - backup node, only takes requests
+                    for backing up user applications
+                    and data from database nodes.
+    */
+    "role": "normal",
+
+
+    /*
+        Microseconds from 1970 on job message request creation
+    */
+    "tstamp": -1,
+
+
+    /*
+        API call by name
+    */
+    "apicall": "",
+
+
+    /*
+        API call arguments
+    */
+    "apiparams": {
+
+        /*
+            "paramName": "paramValue",
+        */
+
+    },
+
+
+    /* list of user names to seek for on remote nodes (blind publish) */
+    "forusers": [
+        /*
+            "mike", "roger", "ksawery", "stefan"
+        */
+    ]
+
+}
