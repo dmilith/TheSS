@@ -5,7 +5,7 @@
  *
  */
 
-#include "../service_spawner/utils.h"
+#include "../core/utils.h"
 #include "public_watcher.h"
 
 

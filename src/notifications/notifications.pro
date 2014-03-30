@@ -9,7 +9,7 @@ include(../Common.pro)
 QT += network
 
 HEADERS   += notifications.h ../service_spawner/process.h
-SOURCES   += notifier.cc notifications.cc ../service_spawner/utils.cc ../service_spawner/process.cc
+SOURCES   += notifier.cc notifications.cc ../core/utils.cc ../service_spawner/process.cc
 
 LIBS += -lz ../liblogger.a ../libyajl.a ../libhiredis.a ../libquazip.a
 

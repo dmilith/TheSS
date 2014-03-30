@@ -7,23 +7,23 @@
 include(../Common.pro)
 
 QT += network
-HEADERS   += json_api.h \
+HEADERS   += ../core/json_api.h \
              service.h \
              ../notifications/notifications.h \
              ../death_watch/death_watch.h \
              process.h \
              service_config.h \
-             utils.h \
+             ../core/utils.h \
              service_watcher.h \
              user_watcher.h \
              file_events_manager.h \
              cron_entry.h \
-             logger.h
-SOURCES   += json_api.cc \
+             ../core/logger.h
+SOURCES   += ../core/json_api.cc \
              service.cc \
              process.cc \
              service_config.cc \
-             utils.cc \
+             ../core/utils.cc \
              service_watcher.cc \
              user_watcher.cc \
              file_events_manager.cc \
@@ -31,6 +31,6 @@ SOURCES   += json_api.cc \
              ../notifications/notifications.cc \
              service_spawner.cc \
              cron_entry.cc \
-             logger.cc
+             ../core/logger.cc
 LIBS      += -lz ../liblogger.a ../libyajl.a ../libhiredis.a ../libquazip.a
 TARGET    = ../../bin/svdss

@@ -13,7 +13,7 @@
 #include <curses.h>
 // #include "../globals/globals.h"
 #include "../service_spawner/service_config.h"
-#include "../service_spawner/utils.h"
+#include "../core/utils.h"
 #include "../service_spawner/file_events_manager.h"
 
 

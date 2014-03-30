@@ -6,7 +6,7 @@
  */
 
 #include "file_events_manager.h"
-#include "utils.h"
+#include "../core/utils.h"
 
 
 void SvdFileEventsManager::registerFile(const QString& path) {
