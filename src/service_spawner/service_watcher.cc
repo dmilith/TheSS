@@ -6,7 +6,7 @@
  */
 
 #include "service_watcher.h"
-#include "utils.h"
+#include "../core/utils.h"
 
 
 SvdHookTriggerFiles::SvdHookTriggerFiles(const QString& path) {
