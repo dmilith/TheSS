@@ -58,7 +58,7 @@ class PanelGui;
 class PanelService;
 class Tail;
 
-#include "service.h"
+#include "panel_service.h"
 #include "tail.h"
 #include "gui.h"
 

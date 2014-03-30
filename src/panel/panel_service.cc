@@ -5,7 +5,7 @@
  *
  */
 
-#include "service.h"
+#include "panel_service.h"
 
 
 void PanelService::panelAssert(bool predicate, const char* where, const char* message) {
