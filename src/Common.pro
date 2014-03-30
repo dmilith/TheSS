@@ -10,8 +10,8 @@ QT -= gui
 QMAKE_CXX = clang++
 QMAKE_CC = clang
 QMAKE_CPP = clang++ -E
-OBJECTS_DIR = .obj
-MOC_DIR = .moc
+OBJECTS_DIR = ../.obj
+MOC_DIR = ../.moc
 DEFINES += THESS_NORMAL_MODE
 
 mac {
@@ -20,7 +20,6 @@ mac {
   QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -w -gline-tables-only
   QMAKE_CXXFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -gline-tables-only -std=c++11
   DEFINES += QT_DEBUG
-
 
 } else {
 
