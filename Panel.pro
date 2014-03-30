@@ -8,5 +8,6 @@ include(src/Common.pro)
 
 TEMPLATE           = subdirs
 SUBDIRS            = src/panel
+CONFIG += ordered
 
 panel.depends = src/yajl src/cutelogger src/quazip src/notifications src/service_spawner

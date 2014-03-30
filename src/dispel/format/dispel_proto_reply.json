@@ -1,0 +1,75 @@
+/* This is node reply data format */
+
+{
+
+    /*
+        NOTE: Published job request, initially contains
+        reply data for current node. Job should be already
+        done on node before publishing.
+    */
+
+
+    /*
+        XXX: Node role information might be useful in reply
+    */
+    "role": "normal",
+
+
+    /*
+        "Finished job" state. Distributed Job is done on current node.
+        NOTE: When it's true, for all replies, the distributed job is done.
+    */
+    "fjob": false,
+
+
+    /*
+        Microseconds from 1970 (of response creation)
+    */
+    "tstamp": -1,
+
+
+    /*
+        Distributed instances. default: 1
+    */
+    "inst": 1, /* XXX: I'm not sure where it should be placed in structure */
+
+
+    /*
+        System load data - used to pick new node (for scalability)
+    */
+    "sysload": {
+
+        /*
+            CPU usage
+        */
+        "cpu": "",
+
+
+        /*
+            Mem usage
+        */
+        "mem": "",
+
+
+        /*
+            Disk IO usage
+        */
+        "dio": "",
+
+
+        /*
+            Network IO usage
+        */
+        "nio": ""
+
+    },
+
+
+    /*
+        Content returned by API as response
+    */
+    "api_response": {
+
+    }
+
+}

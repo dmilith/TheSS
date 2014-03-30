@@ -8,5 +8,6 @@ include(src/Common.pro)
 
 TEMPLATE           = subdirs
 SUBDIRS            = src/cutelogger src/quazip src/hiredis src/yajl src/service_spawner
+CONFIG += ordered
 
 service_spawner.depends = src/cutelogger src/quazip src/hiredis src/yajl src/notifications src/death_watch
