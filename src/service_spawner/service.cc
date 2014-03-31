@@ -13,10 +13,10 @@
 void SvdService::setupDefaultVPNNetwork() {
     #ifdef __FreeBSD__
         logInfo() << "Launching VPN Network Setup";
-        auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
-        proc->spawnProcess(DEFAULT_VPN_INTERFACE_SETUP_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
-        proc->waitForFinished(-1);
-        proc->deleteLater();
+        auto aProc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
+        aProc->spawnProcess(DEFAULT_VPN_INTERFACE_SETUP_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
+        aProc->waitForFinished(-1);
+        aProc->deleteLater();
     #endif
 }
 
@@ -24,10 +24,10 @@ void SvdService::setupDefaultVPNNetwork() {
 void SvdService::shutdownDefaultVPNNetwork() {
     #ifdef __FreeBSD__
         logInfo() << "Shutting down VPN Network Setup";
-        auto proc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
-        proc->spawnProcess(DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
-        proc->waitForFinished(-1);
-        proc->deleteLater();
+        auto aProc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
+        aProc->spawnProcess(DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
+        aProc->waitForFinished(-1);
+        aProc->deleteLater();
     #endif
 }
 
