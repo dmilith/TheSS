@@ -21,6 +21,9 @@ int main(int argc, char *argv[]) {
 
     QCoreApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    QCoreApplication::setOrganizationName("VerKnowSys");
+    QCoreApplication::setOrganizationDomain("verknowsys.com");
+    QCoreApplication::setApplicationName("ServeD");
     QStringList args = app.arguments();
     bool background = true; /* by default launch svdss as daemon */
     QRegExp rxEnableForeground("-f"); /* run in foreground */
