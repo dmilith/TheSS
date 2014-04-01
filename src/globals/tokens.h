@@ -2,8 +2,8 @@
 #define __TOKENS__
 
 
-#define DEFAULT_API_HOST "slack.com"
-#define NOTIFICATIONS_SLACK_AUTH_TOKEN "" /* for now only Slack is supported */
+#define NOTIFICATIONS_API_HOST "notifications.api.host"
+#define NOTIFICATIONS_API_TOKEN "notifications.api.token"
 
 
 #endif

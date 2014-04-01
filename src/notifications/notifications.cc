@@ -101,44 +101,56 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     logDebug() << "Notification msg:" << notificationMessage << "written to:" << QString::number(now) + "_" + notificationFileName;
     writeToFile(notificationRoot + "/" + QString::number(now) + "_" + notificationFileName, stringTime + " " + notificationMessage);
 
-    #ifdef NOTIFICATIONS_SLACK_AUTH_TOKEN
     #ifndef THESS_TEST_MODE /* don't launch notifications while testing */
     // if (level > NOTIFY) { /* notification only for errors */
-        logDebug() << "Launching https error notification with message:" << notificationMessage;
+        QSettings settings;
+        bool skip = false;
+        if (settings.value(NOTIFICATIONS_API_HOST).isNull()) {
+            logWarn() << NOTIFICATIONS_API_HOST << "property isn't set. Https notifications will be disabled.";
+            skip = true;
+        }
+        if (settings.value(NOTIFICATIONS_API_TOKEN).isNull()) {
+            logWarn() << NOTIFICATIONS_API_TOKEN << "property isn't set. Https notifications will be disabled.";
+            skip = true;
+        }
+        if (not skip) {
+            logDebug() << "Launching https error notification with message:" << notificationMessage;
 
-        QSslSocket socket;
-        #ifdef __FreeBSD__
-            if (not QFile::exists(DEFAULT_SSL_CA_CERT)) {
-                logWarn() << "No default SSL ROOT CA Certificates found in:" << DEFAULT_SSL_CA_CERT;
-            } else {
-                QSslSocket::addDefaultCaCertificates(DEFAULT_SSL_CA_CERT);
-                socket.addCaCertificates(DEFAULT_SSL_CA_CERT);
-                logTrace() << "CA certificates:" << socket.caCertificates();
-            }
-        #endif
-        socket.connectToHostEncrypted(DEFAULT_API_HOST, DEFAULT_SSL_PORT);
-        if (socket.waitForEncrypted())
-            logDebug() << "Connected to SSL host:" << DEFAULT_API_HOST;
+            QSslSocket socket;
+            #ifdef __FreeBSD__
+                if (not QFile::exists(DEFAULT_SSL_CA_CERT)) {
+                    logWarn() << "No default SSL ROOT CA Certificates found in:" << DEFAULT_SSL_CA_CERT;
+                } else {
+                    QSslSocket::addDefaultCaCertificates(DEFAULT_SSL_CA_CERT);
+                    socket.addCaCertificates(DEFAULT_SSL_CA_CERT);
+                    logTrace() << "CA certificates:" << socket.caCertificates();
+                }
+            #endif
+            QString apiHost = settings.value(NOTIFICATIONS_API_HOST).toString();
+            QString apiToken = settings.value(NOTIFICATIONS_API_TOKEN).toString();
+            socket.connectToHostEncrypted(apiHost, DEFAULT_SSL_PORT);
+            if (socket.waitForEncrypted())
+                logDebug() << "Connected to SSL host:" << apiHost;
 
-        logDebug() << "SSL Socket state:" << socket.state();
+            logDebug() << "SSL Socket state:" << socket.state();
 
-        QByteArray encodedMessage = message.toUtf8();
-        encodedMessage = encodedMessage.toPercentEncoding();
+            QByteArray encodedMessage = message.toUtf8();
+            encodedMessage = encodedMessage.toPercentEncoding();
 
-        QString get = QString("GET") + " /api/chat.postMessage?token=" + NOTIFICATIONS_SLACK_AUTH_TOKEN + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + levelStr + "&icon_emoji=" + icon + "&parse=full" + " HTTP/1.1\r\n";
-        logDebug() << "SSL request:" << get;
-        socket.write(get.toUtf8().data());
-        get = QString("Host: " + QString(DEFAULT_API_HOST) + "\r\n");
-        socket.write(get.toUtf8().data());
-        socket.write("Connection: Close\r\n\r\n");
+            QString get = QString("GET") + " /api/chat.postMessage?token=" + apiToken + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + levelStr + "&icon_emoji=" + icon + "&parse=full" + " HTTP/1.1\r\n";
+            logDebug() << "SSL request:" << get;
+            socket.write(get.toUtf8().data());
+            get = QString("Host: " + QString(apiHost) + "\r\n");
+            socket.write(get.toUtf8().data());
+            socket.write("Connection: Close\r\n\r\n");
 
-        while (socket.waitForBytesWritten())
-            logDebug() << "Notification http response:" << socket.readAll().data();
+            while (socket.waitForBytesWritten())
+                logDebug() << "Notification http response:" << socket.readAll().data();
 
-        socket.close();
-    #endif
-    #else
-        logWarn() << "Your Slack notifications token wasn't set. Set NOTIFICATIONS_AUTH_TOKEN to enable them.";
+            socket.close();
+            socket.deleteLater();
+
+        }
     #endif
     /* slack API auth */
 
