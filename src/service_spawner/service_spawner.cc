@@ -30,9 +30,10 @@ int main(int argc, char *argv[]) {
     QRegExp rxEnableDebug("-d");
     QRegExp rxEnableTrace("-t");
     QRegExp rxPrintVersion("-v");
+    QRegExp rxInteractive("-i");
     uint uid = getuid();
 
-    bool debug = false, trace = false;
+    bool debug = false, trace = false, interactive = false;
     for (int i = 1; i < args.size(); ++i) {
         if (rxEnableDebug.indexIn(args.at(i)) != -1 ) {
             debug = true;
@@ -43,6 +44,9 @@ int main(int argc, char *argv[]) {
         if (rxEnableTrace.indexIn(args.at(i)) != -1 ) {
             debug = true;
             trace = true;
+        }
+        if (rxInteractive.indexIn(args.at(i)) != -1 ) {
+            interactive = true;
         }
         if (rxPrintVersion.indexIn(args.at(i)) != -1) {
             cout << "ServeD Service Spawner v" << APP_VERSION << ". " << COPYRIGHT << endl;
@@ -116,6 +120,20 @@ int main(int argc, char *argv[]) {
     #ifdef THESS_TEST_MODE
         logFatal() << "Please rebuild TheSS after tests. Service Spawner can't be running in test mode.";
     #endif
+
+    QSettings settings;
+    if (interactive) {
+        char input[255];
+        logInfo() << "Enter" << NOTIFICATIONS_API_HOST << ":";
+        cin.getline(input, 255);
+        if (not QString(input).trimmed().isEmpty())
+            settings.setValue(NOTIFICATIONS_API_HOST, input);
+
+        logInfo() << "Enter" << NOTIFICATIONS_API_TOKEN << ":";
+        cin.getline(input, 255);
+        if (not QString(input).trimmed().isEmpty())
+            settings.setValue(NOTIFICATIONS_API_TOKEN, input);
+    }
 
     if (uid == 0) {
         logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
