@@ -1,7 +1,7 @@
 /* This is default Job message format */
 {
 
-    "pver": "0.2.0", /* protocol version.
+    "pver": 0.40,       /* protocol version.
                         WARNING: jobs will work only for nodes
                         with exact same protocol version! */
 
