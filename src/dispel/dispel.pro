@@ -14,6 +14,7 @@ DEFINES += NZMQT_LIB
 
 HEADERS += \
         nzmqt/*.hpp \
+        ../core/json_api.h \
         ../core/utils.h \
         ../notifications/notifications.h \
         ../quazip/quazip.h \
@@ -21,6 +22,7 @@ HEADERS += \
         *.h
 
 SOURCES += \
+        ../core/json_api.cc \
         ../core/utils.cc \
         ../notifications/notifications.cc \
         nzmqt/*.cpp \
@@ -35,4 +37,5 @@ LIBS += \
         ../libzeromq.a \
         ../liblogger.a \
         ../libquazip.a \
+        ../libyajl.a \
         -lz

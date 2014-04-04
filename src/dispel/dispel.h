@@ -20,7 +20,4 @@
 #include "dispel_core.h"
 
 
-QMap<QString, QString> readNodesData();
-
-
 #endif

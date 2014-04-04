@@ -10,35 +10,6 @@
 #include "dispel_subscriber.h"
 
 
-/*
-    example value for knownNodes file:
-
-    {
-      "knownNodes": [
-          ["127.0.0.1", "{40a8e817-57de-4e5e-9806-2c1338a5079b}"],
-          ["192.168.0.9", "{40a8e817-57de-4e5e-9806-2c1338a5079b}"]
-      ]
-    }
-
-*/
-
-
-QMap<QString, QString> readNodesData() {
-    auto map = QMap<QString, QString>();
-    if (getuid() == 0) {
-        QMap<QString,QString> nodes = allKnownNodeUUIDs();
-        logInfo() << "Known nodes:" << nodes.values();
-        Q_FOREACH(QString node, nodes) {
-            map.insert(DEFAULT_LOCAL_ADDRESS, node);
-        }
-    } else {
-        map.insert("192.168.0.9", "{devel-node-uuid}"); // XXX: local box
-        map.insert("192.168.0.10", "{devel-node-uuid}"); // XXX: local vm
-    }
-    return map;
-}
-
-
 int main(int argc, char *argv[]) {
 
     QCoreApplication app(argc, argv);
@@ -81,22 +52,22 @@ int main(int argc, char *argv[]) {
         consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
     }
 
-    uint uid = getuid();
-    switch (uid) {
-        case 0: {
-            logInfo() << "Checking existance and access priviledges of ServeD private directories";
-            // readOrGenerateNodeUuid();
-            if (not QDir().exists(DISPEL_NODE_KNOWN_NODES_DIR))
-                QDir().mkpath(DISPEL_NODE_KNOWN_NODES_DIR);
-            chmod(DISPEL_NODE_IDENTIFICATION_FILE, 0600); /* rw------- */
-            chmod(DISPEL_NODE_KNOWN_NODES_DIR, 0600); /* rw------- */
+    /* setting up file permissions */
+    auto idFile = (getHomeDir() + DISPEL_NODE_IDENTIFICATION_FILE).toUtf8();
+    chmod(idFile, 0600); /* rw------- */
+    auto nodesFIle = (getHomeDir() + DISPEL_NODES_FILE).toUtf8();
+    chmod(nodesFIle, 0600); /* rw------- */
 
-        } break;
+    // uint uid = getuid();
+    // switch (uid) {
+    //     case 0: {
 
-        default:
-            logError() << "Please note that this software requires super user priviledges to run!";
-            // logFatal()
-    }
+    //     } break;
+
+    //     default:
+    //         logWarn() << "Please note that this software requires super user priviledges to run!";
+    //         // logFatal()
+    // }
 
     logInfo("The ServeD Dispel v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
     logInfo("Using Zeromq v" + zmqVersion());
