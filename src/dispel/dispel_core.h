@@ -52,6 +52,9 @@
 // #define DISPEL_NODE_KNOWN_NODES_DIR "/.svd-known-nodes/"
 #define DISPEL_API_HEADER_LENGTH 39
 
+#define DISPEL_NODE_ENTRY "node"
+#define DISPEL_NODES_ENTRY "known-nodes"
+
 #include "nzmqt/AbstractZmqBase.hpp"
 #include "nzmqt/nzmqt.hpp"
 

@@ -15,7 +15,7 @@ QMap<QString, QString> readNodesData() {
     if (QString(errbuf).length() > 0) {
         logError() << "Error in nodes file:" << DISPEL_NODES_FILE << "::" << errbuf;
     }
-    QStringList nodes = JSONAPI::getArray(knownNodes, NULL, "known-nodes");
+    QStringList nodes = JSONAPI::getArray(knownNodes, NULL, DISPEL_NODES_ENTRY);
 
     QMap<QString, QString> buf;
     Q_FOREACH(QString node, nodes) {
@@ -37,7 +37,7 @@ QString currentNodeUUID() {
     if (QString(errbuf).length() > 0) {
         logError() << "Error in identification file:" << getHomeDir() + DISPEL_NODE_IDENTIFICATION_FILE << "::" << errbuf;
     }
-    QString node = JSONAPI::getString(currentNode, NULL, "node");
+    QString node = JSONAPI::getString(currentNode, NULL, DISPEL_NODE_ENTRY);
     yajl_tree_free(currentNode);
     return node; /* NOTE: will return uuid for 127.0.0.1 host (DEFAULT_LOCAL_ADDRESS) as current system */
 }
