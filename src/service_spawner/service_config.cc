@@ -115,8 +115,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     formatVersion = getDouble("formatVersion");
     logDebug() << "IGN-VER:" << QString::number(formatVersion) << "APP-VER:" << QString::number(appVerVal) << "difference:" << QString::number(appVerVal - formatVersion);
     if ((appVerVal - formatVersion) > 0.1) {
-        logError() << "Outdated igniter format detected. Please update your igniters!";
-        return;
+        logWarn() << "Outdated igniter format detected. Please update your igniters!";
     }
     shell = getString("shell");
     softwareName = getString("softwareName");
