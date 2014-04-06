@@ -1239,8 +1239,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     auto binappScript = latestReleaseDir + "/bin/app";
     if (QFile::exists(binappScript)) {
         logDebug() << "Detected bin/app script in service root. Replacing special #ENVIRONMENT with environment loading routine";
+        QString el;
+        switch (appType) {
+            case NodeSite:
+                el = "NODE";
+                break;
+            case RubySite:
+                el = "RUBY";
+                break;
+            case PhpSite:
+                el = "PHP";
+                break;
+            default:
+                el = "STATIC";
+                break;
+        }
         /* replace special in bin/app launcher */
-        writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", ". " + envFilePathDest));
+        writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", ". " + envFilePathDest + "\nfor elm in `env | grep " + el + "_`; do export $elm; done\n"));
     }
 
     logDebug() << "Creating .pids, .envs and .confs";
