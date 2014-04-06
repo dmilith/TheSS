@@ -924,7 +924,7 @@ void PanelGui::readInput(){
             key(ch);
         }
     } else {
-        usleep(20000);
+        usleep(2000);
     }
 }
 
