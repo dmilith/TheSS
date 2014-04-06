@@ -777,6 +777,12 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
                     logInfo() << "Dependency:" << val << "seems to be running, TCP/UDP port taken:" << QString::number(dependencyPort);
                     break;
             }
+            auto socketFile = location + DEFAULT_SERVICE_SOCKET_FILE;
+            if (QFile::exists(socketFile)) {
+                logDebug() << "Detected service socket file. It's fine.";
+                logInfo() << "Dependency:" << val << "seems to be running, UNIX socket exists:" << socketFile;
+                break;
+            }
 
             if (steps % 5 == 0) {
                 QFile::remove(location + RESTART_TRIGGER_FILE);
