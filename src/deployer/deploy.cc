@@ -1284,7 +1284,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(envFilePathDest, envEntriesString);
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
-            clne->spawnProcess(QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + svConfig->releaseName() + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG 2>&1", DEFAULT_DEPLOYER_SHELL);
+            clne->spawnProcess(QString("cd ") + getServiceDataDir(serviceName) + DEFAULT_RELEASES_DIR + svConfig->releaseName() + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> " + getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1", DEFAULT_DEPLOYER_SHELL);
             clne->waitForFinished(-1);
 
         } break;
