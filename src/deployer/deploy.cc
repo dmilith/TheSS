@@ -992,15 +992,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             /* write to service env file */
 
-            logInfo() << "Building environment for stage:" << stage;
-            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
-            envEntriesString += "STATIC_ENV=" + stage + "\n";
-            envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
-            // envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
-            envEntriesString += "STATIC_PORT=" + servPort + "\n";
-            envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
-            writeToFile(envFilePath, envEntriesString);
+            // logInfo() << "Building environment for stage:" << stage;
+            // envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            // envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            // envEntriesString += "STATIC_ENV=" + stage + "\n";
+            // envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
+            // // envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
+            // envEntriesString += "STATIC_PORT=" + servPort + "\n";
+            // envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
+            // writeToFile(envFilePath, envEntriesString);
 
         } break;
 
@@ -1135,7 +1135,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && " + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
@@ -1154,16 +1154,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             /* write to service env file */
             QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
-            logInfo() << "Building environment for stage:" << stage;
-            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
-            // envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
-            envEntriesString += "NODE_ENV=" + stage + "\n";
-            envEntriesString += "NODE_PORT=" + servPort + "\n";
-            envEntriesString += "NODE_DOMAIN=" + domain + "\n";
-            envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
-            envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
-            writeToFile(envFilePath, envEntriesString);
+            // logInfo() << "Building environment for stage:" << stage;
+            // envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            // envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
+            // // envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
+            // envEntriesString += "NODE_ENV=" + stage + "\n";
+            // envEntriesString += "NODE_PORT=" + servPort + "\n";
+            // envEntriesString += "NODE_DOMAIN=" + domain + "\n";
+            // envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
+            // envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
+            // writeToFile(envFilePath, envEntriesString);
 
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString deps = readFileContents(depsFile).trimmed();
@@ -1173,7 +1173,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}\n"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && bin/app >> SERVICE_LOG 2>&1 &\"}\n}\n"; /* env loading is invoked from bin/app */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
         } break;
@@ -1195,7 +1195,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult += "\n\n\"start\": {\"commands\": \"sofin reload && " + buildEnv(serviceName, appDependencies, latestRelease) + " SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && echo 'Php app ready' >> SERVICE_LOG\"}\n}\n";
+            jsonResult += "\n\n\"start\": {\"commands\": \"sofin reload && SERVICE_ROOT/exports/php-fpm -c SERVICE_PREFIX/service.ini --fpm-config SERVICE_CONF -D && echo 'Php app ready' >> SERVICE_LOG\"}\n}\n";
 
         } break;
 
@@ -1234,6 +1234,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* now we can generate environment again for destination app */
     envEntriesString = "";
     QString envFilePathDest = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
+
+    /* replace "#ENVIRONMENT#" with ". env_file_path" */
+    auto binappScript = latestReleaseDir + "/bin/app";
+    if (QFile::exists(binappScript)) {
+        logDebug() << "Detected bin/app script in service root. Replacing special #ENVIRONMENT with environment loading routine";
+        /* replace special in bin/app launcher */
+        writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", ". " + envFilePathDest));
+    }
 
     logDebug() << "Creating .pids, .envs and .confs";
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
