@@ -119,6 +119,7 @@ void TestLibrary::testParseDefault() {
     QVERIFY(testParseDefault.split("/").size() == 2);
     char errbuf[1024];
     auto config = new SvdServiceConfig(); /* Load default values */
+    QVERIFY(config->standaloneDependencies.size() > 0);
     QVERIFY(config->valid());
 
     /* parse arrays test */
@@ -217,6 +218,9 @@ void TestLibrary::testParseExistingIgniter() {
     QVERIFY(testParseDefault.split("/").size() == 2);
     char errbuf[1024];
     auto config = new SvdServiceConfig("Redis"); /* Load Redis igniter values */
+    QVERIFY(config->standaloneDependencies.size() > 0);
+    QVERIFY(config->standaloneDependencies.contains("redis-usock"));
+    QVERIFY(config->standaloneDependencies.contains("mysql"));
     QVERIFY(config->valid());
 
     /* parse arrays test */
