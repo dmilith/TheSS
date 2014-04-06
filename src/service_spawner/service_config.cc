@@ -112,9 +112,9 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
 
     auto spt = QString(APP_VERSION).split("."); /* XXX: provide double value */
     auto appVerVal = (spt.at(0) + "." + spt.at(1)).toDouble();
-    auto formatVersionVal = getDouble("formatVersion");
-    logTrace() << "IGN-VER:" << QString::number(formatVersionVal) << "APP-VER:" << QString::number(appVerVal) << "difference:" << QString::number(appVerVal - formatVersionVal);
-    if (appVerVal - formatVersionVal > 0.1) {
+    formatVersion = getDouble("formatVersion");
+    logDebug() << "IGN-VER:" << QString::number(formatVersion) << "APP-VER:" << QString::number(appVerVal) << "difference:" << QString::number(appVerVal - formatVersion);
+    if ((appVerVal - formatVersion) > 0.1) {
         logError() << "Outdated igniter format detected. Please update your igniters!";
         return;
     }
@@ -161,6 +161,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
 
 void SvdServiceConfig::prettyPrint() {
     logDebug() << "Service |                     name:" << name;
+    logDebug() << "        |            formatVersion:" << formatVersion;
     logDebug() << "        |                    shell:" << shell;
     logDebug() << "        |             softwareName:" << softwareName;
     logDebug() << "        |                autoStart:" << autoStart;
