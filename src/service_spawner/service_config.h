@@ -90,7 +90,7 @@ class SvdServiceConfig : public QObject {
         int generatedDefaultPort = 0;
         double formatVersion = 0.0;
         bool autoStart, watchPort, watchUdpPort, alwaysOn, resolveDomain, webApp;
-        long long staticPort, portsPool, minimumRequiredDiskSpace, configureOrder, startOrder, notificationLevel;
+        long long staticPort = -1, portsPool = -1, minimumRequiredDiskSpace = -1, configureOrder = -1, startOrder = -1, notificationLevel = -1;
         QStringList dependencies, watchHttpAddresses, domains, standaloneDependencies;
         QList<SvdScheduler*> schedulers;
         SvdShellOperations  *install = NULL,
