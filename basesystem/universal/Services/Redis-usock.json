@@ -22,8 +22,10 @@ SERVICE_ROOT/exports/redis-server SERVICE_CONF \
         "commands": " \
 test ! -f SERVICE_CONF && printf \" \
 # Default Redis service configuration for UNIX sockets \
-unixsocket SERVICE_PREFIX/service.sock \
 port 0 \
+bind 127.0.0.1 \
+unixsocket SERVICE_PREFIX/service.sock \
+unixsocketperm 700 \
 pidfile SERVICE_PID \
 dir SERVICE_PREFIX/database \
 dbfilename database.rdf \
