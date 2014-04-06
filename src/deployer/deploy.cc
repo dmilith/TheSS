@@ -1176,10 +1176,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + "bin/app >> SERVICE_LOG 2>&1 &\"}\n}\n"; /* bin/app has to get all settings from ENV (stage in NODE_ENV) */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
-            logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
-            clne->spawnProcess(QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG", DEFAULT_DEPLOYER_SHELL);
-            clne->waitForFinished(-1);
-
         } break;
 
 
@@ -1286,6 +1282,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
             envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
             writeToFile(envFilePathDest, envEntriesString);
+
+            logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
+            clne->spawnProcess(QString("cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + svConfig->releaseName() + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> SERVICE_LOG 2>&1", DEFAULT_DEPLOYER_SHELL);
+            clne->waitForFinished(-1);
 
         } break;
         case PhpSite: {
