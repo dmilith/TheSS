@@ -1230,33 +1230,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // 2. remove all non empty .pids .envs .confs from old releases
 
     QString servPort = readFileContents(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
 
     /* now we can generate environment again for destination app */
     envEntriesString = "";
     QString envFilePathDest = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
-
-    /* replace "#ENVIRONMENT#" with ". env_file_path" */
-    auto binappScript = latestReleaseDir + "/bin/app";
-    if (QFile::exists(binappScript)) {
-        logDebug() << "Detected bin/app script in service root. Replacing special #ENVIRONMENT with environment loading routine";
-        QString el;
-        switch (appType) {
-            case NodeSite:
-                el = "NODE";
-                break;
-            case RubySite:
-                el = "RUBY";
-                break;
-            case PhpSite:
-                el = "PHP";
-                break;
-            default:
-                el = "STATIC";
-                break;
-        }
-        /* replace special in bin/app launcher */
-        writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", ". " + envFilePathDest + "\nfor elm in `env | grep " + el + "_`; do export $elm; done\n"));
-    }
 
     logDebug() << "Creating .pids, .envs and .confs";
     getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
@@ -1307,7 +1285,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             writeToFile(envFilePathDest, envEntriesString);
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
-            clne->spawnProcess(QString("cd ") + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> " + getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE + " 2>&1", DEFAULT_DEPLOYER_SHELL);
+            clne->spawnProcess(QString("cd ") + latestReleaseDir + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " npm install >> " + serviceLog + " 2>&1", DEFAULT_DEPLOYER_SHELL);
             clne->waitForFinished(-1);
 
         } break;
@@ -1316,7 +1294,13 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
     }
 
-    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
+    /* replace "#ENVIRONMENT#" with ". env_file_path" */
+    auto binappScript = latestReleaseDir + "/bin/app";
+    if (QFile::exists(binappScript)) {
+        logDebug() << "Detected bin/app script in service root. Replacing special #ENVIRONMENT with environment loading routine";
+        /* replace special in bin/app launcher */
+        writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", "for elm in `cat envFilePathDest`; do\necho Exporting $elm >> " + serviceLog + "\nexport $elm\ndone\n"));
+    }
 
     /* TODO: clean generated environment */
 
