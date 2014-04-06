@@ -1299,7 +1299,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     if (QFile::exists(binappScript)) {
         logDebug() << "Detected bin/app script in service root. Replacing special #ENVIRONMENT with environment loading routine";
         /* replace special in bin/app launcher */
-        writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", "for elm in `cat envFilePathDest`; do\necho Exporting $elm >> " + serviceLog + "\nexport $elm\ndone\n"));
+        writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", "for elm in `cat " + envFilePathDest + "`; do\necho Exporting $elm >> " + serviceLog + "\nexport $elm\ndone\n"));
     }
 
     /* TODO: clean generated environment */
