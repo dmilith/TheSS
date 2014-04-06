@@ -1231,6 +1231,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     QString servPort = readFileContents(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
+    QString servicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
     /* now we can generate environment again for destination app */
     envEntriesString = "";
@@ -1266,6 +1267,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
             envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "RUBY_PORT=" + servPort + "\n";
+            envEntriesString += "RUBY_PID_FILE=" + servicePidFile + "\n";
+            envEntriesString += "RUBY_LOG_FILE=" + serviceLog + "\n";
             envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
             writeToFile(envFilePathDest, envEntriesString);
 
@@ -1280,6 +1283,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "NODE_PORT=" + servPort + "\n";
             envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "NODE_DOMAIN=" + domain + "\n";
+            envEntriesString += "NODE_PID_FILE=" + servicePidFile + "\n";
+            envEntriesString += "NODE_LOG_FILE=" + serviceLog + "\n";
             envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
             envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
             writeToFile(envFilePathDest, envEntriesString);
