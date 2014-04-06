@@ -894,6 +894,7 @@ QString getDbName(WebDatastore db) {
 QStringList filterSpawnableDependencies(const QString& deps) {
     /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
     auto defaultIgn = new SvdServiceConfig();
+    defaultIgn->prettyPrint();
     QStringList allowedToSpawnDeps = defaultIgn->standaloneDependencies; /* dependencies allowed to spawn as independent service */
     if (allowedToSpawnDeps.size() == 0) {
         logWarn() << "No spawnable dependencies found! It probably means that something is wrong with user igniters for uid:" << QString::number(getuid());
