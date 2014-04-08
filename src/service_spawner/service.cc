@@ -325,6 +325,19 @@ void SvdService::babySitterSlot() {
                 logDebug() << "No service pid file found for service:" << name << "Ignoring this problem (might be auto pid managment defined in software)";
             }
 
+            if (config->watchSocket) {
+                auto socketFile = getServiceDataDir(name) + DEFAULT_SERVICE_SOCKET_FILE;
+                logDebug() << "Checking UNIX socket availability (" << socketFile << ") for service:" << name;
+                if (not QFile::exists(socketFile)) {
+                    QString msg = "Socket file not found for service: " + name + ". Restarting service.";
+                    notificationSend(msg, ERROR);
+                    emit restartSlot();
+                    return;
+
+                } else
+                    logDebug() << "Socket exists. Service seems to be just fine.";
+            }
+
             /* perform additional port check if watchPort property is set to true */
             if (config->watchPort) {
                 logDebug() << "Checking port availability for service" << name;

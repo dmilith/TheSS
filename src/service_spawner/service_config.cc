@@ -123,6 +123,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     notificationLevel = getInteger("notificationLevel");
     webApp = getBoolean("webApp");
     watchPort = getBoolean("watchPort");
+    watchSocket = getBoolean("watchSocket");
     watchUdpPort = getBoolean("watchUdpPort");
     alwaysOn = getBoolean("alwaysOn");
     resolveDomain = getBoolean("resolveDomain");
@@ -167,6 +168,7 @@ void SvdServiceConfig::prettyPrint() {
     logDebug() << "        |        notificationLevel:" << notificationLevel;
     logDebug() << "        |                   webApp:" << webApp;
     logDebug() << "        |                watchPort:" << watchPort;
+    logDebug() << "        |                watchSocket:" << watchSocket;
     logDebug() << "        |             watchUdpPort:" << watchUdpPort;
     logDebug() << "        |                 alwaysOn:" << alwaysOn;
     logDebug() << "        |            resolveDomain:" << resolveDomain;
@@ -303,6 +305,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     notificationLevel = getInteger("notificationLevel");
     webApp = getBoolean("webApp");
     watchPort = getBoolean("watchPort");
+    watchSocket = getBoolean("watchSocket");
     watchUdpPort = getBoolean("watchUdpPort");
     alwaysOn = getBoolean("alwaysOn");
     resolveDomain = getBoolean("resolveDomain");

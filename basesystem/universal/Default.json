@@ -1,5 +1,5 @@
 {
-    "formatVersion": 0.90,
+    "formatVersion": 0.92,
 
     "shell": "/Software/Zsh/exports/zsh",
 
@@ -37,6 +37,9 @@
 
     /* watchPort with true will always watch for service TCP port with babysitter */
     "watchPort": true,
+
+    /* watchSocket with true will always watch for service UNIX socket with babysitter */
+    "watchSocket": false,
 
     /* watchPort with true will always watch for service UDP port with babysitter */
     "watchUdpPort": false,

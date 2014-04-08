@@ -1,6 +1,7 @@
 {
     "softwareName": "Redis",
     "watchPort": false,
+    "watchSocket": true,
     "autoStart": true,
     "schedulers": [
         "*/50 12 * * * ?! \
