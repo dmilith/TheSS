@@ -147,7 +147,7 @@
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
     #define DEFAULT_CRON_CHECK_DELAY 60000000 // 60s
     #define DEFAULT_SERVICE_PAUSE_INTERVAL 5000000 // 5 seconds
-    #define BABYSITTER_TIMEOUT_INTERVAL 30000000 // 30 seconds
+    #define BABYSITTER_TIMEOUT_INTERVAL 15000000 // 15 seconds
     #define COLLECTOR_TIMEOUT_INTERVAL 1000000 // 1 second
     #define DEFAULT_GATHERING_PAUSE_MICROSECONDS 500000 // half a second
     #define DEFAULT_COUNT_OF_ROUNDS_OF_GATHERING 7200 // waiting half a second, hence 7200 is 60 minutes of gathering
