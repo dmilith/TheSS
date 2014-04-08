@@ -560,9 +560,9 @@ void generateServicePorts(QString servicePath, int amount) {
     if (amount < 1) {
         amount = 1;
     }
-    QString portsDir = servicePath + QString(DEFAULT_SERVICE_PORTS_DIR);
+    QString portsDir = servicePath + DEFAULT_SERVICE_PORTS_DIR;
     getOrCreateDir(portsDir);
-    QString portFilePath = portsDir + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+    QString portFilePath = portsDir + DEFAULT_SERVICE_PORT_NUMBER; /* default port */
     // if (not QFile::exists(portFilePath)) {
     QTime midnight(0, 0, 0);
     qsrand(midnight.msecsTo(QTime::currentTime()));

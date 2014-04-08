@@ -123,9 +123,8 @@ Scheduler example based on Redis igniter:
 
 ```sh
 # Standard formatting for "cronEntry":
-"*/10 10,11,12 1-15 * * ?"  # invoke each 10 minutes, exactly at 10am or 11am or 12am,
+"*/10 10,11,12 1-15 * * ?! commands"  # invoke each 10 minutes, exactly at 10am or 11am or 12am,
 # only in first 15 days of month.
-# The "?" sign is just a required symbolic placeholder which must be last character of each cron entry.
 
 # Currently supported cron formats:
 *       # WILDCARD: passes on each value
