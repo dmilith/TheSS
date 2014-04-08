@@ -227,5 +227,10 @@ int main(int argc, char *argv[]) {
     removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + "build-in-progress-" + stage, true);
     removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + "build-in-progress-" + stage, true);
 
+    if (not QFile::exists(getServiceDataDir(serviceName) + DEFAULT_SERVICE_RUNNING_FILE)) {
+        logInfo() << "Launching service:" << serviceName;
+        touch(getServiceDataDir(serviceName) + START_TRIGGER_FILE);
+    }
+
     return EXIT_SUCCESS;
 }
