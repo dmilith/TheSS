@@ -7,13 +7,14 @@
 test "$(id -u)" = "0" || error "Updater must be run as root"
 
 TTYS="/etc/ttys"
-SVD_SHELL="/bin/svdshell"
+SVD_PREFIX="/Software/TheSS/exports/"
+SVD_SHELL="${SVD_PREFIX}svdshell"
 STAT_BIN="/usr/bin/stat"
 
 if [ ! -f "${TTYS}" ]; then
     printf "# Default TTYs for ServeD system\n \
-ttyv1 \"/bin/svdss\"              xterm on secure \n \
-ttyv2 \"/bin/svdcoreginx_helper\" xterm on secure \n \
+ttyv1 \"${SVD_PREFIX}svdss\"              xterm on secure \n \
+ttyv2 \"${SVD_PREFIX}svdcoreginx_helper\" xterm on secure \n \
 \n" > ${TTYS}
 fi
 
