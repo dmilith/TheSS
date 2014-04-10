@@ -7,7 +7,7 @@
 test "$(id -u)" = "0" || error "Updater must be run as root"
 
 TTYS="/etc/ttys"
-SVD_PREFIX="/Software/TheSS/exports/"
+SVD_PREFIX="/Software/Thess/exports/"
 SVD_SHELL="${SVD_PREFIX}svdshell"
 STAT_BIN="/usr/bin/stat"
 
