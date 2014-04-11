@@ -53,6 +53,10 @@ http { \
     fastcgi_buffers 8 16k; \
     fastcgi_buffer_size 32k; \
  \
+    ssl_protocols SSLv3 TLSv1.2; \
+    ssl_ciphers HIGH:!aNULL:!MD5; \
+    ssl_prefer_server_ciphers on; \
+ \
     access_log off; \
  \
     server { \
