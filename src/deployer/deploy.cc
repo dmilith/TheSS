@@ -1439,6 +1439,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         timeout--;
         if (timeout == 0)
             break;
+        sleep(1);
     }
 
     clne->deleteLater();
