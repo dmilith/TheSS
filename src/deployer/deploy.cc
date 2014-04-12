@@ -1405,8 +1405,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* -- */
 
     /* stop all dependencies before real launch */
-    logInfo() << "Requesting dependencies stop";
-    requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
+    // logInfo() << "Requesting dependencies stop";
+    // requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
 
     /* prepare http proxy */
     logInfo() << "Generating http proxy configuration for web-app";
