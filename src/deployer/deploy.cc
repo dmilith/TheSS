@@ -1263,7 +1263,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QString serviceLog = servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     QString servicePidFile = servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
-    /* now we can generate environment again for destination app */
+    /* now we can generate environment for destination app */
     envEntriesString = "";
     QString envFilePathDest = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
 
@@ -1425,7 +1425,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     int timeout = DEFAULT_DEPLOYER_TIMEOUT_INTERVAL;
     while (not pidIsAlive(aPid)) {
         aPid = readFileContents(servicePidFile).trimmed().toUInt();
-        if (timeout % 10 == 0) {
+        if (timeout % 5 == 0) {
             logInfo() << "Waiting for service to start:" << serviceName;
             QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
