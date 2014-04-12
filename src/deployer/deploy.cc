@@ -799,6 +799,34 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
 }
 
 
+void requestDependenciesStoppedOf(const QString& serviceName, const QStringList appDependencies, SvdServiceConfig* svConfig) {
+    Q_FOREACH(auto val, appDependencies) {
+        val[0] = val.at(0).toUpper();
+        QString location = getOrCreateDir(getServiceDataDir(val));
+
+        QString homeDr = getenv("HOME");
+        logDebug() << "Validating depdendency igniter existance in service prefix:" << val << "with homedir:" << homeDr;
+        QString igniterFile = homeDr + DEFAULT_USER_IGNITERS_DIR + val + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+        QString igniterFileContent = readFileContents(igniterFile).trimmed();
+        if (igniterFileContent.size() <= 1) {
+            logError() << "No fully qualified igniter found for service:" << val << "Make sure that you have installed default igniters!";
+            raise(SIGINT);
+            raise(SIGTERM);
+            // TODO: write igniter from some source
+        }
+
+        int steps = 0;
+        int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+        logInfo() << "Requesting dependency shutdown:" << val << "with pid:" << QString::number(aPid);
+        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
+        while (pidIsAlive(aPid)) {
+            deathWatch(aPid, SIGINT);
+        }
+        svConfig->deleteLater();
+    }
+}
+
+
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
     /* deal with dependencies. filter through them, don't add dependencies which shouldn't start standalone */
     QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
@@ -1370,11 +1398,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     }
 
-        /* spawn bin/build */
+    /* spawn bin/build */
     logInfo() << "Invoking bin/build of project if exists";
     clne->spawnProcess("cd " + latestReleaseDir + " && test -f bin/build && chmod a+x bin/build && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/build " + stage + " >> " + serviceLog, DEFAULT_DEPLOYER_SHELL);
     clne->waitForFinished(-1);
     /* -- */
+
+    /* stop all dependencies before real launch */
+    requestDependenciesStoppedOf(serviceName, appDependencies, svConfig);
 
     /* prepare http proxy */
     logInfo() << "Generating http proxy configuration for web-app";
