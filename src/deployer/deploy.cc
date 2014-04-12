@@ -1419,7 +1419,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // startWithoutDependencies(serviceName);
 
     //if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-    touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+    // touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
 
     uint aPid = readFileContents(servicePidFile).trimmed().toUInt();
     int timeout = DEFAULT_DEPLOYER_TIMEOUT_INTERVAL;
