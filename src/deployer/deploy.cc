@@ -1319,8 +1319,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "NODE_DOMAIN=" + domain + "\n";
             envEntriesString += "NODE_PID_FILE=" + servicePidFile + "\n";
             envEntriesString += "NODE_LOG_FILE=" + serviceLog + "\n";
-            envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
-            envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
+            // envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
+            // envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
             writeToFile(envFilePathDest, envEntriesString);
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
