@@ -1411,9 +1411,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // logInfo() << "Requesting dependencies stop";
     requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
 
-    if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
-        touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
     // logInfo() << "Writing web-app current release version";
     // writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
     // startWithoutDependencies(serviceName);
@@ -1452,6 +1449,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
     /* -- */
 
+    if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
+        touch(servicePath + AUTOSTART_TRIGGER_FILE);
 
     clne->deleteLater();
     svConfig->deleteLater();
