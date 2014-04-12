@@ -1015,8 +1015,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += "\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_LOG\"}\n}";
 
-            generateServicePorts(servicePath);
-            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            // generateServicePorts(servicePath);
+            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
 
@@ -1035,21 +1035,21 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case RubySite: {
 
-            generateServicePorts(servicePath);
-            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            // generateServicePorts(servicePath);
+            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
-            logInfo() << "Building environment for stage:" << stage;
-            envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
-            envEntriesString += "RAILS_ENV=" + stage + "\n";
-            envEntriesString += "RAKE_ENV=" + stage + "\n";
-            envEntriesString += "RUBY_ENV=" + stage + "\n";
-            envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
-            // envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
-            envEntriesString += "RUBY_PORT=" + servPort + "\n";
-            envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
-            writeToFile(envFilePath, envEntriesString);
+            // logInfo() << "Building environment for stage:" << stage;
+            // envEntriesString += "LANG=" + QString(LOCALE) + "\n";
+            // envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
+            // envEntriesString += "RAILS_ENV=" + stage + "\n";
+            // envEntriesString += "RAKE_ENV=" + stage + "\n";
+            // envEntriesString += "RUBY_ENV=" + stage + "\n";
+            // envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
+            // // envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
+            // envEntriesString += "RUBY_PORT=" + servPort + "\n";
+            // envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
+            // writeToFile(envFilePath, envEntriesString);
 
             appDependencies = filterSpawnableDependencies(deps);
 
@@ -1177,11 +1177,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case NodeSite: {
 
-            generateServicePorts(servicePath, 2); /* XXX: 2 ports for node by default */
-            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            // generateServicePorts(servicePath, 2); /* XXX: 2 ports for node by default */
+            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             /* write to service env file */
-            QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
+            // QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
             // logInfo() << "Building environment for stage:" << stage;
             // envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             // envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
@@ -1216,8 +1216,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 raise(SIGTERM);
             #endif
 
-            generateServicePorts(servicePath);
-            QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+            // generateServicePorts(servicePath);
+            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString deps = readFileContents(depsFile).trimmed();
@@ -1257,19 +1257,20 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // 1. remove all empty .pids, .envs, .confs dirs
     // 2. remove all non empty .pids .envs .confs from old releases
 
-    QString servPort = readFileContents(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-    QString serviceLog = getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
-    QString servicePidFile = getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
+    generateServicePorts(servicePath, 2); /* XXX: hardcode: 2 ports for each web app by default */
+    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+    QString serviceLog = servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
+    QString servicePidFile = servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
     /* now we can generate environment again for destination app */
     envEntriesString = "";
     QString envFilePathDest = servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_ENV_FILE;
 
     logDebug() << "Creating .pids, .envs and .confs";
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName());
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName());
-    getOrCreateDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName());
+    getOrCreateDir(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName());
+    getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + svConfig->releaseName());
+    getOrCreateDir(servicePath + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName());
+    getOrCreateDir(servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName());
 
     switch (appType) {
         case StaticSite: {
