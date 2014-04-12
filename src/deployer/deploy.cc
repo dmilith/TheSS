@@ -1431,14 +1431,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // startWithoutDependencies(serviceName);
 
     if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+        touch(servicePath + START_TRIGGER_FILE);
 
     uint aPid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
     int timeout = 30;
     while (not pidIsAlive(aPid)) {
         aPid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
         if (timeout % 5 == 0)
-            logInfo() << "Waiting for main service pid:" << QString::number(aPid);
+            logInfo() << "Waiting for service:" << serviceName;
+        logDebug() << "Pid in file:" << QString::number(aPid) << "timeout:" << QString::number(timeout);
         timeout--;
         if (timeout == 0)
             break;
