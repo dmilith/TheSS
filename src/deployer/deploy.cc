@@ -738,8 +738,9 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir, QStrin
 }
 
 
-void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies, SvdServiceConfig* svConfig) {
+void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName) {
     Q_FOREACH(auto val, appDependencies) {
+        logDebug() << "Processing dependency:" << val;
         val[0] = val.at(0).toUpper();
         QString location = getOrCreateDir(getServiceDataDir(val));
 
@@ -755,16 +756,16 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
         }
 
         int steps = 0;
-        int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+        int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
         logInfo() << "Requesting dependency presence:" << val << "with pid:" << QString::number(aPid);
-        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
+        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE;
         while (not pidIsAlive(aPid)) {
             if (not QFile::exists(location + DEFAULT_SERVICE_RUNNING_FILE)) {
                 QFile::remove(location + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
                 touch(location + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             }
             sleep(1);
-            aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+            aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
             steps++;
 
             /* check for tcp port of dependency? */
@@ -794,13 +795,13 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
                 break;
             }
         }
-        svConfig->deleteLater();
     }
 }
 
 
-void requestDependenciesStoppedOf(const QString& serviceName, const QStringList appDependencies, SvdServiceConfig* svConfig) {
+void requestDependenciesStoppedOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName) {
     Q_FOREACH(auto val, appDependencies) {
+        logDebug() << "Processing dependency:" << val;
         val[0] = val.at(0).toUpper();
         QString location = getOrCreateDir(getServiceDataDir(val));
 
@@ -816,13 +817,12 @@ void requestDependenciesStoppedOf(const QString& serviceName, const QStringList 
         }
 
         int steps = 0;
-        int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+        int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
         logInfo() << "Requesting dependency shutdown:" << val << "with pid:" << QString::number(aPid);
-        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
+        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE;
         while (pidIsAlive(aPid)) {
             deathWatch(aPid, SIGINT);
         }
-        svConfig->deleteLater();
     }
 }
 
@@ -1337,7 +1337,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* TODO: clean generated environment */
 
-    requestDependenciesRunningOf(serviceName, appDependencies, svConfig);
+    requestDependenciesRunningOf(serviceName, appDependencies, svConfig->releaseName());
     prepareSharedDirs(latestReleaseDir, servicePath, stage);
     generateDatastoreSetup(datastores, serviceName, stage, appType);
     prepareSharedSymlinks(serviceName, latestReleaseDir, stage, svConfig);
@@ -1405,7 +1405,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* -- */
 
     /* stop all dependencies before real launch */
-    requestDependenciesStoppedOf(serviceName, appDependencies, svConfig);
+    logInfo() << "Requesting dependencies stop";
+    requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
 
     /* prepare http proxy */
     logInfo() << "Generating http proxy configuration for web-app";

@@ -43,6 +43,7 @@ QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName,
 QString buildEnv(QString& serviceName, QStringList deps, QString preEnv);
 QStringList filterSpawnableDependencies(const QString& deps);
 void startWithoutDependencies(const QString& servicePath);
-void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies, SvdServiceConfig* svConfig);
+void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName);
+void requestDependenciesStoppedOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName);
 
 #endif
