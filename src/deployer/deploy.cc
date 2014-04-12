@@ -1007,6 +1007,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     QString envFilePath = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + latestRelease) + DEFAULT_SERVICE_ENV_FILE;
 
+    generateServicePorts(servicePath, 2); /* XXX: hardcode: 2 ports for each web app by default */
+    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+
     switch (appType) {
 
         case StaticSite: {
@@ -1257,8 +1260,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // 1. remove all empty .pids, .envs, .confs dirs
     // 2. remove all non empty .pids .envs .confs from old releases
 
-    generateServicePorts(servicePath, 2); /* XXX: hardcode: 2 ports for each web app by default */
-    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     QString serviceLog = servicePath + DEFAULT_SERVICE_LOGS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_LOG_FILE;
     QString servicePidFile = servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
