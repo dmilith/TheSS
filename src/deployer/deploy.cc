@@ -972,6 +972,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Writing domain:" << domainFilePath;
     touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
 
+    /* remove autostart state to prevent premature launch */
+    if (QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
+        QFile::remove(servicePath + AUTOSTART_TRIGGER_FILE);
+
     /* create "deploying" state */
     touch(servicePath + DEFAULT_SERVICE_DEPLOYING_FILE);
     logDebug() << "Created deploying state in file:" << servicePath + DEFAULT_SERVICE_DEPLOYING_FILE << "for service:" << serviceName;
