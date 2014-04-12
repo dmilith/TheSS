@@ -32,13 +32,13 @@ for user in *; do
 
     if [ -f "${user_home}/.autostart" ]; then
         note "Autostarting enabled for user: ${user}"
-        ${GREP_BIN} -q "${uid}" ${TTYS} || ${PRINTF_BIN} "\n# user: ${user}($uid):\nttyv${uid} \"${SVD_SHELL} -u${uid} -- svdss\" xterm on secure" >> ${TTYS}
+        ${GREP_BIN} -q "${uid}" ${TTYS} || ${PRINTF_BIN} "\n# user: ${user}($uid):\nttyv${uid} \"${SVD_SHELL} -u${uid} -- ${SVD_PREFIX}svdss\" xterm on secure\n" >> ${TTYS}
     fi
 
     if [ ! -f "${user_home}/.autostart" ]; then
         note "Autostarting disabled for user: ${user}"
         note "Removing user watchers for uid: ${uid}"
-        ${SED_BIN} -i'' -e "/${uid}/,+1 d" /etc/ttys
+        ${SED_BIN} -i '' -e "/${uid}/,+1 d" /etc/ttys
     fi
 
 done
