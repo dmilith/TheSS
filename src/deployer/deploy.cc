@@ -799,32 +799,32 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
 }
 
 
-// void requestDependenciesStoppedOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName) {
-//     Q_FOREACH(auto val, appDependencies) {
-//         logDebug() << "Processing dependency:" << val;
-//         val[0] = val.at(0).toUpper();
-//         QString location = getOrCreateDir(getServiceDataDir(val));
+void requestDependenciesStoppedOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName) {
+    Q_FOREACH(auto val, appDependencies) {
+        logDebug() << "Processing dependency:" << val;
+        val[0] = val.at(0).toUpper();
+        QString location = getOrCreateDir(getServiceDataDir(val));
 
-//         QString homeDr = getenv("HOME");
-//         logDebug() << "Validating depdendency igniter existance in service prefix:" << val << "with homedir:" << homeDr;
-//         QString igniterFile = homeDr + DEFAULT_USER_IGNITERS_DIR + val + DEFAULT_SOFTWARE_TEMPLATE_EXT;
-//         QString igniterFileContent = readFileContents(igniterFile).trimmed();
-//         if (igniterFileContent.size() <= 1) {
-//             logError() << "No fully qualified igniter found for service:" << val << "Make sure that you have installed default igniters!";
-//             raise(SIGINT);
-//             raise(SIGTERM);
-//             // TODO: write igniter from some source
-//         }
+        QString homeDr = getenv("HOME");
+        logDebug() << "Validating depdendency igniter existance in service prefix:" << val << "with homedir:" << homeDr;
+        QString igniterFile = homeDr + DEFAULT_USER_IGNITERS_DIR + val + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+        QString igniterFileContent = readFileContents(igniterFile).trimmed();
+        if (igniterFileContent.size() <= 1) {
+            logError() << "No fully qualified igniter found for service:" << val << "Make sure that you have installed default igniters!";
+            raise(SIGINT);
+            raise(SIGTERM);
+            // TODO: write igniter from some source
+        }
 
-//         int steps = 0;
-//         int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-//         logInfo() << "Requesting dependency shutdown:" << val << "with pid:" << QString::number(aPid);
-//         logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE;
-//         while (pidIsAlive(aPid)) {
-//             deathWatch(aPid, SIGINT);
-//         }
-//     }
-// }
+        int steps = 0;
+        int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
+        logInfo() << "Requesting dependency shutdown:" << val << "with pid:" << QString::number(aPid);
+        logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE;
+        while (pidIsAlive(aPid)) {
+            deathWatch(aPid, SIGINT);
+        }
+    }
+}
 
 
 QString generateIgniterDepsBase(QString& latestReleaseDir, QString& serviceName, QString& branch, QString& domain) {
@@ -1407,7 +1407,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     /* stop all dependencies before real launch */
     // logInfo() << "Requesting dependencies stop";
-    // requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
+    requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
 
     if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
         touch(servicePath + AUTOSTART_TRIGGER_FILE);
