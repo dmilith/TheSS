@@ -1434,16 +1434,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         touch(servicePath + START_TRIGGER_FILE);
 
     uint aPid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-    int timeout = 30;
+    int timeout = DEFAULT_DEPLOYER_TIMEOUT_INTERVAL;
     while (not pidIsAlive(aPid)) {
         aPid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-        if (timeout % 5 == 0)
-            logInfo() << "Waiting for service:" << serviceName;
+        if (timeout % 10 == 0)
+            logInfo() << "Waiting for service to start:" << serviceName;
         logDebug() << "Pid in file:" << QString::number(aPid) << "timeout:" << QString::number(timeout);
-        timeout--;
         if (timeout == 0)
             break;
         sleep(1);
+        timeout--;
     }
 
     clne->deleteLater();
