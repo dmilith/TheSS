@@ -924,15 +924,15 @@ QStringList filterSpawnableDependencies(const QString& deps) {
 }
 
 
-void startWithoutDependencies(const QString& servicePath) {
-    logInfo() << "Launching service without dependencies, using newly generated igniter.";
-    if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-    else {
-        QFile::remove(servicePath + DEFAULT_SERVICE_RUNNING_FILE);
-        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-    }
-}
+// void startWithoutDependencies(const QString& servicePath) {
+//     logInfo() << "Launching service without dependencies, using newly generated igniter.";
+//     if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+//         touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+//     else {
+//         QFile::remove(servicePath + DEFAULT_SERVICE_RUNNING_FILE);
+//         touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+//     }
+// }
 
 
 void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stage, QString& branch) {
