@@ -300,10 +300,8 @@ NODE_PORT                   # value contains generated port on which web-app
 NODE_ENV                    # value of environment stage
 NODE_DOMAIN                 # value of domain name - what user did specify
                             # by doing "svdply domain.name"
-NODE_WEBSOCKET_PORT         # value of additional port frequently used for
-                            # websockets (this env might dissapear in future,
-                            # cause it might be done automagically)
-NODE_WEBSOCKET_CHANNEL_NAME # value of channel name of websockets root
+NODE_PID_FILE               # value of absolute path to pid file
+NODE_LOG_FILE               # value of absolute path to log file
 
 # all of these values are accessible through process.env.VALUE_NAME on web-app side
 ```
@@ -325,6 +323,8 @@ RUBY_PORT                   # value contains generated port on which web-app
                             # main worker should listen on
 RUBY_DOMAIN                 # value of domain name - what user did specify
                             # by doing "svdply domain.name"
+RUBY_PID_FILE               # value of absolute path to pid file
+RUBY_LOG_FILE               # value of absolute path to log file
 ```
 
 
