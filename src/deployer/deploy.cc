@@ -785,8 +785,8 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
             }
 
             if (steps % 5 == 0) {
-                QFile::remove(location + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-                touch(location + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                // QFile::remove(location + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                // touch(location + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
                 logInfo() << "Still waiting for service:" << val << "with pid:" << aPid;
             }
             if (steps > OLD_SERVICE_SHUTDOWN_TIMEOUT) {
