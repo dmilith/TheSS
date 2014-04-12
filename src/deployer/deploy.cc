@@ -1362,6 +1362,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     logDebug() << "Setting configured state for service:" << serviceName;
     touch(servicePath + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
+    QFile::remove(servicePath + DEFAULT_SERVICE_CONFIGURING_FILE);
     logInfo() << "Finalizing environment setup of service:" << serviceName;
 
     switch (appType) {
@@ -1408,6 +1409,29 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // logInfo() << "Requesting dependencies stop";
     // requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
 
+    if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
+        touch(servicePath + AUTOSTART_TRIGGER_FILE);
+
+    // logInfo() << "Writing web-app current release version";
+    // writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
+    // startWithoutDependencies(serviceName);
+
+    //if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
+    touch(servicePath + START_TRIGGER_FILE);
+
+    uint aPid = readFileContents(servicePidFile).trimmed().toUInt();
+    int timeout = DEFAULT_DEPLOYER_TIMEOUT_INTERVAL;
+    while (not pidIsAlive(aPid)) {
+        aPid = readFileContents(servicePidFile).trimmed().toUInt();
+        if (timeout % 10 == 0)
+            logInfo() << "Waiting for service to start:" << serviceName;
+        logDebug() << "Pid:" << QString::number(aPid) << "in file:" << servicePidFile << "timeout:" << QString::number(timeout);
+        if (timeout == 0)
+            break;
+        sleep(1);
+        timeout--;
+    }
+
     /* prepare http proxy */
     logInfo() << "Generating http proxy configuration for web-app";
     QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
@@ -1423,28 +1447,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
     /* -- */
 
-    if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
-        touch(servicePath + AUTOSTART_TRIGGER_FILE);
-
-    // logInfo() << "Writing web-app current release version";
-    // writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
-    // startWithoutDependencies(serviceName);
-
-    if (not QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE))
-        touch(servicePath + START_TRIGGER_FILE);
-
-    uint aPid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-    int timeout = DEFAULT_DEPLOYER_TIMEOUT_INTERVAL;
-    while (not pidIsAlive(aPid)) {
-        aPid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
-        if (timeout % 10 == 0)
-            logInfo() << "Waiting for service to start:" << serviceName;
-        logDebug() << "Pid in file:" << QString::number(aPid) << "timeout:" << QString::number(timeout);
-        if (timeout == 0)
-            break;
-        sleep(1);
-        timeout--;
-    }
 
     clne->deleteLater();
     svConfig->deleteLater();
