@@ -1419,6 +1419,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             aPid = readFileContents(servicePidFile).trimmed().toUInt();
             if (timeout % 5 == 0) {
                 logInfo() << "Waiting for service to start:" << serviceName;
+            }
+            if (timeout % 15 == 0) {
                 QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
                 touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             }
