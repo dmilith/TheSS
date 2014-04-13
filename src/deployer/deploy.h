@@ -47,4 +47,6 @@ void startWithoutDependencies(const QString& servicePath);
 void requestDependenciesRunningOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName);
 // void requestDependenciesStoppedOf(const QString& serviceName, const QStringList appDependencies, const QString& releaseName);
 
+QString injectPorts(const QStringList& servPorts, const QString& identifier);
+
 #endif

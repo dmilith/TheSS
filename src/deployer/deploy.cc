@@ -551,6 +551,19 @@ stage + ": \n\
 }
 
 
+QString injectPorts(const QStringList& servPorts, const QString& identifier) {
+    QString envs = "";
+    for (int indx = 0; indx < servPorts.size(); indx++) {
+        auto port = servPorts.at(indx);
+        if (indx == 0)
+            envs += identifier + "_PORT=" + port + "\n";
+        else
+            envs += identifier + "_PORT" + QString::number(indx) + "=" + port + "\n";
+    }
+    return envs;
+}
+
+
 /* consider generating different port for redeployed services soon. */
 void generateServicePorts(QString servicePath, int amount) {
     /* generate default port for service */
@@ -564,7 +577,7 @@ void generateServicePorts(QString servicePath, int amount) {
     getOrCreateDir(portsDir);
     QString portFilePath = portsDir + DEFAULT_SERVICE_PORT_NUMBER; /* default port */
     QTime midnight(0, 0, 0);
-    if (not QFile::exists(portFilePath)) {
+    if (not QFile::exists(portFilePath)) { // TODO: re enable dynamic ports
         qsrand(midnight.msecsTo(QTime::currentTime()));
         uint port = registerFreeTcpPort(abs((qrand() + 1024) % 65535));
         logInfo() << "Generated service port:" << QString::number(port);
@@ -1011,60 +1024,48 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     QString envFilePath = getOrCreateDir(servicePath + DEFAULT_SERVICE_ENVS_DIR + latestRelease) + DEFAULT_SERVICE_ENV_FILE;
 
-    generateServicePorts(servicePath, 2); /* XXX: hardcode: 2 ports for each web app by default */
-    QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+
+    /* portPool management */
+    uint portsCount = 2; /* XXX: hardcode: 2 ports for each web app by default */
+    generateServicePorts(servicePath, portsCount);
+    QStringList servPorts;
+    servPorts << readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+    servPorts << readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "1").trimmed(); // XXX
+
+    QString portsPool = " \"portsPool\": " + QString::number(portsCount) + ", ";
+
+    /* TODO: add support for portsPool auto generation */
+    /* TODO: add support for port registration in /Public */
+    /* TODO: add support for portsPool amount from domains amount */
+    // TODO:
+    //       define default domains:
+    //
+    //          http(s)://www.DOMAIN    => default fallback to http://DOMAIN (port 0)
+    //          http(s)://DOMAIN        => main app (port 0)
+    //          http(s)://webs.DOMAIN   => websocket standard domain (with proxy.conf automatic support) (port 1)
+    //              \_ for example: port pool must be at least 2 for basic case here with one DOMAIN
+    //
 
     switch (appType) {
 
         case StaticSite: {
 
             jsonResult = "{\"alwaysOn\": false, \"watchPort\": false, \"webApp\": true, ";
+            jsonResult += portsPool;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             jsonResult += "\n\n\"start\": {\"commands\": \"echo 'Static app ready' >> SERVICE_LOG\"}\n}";
-
-            // generateServicePorts(servicePath);
-            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-
-            /* write to service env file */
-
-            // logInfo() << "Building environment for stage:" << stage;
-            // envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            // envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
-            // envEntriesString += "STATIC_ENV=" + stage + "\n";
-            // envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
-            // // envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
-            // envEntriesString += "STATIC_PORT=" + servPort + "\n";
-            // envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
-            // writeToFile(envFilePath, envEntriesString);
 
         } break;
 
 
         case RubySite: {
 
-            // generateServicePorts(servicePath);
-            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-
-            /* write to service env file */
-            // logInfo() << "Building environment for stage:" << stage;
-            // envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            // envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
-            // envEntriesString += "RAILS_ENV=" + stage + "\n";
-            // envEntriesString += "RAKE_ENV=" + stage + "\n";
-            // envEntriesString += "RUBY_ENV=" + stage + "\n";
-            // envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
-            // // envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
-            // envEntriesString += "RUBY_PORT=" + servPort + "\n";
-            // envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
-            // writeToFile(envFilePath, envEntriesString);
-
             appDependencies = filterSpawnableDependencies(deps);
+            QString environment = buildEnv(serviceName, appDependencies, latestRelease);
 
             jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Ruby\", \"webApp\": true, ";
-            QString environment = buildEnv(serviceName, appDependencies, latestRelease);
-            // logDebug() << "Generateed Service Environment:" << environment;
+            jsonResult += portsPool;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            // QString startResultJson = ""; /* command that actually launches main app */
             QString serviceLog = servicePath + DEFAULT_SERVICE_LOGS_DIR + latestRelease + DEFAULT_SERVICE_LOG_FILE;
 
             QMap<QString, QString> serviceWorkers; /* additional workers of service: (startCommands, stopCommands) */
@@ -1184,27 +1185,13 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
         case NodeSite: {
 
-            // generateServicePorts(servicePath, 2); /* XXX: 2 ports for node by default */
-            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
-
-            /* write to service env file */
-            // QString websocketsPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/1").trimmed(); // XXX: hardcoded
-            // logInfo() << "Building environment for stage:" << stage;
-            // envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            // envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
-            // // envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
-            // envEntriesString += "NODE_ENV=" + stage + "\n";
-            // envEntriesString += "NODE_PORT=" + servPort + "\n";
-            // envEntriesString += "NODE_DOMAIN=" + domain + "\n";
-            // envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
-            // envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
-            // writeToFile(envFilePath, envEntriesString);
-
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString deps = readFileContents(depsFile).trimmed();
             appDependencies = filterSpawnableDependencies(deps);
 
-            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Node\", \"webApp\": true, \"portsPool\": 2, ";
+            jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Node\", \"webApp\": true, ";
+            jsonResult += portsPool;
+
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
@@ -1217,14 +1204,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case PhpSite: {
 
             jsonResult = "{\"alwaysOn\": true, \"watchPort\": true, \"softwareName\": \"Php\", \"webApp\": true, ";
+            jsonResult += portsPool;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
             #ifdef __APPLE__
                 logError() << "Apple PHP deployments aren't supported yet!";
                 raise(SIGTERM);
             #endif
-
-            // generateServicePorts(servicePath);
-            // QString servPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
 
             QString depsFile = latestReleaseDir + DEFAULT_SERVICE_DEPENDENCIES_FILE;
             QString deps = readFileContents(depsFile).trimmed();
@@ -1286,8 +1271,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "STATIC_ENV=" + stage + "\n";
             envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
             envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
-            envEntriesString += "STATIC_PORT=" + servPort + "\n";
             envEntriesString += "STATIC_DOMAIN=" + domain + "\n";
+            envEntriesString += injectPorts(servPorts, "STATIC");
             writeToFile(envFilePathDest, envEntriesString);
 
         } break;
@@ -1300,10 +1285,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "RUBY_ENV=" + stage + "\n";
             envEntriesString += "RUBY_APP_NAME=" + serviceName + "\n";
             envEntriesString += "RUBY_ROOT=" + latestReleaseDir + "\n";
-            envEntriesString += "RUBY_PORT=" + servPort + "\n";
             envEntriesString += "RUBY_PID_FILE=" + servicePidFile + "\n";
             envEntriesString += "RUBY_LOG_FILE=" + serviceLog + "\n";
             envEntriesString += "RUBY_DOMAIN=" + domain + "\n";
+            envEntriesString += injectPorts(servPorts, "RUBY");
             writeToFile(envFilePathDest, envEntriesString);
 
         } break;
@@ -1314,13 +1299,11 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
             envEntriesString += "NODE_APP_NAME=" + serviceName + "\n";
             envEntriesString += "NODE_ENV=" + stage + "\n";
-            envEntriesString += "NODE_PORT=" + servPort + "\n";
             envEntriesString += "NODE_ROOT=" + latestReleaseDir + "\n";
             envEntriesString += "NODE_DOMAIN=" + domain + "\n";
             envEntriesString += "NODE_PID_FILE=" + servicePidFile + "\n";
             envEntriesString += "NODE_LOG_FILE=" + serviceLog + "\n";
-            // envEntriesString += "NODE_WEBSOCKET_PORT=" + websocketsPort + "\n";
-            // envEntriesString += "NODE_WEBSOCKET_CHANNEL_NAME=" + serviceName + "-" + domain + "\n";
+            envEntriesString += injectPorts(servPorts, "NODE");
             writeToFile(envFilePathDest, envEntriesString);
 
             logInfo() << "Installing npm modules for stage:" << stage << "of Node Site";
