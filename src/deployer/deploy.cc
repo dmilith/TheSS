@@ -1411,20 +1411,23 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
     }
 
-    uint aPid = readFileContents(servicePidFile).trimmed().toUInt();
-    int timeout = DEFAULT_DEPLOYER_TIMEOUT_INTERVAL;
-    while (not pidIsAlive(aPid)) {
-        aPid = readFileContents(servicePidFile).trimmed().toUInt();
-        if (timeout % 5 == 0) {
-            logInfo() << "Waiting for service to start:" << serviceName;
-            QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-            touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+    if (appType != StaticSite) {
+        logInfo() << "Detected non static app, waiting for service to start";
+        uint aPid = readFileContents(servicePidFile).trimmed().toUInt();
+        int timeout = DEFAULT_DEPLOYER_TIMEOUT_INTERVAL;
+        while (not pidIsAlive(aPid)) {
+            aPid = readFileContents(servicePidFile).trimmed().toUInt();
+            if (timeout % 5 == 0) {
+                logInfo() << "Waiting for service to start:" << serviceName;
+                QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+                touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+            }
+            logDebug() << "Pid:" << QString::number(aPid) << "in file:" << servicePidFile << "timeout:" << QString::number(timeout);
+            if (timeout == 0)
+                break;
+            sleep(1);
+            timeout--;
         }
-        logDebug() << "Pid:" << QString::number(aPid) << "in file:" << servicePidFile << "timeout:" << QString::number(timeout);
-        if (timeout == 0)
-            break;
-        sleep(1);
-        timeout--;
     }
 
     /* prepare http proxy */
