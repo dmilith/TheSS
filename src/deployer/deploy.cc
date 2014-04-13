@@ -1108,12 +1108,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                            Whole <3 goes to Rack/Rails teams!
                          */
                         /* Rack is deafault pick */
-                        QString daemOpt = "-D";
+                        QString daemOpt = " ";
                         QString envOpt = "-E";
                         QString bindOpt = "-o";
                         if (procfileTail.toLower().contains("rails")) {
                             logInfo() << "Rails launcher detected.";
-                            daemOpt = "-d";
+                            daemOpt = " ";
                             envOpt = "-e";
                             bindOpt = "-b";
                         } else
@@ -1124,7 +1124,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                             portStr = "SERVICE_PORT" + QString::number(entryPosition);
                         serviceWorkers.insert(
                             /* start commands: */
-                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p " + portStr + " -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
+                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p " + portStr + " -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1 &",
 
                             /* stop commands */
                             "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
