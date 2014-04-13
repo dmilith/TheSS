@@ -1232,14 +1232,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
     auto svConfig = new SvdServiceConfig(serviceName);
     cloneRepository(serviceName, branch, svConfig->releaseName());
-
-    // // TODO: keep also history file here
-    // logInfo() << "Writing web-app previous release pid";
-    // auto conts = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_PID_FILE).trimmed();
-    // if (conts.length() > 0)
-    //     writeToFile(servicePath + DEFAULT_SERVICE_PREVIOUS_RELEASE_FILE, conts);
-    // startWithoutDependencies(servicePath);
-
     logDebug() << "Moving rebuilt prefix from:" << latestReleaseDir;
     QString oldRD = latestReleaseDir;
     latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + svConfig->releaseName();
@@ -1398,10 +1390,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // logInfo() << "Requesting dependencies stop";
     requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
 
-    // logInfo() << "Writing web-app current release version";
-    // writeToFile(servicePath + DEFAULT_SERVICE_LATEST_RELEASE_FILE, svConfig->releaseName());
-    // startWithoutDependencies(serviceName);
-
     if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
         QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
         touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
@@ -1420,7 +1408,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             if (timeout % 5 == 0) {
                 logInfo() << "Waiting for service to start:" << serviceName;
             }
-            if (timeout % 15 == 0) {
+            if (timeout % 15 == 0) { // TODO: fix issue with timeout, currently we give 15s to app to start
                 QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
                 touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
             }
