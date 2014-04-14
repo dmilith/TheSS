@@ -38,7 +38,7 @@ for user in *; do
     if [ ! -f "${user_home}/.autostart" ]; then
         note "Autostarting disabled for user: ${user}"
         note "Removing user watchers for uid: ${uid}"
-        ${SED_BIN} -i '' -e "/${uid}/,+1 d" /etc/ttys
+        ${SED_BIN} -i '' -e "/${uid}/,+1 d" ${TTYS}
     fi
 
 done
