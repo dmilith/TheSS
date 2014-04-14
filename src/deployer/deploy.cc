@@ -945,8 +945,7 @@ QStringList filterSpawnableDependencies(const QString& deps) {
     QStringList allowedToSpawnDeps = defaultIgn->standaloneDependencies; /* dependencies allowed to spawn as independent service */
     if (allowedToSpawnDeps.size() == 0) {
         logWarn() << "No spawnable dependencies found! It probably means that something is wrong with user igniters for uid:" << QString::number(getuid());
-    } else
-        logInfo() << "Spawnable dependencies defined:" << allowedToSpawnDeps.join(", ");
+    }
 
     defaultIgn->deleteLater();
     QStringList appDependencies = deps.split("\n");
@@ -1221,6 +1220,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
 
     }
+
+    logInfo() << "App dependencies:" << appDependencies.join(", ");
 
     /* write igniter to user igniters */
     QString igniterFile = QString(getenv("HOME")) + DEFAULT_USER_IGNITERS_DIR + serviceName + DEFAULT_SOFTWARE_TEMPLATE_EXT;
