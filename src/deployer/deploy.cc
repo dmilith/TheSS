@@ -1403,6 +1403,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* stop all dependencies before real launch */
     // logInfo() << "Requesting dependencies stop";
     requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
+    logInfo() << "Stopping old instances of service";
+    auto pidEntries = QDir(servicePath + DEFAULT_SERVICE_PIDS_DIR).entryList(QDir::Dirs, QDir::Time).toSet();
+    Q_FOREACH(auto oldsrv, pidEntries) {
+        if (not (oldsrv == svConfig->releaseName())) {
+            auto pid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + oldsrv + DEFAULT_SERVICE_PID_FILE).toUInt();
+            logDebug() << "Processing old pid:" << pid << " from:" << oldsrv;
+            deathWatch(pid, SIGTERM);
+        }
+    }
 
     if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
         QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
