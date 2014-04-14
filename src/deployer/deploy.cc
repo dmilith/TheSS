@@ -1194,7 +1194,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString environment = buildEnv(serviceName, appDependencies, latestRelease);
             logDebug() << "Generateed Service Environment:" << environment;
             jsonResult += generateIgniterDepsBase(latestReleaseDir, serviceName, branch, domain);
-            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && bin/app >> SERVICE_LOG 2>&1 &\"}\n}\n"; /* env loading is invoked from bin/app */
+            jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && daemon bin/app >> SERVICE_LOG 2>&1\"}\n}\n"; /* env loading is invoked from bin/app */
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
         } break;
