@@ -1403,23 +1403,6 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     /* stop all dependencies before real launch */
     // logInfo() << "Requesting dependencies stop";
     requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
-    logInfo() << "Stopping old instances of service";
-    auto pidEntries = QDir(servicePath + DEFAULT_SERVICE_PIDS_DIR).entryList(QDir::Dirs, QDir::Time).toSet();
-    Q_FOREACH(auto oldsrv, pidEntries) {
-        if (not (oldsrv == svConfig->releaseName())) {
-            auto pidDir = servicePath + DEFAULT_SERVICE_PIDS_DIR + oldsrv;
-            auto pidFile = pidDir + DEFAULT_SERVICE_PID_FILE;
-            auto pid = readFileContents(pidFile).toUInt();
-            if (pid != 0) {
-                if (pidIsAlive(pid)) {
-                    logInfo() << "Putting deathwatch on an old pid:" << pid << " from:" << oldsrv;
-                    deathWatch(pid, SIGTERM);
-                }
-                QFile::remove(pidFile);
-                removeDir(pidDir);
-            }
-        }
-    }
 
     if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
         QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
@@ -1448,6 +1431,24 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                 break;
             sleep(1);
             timeout--;
+        }
+    }
+
+    logInfo() << "Stopping old instances of service";
+    auto pidEntries = QDir(servicePath + DEFAULT_SERVICE_PIDS_DIR).entryList(QDir::Dirs, QDir::Time).toSet();
+    Q_FOREACH(auto oldsrv, pidEntries) {
+        if (not (oldsrv == svConfig->releaseName())) {
+            auto pidDir = servicePath + DEFAULT_SERVICE_PIDS_DIR + oldsrv;
+            auto pidFile = pidDir + DEFAULT_SERVICE_PID_FILE;
+            auto pid = readFileContents(pidFile).toUInt();
+            if (pid != 0) {
+                if (pidIsAlive(pid)) {
+                    logInfo() << "Putting deathwatch on an old pid:" << pid << " from:" << oldsrv;
+                    deathWatch(pid, SIGTERM);
+                }
+                QFile::remove(pidFile);
+                removeDir(pidDir);
+            }
         }
     }
 
