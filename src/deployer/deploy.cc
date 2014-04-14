@@ -1407,10 +1407,16 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     auto pidEntries = QDir(servicePath + DEFAULT_SERVICE_PIDS_DIR).entryList(QDir::Dirs, QDir::Time).toSet();
     Q_FOREACH(auto oldsrv, pidEntries) {
         if (not (oldsrv == svConfig->releaseName())) {
-            auto pid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + oldsrv + DEFAULT_SERVICE_PID_FILE).toUInt();
+            auto pidDir = servicePath + DEFAULT_SERVICE_PIDS_DIR + oldsrv;
+            auto pidFile = pidDir + DEFAULT_SERVICE_PID_FILE;
+            auto pid = readFileContents(pidFile).toUInt();
             if (pid != 0) {
-                logInfo() << "Putting deathwatch on an old pid:" << pid << " from:" << oldsrv;
-                deathWatch(pid, SIGTERM);
+                if (pidIsAlive(pid)) {
+                    logInfo() << "Putting deathwatch on an old pid:" << pid << " from:" << oldsrv;
+                    deathWatch(pid, SIGTERM);
+                }
+                QFile::remove(pidFile);
+                removeDir(pidDir);
             }
         }
     }
