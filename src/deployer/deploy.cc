@@ -1408,8 +1408,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     Q_FOREACH(auto oldsrv, pidEntries) {
         if (not (oldsrv == svConfig->releaseName())) {
             auto pid = readFileContents(servicePath + DEFAULT_SERVICE_PIDS_DIR + oldsrv + DEFAULT_SERVICE_PID_FILE).toUInt();
-            logDebug() << "Processing old pid:" << pid << " from:" << oldsrv;
-            deathWatch(pid, SIGTERM);
+            if (pid != 0) {
+                logInfo() << "Putting deathwatch on an old pid:" << pid << " from:" << oldsrv;
+                deathWatch(pid, SIGTERM);
+            }
         }
     }
 
