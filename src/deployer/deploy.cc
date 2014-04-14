@@ -1309,6 +1309,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
 
     /* replace "#ENVIRONMENT#" with ". env_file_path" */
+    auto binbuildScript = latestReleaseDir + "/bin/build";
+    if (QFile::exists(binbuildScript)) {
+        logDebug() << "Detected bin/build script in service root. Replacing special #ENVIRONMENT with environment loading routine";
+        /* replace special in bin/app launcher */
+        writeToFile(binbuildScript, readFileContents(binbuildScript).replace("#ENVIRONMENT", "for elm in `cat " + envFilePathDest + "`; do\necho Exporting $elm >> " + serviceLog + "\nexport $elm\ndone\n"));
+    }
     auto binappScript = latestReleaseDir + "/bin/app";
     if (QFile::exists(binappScript)) {
         logDebug() << "Detected bin/app script in service root. Replacing special #ENVIRONMENT with environment loading routine";
