@@ -253,9 +253,10 @@ void SvdService::babySitterSlot() {
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) or
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_DEPLOYING_FILE) or
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) or
-        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE)
+        QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE) or
+        not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE)
     ) {
-        logInfo() << "Skipping babysitter, service:" << name << "is still busy.";
+        logInfo() << "Skipping babysitter, service:" << name << "is still busy, or not yet configured.";
         return;
     }
     if (not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
