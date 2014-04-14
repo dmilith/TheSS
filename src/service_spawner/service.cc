@@ -833,7 +833,6 @@ void SvdService::stopSlot(bool withDeps) {
             } else
                 logWarn() << "PID of service:" << name << "is zero. (empty pid file?)";
         }
-        process->waitForFinished(-1);
         // deathWatch(process->pid());
         notificationSend("Terminating service: " + name);
         if (not expect(readFileContents(process->outputFile), config->stop->expectOutput)) {

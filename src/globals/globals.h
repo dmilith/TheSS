@@ -144,6 +144,7 @@
     #define CONTROL_PANEL_LOG_FILE "/.thess-panel.log"
     #define DEFAULT_CRON_ENTRY "0 4 * * * ?" /* exactly 4am */
 
+    #define DEFAULT_PROCESS_TIMEOUT 30 // s
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
     #define DEFAULT_CRON_CHECK_DELAY 60000000 // 60s
     #define DEFAULT_SERVICE_PAUSE_INTERVAL 5000000 // 5 seconds
