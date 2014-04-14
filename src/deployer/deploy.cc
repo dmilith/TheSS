@@ -1170,7 +1170,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             } else { /* generate standard igniter entry */
 
                 logInfo() << "Generating default entry (no Procfile used)";
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && " + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG &\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && " + buildEnv(serviceName, appDependencies, latestRelease) + " daemon bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID >> SERVICE_LOG\"}\n}";
             }
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
