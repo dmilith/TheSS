@@ -15,7 +15,7 @@ void SvdService::setupDefaultVPNNetwork() {
         logInfo() << "Launching VPN Network Setup";
         auto aProc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
         aProc->spawnProcess(DEFAULT_VPN_INTERFACE_SETUP_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
-        aProc->waitForFinished(-1);
+        aProc->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         aProc->deleteLater();
     #endif
 }
@@ -26,7 +26,7 @@ void SvdService::shutdownDefaultVPNNetwork() {
         logInfo() << "Shutting down VPN Network Setup";
         auto aProc = new SvdProcess("VPN-setup", 0, false); // don't redirect output
         aProc->spawnProcess(DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND, DEFAULT_VPN_SPAWN_SHELL);
-        aProc->waitForFinished(-1);
+        aProc->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         aProc->deleteLater();
     #endif
 }
@@ -429,7 +429,7 @@ void SvdService::babySitterSlot() {
 
             auto babySit = new SvdProcess(name);
             babySit->spawnProcess(config->babySitter->commands, config->shell);
-            babySit->waitForFinished(-1); // TODO: implement support for config->babySitter->expectOutputTimeout
+            babySit->waitForFinished(DEFAULT_PROCESS_TIMEOUT); // TODO: implement support for config->babySitter->expectOutputTimeout
             // deathWatch(babySit->pid());
             logDebug() << "Checking contents of file:" << babySit->outputFile;
             if (not expect(readFileContents(babySit->outputFile), config->babySitter->expectOutput)) {
@@ -484,7 +484,7 @@ void SvdService::installSlot() {
         auto process = new SvdProcess(name);
         touch(indicator);
         process->spawnProcess(config->install->commands, config->shell);
-        process->waitForFinished(-1); // no timeout
+        process->waitForFinished(DEFAULT_INSTALL_TIMEOUT);
         // deathWatch(process->pid());
         QFile::remove(indicator); // this indicates finish of installing process
         if (not expect(readFileContents(process->outputFile), config->install->expectOutput)) {
@@ -541,7 +541,7 @@ void SvdService::configureSlot() {
         logTrace() << "Launching commands:" << config->configure->commands;
         auto process = new SvdProcess(name);
         process->spawnProcess(config->configure->commands, config->shell);
-        process->waitForFinished(-1);
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         QFile::remove(indicator);
         // deathWatch(process->pid());
         logInfo() << "Service configured:" << name;
@@ -678,7 +678,7 @@ void SvdService::startSlot(bool withDeps) {
         auto process = new SvdProcess(name);
         notificationSend("Launching service: " + name);
         process->spawnProcess(config->start->commands, config->shell);
-        process->waitForFinished(-1);
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
 
         if (not expect(readFileContents(process->outputFile), config->start->expectOutput)) {
             QString msg = name + " failed in start hook. exp: '" + config->start->expectOutput + "'";
@@ -784,7 +784,7 @@ void SvdService::afterStartSlot() {
         touch(indicator);
         auto process = new SvdProcess(name);
         process->spawnProcess(config->afterStart->commands, config->shell);
-        process->waitForFinished(-1);
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         if (not expect(readFileContents(process->outputFile), config->afterStart->expectOutput)) {
             QString msg = name + " failed in afterStart hook. exp: '" + config->afterStart->expectOutput + "'";
             notificationSend(msg, ERROR);
@@ -820,6 +820,7 @@ void SvdService::stopSlot(bool withDeps) {
 
         logTrace() << "Loading service igniter" << name;
         process->spawnProcess(config->stop->commands, config->shell); // invoke igniter stop, and then try to look for service.pid in prefix directory:
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
 
         QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
         if (QFile::exists(servicePidFile)) {
@@ -902,7 +903,7 @@ void SvdService::afterStopSlot() {
         logTrace() << "Launching commands:" << config->afterStop->commands;
         auto process = new SvdProcess(name);
         process->spawnProcess(config->afterStop->commands, config->shell);
-        process->waitForFinished(-1);
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         // deathWatch(process->pid());
         QFile::remove(indicator);
         if (not expect(readFileContents(process->outputFile), config->afterStop->expectOutput)) {
@@ -954,7 +955,7 @@ void SvdService::reloadSlot() {
         touch(indicator);
         auto process = new SvdProcess(name);
         process->spawnProcess(config->reload->commands, config->shell);
-        process->waitForFinished(-1);
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         // deathWatch(process->pid());
         if (not expect(readFileContents(process->outputFile), config->reload->expectOutput)) {
             QString msg = name + " failed in reload hook. exp: '" + config->reload->expectOutput + "'";
@@ -986,7 +987,7 @@ void SvdService::validateSlot() {
             touch(indicator);
             auto process = new SvdProcess(name);
             process->spawnProcess(config->validate->commands, config->shell);
-            process->waitForFinished(-1);
+            process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
 
             // deathWatch(process->pid());
             if (not expect(readFileContents(process->outputFile), config->validate->expectOutput)) {
