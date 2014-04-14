@@ -478,6 +478,7 @@ void SvdService::installSlot() {
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
         logInfo() << "No need to install already installed service:" << name;
+        return;
     } else {
         logDebug() << "Loaded service igniter" << name;
         logTrace() << "Launching commands:" << config->install->commands;
@@ -533,6 +534,7 @@ void SvdService::configureSlot() {
     QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
+        return;
     } else if (QFile::exists(configuredIndicator)) {
         notificationSend("Service already configured: " + name);
     } else {
@@ -611,6 +613,7 @@ void SvdService::startSlot(bool withDeps) {
         logDebug() << "Checking cronSitter state for service:" << name;
         if (not cronSitter.isActive())
             cronSitter.start();
+        return;
     } else {
         logDebug() << "Emitting install slot for service:" << name;
         emit installSlot();
@@ -784,6 +787,7 @@ void SvdService::afterStartSlot() {
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to afterStart service" << name << "because it's already afterStarting.";
+        return;
     } else {
         logTrace() << "Launching commands:" << config->afterStart->commands;
         touch(indicator);
@@ -908,6 +912,7 @@ void SvdService::afterStopSlot() {
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to afterStop service" << name << "because it's already afterStopping.";
+        return;
     } else {
         touch(indicator);
         logTrace() << "Launching commands:" << config->afterStop->commands;
@@ -960,6 +965,7 @@ void SvdService::reloadSlot() {
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to reload service" << name << "because it's already reloading.";
+        return;
     } else {
         logTrace() << "Launching commands:" << config->reload->commands;
         touch(indicator);
@@ -989,6 +995,7 @@ void SvdService::validateSlot() {
         QString indicator = config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE;
         if (QFile::exists(indicator)) {
             logInfo() << "No need to validate service" << name << "because it's already validating.";
+            return;
         } else {
             logTrace() << "Launching commands:" << config->validate->commands;
             /* remove failure state */
