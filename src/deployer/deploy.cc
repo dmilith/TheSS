@@ -1309,7 +1309,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         } break;
     }
 
-    /* replace "#ENVIRONMENT#" with ". env_file_path" */
+    /*  Replace "#ENVIRONMENT#" with dynamically generated environments.
+        NOTE: Three scripts in order of execution: */
     auto binbuildScript = latestReleaseDir + "/bin/build";
     if (QFile::exists(binbuildScript)) {
         logDebug() << "Detected bin/build script in service root. Replacing special #ENVIRONMENT with environment loading routine";
@@ -1321,6 +1322,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         logDebug() << "Detected bin/app script in service root. Replacing special #ENVIRONMENT with environment loading routine";
         /* replace special in bin/app launcher */
         writeToFile(binappScript, readFileContents(binappScript).replace("#ENVIRONMENT", "for elm in `cat " + envFilePathDest + "`; do\necho Exporting $elm >> " + serviceLog + "\nexport $elm\ndone\n"));
+    }
+    auto binteardownScript = latestReleaseDir + "/bin/teardown";
+    if (QFile::exists(binteardownScript)) {
+        logDebug() << "Detected bin/teardown script in service root. Replacing special #ENVIRONMENT with environment loading routine";
+        /* replace special in bin/app launcher */
+        writeToFile(binteardownScript, readFileContents(binteardownScript).replace("#ENVIRONMENT", "for elm in `cat " + envFilePathDest + "`; do\necho Exporting $elm >> " + serviceLog + "\nexport $elm\ndone\n"));
     }
 
     /* TODO: clean generated environment */
@@ -1388,7 +1395,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     }
 
     /* spawn bin/build */
-    logInfo() << "Invoking bin/build of project if exists";
+    logInfo() << "Trying with bin/build for service:" << serviceName;
     clne->spawnProcess("cd " + latestReleaseDir + " && test -f bin/build && chmod a+x bin/build && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/build " + stage + " >> " + serviceLog + " 2>&1", DEFAULT_DEPLOYER_SHELL);
     clne->waitForFinished(-1);
     /* -- */
@@ -1426,6 +1433,12 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             timeout--;
         }
     }
+
+    /* spawn bin/teardown */
+    logInfo() << "Trying with bin/teardown for service:" << serviceName;
+    clne->spawnProcess("cd " + latestReleaseDir + " && test -f bin/teardown && chmod a+x bin/teardown && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/teardown " + stage + " >> " + serviceLog + " 2>&1", DEFAULT_DEPLOYER_SHELL);
+    clne->waitForFinished(-1);
+    /* -- */
 
     /* prepare http proxy */
     logInfo() << "Generating http proxy configuration for web-app";
