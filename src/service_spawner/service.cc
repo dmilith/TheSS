@@ -613,6 +613,7 @@ void SvdService::startSlot(bool withDeps) {
         logDebug() << "Checking cronSitter state for service:" << name;
         if (not cronSitter.isActive())
             cronSitter.start();
+        mtx.unlock();
         return;
     } else {
         logDebug() << "Emitting install slot for service:" << name;
