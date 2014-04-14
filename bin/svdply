@@ -8,7 +8,7 @@ readonly BEGIN_TIMER=$(date +%s)
 export DEPLOY_PORT="22"
 export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
 export SCP_OPTIONS="-P ${DEPLOY_PORT}"
-
+export SSH_CONFIG_PATH="${HOME}/.ssh/config"
 
 case "$(uname)" in
     Darwin|FreeBSD)
@@ -49,6 +49,7 @@ case "$(uname)" in
         export BASENAME_BIN=basename
         export BC_BIN=bc
         export DIG_BIN=dig
+        export GREP_BIN=grep
         ;;
 
 esac
@@ -181,6 +182,8 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     else
         note "Specify APP_SLL_CERT and APP_SSL_KEY to upload your SSL certificate."
     fi
+
+    ${GREP_BIN} -q "${APP_DOMAIN}" ${SSH_CONFIG_PATH} || (note "Setting SSH config for host: ${APP_DOMAIN}" && ${PRINTF_BIN} "\nHost ${APP_DOMAIN}\nPort ${DEPLOY_PORT}\n" >> ${SSH_CONFIG_PATH})
 
     note "Pushing current repository to remote: ${DEFAULT_REMOTE}"
     ${GIT_BIN} remote rm ${DEFAULT_REMOTE} > /dev/null 2>&1
