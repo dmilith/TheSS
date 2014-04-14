@@ -1401,14 +1401,14 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     // logInfo() << "Requesting dependencies stop";
     requestDependenciesStoppedOf(serviceName, appDependencies, svConfig->releaseName());
 
-    if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
-        QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-        touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
-    }
-    else {
-        QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-        touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
-    }
+    // if (QFile::exists(servicePath + DEFAULT_SERVICE_RUNNING_FILE)) {
+    //     QFile::remove(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+    //     touch(servicePath + RESTART_WITHOUT_DEPS_TRIGGER_FILE);
+    // }
+    // else {
+    //     QFile::remove(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+    //     touch(servicePath + START_WITHOUT_DEPS_TRIGGER_FILE);
+    // }
 
     logDebug() << "Setting configured state for service:" << serviceName;
     touch(servicePath + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
