@@ -803,6 +803,7 @@ void SvdService::afterStartSlot() {
 
 
 void SvdService::stopSlot(bool withDeps) {
+    mtx.lock();
     loadServiceConfig(name);
     logDebug() << "Invoked stop slot for service:" << name;
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
@@ -813,6 +814,8 @@ void SvdService::stopSlot(bool withDeps) {
     /* stop main application first, dependencies after it */
     if (not QFile::exists(indicator)) {
         logInfo() << "No need to stop service" << name << "because it's already stopped.";
+        mtx.unlock();
+        return;
     } else {
         auto process = new SvdProcess(name);
         logInfo() << "Terminating service" << name << "after" << toHMS(getUptime()) << "of uptime.";
@@ -875,6 +878,8 @@ void SvdService::stopSlot(bool withDeps) {
             }
         }
     }
+
+    mtx.unlock();
 
     /* invoke after stop slot */
     emit afterStopSlot();
