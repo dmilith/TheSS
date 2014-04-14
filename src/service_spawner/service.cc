@@ -580,6 +580,7 @@ bool dependencyStartOrderLessThan(const QString &a, const QString &b) {
 
 
 void SvdService::startSlot(bool withDeps) {
+    mtx.lock();
     logTrace() << "Loading service igniter" << name;
     loadServiceConfig(name);
     logDebug() << "Invoked start slot for service:" << name;
@@ -591,6 +592,7 @@ void SvdService::startSlot(bool withDeps) {
         if (map[value] <= config->minimumRequiredDiskSpace) {
             QString msg = "Insufficient disk space for service: " + config->name + " on domains: " + config->domains.join(", ") + ". Expected disk space amount (MiB): " + QString::number(config->minimumRequiredDiskSpace) + " but disk: " + value + " has only: " + map[value] + "!";
             notificationSend(msg, ERROR);
+            mtx.unlock();
             return;
         }
     }
@@ -671,6 +673,7 @@ void SvdService::startSlot(bool withDeps) {
             QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
             notificationSend(msg, ERROR);
             /* NOTE: don't try to retry. Notification is enough */
+            mtx.unlock();
             return;
         }
 
@@ -703,6 +706,8 @@ void SvdService::startSlot(bool withDeps) {
         process->deleteLater();
     }
     touch(indicator);
+
+    mtx.unlock();
 
     /* invoke after start slot */
     logTrace() << "After process start execution:" << name;
