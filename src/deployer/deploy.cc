@@ -1404,6 +1404,18 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     touch(servicePath + DEFAULT_SERVICE_CONFS_DIR + svConfig->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
     QFile::remove(servicePath + DEFAULT_SERVICE_CONFIGURING_FILE);
 
+    /* kill existing services if running */
+    auto pidDir = servicePath + DEFAULT_SERVICE_PIDS_DIR + svConfig->releaseName();
+    auto pidFile = pidDir + DEFAULT_SERVICE_PID_FILE;
+    auto pid = readFileContents(pidFile).toUInt();
+    if (pid != 0) {
+        if (pidIsAlive(pid)) {
+            logInfo() << "Putting deathwatch on an old pid:" << pid;
+            deathWatch(pid, SIGTERM);
+        }
+        QFile::remove(pidFile);
+    }
+
     if (appType != StaticSite) {
         logInfo() << "Detected non static app, waiting for service to start";
         uint aPid = readFileContents(servicePidFile).trimmed().toUInt();
