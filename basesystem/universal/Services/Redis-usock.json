@@ -2,7 +2,6 @@
     "softwareName": "Redis",
     "watchPort": false,
     "watchSocket": true,
-    "autoStart": true,
     "schedulers": [
         "*/50 12 * * * ?! \
         test -e SERVICE_PREFIX/database/database.rdf && \
