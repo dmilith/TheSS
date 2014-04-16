@@ -1069,7 +1069,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             QMap<QString, QString> serviceWorkers; /* additional workers of service: (startCommands, stopCommands) */
 
-            if (QFile::exists(latestReleaseDir + "bin/app")) {
+            if (QFile::exists(latestReleaseDir + "/bin/app")) {
                 logInfo() << "Using bin/app for Rails web-app:" << serviceName;
                 jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && test -f bin/app && chmod a+x bin/app && daemon bin/app >> SERVICE_LOG 2>&1\"}\n}";
             } else {
