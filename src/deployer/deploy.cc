@@ -1071,7 +1071,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             if (QFile::exists(latestReleaseDir + "bin/app")) {
                 logInfo() << "Using bin/app for Rails web-app:" << serviceName;
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd " + latestReleaseDir) + " && test -f bin/app && chmod a+x bin/app && daemon bin/app >> SERVICE_LOG 2>&1\"}\n}";
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && test -f bin/app && chmod a+x bin/app && daemon bin/app >> SERVICE_LOG 2>&1\"}\n}";
             } else {
 
                 QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
@@ -1129,7 +1129,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
                                 portStr = "SERVICE_PORT" + QString::number(entryPosition);
                             serviceWorkers.insert(
                                 /* start commands: */
-                                QString("sofin reload && cd ") + latestReleaseDir + " && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p " + portStr + " -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
+                                QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p " + portStr + " -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
 
                                 /* stop commands */
                                 "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
