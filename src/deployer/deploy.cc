@@ -1068,116 +1068,117 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             QString serviceLog = servicePath + DEFAULT_SERVICE_LOGS_DIR + latestRelease + DEFAULT_SERVICE_LOG_FILE;
 
             QMap<QString, QString> serviceWorkers; /* additional workers of service: (startCommands, stopCommands) */
-            QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
-            if (QFile::exists(procFile)) {
-                uint entryPosition = 0;
-                QStringList entries = readFileContents(procFile).trimmed().split("\n");
-                logInfo() << "Proceeding with Procfile entries:" << entries;
 
-                Q_FOREACH(QString entry, entries) {
-                    /*
-                        Pick port number, based on amount of workers defined in Procfile
-                     */
-                    int portFileNum = QString(DEFAULT_SERVICE_PORT_NUMBER).toInt() + entryPosition;
-                    QString svPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + QString::number(portFileNum)).trimmed();
-                    QString procfileHead = entry.split(":").at(0);
-                    QString procfileTail = entry.split(":").at(1);
-                    if (entryPosition == 0)
-                        procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT"); /* replace $PORT value of Procfile if exists */
-                    else
-                        procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT" + QString::number(entryPosition));
+            if (QFile::exists(latestReleaseDir + "bin/app")) {
+                logInfo() << "Using bin/app for Rails web-app:" << serviceName;
+                jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd " + latestReleaseDir) + " && test -f bin/app && chmod a+x bin/app && daemon bin/app >> SERVICE_LOG 2>&1\"}\n}";
+            } else {
 
-                    if (procfileHead == "web") { /* web worker is defined here */
-                        logInfo() << "Found web worker:" << procfileHead;
-                        logDebug() << "Worker entry:" << procfileTail << "on port:" << svPort;
-                        // startResultJson += " ";
-                        /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
+                QString procFile = latestReleaseDir + "/Procfile"; /* heroku compatible procfile */
+                if (QFile::exists(procFile)) {
+                    uint entryPosition = 0;
+                    QStringList entries = readFileContents(procFile).trimmed().split("\n");
+                    logInfo() << "Proceeding with Procfile entries:" << entries;
 
+                    Q_FOREACH(QString entry, entries) {
                         /*
-                           XXX: now we need to try to figure out how to launch that app
-                           (which is just fucking stupid, but there's no standard way to launch anything here),
-                           unfortunately Rake and/or Rails teams can't talk with each other to solve different
-                           arguments accepted by both services:
-                           --daemon         vs --daemonize
-                           -D               vs -d
-                           --environment    vs --env
-                           --host           vs --binding
-                           -b               vs -o
-                           So we need to hack it!
-                           Whole <3 goes to Rack/Rails teams!
+                            Pick port number, based on amount of workers defined in Procfile
                          */
-                        /* Rack is deafault pick */
-                        QString daemOpt = "-D";
-                        QString envOpt = "-E";
-                        QString bindOpt = "-o";
-                        if (procfileTail.toLower().contains("rails")) {
-                            logInfo() << "Rails launcher detected.";
-                            daemOpt = "-d";
-                            envOpt = "-e";
-                            bindOpt = "-b";
-                        } else
-                            logInfo() << "Rack launcher detected.";
+                        int portFileNum = QString(DEFAULT_SERVICE_PORT_NUMBER).toInt() + entryPosition;
+                        QString svPort = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + QString::number(portFileNum)).trimmed();
+                        QString procfileHead = entry.split(":").at(0);
+                        QString procfileTail = entry.split(":").at(1);
+                        if (entryPosition == 0)
+                            procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT"); /* replace $PORT value of Procfile if exists */
+                        else
+                            procfileTail = procfileTail.replace("$PORT", "SERVICE_PORT" + QString::number(entryPosition));
 
-                        QString portStr = "SERVICE_PORT";
-                        if (entryPosition > 0)
-                            portStr = "SERVICE_PORT" + QString::number(entryPosition);
-                        serviceWorkers.insert(
-                            /* start commands: */
-                            QString("sofin reload && cd ") + latestReleaseDir + " && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p " + portStr + " -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
+                        if (procfileHead == "web") { /* web worker is defined here */
+                            logInfo() << "Found web worker:" << procfileHead;
+                            logDebug() << "Worker entry:" << procfileTail << "on port:" << svPort;
+                            // startResultJson += " ";
+                            /* NOTE: dropped -b " + DEFAULT_LOCAL_ADDRESS + ", cause rack isn't supporting this feature like rails app, it should be explicitly given in Procfile then. */
 
-                            /* stop commands */
-                            "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
-                        );
+                            /*
+                               XXX: now we need to try to figure out how to launch that app
+                               (which is just fucking stupid, but there's no standard way to launch anything here),
+                               unfortunately Rake and/or Rails teams can't talk with each other to solve different
+                               arguments accepted by both services:
+                               --daemon         vs --daemonize
+                               -D               vs -d
+                               --environment    vs --env
+                               --host           vs --binding
+                               -b               vs -o
+                               So we need to hack it!
+                               Whole <3 goes to Rack/Rails teams!
+                             */
+                            /* Rack is deafault pick */
+                            QString daemOpt = "-D";
+                            QString envOpt = "-E";
+                            QString bindOpt = "-o";
+                            if (procfileTail.toLower().contains("rails")) {
+                                logInfo() << "Rails launcher detected.";
+                                daemOpt = "-d";
+                                envOpt = "-e";
+                                bindOpt = "-b";
+                            } else
+                                logInfo() << "Rack launcher detected.";
 
-                    } else {
-                        logInfo() << "Found an entry:" << procfileHead;
-                        // QString procPidFile = "/" + procfileHead + ".pid";
+                            QString portStr = "SERVICE_PORT";
+                            if (entryPosition > 0)
+                                portStr = "SERVICE_PORT" + QString::number(entryPosition);
+                            serviceWorkers.insert(
+                                /* start commands: */
+                                QString("sofin reload && cd ") + latestReleaseDir + " && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " " + procfileTail + " -p " + portStr + " -P SERVICE_PID " + envOpt + " " + stage + " " + bindOpt + " " + DEFAULT_LOCAL_ADDRESS + " " + daemOpt + " >> SERVICE_LOG 2>&1",
 
-                        QString portStr = "SERVICE_PORT";
-                        if (entryPosition > 0)
-                            portStr = "SERVICE_PORT" + QString::number(entryPosition);
+                                /* stop commands */
+                                "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
+                            );
 
-                        serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
+                        } else {
+                            logInfo() << "Found an entry:" << procfileHead;
+                            // QString procPidFile = "/" + procfileHead + ".pid";
 
-                            /* (start commands, stop commands) : */
-                            QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -p " + portStr + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && echo 'Started worker " + procfileHead + "' >> SERVICE_LOG 2>&1",
+                            QString portStr = "SERVICE_PORT";
+                            if (entryPosition > 0)
+                                portStr = "SERVICE_PORT" + QString::number(entryPosition);
 
-                            /* , stop commands) : */
-                            "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
+                            serviceWorkers.insert( /* NOTE: by default, each worker must accept pid location, log location and daemon mode */
 
-                        );
+                                /* (start commands, stop commands) : */
+                                QString("sofin reload && cd SERVICE_PREFIX") + DEFAULT_RELEASES_DIR + "SERVICE_RELEASE && \\\n" + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec " + procfileTail + " -p " + portStr + " -P SERVICE_PID -L SERVICE_LOG" + "-" + procfileHead + " -d && echo 'Started worker " + procfileHead + "' >> SERVICE_LOG 2>&1",
+
+                                /* , stop commands) : */
+                                "" //svddw $(cat SERVICE_PID) >> SERVICE_LOG"
+
+                            );
+                        }
+                        /*
+                            Increment position in Procfile entries to generate ports for multiple workers (multiple ports)
+                         */
+                        entryPosition++;
                     }
-                    /*
-                        Increment position in Procfile entries to generate ports for multiple workers (multiple ports)
-                     */
-                    entryPosition++;
-                }
 
-                /* generate correct order of application execution after workers */
-                jsonResult += QString("\n\n\"start\": {\"commands\": \"");
-                Q_FOREACH(QString part, serviceWorkers.keys()) { /* keys => start commands */
-                    jsonResult += part + " && \\\n";
-                }
-                jsonResult += " true ;";
-                jsonResult += "\"}, \n\n\"stop\": {\"commands\": \"";
-                Q_FOREACH(QString acmd, serviceWorkers.keys()) {
-                    logDebug() << "ACMD:" << acmd;
-                    QString cmd = serviceWorkers.take(acmd);
-                    jsonResult += cmd + " ; \\\n";
-                }
-                jsonResult += "\"}\n}";
+                    /* generate correct order of application execution after workers */
+                    jsonResult += QString("\n\n\"start\": {\"commands\": \"");
+                    Q_FOREACH(QString part, serviceWorkers.keys()) { /* keys => start commands */
+                        jsonResult += part + " && \\\n";
+                    }
+                    jsonResult += " true ;";
+                    jsonResult += "\"}, \n\n\"stop\": {\"commands\": \"";
+                    Q_FOREACH(QString acmd, serviceWorkers.keys()) {
+                        logDebug() << "ACMD:" << acmd;
+                        QString cmd = serviceWorkers.take(acmd);
+                        jsonResult += cmd + " ; \\\n";
+                    }
+                    jsonResult += "\"}\n}";
 
-            } else { /* generate standard igniter entry */
-
-                if (QFile::exists(latestReleaseDir + "bin/app")) {
-                    logInfo() << "Using bin/app for Rails web-app:" << serviceName;
-                    jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd " + latestReleaseDir) + " && test -f bin/app && chmod a+x bin/app && daemon bin/app >> SERVICE_LOG 2>&1\"}\n}";
-
-                } else {
+                } else { /* generate standard igniter entry */
                     logInfo() << "Generating default entry (no Procfile used)";
                     jsonResult += QString("\n\n\"start\": {\"commands\": \"sofin reload && cd " + latestReleaseDir) + " && " + buildEnv(serviceName, appDependencies, latestRelease) + " bundle exec rails s -b " + DEFAULT_LOCAL_ADDRESS + " -p SERVICE_PORT -P SERVICE_PID -d >> SERVICE_LOG 2>&1\"}\n}";
                 }
             }
+
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
             QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
