@@ -26,7 +26,7 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     /* check if volatile service state is initialized. No rush */
     while (QDir().exists(getServiceDataDir(name) + DEFAULT_SERVICE_PORTS_DIR) and not QFile::exists(getServiceDataDir(name) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER)) {
         logTrace() << "Waiting for non-volatile service state of service:" << name;
-        usleep(1000);
+        usleep(100);
     }
 
     auto config = new SvdServiceConfig(name);
