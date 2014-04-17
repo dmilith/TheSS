@@ -627,12 +627,12 @@ void PanelGui::key(int ch){
 
         case KEY_PPAGE:
         case '[':
-            tailScroll(12);
+            tailScroll(16);
             break;
 
         case KEY_NPAGE:
         case '\'':
-            tailScroll(-12);
+            tailScroll(-16);
             break;
 
         case 'S': /* Start */
