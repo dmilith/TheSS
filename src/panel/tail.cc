@@ -30,7 +30,7 @@ void Tail::releaseUpdate(const QString& newDirname) {
   eventsManager->registerFile(dirname);
   onDirectoryChanged(dirname);
 
-  usleep(1000); /* XXX: to slow things down - a throttle */
+  usleep(100); /* XXX: to slow things down - a throttle */
 }
 
 
