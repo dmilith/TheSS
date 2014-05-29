@@ -583,7 +583,7 @@ bool dependencyStartOrderLessThan(const QString &a, const QString &b) {
 
 
 void SvdService::startSlot(bool withDeps) {
-    mtx.lock();
+    // mtx.lock();
     logTrace() << "Loading service igniter" << name;
     loadServiceConfig(name);
     logDebug() << "Invoked start slot for service:" << name;
@@ -595,7 +595,7 @@ void SvdService::startSlot(bool withDeps) {
         if (map[value] <= config->minimumRequiredDiskSpace) {
             QString msg = "Insufficient disk space for service: " + config->name + " on domains: " + config->domains.join(", ") + ". Expected disk space amount (MiB): " + QString::number(config->minimumRequiredDiskSpace) + " but disk: " + value + " has only: " + map[value] + "!";
             notificationSend(msg, ERROR);
-            mtx.unlock();
+            // mtx.unlock();
             return;
         }
     }
@@ -614,7 +614,7 @@ void SvdService::startSlot(bool withDeps) {
         logDebug() << "Checking cronSitter state for service:" << name;
         if (not cronSitter.isActive())
             cronSitter.start();
-        mtx.unlock();
+        // mtx.unlock();
         return;
     } else {
         logDebug() << "Emitting install slot for service:" << name;
@@ -678,7 +678,7 @@ void SvdService::startSlot(bool withDeps) {
             QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
             notificationSend(msg, ERROR);
             /* NOTE: don't try to retry. Notification is enough */
-            mtx.unlock();
+            // mtx.unlock();
             return;
         }
 
@@ -712,7 +712,7 @@ void SvdService::startSlot(bool withDeps) {
     }
     touch(indicator);
 
-    mtx.unlock();
+    // mtx.unlock();
 
     /* invoke after start slot */
     logTrace() << "After process start execution:" << name;
@@ -814,7 +814,7 @@ void SvdService::afterStartSlot() {
 
 
 void SvdService::stopSlot(bool withDeps) {
-    mtx.lock();
+    // mtx.lock();
     loadServiceConfig(name);
     logDebug() << "Invoked stop slot for service:" << name;
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE;
@@ -825,7 +825,7 @@ void SvdService::stopSlot(bool withDeps) {
     /* stop main application first, dependencies after it */
     if (not QFile::exists(indicator)) {
         logInfo() << "No need to stop service" << name << "because it's already stopped.";
-        mtx.unlock();
+        // mtx.unlock();
         return;
     } else {
         auto process = new SvdProcess(name);
@@ -890,7 +890,7 @@ void SvdService::stopSlot(bool withDeps) {
         }
     }
 
-    mtx.unlock();
+    // mtx.unlock();
 
     /* invoke after stop slot */
     emit afterStopSlot();

@@ -71,7 +71,7 @@ class SvdService: public QThread {
         void run();
 
     private:
-        QMutex mtx;
+        // QMutex mtx;
         QString name;
         QString hash = "";
         QElapsedTimer uptime;
