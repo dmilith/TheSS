@@ -15,6 +15,7 @@
 #include "service_watcher.h"
 #include "user_watcher.h"
 #include "../core/utils.h"
+#include <sys/file.h>
 
 
 int main(int argc, char *argv[]) {
@@ -110,16 +111,20 @@ int main(int argc, char *argv[]) {
             QFile::remove(lockName);
         }
     }
-    logDebug() << "Lock name:" << lockName;
-    writeToFile(lockName, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
 
     signal(SIGINT, unixSignalHandler);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
-    notification("Launching TheSS v" + QString(APP_VERSION) + " on host: " + QHostInfo::localHostName() + " for uid: " + QString::number(uid));
 
     #ifdef THESS_TEST_MODE
         logFatal() << "Please rebuild TheSS after tests. Service Spawner can't be running in test mode.";
     #endif
+
+    logInfo() << "=================================================================================";
+    writeToFile(lockName, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
+    logInfo() << "Acquiring file lock on:" << lockName;
+    FILE* fp = fopen(lockName.toUtf8(), "r+");
+    flock(fileno(fp), LOCK_EX); /* lock file */
+    notification("Launching TheSS v" + QString(APP_VERSION) + " on host: " + QHostInfo::localHostName() + " for uid: " + QString::number(uid));
 
     QSettings settings;
     if (interactive) {
