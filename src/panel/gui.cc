@@ -270,7 +270,12 @@ void PanelGui::helpDialog(){
 void PanelGui::newServiceDialog(){
     int r = min(rows-6, 23);
     WINDOW *win = newwin(r, 46, 2, 5);
-    AvailableServicesList list(panel->availableServices(), r - 3, win);
+    auto svcesAvailable = panel->availableServices();
+    if (svcesAvailable->length() <= 0) {
+        status = "Igniters were not installed. Use ignitersinstall script first.";
+        return;
+    }
+    AvailableServicesList list(svcesAvailable, r - 3, win);
     QString name = "";
     int ch = 0;
 

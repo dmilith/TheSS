@@ -89,16 +89,12 @@ void Panel::refreshServicesList() {
 
 QStringList * Panel::availableServices() {
     auto userEntries = QDir(home.absolutePath() + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
-    auto standardEntries = QDir(QString(DEFAULT_SOFTWARE_TEMPLATES_DIR)).entryList(QDir::Files);
-    auto rootEntries = QStringList();
-    if (getuid() == 0) {
-            rootEntries << QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
-    }
-
+    auto rootEntries = QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
     available.clear();
-    available.append(userEntries);
-    available.append(standardEntries);
-    available.append(rootEntries);
+    if (getuid() == 0)
+        available.append(rootEntries);
+    else
+        available.append(userEntries);
     available.removeDuplicates();
     available.sort();
     available.replaceInStrings(QRegExp("\\.json"), "");
