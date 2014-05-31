@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
 
     /* file lock setup */
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
+    FILE* fp = fopen(lockName.toUtf8(), "r");
     if (getuid() == 0) {
         lockName = getHomeDir() + "/.root.pid";
     }
@@ -101,13 +102,19 @@ int main(int argc, char *argv[]) {
         uint pid = aPid.toInt(&ok, 10);
         if (ok) {
             if (pidIsAlive(pid) or pid == 0) { /* NOTE: if pid == 0 it means that SS is runned from SS root maintainer */
-                logError() << "Service Spawner is already running.";
+                logError() << "Service Spawner is already running with pid:" << QString::number(pid);
                 return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
-            } else
-                logDebug() << "No alive Service Spawner pid found";
+            } else {
+                logInfo() << "Dead Service Spawner pid found. Removing lock";
+                if (fp)
+                    funlockfile(fp);
+                QFile::remove(lockName);
+            }
 
         } else {
-            logWarn() << "Pid file is damaged or doesn't contains valid pid. File will be removed";
+            logWarn() << "Pid file is damaged or doesn't contains valid pid. Removing lock";
+            if (fp)
+                funlockfile(fp);
             QFile::remove(lockName);
         }
     }
@@ -119,6 +126,7 @@ int main(int argc, char *argv[]) {
         logFatal() << "Please install igniters for TheSS to work with first.";
 
     signal(SIGINT, unixSignalHandler);
+    signal(SIGTERM, unixSignalHandler);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
     #ifdef THESS_TEST_MODE
@@ -126,10 +134,12 @@ int main(int argc, char *argv[]) {
     #endif
 
     logInfo() << "=================================================================================";
+
     writeToFile(lockName, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
     logInfo() << "Acquiring file lock on:" << lockName;
-    FILE* fp = fopen(lockName.toUtf8(), "r+");
-    flock(fileno(fp), LOCK_EX); /* lock file */
+    if (not fp)
+        fp = fopen(lockName.toUtf8(), "r");
+    flockfile(fp); /* lock file */
     notification("Launching TheSS v" + QString(APP_VERSION) + " on host: " + QHostInfo::localHostName() + " for uid: " + QString::number(uid));
 
     QSettings settings;
