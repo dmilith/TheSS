@@ -129,7 +129,6 @@ int main(int argc, char *argv[]) {
     logDebug() << "Lock name:" << cgxhPidFile;
     writeToFile(cgxhPidFile, QString::number(getpid()));
 
-    signal(SIGINT, unixSignalHandler);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
     new SvdPublicWatcher();
