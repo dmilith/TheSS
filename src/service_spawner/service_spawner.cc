@@ -112,6 +112,12 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    auto userEntries = QDir(getHomeDir() + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
+    auto rootEntries = QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
+    logDebug() << "Validating igniters existance.\nUser entries:" << userEntries << "\nRoot entries:" << rootEntries;
+    if (((getuid() == 0) and rootEntries.isEmpty()) or userEntries.isEmpty())
+        logFatal() << "Please install igniters for TheSS to work with first.";
+
     signal(SIGINT, unixSignalHandler);
     signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
