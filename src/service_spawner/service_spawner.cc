@@ -15,7 +15,6 @@
 #include "service_watcher.h"
 #include "user_watcher.h"
 #include "../core/utils.h"
-#include <sys/file.h>
 
 
 int main(int argc, char *argv[]) {
@@ -32,7 +31,10 @@ int main(int argc, char *argv[]) {
     QRegExp rxEnableTrace("-t");
     QRegExp rxPrintVersion("-v");
     QRegExp rxInteractive("-i");
+    QRegExp rxResetSystemLock("-r");
     uint uid = getuid();
+
+    QSystemSemaphore systemLock(DEFAULT_LOCK_KEY + QString::number(uid), 1, QSystemSemaphore::Open);
 
     bool debug = false, trace = false, interactive = false;
     for (int i = 1; i < args.size(); ++i) {
@@ -51,6 +53,11 @@ int main(int argc, char *argv[]) {
         }
         if (rxPrintVersion.indexIn(args.at(i)) != -1) {
             cout << "ServeD Service Spawner v" << APP_VERSION << ". " << COPYRIGHT << endl;
+            return EXIT_SUCCESS;
+        }
+        if (rxResetSystemLock.indexIn(args.at(i)) != -1) {
+            cout << "Resetting system lock.";
+            QSystemSemaphore systemLock(DEFAULT_LOCK_KEY + QString::number(uid), 1, QSystemSemaphore::Create);
             return EXIT_SUCCESS;
         }
     }
@@ -90,34 +97,32 @@ int main(int argc, char *argv[]) {
         new FileLoggerTimer(fileAppender);
     }
 
-    /* file lock setup */
-    QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
-    FILE* fp = fopen(lockName.toUtf8(), "r");
+    QString pidFile = getHomeDir() + "/." + getenv("USER") + ".pid";
     if (getuid() == 0) {
-        lockName = getHomeDir() + "/.root.pid";
+        pidFile = getHomeDir() + "/.root.pid";
     }
-    if (QFile::exists(lockName)) {
+    if (QFile::exists(pidFile)) {
         bool ok;
-        QString aPid = readFileContents(lockName).trimmed();
+        QString aPid = readFileContents(pidFile).trimmed();
         uint pid = aPid.toInt(&ok, 10);
         if (ok) {
             if (pidIsAlive(pid) or pid == 0) { /* NOTE: if pid == 0 it means that SS is runned from SS root maintainer */
                 logError() << "Service Spawner is already running with pid:" << QString::number(pid);
                 return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
             } else {
-                logInfo() << "Dead Service Spawner pid found. Removing lock";
-                if (fp)
-                    funlockfile(fp);
-                QFile::remove(lockName);
+                logInfo() << "Dead Service Spawner pid found. Removing pid file.";
+                QFile::remove(pidFile);
             }
 
         } else {
-            logWarn() << "Pid file is damaged or doesn't contains valid pid. Removing lock";
-            if (fp)
-                funlockfile(fp);
-            QFile::remove(lockName);
+            logWarn() << "Pid file is damaged or doesn't contains valid pid. Removing pid file.";
+            QFile::remove(pidFile);
         }
     }
+
+    /* file lock setup */
+    logInfo() << "Acquiring system lock:" << DEFAULT_LOCK_KEY + QString::number(uid);
+    systemLock.acquire();
 
     auto userEntries = QDir(getHomeDir() + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
     auto rootEntries = QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
@@ -135,11 +140,7 @@ int main(int argc, char *argv[]) {
 
     logInfo() << "=================================================================================";
 
-    writeToFile(lockName, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
-    logInfo() << "Acquiring file lock on:" << lockName;
-    if (not fp)
-        fp = fopen(lockName.toUtf8(), "r");
-    flockfile(fp); /* lock file */
+    writeToFile(pidFile, QString::number(getpid()), false); /* get process pid and record it to pid file no logrotate */
     notification("Launching TheSS v" + QString(APP_VERSION) + " on host: " + QHostInfo::localHostName() + " for uid: " + QString::number(uid));
 
     QSettings settings;
