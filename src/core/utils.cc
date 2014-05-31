@@ -174,9 +174,12 @@ bool pidIsAlive(uint pid) {
 
 void unixSignalHandler(int sigNum) {
     if (sigNum == SIGINT) {
-        logWarn() << "Caught SIGINT signal. Quitting application.";
-        // touch(getHomeDir() + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
+        logWarn() << "Caught SIGINT signal. Quitting application and services.";
         qApp->quit();
+    }
+    if (sigNum == SIGTERM) {
+        logWarn() << "Caught SIGTERM signal. Quitting application, leaving services intact.";
+        raise(SIGQUIT);
     }
 }
 
