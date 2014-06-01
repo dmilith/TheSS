@@ -57,6 +57,7 @@ void PanelService::refresh(){
 
     isRunning = QFile::exists(basePath + DEFAULT_SERVICE_RUNNING_FILE);
     bool isAutostarted = QFile::exists(basePath + AUTOSTART_TRIGGER_FILE);
+    bool isNotificationEnabled = QFile::exists(basePath + NOTIFICATION_TRIGGER_FILE);
     bool sv = QFile::exists(basePath + DEFAULT_SERVICE_VALIDATING_FILE);
     bool sc = QFile::exists(basePath + DEFAULT_SERVICE_CONFIGURING_FILE) || QFile::exists(basePath + DEFAULT_SERVICE_DEPLOYING_FILE);
     bool si = QFile::exists(basePath + DEFAULT_SERVICE_INSTALLING_FILE);
@@ -116,7 +117,8 @@ void PanelService::refresh(){
     flags[3] = si ? 'I' : '-';
     flags[4] = se ? 'E' : '-';
     flags[5] = isAutostarted ? 'A' : '-';
-    flags[6] = '\0';
+    flags[6] = isNotificationEnabled ? 'N' : '-';
+    flags[7] = '\0';
 }
 
 
@@ -134,6 +136,13 @@ void PanelService::restartWithoutDeps() {      touch(basePath + RESTART_WITHOUT_
 void PanelService::reload() {                  touch(basePath + RELOAD_TRIGGER_FILE);                  refresh();  }
 void PanelService::toggleAutostart() {
     QString file = basePath + AUTOSTART_TRIGGER_FILE;
+    if (not QFile::exists(file)) touch(file);
+    else QFile::remove(file);
+    refresh();
+}
+
+void PanelService::toggleNotifications() {
+    QString file = basePath + NOTIFICATION_TRIGGER_FILE;
     if (not QFile::exists(file)) touch(file);
     else QFile::remove(file);
     refresh();

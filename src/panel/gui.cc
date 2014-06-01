@@ -239,7 +239,8 @@ void PanelGui::helpDialog(){
     list << "  I       - Install current service";
     list << "  C       - Configure current service";
     list << "  V       - Validate current service";
-    list << "  A       - Toggle autostart";
+    list << "  A       - Toggle autostart for service";
+    list << "  Y       - Toggle notifications for service";
     list << "  K       - Show app config (service.conf)";
     list << "  E       - Show app env (service.env)";
     list << "  L       - Show service log (service.log)";
@@ -790,6 +791,15 @@ void PanelGui::key(int ch){
             } else {
                 servicesList->currentItem()->toggleAutostart();
                 status = "Triggered autostart of application: " + servicesList->currentItem()->name;
+            }
+            break;
+
+        case 'Y':
+            if (servicesList->currentItem() == NULL) {
+                status = "Can't trigger notifications for non existant service";
+            } else {
+                servicesList->currentItem()->toggleNotifications();
+                status = "Triggered notifications for application: " + servicesList->currentItem()->name;
             }
             break;
 

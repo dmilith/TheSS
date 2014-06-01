@@ -28,10 +28,11 @@ public:
     void restartWithoutDeps();
     void reload();
     void toggleAutostart();
+    void toggleNotifications();
     bool remove();
     void refresh();
 
-    char flags[7];
+    char flags[8];
     QString name, pid, domain, port;
     bool autostart;
     int status;
