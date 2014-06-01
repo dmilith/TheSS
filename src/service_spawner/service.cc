@@ -57,12 +57,16 @@ void SvdService::loadServiceConfig(const QString& nme) {
 
 
 void SvdService::notificationSend(const QString& notificationMessage, NotificationLevels level) {
-    if (level >= config->notificationLevel) {
-    loadServiceConfig(name);
-        logDebug() << "Allowed notification with level:" << QString::number(level) << "vs" << QString::number(config->notificationLevel);
-        notification(notificationMessage, level);
+    if (not QFile::exists(getServiceDataDir(name) + NOTIFICATION_TRIGGER_FILE)) {
+        logDebug() << "Notifications disabled for service:" << name;
     } else {
-        logDebug() << "Discarded notification with level:" << QString::number(level) << "vs" << QString::number(config->notificationLevel);
+        if (level >= config->notificationLevel) {
+            loadServiceConfig(name);
+            logDebug() << "Allowed notification with level:" << QString::number(level) << "vs" << QString::number(config->notificationLevel);
+            notification(notificationMessage, level);
+        } else {
+            logDebug() << "Discarded notification with level:" << QString::number(level) << "vs" << QString::number(config->notificationLevel);
+        }
     }
 }
 
