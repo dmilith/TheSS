@@ -173,17 +173,10 @@ bool pidIsAlive(uint pid) {
 
 
 void unixSignalHandler(int sigNum) {
-    auto uid = getuid();
-    QSystemSemaphore systemLock(DEFAULT_LOCK_KEY + QString::number(uid), 1, QSystemSemaphore::Open);
-    if (sigNum == SIGINT) {
-        systemLock.release();
-        logWarn() << "Caught SIGINT signal. Quitting application and services.";
-        qApp->quit();
-    }
     if (sigNum == SIGTERM) {
-        systemLock.release();
         logWarn() << "Caught SIGTERM signal. Quitting application, leaving services intact.";
-        raise(SIGQUIT);
+        logInfo() << "Forced shutdown";
+        exit(EXIT_SUCCESS);
     }
 }
 

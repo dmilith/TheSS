@@ -97,6 +97,9 @@ int main(int argc, char *argv[]) {
         new FileLoggerTimer(fileAppender);
     }
 
+    signal(SIGTERM, unixSignalHandler);
+    signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
+
     QString pidFile = getHomeDir() + "/." + getenv("USER") + ".pid";
     if (getuid() == 0) {
         pidFile = getHomeDir() + "/.root.pid";
@@ -120,19 +123,19 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    /* file lock setup */
-    logInfo() << "Acquiring system lock:" << DEFAULT_LOCK_KEY + QString::number(uid);
-    systemLock.acquire();
+    /* mem lock setup */
+    auto startTimer = QDateTime::currentMSecsSinceEpoch();
+    QSharedMemory memLock(DEFAULT_LOCK_KEY + QString::number(startTimer/5000));
+    if (not memLock.create(1)) {
+        logError() << "Memory locked! You cannot launch more than one process per 5 seconds.";
+        return EXIT_SUCCESS;
+    }
 
     auto userEntries = QDir(getHomeDir() + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
     auto rootEntries = QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
     logDebug() << "Validating igniters existance.\nUser entries:" << userEntries << "\nRoot entries:" << rootEntries;
     if (((getuid() == 0) and rootEntries.isEmpty()) or userEntries.isEmpty())
         logFatal() << "Please install igniters for TheSS to work with first.";
-
-    signal(SIGINT, unixSignalHandler);
-    signal(SIGTERM, unixSignalHandler);
-    signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
     #ifdef THESS_TEST_MODE
         logFatal() << "Please rebuild TheSS after tests. Service Spawner can't be running in test mode.";

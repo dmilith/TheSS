@@ -17,7 +17,7 @@
     /* global constants */
     #define APP_VERSION "0.92.18"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
-    #define DEFAULT_LOCK_KEY "ServeD System Lock"
+    #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
     /* default BSD case: */
     #define DEFAULT_SSL_PORT 443
