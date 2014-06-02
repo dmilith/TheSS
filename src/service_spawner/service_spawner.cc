@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 
     /* mem lock setup */
     auto startTimer = QDateTime::currentMSecsSinceEpoch();
-    QSharedMemory memLock(DEFAULT_LOCK_KEY + QString::number(startTimer/5000));
+    QSharedMemory memLock(DEFAULT_LOCK_KEY + QString::number(uid) + QString::number(ceil(startTimer/5000)));
     if (not memLock.create(1)) {
         logError() << "Memory locked! You cannot launch more than one process per 5 seconds.";
         return EXIT_SUCCESS;
