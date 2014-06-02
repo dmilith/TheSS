@@ -11,11 +11,6 @@ else
 fi
 note "Loaded Sofin environment"
 
-QMAKE=qmake
-if [ ${BUNDLED_QT_DIR} != "" ]; then
-    export QMAKE="${BUNDLED_QT_DIR}/bin/qmake"
-fi
-
 build () {
     QMAKE_OPTS=""
     MAKE_OPTS_BUILD="-j${JOBS} -Q -s"
@@ -29,65 +24,65 @@ build () {
 
     case "$1" in
         dispel)
-            (${QMAKE} ${QMAKE_OPTS} Dispel.pro) || exit 1
+            (qmake ${QMAKE_OPTS} Dispel.pro) || exit 1
             (note "Building Dispel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddispel\n") || exit 1
             ;;
 
         shell|svdshell)
-            (${QMAKE} ${QMAKE_OPTS} Shell.pro) || exit 1
+            (qmake ${QMAKE_OPTS} Shell.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1
             ;;
 
         panel|svdpanel)
-            (${QMAKE} ${QMAKE_OPTS} Panel.pro) || exit 1
+            (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
             ;;
 
         ss|svdss)
-            (${QMAKE} ${QMAKE_OPTS} TheSS.pro) || exit 1
+            (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
             ;;
 
         tests|test)
-            (${QMAKE} ${QMAKE_OPTS} TestSS.pro) || exit 1
+            (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built tests\n") || exit 1
             ;;
 
         deployer|deploy|depl|d)
-            (${QMAKE} ${QMAKE_OPTS} WAD.pro) || exit 1
+            (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
             ;;
 
         coreginx_helper|cgx|c)
-            (${QMAKE} ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
+            (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
             (make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
             ;;
 
         *)
             sed -i '' -e 's/THESS_TEST_MODE/THESS_NORMAL_MODE/' src/Common.pro
 
-            (${QMAKE} ${QMAKE_OPTS} Shell.pro) || exit 1
+            (qmake ${QMAKE_OPTS} Shell.pro) || exit 1
             (note "Building Shell" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1
 
-            (${QMAKE} ${QMAKE_OPTS} Dispel.pro) || exit 1
+            (qmake ${QMAKE_OPTS} Dispel.pro) || exit 1
             (note "Building Dispel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddispel\n") || exit 1
 
-            (${QMAKE} ${QMAKE_OPTS} TheSS.pro) || exit 1
+            (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
             (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
 
-            (${QMAKE} ${QMAKE_OPTS} DeathWatch.pro) || exit 1
+            (qmake ${QMAKE_OPTS} DeathWatch.pro) || exit 1
             (note "Building DeathWatch" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddw\n") || exit 1
 
-            (${QMAKE} ${QMAKE_OPTS} WAD.pro) || exit 1
+            (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
             (note "Building WAD" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
 
-            (${QMAKE} ${QMAKE_OPTS} Notifications.pro) || exit 1
+            (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
             (note "Building Notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built Notifications\n") || exit 1
 
-            (${QMAKE} ${QMAKE_OPTS} Panel.pro) || exit 1
+            (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
             (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
 
-            (${QMAKE} ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
+            (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
             (note "Building CoreginxHelper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
 
             ;;
