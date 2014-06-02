@@ -31,10 +31,7 @@ int main(int argc, char *argv[]) {
     QRegExp rxEnableTrace("-t");
     QRegExp rxPrintVersion("-v");
     QRegExp rxInteractive("-i");
-    QRegExp rxResetSystemLock("-r");
     uint uid = getuid();
-
-    QSystemSemaphore systemLock(DEFAULT_LOCK_KEY + QString::number(uid), 1, QSystemSemaphore::Open);
 
     bool debug = false, trace = false, interactive = false;
     for (int i = 1; i < args.size(); ++i) {
@@ -53,11 +50,6 @@ int main(int argc, char *argv[]) {
         }
         if (rxPrintVersion.indexIn(args.at(i)) != -1) {
             cout << "ServeD Service Spawner v" << APP_VERSION << ". " << COPYRIGHT << endl;
-            return EXIT_SUCCESS;
-        }
-        if (rxResetSystemLock.indexIn(args.at(i)) != -1) {
-            cout << "Resetting system lock.";
-            QSystemSemaphore systemLock(DEFAULT_LOCK_KEY + QString::number(uid), 1, QSystemSemaphore::Create);
             return EXIT_SUCCESS;
         }
     }
