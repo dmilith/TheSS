@@ -10,6 +10,7 @@ QT += network
 HEADERS   += \
             ../core/json_api.h \
             ../service_spawner/cron_entry.h \
+            ../core/utils-core.h \
             ../core/utils.h \
             ../cutelogger/Logger.h \
             ../cutelogger/ConsoleAppender.h \
@@ -26,6 +27,7 @@ HEADERS   += \
 SOURCES   += \
             ../core/json_api.cc \
             ../service_spawner/cron_entry.cc \
+            ../core/utils-core.cc \
             ../core/utils.cc \
             ../core/logger.cc \
             ../service_spawner/process.cc \

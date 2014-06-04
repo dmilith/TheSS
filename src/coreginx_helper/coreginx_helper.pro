@@ -11,6 +11,7 @@ HEADERS   += ../core/json_api.h \
              ../notifications/notifications.h \
              ../service_spawner/process.h \
              ../death_watch/death_watch.h \
+             ../core/utils-core.h \
              ../core/utils.h \
              ../core/logger.h \
              ../service_spawner/file_events_manager.h \
@@ -22,6 +23,7 @@ HEADERS   += ../core/json_api.h \
 
 SOURCES   += ../core/json_api.cc \
              ../service_spawner/process.cc \
+             ../core/utils-core.cc \
              ../core/utils.cc \
              ../death_watch/death_watch.cc \
              ../core/logger.cc \

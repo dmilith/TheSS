@@ -13,6 +13,7 @@ HEADERS   += ../core/json_api.h \
              ../death_watch/death_watch.h \
              process.h \
              service_config.h \
+             ../core/utils-core.h \
              ../core/utils.h \
              service_watcher.h \
              user_watcher.h \
@@ -23,6 +24,7 @@ SOURCES   += ../core/json_api.cc \
              service.cc \
              process.cc \
              service_config.cc \
+             ../core/utils-core.cc \
              ../core/utils.cc \
              service_watcher.cc \
              user_watcher.cc \
