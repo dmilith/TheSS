@@ -46,8 +46,21 @@ int main(int argc, char *argv[]) {
         logInfo() << "Death watch is harvesting soul of pid:" << QString::number(pid);
         deathWatch(pid);
     } else {
-        logError() << "Bad pid number given:" << args.at(1) << " Aborting.";
-        return 1;
+        QString possiblePidFile = args.at(1);
+        if (QFile::exists(possiblePidFile)) { /* case when given param is name of file with pid, not pid itself */
+            logInfo() << "Reading file:" << possiblePidFile;
+            pid = readFileContents(possiblePidFile).trimmed().toInt(&ok, 10);
+            if (ok) {
+                logInfo() << "Death watch is harvesting soul of pid:" << QString::number(pid);
+                deathWatch(pid);
+            } else {
+                logError() << "Bad pid file given:" << possiblePidFile << " Aborting.";
+                return 1;
+            }
+        } else {
+            logError() << "Bad pid number given:" << args.at(1) << " Aborting.";
+            return 1;
+        }
     }
     return 0;
 }
