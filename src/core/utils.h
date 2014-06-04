@@ -16,6 +16,7 @@
 #include "../service_spawner/process.h"
 #include "../quazip/quazip.h"
 #include "../quazip/quazipfile.h"
+#include "utils-core.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -55,8 +56,6 @@ using namespace std;
 #endif
 
 QList<int> gatherUserUids();
-
-QString readFileContents(const QString& fileName);
 
 bool expect(const QString& inputFileContent, const QString& expectedString);
 bool removeDir(const QString& dirName, bool system_method = false);

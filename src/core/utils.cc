@@ -414,28 +414,6 @@ uint registerFreeUdpPort(uint specificPort) {
 }
 
 
-/*
- *  Read file contents of text file
- */
-QString readFileContents(const QString& fileName) {
-    QString lines = "";
-    QFile f(fileName);
-    f.open(QIODevice::ReadOnly);
-    QTextStream stream(&f);
-    // stream.setCodec(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
-    while (!stream.atEnd()) {
-        QString line = stream.readLine();
-        if (!line.trimmed().isEmpty()) {
-            lines += line + "\n";
-            logTrace() << fileName << ":" << line;
-        }
-    }
-    lines += "\n";
-    f.close();
-    return lines;
-}
-
-
 // /*
 //  *  Parse string contents to Json value.
 //  */
