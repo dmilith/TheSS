@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
     /* setup new file lock with current pid */
     uint currentPid = getpid();
     logInfo() << "Setting up and writing pid:" << currentPid << "new lock name:" << wadPidFile;
-    writeToFile(wadPidFile, QString::number(currentPid));
+    writeToFile(wadPidFile + ".pid", QString::number(currentPid));
 
     /* print warnings and errors */
     if (not warnings.isEmpty()) {
