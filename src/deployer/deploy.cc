@@ -829,7 +829,6 @@ void requestDependenciesStoppedOf(const QString& serviceName, const QStringList 
             // TODO: write igniter from some source
         }
 
-        int steps = 0;
         int aPid = readFileContents(location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE).trimmed().toUInt();
         logInfo() << "Requesting dependency shutdown:" << val << "with pid:" << QString::number(aPid);
         logDebug() << "\\_from:" << location + DEFAULT_SERVICE_PIDS_DIR + releaseName + DEFAULT_SERVICE_PID_FILE;
@@ -1462,18 +1461,21 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         }
     }
 
-    /* spawn bin/teardown */
-    auto orderedPort = servPorts.at(0).toUInt();
-    logInfo() << "Waiting for port:" << QString::number(orderedPort) << "to be taken by web-app";
-    auto timeout = 30;
-    while (orderedPort == registerFreeTcpPort(orderedPort)) { /* first tcp port should be taken */
-        logDebug() << "Waiting for port of service:" << serviceName << "timeout:" << QString::number(timeout);
-        timeout--;
-        if (timeout <= 0)
-            break;
-        sleep(1);
+    /* for static web apps, don't look for service port */
+    if (appType != StaticSite) {
+        auto orderedPort = servPorts.at(0).toUInt();
+        logInfo() << "Waiting for port:" << QString::number(orderedPort) << "to be taken by web-app";
+        auto timeout = 30;
+        while (orderedPort == registerFreeTcpPort(orderedPort)) { /* first tcp port should be taken */
+            logDebug() << "Waiting for port of service:" << serviceName << "timeout:" << QString::number(timeout);
+            timeout--;
+            if (timeout <= 0)
+                break;
+            sleep(1);
+        }
     }
 
+    /* spawn bin/teardown */
     logInfo() << "Trying with bin/teardown for service:" << serviceName;
     clne->spawnProcess("cd " + latestReleaseDir + " && test -f bin/teardown && chmod a+x bin/teardown && " + buildEnv(serviceName, appDependencies, svConfig->releaseName()) + " bin/teardown " + stage + " >> " + serviceLog + " 2>&1", DEFAULT_DEPLOYER_SHELL);
     clne->waitForFinished(-1);
