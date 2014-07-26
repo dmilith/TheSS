@@ -11,6 +11,10 @@ else
 fi
 note "Loaded Sofin environment"
 
+if [ "$(uname)" = "Darwin" ]; then # use system side qt 4.8.x
+    export PATH="/usr/bin:/bin:$PATH"
+fi
+
 build () {
     QMAKE_OPTS=""
     MAKE_OPTS_BUILD="-j${JOBS} -Q -s"

@@ -3,6 +3,9 @@
 readonly JOBS="12"
 QMAKE_OPTS=""
 MAKE_OPTS="-j${JOBS} -Q -s"
+if [ "$(uname)" = "Darwin" ]; then # use system side qt 4.8.x
+    export PATH="/usr/bin:/bin:$PATH"
+fi
 
 if [ "$(uname)" = "Darwin" ]; then
     MAKE_OPTS="-j${JOBS} --silent"
