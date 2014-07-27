@@ -15,16 +15,18 @@ QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, Q
     QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
     QString sslDir = getOrCreateDir(servicePath + DEFAULT_SERVICE_SSLS_DIR);
     QString appProxyContent = readFileContents(latestReleaseDir + DEFAULT_APP_PROXY_FILE).trimmed();
-    if (not sslPemPath.isEmpty()) { /* ssl pem file given */
-        logWarn() << "NYI";
+    if (not QFile::exists(sslDir + domain + ".crt")) {
+        if (not sslPemPath.isEmpty()) { /* ssl pem file given */
+            logWarn() << "NYI";
+            // use interactive mode or set some file from input
 
-    } else {
-        logInfo() << "Generating self signed SSL certificate for service:" << serviceName;
-        SvdProcess *prc = new SvdProcess("an_self_signed_cert_generate", getuid(), false);
-
-        prc->spawnProcess("test ! -f " + sslDir + domain + ".crt && echo \"EU\nPoland\nWejherowo\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + domain + ".crt -keyout " + sslDir + domain + ".key", DEFAULT_DEPLOYER_SHELL);
-        prc->waitForFinished(-1);
-        prc->deleteLater();
+        } else {
+            logInfo() << "Generating self signed SSL certificate for service:" << serviceName;
+            SvdProcess *prc = new SvdProcess("an_self_signed_cert_generate", getuid(), false);
+            prc->spawnProcess("test ! -f " + sslDir + domain + ".crt && echo \"EU\nPoland\nWejherowo\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + domain + ".crt -keyout " + sslDir + domain + ".key", DEFAULT_DEPLOYER_SHELL);
+            prc->waitForFinished(-1);
+            prc->deleteLater();
+        }
     }
     switch (type) {
         case StaticSite:
