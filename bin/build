@@ -21,7 +21,7 @@ build () {
     case "${SYSTEM_NAME}" in
         Darwin)
             MAKE_OPTS_BUILD="-j${JOBS} --silent"
-            QMAKE_OPTS="-spec clang++"
+            QMAKE_OPTS="-spec macx-clang"
             ;;
     esac
 
