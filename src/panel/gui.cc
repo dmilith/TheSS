@@ -256,7 +256,7 @@ void PanelGui::helpDialog(){
     list << "  F10     - Gracefully shutdown TheSS if running";
     list << "  F11     - Forced TheSS shutdown (make it dead, no matter what)";
     list << "  F12     - Reset service state & trigger files (useful for igniter debugging)";
-    list << "  ` ~ \\   - Show TheSS log";
+    list << "  ` ~ \\   - Show TheSS log                                                                          Qt version: " + QString(qVersion()).trimmed();
 
     for(int i=0; i<list.length(); i++){
         mvwprintw(win, i+1, 2, "%s", list.at(i).toUtf8().data());
