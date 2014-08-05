@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
 
     // App setup
     QCoreApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    setDefaultEncoding();
 
     QString logFile = QString(getenv("HOME")) + CONTROL_PANEL_LOG_FILE;
     // QFile::remove(logFile);

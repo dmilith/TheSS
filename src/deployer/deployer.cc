@@ -37,7 +37,7 @@ void deployerSignalHandler(int sigNum) {
 int main(int argc, char *argv[]) {
 
     QCoreApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    setDefaultEncoding();
     QStringList args = app.arguments();
     bool background = false; /* by default launch svddeployer as foreground task */
     QRegExp rxEnableForeground("-f"); /* run in foreground */

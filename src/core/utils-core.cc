@@ -29,3 +29,11 @@ QString readFileContents(const QString& fileName) {
     return lines;
 }
 
+
+void setDefaultEncoding() {
+    #if QT_VERSION >= 0x050000
+        QTextCodec::setCodecForLocale(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    #else
+        QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    #endif
+}

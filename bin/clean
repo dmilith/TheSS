@@ -12,12 +12,12 @@ if [ "$(uname)" = "Darwin" ]; then
     QMAKE_OPTS="-spec darwin-g++"
     for i in Notifications TestSS Panel TheSS WAD CoreginxHelper DeathWatch Shell Dispel; do
         qmake ${QMAKE_OPTS} ${i}.pro
-        make ${MAKE_OPTS} distclean
+        make ${MAKE_OPTS} clean
     done
 else
     for i in Notifications TestSS Panel TheSS WAD CoreginxHelper DeathWatch Shell Dispel; do
         qmake ${QMAKE_OPTS} ${i}.pro
-        make ${MAKE_OPTS} distclean
+        make ${MAKE_OPTS} clean
     done
 fi
 

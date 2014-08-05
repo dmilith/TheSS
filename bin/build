@@ -11,9 +11,9 @@ else
 fi
 note "Loaded Sofin environment"
 
-if [ "$(uname)" = "Darwin" ]; then # use system side qt 4.8.x
-    export PATH="/usr/bin:/bin:$PATH"
-fi
+# if [ "$(uname)" = "Darwin" ]; then # use system side qt 4.8.x
+#     export PATH="/usr/bin:/bin:$PATH"
+# fi
 
 build () {
     QMAKE_OPTS=""
@@ -21,7 +21,7 @@ build () {
     case "${SYSTEM_NAME}" in
         Darwin)
             MAKE_OPTS_BUILD="-j${JOBS} --silent"
-            QMAKE_OPTS="-spec darwin-g++"
+            QMAKE_OPTS="-spec clang++"
             ;;
     esac
 

@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    setDefaultEncoding();
     QStringList args = app.arguments();
     QRegExp rxEnableDebug("-d");
 

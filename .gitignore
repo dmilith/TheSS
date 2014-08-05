@@ -29,10 +29,8 @@ releases/
 /TheSS.sublime-project
 /TheSS.sublime-workspace
 /bin/svdnotify
-
 /bin/svdshell
-
 /bin/svddispel
-
 /.tags_sorted_by_file
 /.tags
+/.qmake.stash

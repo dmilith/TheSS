@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
+    setDefaultEncoding();
     QCoreApplication::setOrganizationName("VerKnowSys");
     QCoreApplication::setOrganizationDomain("verknowsys.com");
     QCoreApplication::setApplicationName("ServeD");

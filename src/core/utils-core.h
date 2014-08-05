@@ -16,7 +16,7 @@
 
 
 QString readFileContents(const QString& fileName);
-
+void setDefaultEncoding();
 
 #endif
 
