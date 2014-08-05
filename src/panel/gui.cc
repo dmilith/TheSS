@@ -228,14 +228,14 @@ void PanelGui::helpDialog(){
     wattroff(win, C_BORDER);
 
     QList<QString> list;
-    list << "Available key bindings:";
-    list << "Current service actions:";
-    list << "  S / s   - Start current service / Start current service without dependencies";
-    list << "  T / t   - Stop current service / Stop current service without dependencies";
-    list << "  F / f   - Reconfigure current service / Reconfigure current service without dependencies";
-    list << "  R / r   - Restart current service / Restart current service without dependencies";
-    list << "  D       - Change domain of current service";
-    list << "  O       - Reload current service";
+    list << "Available key bindings:                                                                     Service state flags meanings:";
+    list << "Current service actions:                                                                      R  - Running state";
+    list << "  S / s   - Start current service / Start current service without dependencies                V  - Validating state";
+    list << "  T / t   - Stop current service / Stop current service without dependencies                  C  - Configuring state";
+    list << "  F / f   - Reconfigure current service / Reconfigure current service without dependencies    I  - Installing state";
+    list << "  R / r   - Restart current service / Restart current service without dependencies            E  - Error state";
+    list << "  D       - Change domain of current service                                                  A  - Autostart enabled?";
+    list << "  O       - Reload current service                                                            N  - Notifications enabled?";
     list << "  I       - Install current service";
     list << "  C       - Configure current service";
     list << "  V       - Validate current service";
