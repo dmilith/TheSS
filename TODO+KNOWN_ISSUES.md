@@ -1,6 +1,7 @@
 ## Known Issues:
-* Dispel part isn't production ready. It doesn't work for now.
+* Panel requires quite wide terminal to display it's contents properly. I use size of 238/35 (columns/rows).
 * Deployer part isn't production ready. It works, but it's not stable yet.
+* Dispel part isn't production ready. It doesn't work for now.
 * svdcoreginx_helper sucks, it's written badly and it doesn't reload Coreginx on first svdply deploy.
 * LiveUsers igniter should be more intelligent. It now reloads ttys even if there were no changes in user autostart trigger.
 * Panel is generating high CPU load (which is caused by live monitoring of each service files).
