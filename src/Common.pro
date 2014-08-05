@@ -6,7 +6,8 @@
 
 
 QT -= gui
-
+CONFIG += console
+CONFIG -= app_bundle
 QMAKE_CXX = ccache clang++
 QMAKE_CC = ccache clang
 QMAKE_CPP = ccache clang++ -E
