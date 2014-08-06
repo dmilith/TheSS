@@ -20,8 +20,8 @@ mac {
   QMAKE_CXX = ccache clang++ -w
 
   # development opts:
-  QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -w -gline-tables-only
-  QMAKE_CXXFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -O0 -gline-tables-only -std=c++11
+  QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -fPIE -O0 -w -gline-tables-only
+  QMAKE_CXXFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -fPIE -O0 -gline-tables-only -std=c++11
   DEFINES += QT_DEBUG
 
 } else {
