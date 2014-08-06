@@ -71,10 +71,12 @@ void SvdPublicWatcher::invokeDirChangedTrigger() {
 
 
 void SvdPublicWatcher::invokeFileChangedTrigger(const QString& file) {
+    fileChangedMutex.lock();
     logInfo() << "Invoked file changed trigger of file:" << file;
     reindexPublicDir();
     loadExistingDomains();
     validateDomainExistanceFor(file);
+    fileChangedMutex.unlock();
 }
 
 

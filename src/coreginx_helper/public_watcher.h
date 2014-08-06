@@ -26,7 +26,7 @@ class SvdPublicWatcher: public QObject {
     private:
         SvdFileEventsManager *fileEvents = NULL;
         QSet<QString> fileEntries, domains;
-        QMutex publicReindexMutex, loadExistingMutex;
+        QMutex publicReindexMutex, loadExistingMutex, fileChangedMutex;
 
 
     public:
