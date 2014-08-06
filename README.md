@@ -33,7 +33,8 @@
 ```sh
 
 startHook # will execute:
-# ifNotInstalled(installHook) -> ifNotConfigured(configureHook) -> validateHook -> startHook -> afterStartHook
+# ifNotInstalled(installHook) -> ifNotConfigured(configureHook) ->
+#                             validateHook -> startHook -> afterStartHook
 
 afterStartHook # will execute:
 # afterStartHook
@@ -45,7 +46,8 @@ afterStopHook # will execute:
 # afterStopHook
 
 restartHook # will execute:
-# stopHook -> afterStopHook -> ifNotConfigured(configureHook) -> validateHook -> startHook -> afterStartHook
+# stopHook -> afterStopHook -> ifNotConfigured(configureHook) ->
+#                           validateHook -> startHook -> afterStartHook
 
 validateHook # will execute:
 # validateHook
@@ -86,16 +88,28 @@ reconfigureHook # will execute:
 SERVICE_PREFIX            # by default: ~/SoftwareData/AppName
 PARENT_SERVICE_PREFIX     # defines prefix of service parent
 SERVICE_PORT              # contains generated service port
-SERVICE_CONF              # contains absolute path to configuration file of current service
+SERVICE_CONF              # contains absolute path to configuration file of current
+                          # service
 SERVICE_LOG               # contains absolute path to log file of current service
-SERVICE_ENV               # contains absolute path to environment file of current service
+SERVICE_ENV               # contains absolute path to environment file of current
+                          # service
 SERVICE_SOCK              # contains absolute path to socket file of current service
-SERVICE_RELEASE           # contains sha1 of igniter of current service with port number. It's used in path to every service conf, log and environment.
-SERVICE_DOMAIN            # by default contains first domain name (NOTE: localhost is a default value of domain in case when domain wasn't provided. TheSS will ignore localhost domain entry where there're more than one domain file). All domain files are stored in ~/SoftwareData/AppName/.domains/domain.name.tld file by default.
-SERVICE_DOMAINS           # contains space separated list of domains defined for service
-SERVICE_ADDRESS           # by default it's default host IP address (resolved from SERVICE_DOMAIN)
+SERVICE_RELEASE           # contains sha1 of igniter of current service with port
+                          # number. It's used in path to every service conf, log
+                          # and environment.
+SERVICE_DOMAIN            # by default contains first domain name (NOTE: localhost
+                          # is a default value of domain in case when domain wasn't
+                          # provided. TheSS will ignore localhost domain entry where
+                          # there're more than one domain file). By default, all
+                          # domain files are stored in:
+                          # ~/SoftwareData/AppName/.domains/domain.name.tld file.
+SERVICE_DOMAINS           # contains space separated list of domains defined for
+                          # service
+SERVICE_ADDRESS           # by default it's default host IP address (resolved from
+                          # SERVICE_DOMAIN)
 SERVICE_ROOT              # by default: ~/Apps/AppName
-SERVICE_VERSION           # by default taken from Sofin's: ~/Apps/AppName/appname.version
+SERVICE_VERSION           # by default taken from Sofin's:
+                          # ~/Apps/AppName/appname.version
 
 # You can also inject hook commands using igniter constants:
 SERVICE_INSTALL_HOOK
@@ -122,20 +136,25 @@ Scheduler example based on Redis igniter:
 
 ```sh
 # Standard formatting for "cronEntry":
-"*/10 10,11,12 1-15 * * ?! commands"  # invoke each 10 minutes, exactly at 10am or 11am or 12am,
-# only in first 15 days of month.
+"*/10 10,11,12 1-15 * * ?! commands"  # invoke each 10 minutes,
+                                      # exactly at 10am or 11am or 12am,
+                                      # only in first 15 days of month.
 
 # Currently supported cron formats:
 *       # WILDCARD: passes on each value
-X       # NORMAL: passes when X has exact value as current value (X is a positive number)
-*/X     # PERIODIC: passes when modulo of X and current value is 0 (X is a positive number)
-X-Y     # RANGE: passes when value is in between X and Y (X, Y are positive numbers)
-X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y or Z (X, Y, Z are positive numbers)
+X       # NORMAL: passes when X has exact value as current value
+        # (X is a positive number)
+*/X     # PERIODIC: passes when modulo of X and current value
+        # is 0 (X is a positive number)
+X-Y     # RANGE: passes when value is in between X and Y
+        # (X, Y are positive numbers)
+X,Y,Z   # SEQUENCE: passes when value is exactly one of X or Y
+        # or Z (X, Y, Z are positive numbers)
 
 ```
 
 * Supports live updates. Do `touch ~/.shutdown`. Maintainer will go down but all your software services will stay in background. Then just do an upgrade, rebuild, install and run svdss again. It will just resume watch on live services. After a while (default babysitter pause time) it will automatically rebuild software dependency tree and continue to watch orphaned services.
-* Support maintained, synchronous startup and shutdown of services. SIGINT (Ctrl - c in terminal) will shutdown TheSS gracefully including all running services. SIGTERM will just tell TheSS to shutdown leaving all services spawned in background (equivalent of `touch ~/.shutdown`).
+* Support maintained, synchronous startup and shutdown of services. Signals: SIGINT (Ctrl - c in terminal) and SIGTERM will just tell TheSS to shut down, leaving all services spawned in background (equivalent of `touch ~/.shutdown`). Touching `~/.shutdownGracefully`, will cause TheSS to shutdown with all running services and dependencies.
 * Supports basic UI - `svdpanel` - for easy service managment (based on ncurses library).
 * Supports validation failure check. If validation fails startSlot won't be called. To set failure state, set `touch SERVICE_PREFIX/.validationFailure` in hook commands.
 * Supports asynchronous http/https request-response check, for any number of urls (since 0.62.0).
