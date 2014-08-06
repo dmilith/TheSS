@@ -126,7 +126,7 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
         commitDeploy(serviceName);
     } else
     if (not fileContent.isEmpty()) {
-        logDebug() << "Trying to find existing domain:" << fileContent << "(in:" << file << "), existing domains:" << domains;
+        logInfo() << "Trying to find existing domain:" << fileContent << "(in:" << file << "), existing domains:" << domains;
         if (domains.contains(fileContent) and not fileEntries.contains(file)) {
             QSet<QString> remFiles;
             remFiles << QString(DEFAULT_PUBLIC_DIR) + file;
@@ -180,6 +180,7 @@ void SvdPublicWatcher::dirChangedSlot(const QString& dir) {
 
 void SvdPublicWatcher::fileChangedSlot(const QString& file) {
     logInfo() << "File changed:" << file;
+    logInfo() << "Contents:" << readFileContents(file);
     invokeFileChangedTrigger(file);
 }
 
