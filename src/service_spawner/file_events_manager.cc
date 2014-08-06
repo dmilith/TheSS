@@ -1,5 +1,5 @@
 /**
- *  @author tallica
+ *  @author tallica, dmilith
  *
  *   © 2013 - VerKnowSys
  *
