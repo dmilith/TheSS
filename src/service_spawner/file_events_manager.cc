@@ -10,6 +10,8 @@
 
 
 void SvdFileEventsManager::registerFile(const QString& path) {
+    QMutex registerMutex;
+    registerMutex.lock();
     if (QFile::exists(path)) {
         logDebug() << "Registering watcher on an existing file:" << path;
         addPath(path);
@@ -19,12 +21,16 @@ void SvdFileEventsManager::registerFile(const QString& path) {
         logDebug() << "Creating and registering watcher on a new directory:" << path;
         addPath(path);
     }
+    registerMutex.unlock();
 }
 
 
 void SvdFileEventsManager::unregisterFile(const QString& path) {
+    QMutex unregisterMutex;
+    unregisterMutex.lock();
     logDebug() << "Unregistering watcher on file:" << path;
     removePath(path);
+    unregisterMutex.unlock();
 }
 
 
