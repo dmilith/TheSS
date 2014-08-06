@@ -62,6 +62,9 @@ class SvdUserWatcher: public QObject {
         QString homeDir;
         QString softwareDataDir;
         uid_t uid;
+
+        QMutex collectorMutex;
+
         void init(uid_t uid);
         void collectServices();
         // void collectWebApplications();

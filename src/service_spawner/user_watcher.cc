@@ -93,7 +93,6 @@ void SvdUserWatcher::init(uid_t uid) {
 
 
 void SvdUserWatcher::collectServices() {
-    QMutex collectorMutex;
     collectorMutex.lock();
     logDebug() << "Looking for services inside" << softwareDataDir;
     QStringList oldServices = services;
