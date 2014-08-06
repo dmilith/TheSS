@@ -13,7 +13,7 @@ SvdPublicWatcher::SvdPublicWatcher() {
     logDebug() << "Starting SvdPublicWatcher";
 
     fileEvents = new SvdFileEventsManager();
-    fileEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
+    fileEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files | QDir::NoDotAndDotDot, QDir::Time).toSet();
     loadExistingDomains();
 
     /* connect file event slots to watcher: */
@@ -43,7 +43,7 @@ void SvdPublicWatcher::loadExistingDomains() {
 void SvdPublicWatcher::reindexPublicDir() {
     publicReindexMutex.lock();
     logDebug() << "Old set of ENTRIES:" << this->fileEntries;
-    QSet<QString> currentEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
+    QSet<QString> currentEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files | QDir::NoDotAndDotDot, QDir::Time).toSet();
     QSet<QString> newEntries = currentEntries.subtract(fileEntries);
     logDebug() << "Detected new fileEntries:" << newEntries;
     if (not newEntries.isEmpty())
@@ -51,7 +51,7 @@ void SvdPublicWatcher::reindexPublicDir() {
             logInfo() << "Processing entry:" << entry;
             validateDomainExistanceFor(entry);
         }
-    fileEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
+    fileEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files | QDir::NoDotAndDotDot, QDir::Time).toSet();
     publicReindexMutex.unlock();
 }
 
