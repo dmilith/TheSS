@@ -31,14 +31,19 @@ SvdPublicWatcher::SvdPublicWatcher() {
 
 
 void SvdPublicWatcher::loadExistingDomains() {
+    QMutex loadExistingMutex;
+    loadExistingMutex.lock();
     Q_FOREACH(QString entry, fileEntries) {
         domains << readFileContents(QString(DEFAULT_PUBLIC_DIR) + entry).trimmed();
     }
     logDebug() << "Loaded domains:" << domains;
+    loadExistingMutex.unlock();
 }
 
 
 void SvdPublicWatcher::reindexPublicDir() {
+    QMutex publicReindexMutex;
+    publicReindexMutex.lock();
     logDebug() << "Old set of ENTRIES:" << this->fileEntries;
     QSet<QString> currentEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
     QSet<QString> newEntries = currentEntries.subtract(fileEntries);
@@ -49,6 +54,7 @@ void SvdPublicWatcher::reindexPublicDir() {
             validateDomainExistanceFor(entry);
         }
     fileEntries = QDir(DEFAULT_PUBLIC_DIR).entryList(QDir::Files, QDir::Time).toSet();
+    publicReindexMutex.unlock();
 }
 
 
