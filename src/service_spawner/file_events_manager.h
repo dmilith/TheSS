@@ -19,6 +19,9 @@ class SvdFileEventsManager: public QFileSystemWatcher {
         bool isWatchingFile(const QString& path);
         bool isWatchingDir(const QString& path);
 
+    private:
+        QMutex registerMutex, unregisterMutex;
+
 };
 
 
