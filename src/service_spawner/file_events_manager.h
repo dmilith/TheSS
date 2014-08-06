@@ -9,7 +9,7 @@
 #define __FILE_EVENTS_MANAGER_H__
 
 #include <QFileSystemWatcher>
-
+#include <QMutex>
 
 class SvdFileEventsManager: public QFileSystemWatcher {
 
