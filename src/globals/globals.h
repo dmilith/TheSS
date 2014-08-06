@@ -146,8 +146,8 @@
     #define CONTROL_PANEL_LOG_FILE "/.thess-panel.log"
     #define DEFAULT_CRON_ENTRY "0 4 * * * ?" /* exactly 4am */
 
-    #define DEFAULT_PROCESS_TIMEOUT 300 // 5m
-    #define DEFAULT_INSTALL_TIMEOUT 1800 // 30m
+    #define DEFAULT_PROCESS_TIMEOUT 30000 // 30s
+    #define DEFAULT_INSTALL_TIMEOUT 1800000 // 30m
 
     #define ONE_SECOND_OF_DELAY 1000000 // 1 second
     #define DEFAULT_CRON_CHECK_DELAY 60000000 // 60s
