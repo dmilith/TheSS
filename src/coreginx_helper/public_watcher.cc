@@ -35,7 +35,7 @@ void SvdPublicWatcher::loadExistingDomains() {
     Q_FOREACH(QString entry, fileEntries) {
         domains << readFileContents(QString(DEFAULT_PUBLIC_DIR) + entry).trimmed();
     }
-    logDebug() << "Loaded domains:" << domains;
+    logInfo() << "Loaded domains:" << domains;
     loadExistingMutex.unlock();
 }
 
