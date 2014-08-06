@@ -79,14 +79,27 @@ int main(int argc, char *argv[]) {
         new FileLoggerTimer(fileAppender);
     }
 
+    /* mem lock setup */
+    auto startTimer = QDateTime::currentMSecsSinceEpoch() / 5000;
+    auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+    hash->addData(QString::number(startTimer).toUtf8(), QString::number(startTimer).length());
+    auto shaId = hash->result().toHex();
+    delete hash;
+    const QString key = shaId.left(25) + ":" + QString::number(getuid());
+    QSharedMemory memLock(key);
+    if (not memLock.create(1)) {
+        logError() << "Memory locked! You cannot launch more than one process per 5 seconds. (key: " + key + ")";
+        logError() << "Internal cause:" << memLock.errorString();
+        return EXIT_SUCCESS;
+    }
+
     /* NOTE: make sure TheSS is running for user, and launch it if it's not: */
     bool ok = false;
     QString cgxhPidFile = getHomeDir() + "/.coreginx_helper.pid";
     QString aPid = readFileContents(cgxhPidFile).trimmed();
     uint pid = aPid.toInt(&ok, 10);
     if (ok) {
-        if (not pidIsAlive(pid)) {
-        } else {
+        if (pidIsAlive(pid)) {
             logError() << "Coreginx Helper is already running.";
             return LOCK_FILE_OCCUPIED_ERROR; /* can not open */
         }
