@@ -1,4 +1,6 @@
 ## Known Issues:
+* Coreginx helper might invoke Coreginx reload twice, instead of just once for a single web-app deployment. TheSS uses buffered file write, so it can call reload for file touch and further file modification (Qt4 can't deal with that properly).
+* Panel with Qt5 throw assertions (like: (CarbonCore.framework) FSEventStreamFlushSync(): failed assertion '(SInt64)last_id > 0LL')
 * Panel requires quite wide terminal to display it's contents properly. I use size of 238/35 (columns/rows).
 * Deployer part isn't production ready. It works, but it's not stable yet.
 * Dispel part isn't production ready. It doesn't work for now.
