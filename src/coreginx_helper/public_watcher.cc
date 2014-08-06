@@ -17,16 +17,16 @@ SvdPublicWatcher::SvdPublicWatcher() {
     loadExistingDomains();
 
     /* connect file event slots to watcher: */
-    connect(fileEvents, SIGNAL(directoryChanged(QString)), this, SLOT(dirChangedSlot(QString)));
-    connect(fileEvents, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedSlot(QString)));
     fileEvents->registerFile(DEFAULT_PUBLIC_DIR);
     Q_FOREACH(QString file, fileEntries) {
         logDebug() << "Putting watch on file:" << file;
         fileEvents->registerFile(QString(DEFAULT_PUBLIC_DIR) + file);
     }
 
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
     reindexPublicDir();
+    connect(fileEvents, SIGNAL(directoryChanged(QString)), this, SLOT(dirChangedSlot(QString)));
+    connect(fileEvents, SIGNAL(fileChanged(QString)), this, SLOT(fileChangedSlot(QString)));
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
 }
 
 
