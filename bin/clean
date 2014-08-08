@@ -3,13 +3,10 @@
 readonly JOBS="12"
 QMAKE_OPTS=""
 MAKE_OPTS="-j${JOBS} -Q -s"
-if [ "$(uname)" = "Darwin" ]; then # use system side qt 4.8.x
-    export PATH="/usr/bin:/bin:$PATH"
-fi
 
 if [ "$(uname)" = "Darwin" ]; then
     MAKE_OPTS="-j${JOBS} --silent"
-    QMAKE_OPTS="-spec darwin-g++"
+    QMAKE_OPTS="-spec macx-clang"
     for i in Notifications TestSS Panel TheSS WAD CoreginxHelper DeathWatch Shell Dispel; do
         qmake ${QMAKE_OPTS} ${i}.pro
         make ${MAKE_OPTS} clean
