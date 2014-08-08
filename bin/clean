@@ -20,3 +20,4 @@ fi
 
 rm -fv src/*.a
 rm -fv .*.stash
+find . -name 'Makefile' | xargs rm -f
