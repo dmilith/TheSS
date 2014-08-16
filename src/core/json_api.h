@@ -17,7 +17,7 @@
 #include <QStringList>
 
 
-#define ZERO_CHAR (char *)0
+#define DEFAULT_ZERO_CHAR (char *)0
 #define MAX_DEPTH 64 /* max supported json tree depth */
 
 

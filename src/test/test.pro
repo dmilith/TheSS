@@ -18,6 +18,7 @@ HEADERS += TestLibrary.h \
            ../globals/globals.h \
            ../service_spawner/service_config.h \
            ../core/utils.h \
+           ../core/utils-core.h \
            ../cutelogger/Logger.h \
            ../cutelogger/ConsoleAppender.h \
            ../cutelogger/FileAppender.h \
@@ -31,6 +32,7 @@ HEADERS += TestLibrary.h \
 SOURCES += ../core/json_api.cc \
            ../service_spawner/service_config.cc \
            ../core/utils.cc \
+           ../core/utils-core.cc \
            ../service_spawner/process.cc \
            ../service_spawner/service.cc \
            ../death_watch/death_watch.cc \

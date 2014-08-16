@@ -60,6 +60,7 @@
 #endif
 
 #define NS 1000000000
+#define DEFAULT_ALL_ALPHANUMERIC "0123456789.-+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzżźłóćęąń"; // XXX: only Polish characters and ASCII for now.
 #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh"
 
 using namespace std;

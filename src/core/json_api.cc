@@ -22,10 +22,10 @@ void JSONAPI::getTreeNode(yajl_val nodeDefault, yajl_val nodeRoot, const char* e
     for (i = 0; result != NULL; i++) {
         path[i] = (const char*)malloc(strlen(result) + 1) ; //new char[strlen(result)];
         strncpy((char*)path[i], result, strlen(result) + 1);
-        path[strlen(result)] = ZERO_CHAR;
+        path[strlen(result)] = DEFAULT_ZERO_CHAR;
         result = strtok( NULL, delims );
     }
-    path[i] = ZERO_CHAR;
+    path[i] = DEFAULT_ZERO_CHAR;
 
     *v = yajl_tree_get(nodeDefault, path, yajl_t_any);
     *w = NULL;

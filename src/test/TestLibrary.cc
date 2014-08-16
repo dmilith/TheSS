@@ -21,14 +21,13 @@ TestLibrary::~TestLibrary() {
 
 
 TestLibrary::TestLibrary() {
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName(DEFAULT_STRING_CODEC));
 
     /* Logger setup */
     consoleAppender = new ConsoleAppender();
     consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c> %m\n");
     consoleAppender->setDetailsLevel(Logger::Info); /* we don't need logger in test suite by default */
     Logger::registerAppender(consoleAppender);
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
+    setDefaultEncoding();
 
     // if (not QDir().exists(DEFAULT_SOFTWARE_TEMPLATES_DIR)) {
     //     cout << "Install igniters first before launching test!" << endl;
@@ -99,10 +98,10 @@ void TestLibrary::testLoadingDefault() {
     foreach (QString s, input) {
         path[i] = new char[s.length()];
         strncpy(path[i], s.toUtf8().constData(), s.length() + 1);
-        path[s.length()] = ZERO_CHAR;
+        path[s.length()] = DEFAULT_ZERO_CHAR;
         i++;
     }
-    path[i] = ZERO_CHAR;
+    path[i] = DEFAULT_ZERO_CHAR;
     QVERIFY(config->getDouble("formatVersion") != 0);
     QVERIFY(config->getDouble("formatVersion") > 0.88);
     QVERIFY(config->getBoolean("alwaysOn") == true);

@@ -6,7 +6,7 @@ bin/clean && \
 bin/ignitersinstall && \
 sed -i '' -e 's/THESS_NORMAL_MODE/THESS_TEST_MODE/' src/Common.pro && \
 bin/build test &&\
-bin/test-app -nocrashhandler -random && \
+bin/test-app -nocrashhandler && \
 sed -i '' -e 's/THESS_TEST_MODE/THESS_NORMAL_MODE/' src/Common.pro && \
 rm -rf ${HOME}/SoftwareData/*-TEST
 
