@@ -30,7 +30,7 @@ string getUserHomeDirAndAskForName(int uid) {
     }
 
     // define allowed chars in user folder name entry:
-    const char alphanum[] = DEFAULT_ALL_ALPHANUMERIC
+    const char alphanum[] = DEFAULT_ALL_ALPHANUMERIC;
 
     if (in.length() == 0) {
         cerr << "Empty user name given!" << endl;
