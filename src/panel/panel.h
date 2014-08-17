@@ -50,6 +50,7 @@
 #define C_NOTIFICATION_WARNING  COLOR(8*COLOR_YELLOW)
 #define C_NOTIFICATION_NOTICE   COLOR(8*COLOR_GREEN)
 
+#define DEFAULT_PANEL_TIMER_PAUSE 25
 
 // Forward referecnes, C++ you're such a moron
 class Panel;
