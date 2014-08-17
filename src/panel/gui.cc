@@ -245,7 +245,7 @@ void PanelGui::helpDialog(){
     list << "  E       - Show app env (service.env)";
     list << "  L       - Show service log (service.log)";
     list << "  W       - Toggle line wrapping in log window";
-    list << "  ↵       - Edit service igniter in vim editor";
+    list << "  ⏎       - Edit service igniter in vim editor";
     list << "Other actions:";
     list << "  F1-F4   - Set log level (trace, debug, info, error)";
     list << "  F5      - Refresh panel";
