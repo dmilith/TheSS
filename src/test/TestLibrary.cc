@@ -755,6 +755,17 @@ void TestLibrary::testIgniterInjection() {
     QVERIFY(not config->install->commands.contains("SERVICE_AFTERSTOP_HOOK"));
     QVERIFY(config->softwareName == "Redis");
     QVERIFY(config->portsPool == 11);
+    QVERIFY(not config->alwaysOn);
+    QVERIFY(not config->resolveDomain);
+    QVERIFY(config->watchPort);
+    QVERIFY(not config->watchUdpPort);
+    QVERIFY(not config->watchSocket);
+    QVERIFY(config->watchHttpAddresses.length() == 0);
+    QVERIFY(not config->autoStart);
+    QVERIFY(not config->webApp);
+    QVERIFY(config->staticPort == -1);
+    QVERIFY(config->startOrder == 10);
+    QVERIFY(config->configureOrder == config->startOrder);
     QVERIFY(config->afterStop->commands.contains("kongo bongo"));
     QVERIFY(config->install->commands.contains("kongo bongo"));
     delete config;
