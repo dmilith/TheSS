@@ -30,6 +30,9 @@ int main(int argc, char *argv[]) {
     // App setup
     QCoreApplication app(argc, argv);
     setDefaultEncoding();
+    QCoreApplication::setOrganizationName("VerKnowSys");
+    QCoreApplication::setOrganizationDomain("verknowsys.com");
+    QCoreApplication::setApplicationName("ServeD");
 
     QString logFile = QString(getenv("HOME")) + CONTROL_PANEL_LOG_FILE;
     // QFile::remove(logFile);
