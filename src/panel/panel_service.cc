@@ -50,6 +50,10 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     refresh();
 }
 
+bool isWebApp(const QString& basePath) {
+    return QDir().exists(basePath + DEFAULT_SHARED_DIR) and QFile::exists(basePath + "/proxy.conf");
+}
+
 void PanelService::refresh(){
 
     // logDebug() << "new tail";
@@ -95,7 +99,7 @@ void PanelService::refresh(){
         if(pid.isEmpty()) {
             uint __port = registerFreeTcpPort(port.toUInt());
             if (port.toUInt() == __port) {
-                if (QDir().exists(basePath + DEFAULT_SHARED_DIR) and QFile::exists(basePath + "proxy.conf")) {
+                if (isWebApp(basePath)) {
                     pid = "  WEB";
                 } else
                     // status = SERVICE_STATUS_WORKING;
@@ -105,6 +109,8 @@ void PanelService::refresh(){
             }
             status = SERVICE_STATUS_RUNNING;
         } else {
+            if (isWebApp(basePath))
+                pid = "  WEB";
             status = SERVICE_STATUS_RUNNING;
         }
     } else if(se){
