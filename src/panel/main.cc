@@ -33,9 +33,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationName("VerKnowSys");
     QCoreApplication::setOrganizationDomain("verknowsys.com");
     QCoreApplication::setApplicationName("ServeD");
-
     QString logFile = QString(getenv("HOME")) + CONTROL_PANEL_LOG_FILE;
-    // QFile::remove(logFile);
 
     // Logger setup - turn it off
     FileAppender *consoleAppender = new FileAppender(logFile);
@@ -53,33 +51,17 @@ int main(int argc, char *argv[]) {
         ignitersDir = QDir(SYSTEM_USERS_DIR + ignitersPrefix);
     }
 
-
-    Panel * panel = new Panel(user, homeDir, ignitersDir);
+    Panel* panel = new Panel(user, homeDir, ignitersDir);
     gui = new PanelGui(panel);
-
-    // QThread * guiThread = new QThread();
-    // gui->moveToThread(guiThread);
-    // app.connect(guiThread, SIGNAL(started()), gui, SLOT(run()));
-    app.connect(gui, SIGNAL(quit()), &app, SLOT(quit()));
-
-    // panel->start();
-    // gui->run();
-    // guiThread->start();
-
-    // gui->display();
+    gui->init();
+    gui->display();
 
     QTimer *timer1 = new QTimer(&app);
     app.connect(timer1, SIGNAL(timeout()), panel, SLOT(refresh()));
-    timer1->start(25);
-    gui->init();
+    app.connect(timer1, SIGNAL(timeout()), gui, SLOT(readInput()));
+    app.connect(timer1, SIGNAL(timeout()), gui, SLOT(gatherNotifications()));
+    timer1->start(DEFAULT_PANEL_TIMER_PAUSE);
 
-    QTimer *timer2 = new QTimer(&app);
-    app.connect(timer2, SIGNAL(timeout()), gui, SLOT(readInput()));
-    timer2->start(25);
-
-    QTimer *timerNotification = new QTimer(&app);
-    app.connect(timerNotification, SIGNAL(timeout()), gui, SLOT(gatherNotifications()));
-    timerNotification->start(50);
-
+    app.connect(gui, SIGNAL(quit()), &app, SLOT(quit()));
     return app.exec();
 }
