@@ -67,8 +67,7 @@ int main(int argc, char *argv[]) {
 
     QTimer *timer1 = new QTimer(&app);
     app.connect(timer1, SIGNAL(timeout()), panel, SLOT(refresh()));
-    timer1->start(35);
-
+    timer1->start(25);
     gui->init();
 
     QTimer *timer2 = new QTimer(&app);
@@ -77,7 +76,7 @@ int main(int argc, char *argv[]) {
 
     QTimer *timerNotification = new QTimer(&app);
     app.connect(timerNotification, SIGNAL(timeout()), gui, SLOT(gatherNotifications()));
-    timerNotification->start(350);
+    timerNotification->start(50);
 
     return app.exec();
 }

@@ -215,7 +215,7 @@ void Tail::display(WINDOW * win, int rows, int cols){
   int off = max(s-rows, 0);
   int m = min(s, rows);
   int i=0;
-  int w = cols/2 + 10;
+  int w = cols/2 + 12;
 
   wmove(win, 0, 0);
   wvline(win, '|', rows+1);

@@ -221,7 +221,7 @@ void PanelGui::cleanup(){
 
 
 void PanelGui::helpDialog(){
-    WINDOW *win = newwin(rows-4, cols-2, 2, 1);
+    WINDOW *win = newwin(rows-4, cols/2 + 6, 2, 1);
 
     wattron(win, C_BORDER);
     box(win, '|', '-');
@@ -939,7 +939,7 @@ void PanelGui::readInput(){
             key(ch);
         }
     } else {
-        usleep(100);
+        usleep(1000);
     }
 }
 
