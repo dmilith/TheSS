@@ -360,7 +360,7 @@ RUBY_LOG_FILE               # value of absolute path to log file
 * On OSX hosts, there's a very low default limit of maximum opened files (256). If user defined more than 10 services with such default, svdpanel may become unstable. It's recommended to increase this value to 2048 by `ulimit -n 2048`.
 * Sofin build mechanism is known to be in conflict with other software managment solutions like: BSD Ports, HomeBrew, MacPorts, Fink. Keep that in mind before reporting problems.
 * It's recommended to change shell by doing: `chsh -s /Software/Zsh/exports/zsh` for each user which will use TheSS. TheSS internally uses Shell from that path by default (currently Shell path is hardcoded due to lack of TheSS config in current version)
-* TheSS is using `/etc/ttys` solution for managing user side service spawner contunously. It requires `svdshell` utility from `ServeD` repository, and user must be in group 0 (`wheel` on FreeBSD/ OSX)
+* TheSS is using `/etc/ttys` solution for managing user side service spawner contunously. It requires `svdshell` utility (available in this repository) to be installed, and user must be in group 0 (`wheel` on FreeBSD/ OSX).
 
 
 ## FAQ
