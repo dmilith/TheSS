@@ -72,6 +72,7 @@ void Panel::refreshServicesList() {
         Q_FOREACH(auto f, list){
             if(s->baseDir == f){
                 found = true;
+                s->refresh();
                 break;
             }
         }
@@ -82,9 +83,9 @@ void Panel::refreshServicesList() {
         }
     }
 
-    Q_FOREACH(auto s, services){
-        s->refresh();
-    }
+    // Q_FOREACH(auto s, services){
+    //     s->refresh();
+    // }
 }
 
 QStringList * Panel::availableServices() {

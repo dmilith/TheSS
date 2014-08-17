@@ -838,13 +838,13 @@ void PanelGui::key(int ch){
 void PanelGui::display(){
     // logDebug() << "display";
     tailUpdate();
-    displayHeader();
-    displayStatus();
     servicesList->setItems(&panel->services);
     servicesList->display();
+    displayHeader();
+    displayStatus();
     displayFooter();
-    wrefresh(mainWindow);
     standend();
+    wrefresh(mainWindow);
     if (firstRun) {
         displaySSLog();
         firstRun = false;
@@ -863,9 +863,9 @@ void PanelGui::tailUpdate(){
 
         if(tail == NULL) tail = service->log;
         tail->display(logWindow, rows, cols);
+        wrefresh(logWindow);
     }
 
-    wrefresh(logWindow);
 }
 
 void PanelGui::tailToggleWrap(){
