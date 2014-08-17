@@ -50,9 +50,6 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     refresh();
 }
 
-bool isWebApp(const QString& basePath) {
-    return QDir().exists(basePath + DEFAULT_SHARED_DIR) and QFile::exists(basePath + "/proxy.conf");
-}
 
 void PanelService::refresh(){
 
