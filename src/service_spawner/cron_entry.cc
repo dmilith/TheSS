@@ -13,7 +13,7 @@
 SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
     QString entry = cronEntry;
     if (cronEntry.trimmed().isEmpty())
-        entry = "* * * * * ?";
+        entry = "* * * * * ?!";
     auto cronList = entry.split(' ', QString::SkipEmptyParts);
     Q_FOREACH(auto elem, cronList)
         modes << NORMAL; /* normal mode is default for each element by default */
@@ -43,11 +43,11 @@ SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
         }
     }
 
-    if (cronList.at(5) == "?") /* 5th position should be always "?" */
+    if (cronList.at(cronList.length()-1) == "?!") /* 5th position should be always "?!" */
         this->commands = commands;
 
-    if ((entry == "* * * * * ?") || (entry.endsWith("/1 * * * * ?"))) {
-        logDebug() << "Cron continuous mode enabled.";
+    if ((entry == "* * * * * ?!") || (entry.endsWith("/1 * * * * ?!"))) {
+        logInfo() << "Cron continuous mode enabled.";
         this->continuous = true;
     }
 }
@@ -132,7 +132,7 @@ bool SvdCrontab::cronMatch(const QDateTime& now) {
 
     /* check for empty input data */
     if (entries.length() == 0 or modes.length() == 0) {
-        logDebug() << "Empty entries? Return true - it's wildcard case equivalent of entry '* * * * * ?' (run command each minute).";
+        logDebug() << "Empty entries? Return true - it's wildcard case equivalent of entry '* * * * * ?!' (run command each minute).";
         return true;
     }
 
@@ -173,7 +173,7 @@ bool SvdCrontab::cronMatch(const QDateTime& now) {
             /* commands */
             case 5: {
                 if (this->commands.isEmpty())
-                    logError() << "Empty commands given, or cron entry format is invalid. (Might be forgotten \"?\" at end of cronEntry)";
+                    logError() << "Empty commands given, or cron entry format is invalid. (Might be forgotten \"?!\" at end of cronEntry)";
             } break;
 
             /* something's wrong with entry? */

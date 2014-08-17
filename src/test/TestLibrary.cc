@@ -627,7 +627,7 @@ void TestLibrary::testWebAppDetection() {
 void TestLibrary::testCrontabEntry() {
     QVERIFY(QString("bug").toInt() == 0);
 
-    /* this is empty case, which is an equivalent of giving entry: "* * * * * ?" */
+    /* this is empty case, which is an equivalent of giving entry: "* * * * * ?!" */
     auto cron = new SvdCrontab("", "true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->modes.at(0) == WILDCARD);
@@ -640,7 +640,7 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->cronMatch() == true);
     delete cron;
 
-    cron = new SvdCrontab("1 2 3 4 5 ?", "true");
+    cron = new SvdCrontab("1 2 3 4 5 ?!", "true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->modes.at(0) == NORMAL);
     QVERIFY(cron->check(1, 0));
@@ -654,22 +654,22 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->check(5, 4));
     delete cron;
 
-    cron = new SvdCrontab("1,, 2,2,2 ,3 , ,5,5 ?", "true");
+    cron = new SvdCrontab("1,, 2,2,2 ,3 , ,5,5 ?!", "true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->cronMatch() == false);
     delete cron;
 
-    cron = new SvdCrontab("1// 2/2/2 /3 / /5/5 ?", "true");
+    cron = new SvdCrontab("1// 2/2/2 /3 / /5/5 ?!", "true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->cronMatch() == false);
     delete cron;
 
-    cron = new SvdCrontab("1-- 2-2-2 -3 - -5-5 ?", "true");
+    cron = new SvdCrontab("1-- 2-2-2 -3 - -5-5 ?!", "true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->cronMatch() == false);
     delete cron;
 
-    cron = new SvdCrontab("*/10 10-15 32 * 3,4,5,15 ?", "true");
+    cron = new SvdCrontab("*/10 10-15 32 * 3,4,5,15 ?!", "true");
     QVERIFY(cron->modes.at(0) == PERIODIC);
     QVERIFY(cron->check(10, 0));
     QVERIFY(cron->check(40, 0));
@@ -701,8 +701,8 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->cronMatch() == false); /* it must be false when asking for match for month with 32 days */
     delete cron;
 
-    cron = new SvdCrontab("stefan mariola a b 0/2 * ?", "true");
-    QVERIFY(cron->commands == "");
+    cron = new SvdCrontab("stefan mariola a b 0/2 * ?!", "true");
+    QVERIFY(cron->commands == "true");
     QVERIFY(cron->cronMatch() == false);
     delete cron;
 }
