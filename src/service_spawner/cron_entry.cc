@@ -43,7 +43,7 @@ SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
         }
     }
 
-    if (cronList.at(5) == "?!") /* 5th position should be always "?!" */
+    if (cronList.at(cronList.length() - 1) == "?!") /* 5th position should be always "?!" */
         this->commands = commands;
 
     if ((entry == "* * * * * ?!") || (entry.endsWith("/1 * * * * ?!"))) {

@@ -705,6 +705,21 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->cronMatch() == false);
     delete cron;
+
+    cron = new SvdCrontab("1 2 3 0/2 * ?", "true");
+    QVERIFY(cron->commands.isEmpty());
+    QVERIFY(cron->cronMatch() == false);
+    delete cron;
+
+    cron = new SvdCrontab("1 2 3 0/2 * !", "true");
+    QVERIFY(cron->commands.isEmpty());
+    QVERIFY(cron->cronMatch() == false);
+    delete cron;
+
+    cron = new SvdCrontab("1 2 3 0/2 *", "true");
+    QVERIFY(cron->commands.isEmpty());
+    QVERIFY(cron->cronMatch() == false);
+    delete cron;
 }
 
 
