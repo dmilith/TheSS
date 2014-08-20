@@ -10,11 +10,14 @@
 #include "../core/utils.h"
 
 
-SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
+SvdCrontab::SvdCrontab(const QString& cronEntry) {
     QString entry = cronEntry;
-    if (cronEntry.trimmed().isEmpty())
-        entry = "* * * * * ?!";
-    auto cronList = entry.split(' ', QString::SkipEmptyParts);
+    auto cmd = cronEntry.split("?!");
+    auto cronDSL = cmd.first().trimmed();
+    auto commands = cmd.last().trimmed();
+    if (cronDSL.isEmpty())
+        cronDSL = "* * * * * ?! " + commands;
+    auto cronList = cronDSL.split(' ', QString::SkipEmptyParts);
     Q_FOREACH(auto elem, cronList)
         modes << NORMAL; /* normal mode is default for each element by default */
 
@@ -43,10 +46,9 @@ SvdCrontab::SvdCrontab(const QString& cronEntry, const QString& commands) {
         }
     }
 
-    if (cronList.at(cronList.length() - 1) == "?!") /* 5th position should be always "?!" */
-        this->commands = commands;
-
-    if ((entry == "* * * * * ?!") || (entry.endsWith("/1 * * * * ?!"))) {
+    this->commands = commands;
+    this->cronDSL = cronDSL;
+    if (entry.startsWith("* * * * *") || entry.endsWith("/1 * * * *") || entry.endsWith("*/1 * * * *")) {
         logInfo() << "Cron continuous mode enabled.";
         this->continuous = true;
     }

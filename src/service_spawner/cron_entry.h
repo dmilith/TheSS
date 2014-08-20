@@ -33,9 +33,10 @@ class SvdCrontab {
         QStringList entries;
         QList<SvdCronType> modes;
         QString commands;
+        QString cronDSL;
         bool continuous = false;
 
-        SvdCrontab(const QString& cronEntry, const QString& commands);
+        SvdCrontab(const QString& cronEntry);
         bool check(int currentTimeValue, int indx);
         bool cronMatch(const QDateTime& now = QDateTime::currentDateTime());
         bool isContinuous();
