@@ -15,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.94.6"
+    #define APP_VERSION "0.94.7"
     #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
@@ -159,34 +159,34 @@
     #define DEFAULT_USER_GROUP 0
     #define SOCK_DATA_PACKET_SIZE 32
     #define BUFFER_SIZE 256
-    #define LOCK_FILE_OCCUPIED_ERROR -200
-    #define CANNOT_LOCK_ERROR -201
-    #define POPEN_ERROR -202
-    #define CLASSPATH_DIR_MISSING_ERROR -203
-    #define NOROOT_PRIVLEGES_ERROR -204
-    #define SETUID_ERROR -205
-    #define SETGID_ERROR -206
-    #define FORK_ERROR -207
-    #define EXEC_ERROR -208
-    #define NO_UID_GIVEN_ERROR -209
-    #define DIAGNOSTIC_LOG_ERROR -210
-    #define AMBIGOUS_ENTRY_ERROR -211
-    #define ROOT_UID_ERROR -212
-    #define INSTALLATION_MISSING_ERROR -213
-    #define STDIN_GETATTR_ERROR -214
-    #define STDIN_SETATTR_ERROR -215
-    #define STDIN_READ_ERROR -216
-    #define STDOUT_WRITE_ERROR -217
-    #define TERM_GETSIZE_ERROR -218
-    #define TERM_GETATTR_ERROR -219
-    #define PTY_WRITE_ERROR -220
-    #define PTY_FORK_ERROR -221
-    #define GETOPT_ERROR -222
-    #define JSON_PARSE_ERROR -223
-    #define NO_SUCH_FILE_ERROR -224
-    #define NO_DEFAULT_IGNITERS_FOUND_ERROR -225
-    #define JSON_FORMAT_EXCEPTION_ERROR -225
-    #define OTHER_EXCEPTION_ERROR -226
-    #define NO_NETWORK_ERROR -227
+    #define LOCK_FILE_OCCUPIED_ERROR 200
+    #define CANNOT_LOCK_ERROR 201
+    #define POPEN_ERROR 202
+    #define CLASSPATH_DIR_MISSING_ERROR 203
+    #define NOROOT_PRIVLEGES_ERROR 204
+    #define SETUID_ERROR 205
+    #define SETGID_ERROR 206
+    #define FORK_ERROR 207
+    #define EXEC_ERROR 208
+    #define NO_UID_GIVEN_ERROR 209
+    #define DIAGNOSTIC_LOG_ERROR 210
+    #define AMBIGOUS_ENTRY_ERROR 211
+    #define ROOT_UID_ERROR 212
+    #define INSTALLATION_MISSING_ERROR 213
+    #define STDIN_GETATTR_ERROR 214
+    #define STDIN_SETATTR_ERROR 215
+    #define STDIN_READ_ERROR 216
+    #define STDOUT_WRITE_ERROR 217
+    #define TERM_GETSIZE_ERROR 218
+    #define TERM_GETATTR_ERROR 219
+    #define PTY_WRITE_ERROR 220
+    #define PTY_FORK_ERROR 221
+    #define GETOPT_ERROR 222
+    #define JSON_PARSE_ERROR 223
+    #define NO_SUCH_FILE_ERROR 224
+    #define NO_DEFAULT_IGNITERS_FOUND_ERROR 225
+    #define JSON_FORMAT_EXCEPTION_ERROR 225
+    #define OTHER_EXCEPTION_ERROR 226
+    #define NO_NETWORK_ERROR 227
 
 #endif
