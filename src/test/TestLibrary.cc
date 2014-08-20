@@ -669,6 +669,11 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->cronMatch() == false);
     delete cron;
 
+    cron = new SvdCrontab("* * * * * ?!");
+    QVERIFY(cron->commands == "");
+    QVERIFY(cron->cronMatch() == true);
+    delete cron;
+
     cron = new SvdCrontab("*/10 10-15 32 * 3,4,5,15?!true");
     QVERIFY(cron->modes.at(0) == PERIODIC);
     QVERIFY(cron->check(10, 0));
