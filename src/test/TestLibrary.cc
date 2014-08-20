@@ -57,10 +57,10 @@ void TestLibrary::testDirRemoval() {
 
 void TestLibrary::testParseJSONRedis() {
     auto config = new SvdServiceConfig("Redis"); /* Load app specific values */
-    QCOMPARE(config->name, QString("Redis"));
-    QCOMPARE(config->softwareName, QString("Redis"));
-    QCOMPARE(config->staticPort, -1);
-    QCOMPARE(config->uid, getuid());
+    QVERIFY(config->name == QString("Redis"));
+    QVERIFY(config->softwareName == QString("Redis"));
+    QVERIFY(config->staticPort == -1);
+    QVERIFY(config->uid == getuid());
     QVERIFY(config->schedulers.first()->cronEntry.contains("*"));
 
     QVERIFY(!config->install->commands.contains("SERVICE_ROOT"));
