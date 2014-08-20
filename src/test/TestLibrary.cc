@@ -55,39 +55,33 @@ void TestLibrary::testDirRemoval() {
 }
 
 
-// void TestLibrary::testParseJSONRedis() {
-//     auto config = new SvdServiceConfig("Redis"); /* Load app specific values */
-//     QCOMPARE(config->name, QString("Redis"));
-//     QCOMPARE(config->softwareName, QString("Redis"));
-//     QCOMPARE(config->staticPort, -1);
-//     QCOMPARE(config->uid, getuid());
-//     QVERIFY(config->schedulers.first()->cronEntry.contains("*"));
-//     // logDebug() << config->schedulers.first()->cronEntry;
-//     // logDebug() << config->schedulers.first()->commands;
+void TestLibrary::testParseJSONRedis() {
+    auto config = new SvdServiceConfig("Redis"); /* Load app specific values */
+    QCOMPARE(config->name, QString("Redis"));
+    QCOMPARE(config->softwareName, QString("Redis"));
+    QCOMPARE(config->staticPort, -1);
+    QCOMPARE(config->uid, getuid());
+    QVERIFY(config->schedulers.first()->cronEntry.contains("*"));
 
-//     /* verify replaceAllIn result, should not contain SERVICE_PORT, SERVICE_DOMAIN, SERVICE_ROOT, SERVICE_ADDRESS */
-//     // QVERIFY(!config->install->commands.contains("SERVICE_PORT"));
-//     // QVERIFY(!config->start->commands.contains("SERVICE_PORT"));
-//     // QVERIFY(!config->configure->commands.contains("SERVICE_PORT"));
-//     // QVERIFY(!config->afterStart->commands.contains("SERVICE_PORT"));
+    QVERIFY(!config->install->commands.contains("SERVICE_ROOT"));
+    QVERIFY(!config->install->commands.contains("SERVICE_PID"));
+    QVERIFY(!config->install->commands.contains("SERVICE_LOG"));
+    QVERIFY(!config->start->commands.contains("SERVICE_ROOT"));
+    QVERIFY(!config->configure->commands.contains("SERVICE_ROOT"));
+    QVERIFY(!config->afterStart->commands.contains("SERVICE_ROOT"));
 
-//     QVERIFY(!config->install->commands.contains("SERVICE_ROOT"));
-//     QVERIFY(!config->start->commands.contains("SERVICE_ROOT"));
-//     QVERIFY(!config->configure->commands.contains("SERVICE_ROOT"));
-//     QVERIFY(!config->afterStart->commands.contains("SERVICE_ROOT"));
+    QVERIFY(!config->install->commands.contains("SERVICE_DOMAIN"));
+    QVERIFY(!config->start->commands.contains("SERVICE_DOMAIN"));
+    QVERIFY(!config->configure->commands.contains("SERVICE_DOMAIN"));
+    QVERIFY(!config->afterStart->commands.contains("SERVICE_DOMAIN"));
 
-//     QVERIFY(!config->install->commands.contains("SERVICE_DOMAIN"));
-//     QVERIFY(!config->start->commands.contains("SERVICE_DOMAIN"));
-//     QVERIFY(!config->configure->commands.contains("SERVICE_DOMAIN"));
-//     QVERIFY(!config->afterStart->commands.contains("SERVICE_DOMAIN"));
+    QVERIFY(!config->install->commands.contains("SERVICE_ADDRESS"));
+    QVERIFY(!config->start->commands.contains("SERVICE_ADDRESS"));
+    QVERIFY(!config->configure->commands.contains("SERVICE_ADDRESS"));
+    QVERIFY(!config->afterStart->commands.contains("SERVICE_ADDRESS"));
 
-//     QVERIFY(!config->install->commands.contains("SERVICE_ADDRESS"));
-//     QVERIFY(!config->start->commands.contains("SERVICE_ADDRESS"));
-//     QVERIFY(!config->configure->commands.contains("SERVICE_ADDRESS"));
-//     QVERIFY(!config->afterStart->commands.contains("SERVICE_ADDRESS"));
-
-//     delete config;
-// }
+    delete config;
+}
 
 
 void TestLibrary::testLoadingDefault() {
