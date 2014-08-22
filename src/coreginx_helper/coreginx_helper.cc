@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
             fileAppender->setDetailsLevel(Logger::Info);
             fileAppender->setFormat("%t{dd-HH:mm:ss} cgx[%-7l] %m\n");
         }
-        new FileLoggerTimer(fileAppender);
+        // new FileLoggerTimer(fileAppender);
     }
 
     /* mem lock setup */

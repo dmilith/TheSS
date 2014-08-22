@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
             consoleAppender->setDetailsLevel(Logger::Info);
             consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
         }
-        new ConsoleLoggerTimer(consoleAppender);
+        // new ConsoleLoggerTimer(consoleAppender);
 
     } else {
         FileAppender *fileAppender;
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
             fileAppender->setDetailsLevel(Logger::Info);
             fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
         }
-        new FileLoggerTimer(fileAppender);
+        // new FileLoggerTimer(fileAppender);
     }
 
     /* handle some POSIX signals */
