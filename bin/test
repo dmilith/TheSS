@@ -25,10 +25,20 @@ sed_it () { # 0 -> normal => test
     fi
 }
 
+set_pax_if_grsec () {
+    if [ "${SYSTEM_NAME}" = "Linux" ]; then
+        uname -r | grep grsec
+        if [ "$?" = "0" ]; then
+            paxctl -cm "$*"
+        fi
+    fi
+}
+
 bin/clean && \
 bin/ignitersinstall && \
 sed_it && \
 bin/build test &&\
+set_pax_if_grsec bin/test-app && \
 bin/test-app -nocrashhandler && \
 sed_it 1
 #rm -rf ${HOME}/SoftwareData/*-TEST
