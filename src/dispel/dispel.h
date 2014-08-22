@@ -12,7 +12,11 @@
 
 #include <QtCore>
 
-#include <sys/ucred.h>
+#ifdef __linux__
+    #include <linux/socket.h>
+#else
+    #include <sys/ucred.h>
+#endif
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>

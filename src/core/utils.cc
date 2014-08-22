@@ -355,17 +355,19 @@ uint registerFreeTcpPort(uint specificPort) {
         QHostInfo info = QHostInfo::fromName(list.at(j).toString());
         if (!info.addresses().isEmpty()) {
             auto address = info.addresses().first();
-            logTrace() << "Got address: " << address;
-            auto tcpServer = new QTcpServer();
-            tcpServer->listen(address, port);
-            if (not tcpServer->isListening()) {
-                logDebug() << "Taken port on address:" << address << ":" << port;
+            if (not address.toString().contains(":")) { // XXX: HACK - no support for ipv6!
+                logTrace() << "Got address: " << address;
+                auto tcpServer = new QTcpServer();
+                tcpServer->listen(address, port);
+                if (not tcpServer->isListening()) {
+                    logDebug() << "Taken port on address:" << address << ":" << port;
+                    delete tcpServer;
+                    delete inter;
+                    return registerFreeTcpPort(10000 + rand);
+                } else
+                    tcpServer->close();
                 delete tcpServer;
-                delete inter;
-                return registerFreeTcpPort(10000 + rand);
-            } else
-                tcpServer->close();
-            delete tcpServer;
+            }
         }
     }
 

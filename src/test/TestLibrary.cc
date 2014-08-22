@@ -729,7 +729,11 @@ void TestLibrary::testCrontabEntry() {
 
 void TestLibrary::testTail() {
     QString a = tail("/usr/include/string.h", 3);
-    QVERIFY(a.contains("STRING_H"));
+    #ifndef __linux__
+        QVERIFY(a.contains("STRING_H"));
+    #else
+        QVERIFY(a.contains("string.h"));
+    #endif
 }
 
 

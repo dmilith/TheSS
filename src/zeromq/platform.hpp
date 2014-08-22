@@ -9,3 +9,6 @@
 #ifdef __FreeBSD__
     #include "FreeBSD-platform.hpp"
 #endif
+#ifdef __linux__
+    #include "Linux-platform.hpp"
+#endif

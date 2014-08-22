@@ -23,6 +23,9 @@ build () {
             MAKE_OPTS_BUILD="-j${JOBS} --silent"
             QMAKE_OPTS="-spec macx-clang"
             ;;
+        Linux)
+            MAKE_OPTS_BUILD="-j${JOBS} -s"
+            ;;
     esac
 
 
@@ -63,7 +66,11 @@ build () {
             ;;
 
         *)
-            sed -i '' -e 's/THESS_TEST_MODE/THESS_NORMAL_MODE/' src/Common.pro
+            if [ "$SYSTEM_NAME" = "Linux" ]; then
+                sed -i -e 's/THESS_TEST_MODE/THESS_NORMAL_MODE/' src/Common.pro > /dev/null
+            else
+                sed -i '' -e 's/THESS_TEST_MODE/THESS_NORMAL_MODE/' src/Common.pro
+            fi
 
             (qmake ${QMAKE_OPTS} Shell.pro) || exit 1
             (note "Building Shell" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1

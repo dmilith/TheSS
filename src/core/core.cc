@@ -257,10 +257,12 @@ static const char* protocol_to_string(int domain, int type, int protocol) {
 
 
 const char* CORE::procstat_files(struct procstat *procstat, struct kinfo_proc *kipp) {
+    stringstream out;
+    /* TODO: implement Linux procstat gather */
+    #ifndef __linux__
     struct sockstat sock;
     struct filestat_list *head;
     struct filestat *fst;
-    stringstream out;
 
     head = procstat_getfiles(procstat, kipp, 0);
     if (head == NULL)
@@ -288,15 +290,16 @@ const char* CORE::procstat_files(struct procstat *procstat, struct kinfo_proc *k
         }
     }
     procstat_freefiles(procstat, head);
+    #endif
     return out.str().c_str();
 }
 
 
 const char* CORE::getProcessUsage(int uid, bool consoleOutput) {
-
+    string command, output;
+    #ifndef __linux__
     int count = 0;
     char** args = NULL;
-    string command, output;
     int pagesize = getpagesize();
 
     kvm_t* kd = kvm_open(NULL, NULL, NULL, O_RDONLY, NULL);
@@ -398,15 +401,17 @@ const char* CORE::getProcessUsage(int uid, bool consoleOutput) {
     }
 
     kvm_close(kd);
+    #endif
     return output.c_str();
 }
 
 
 const char* CORE::processDataToLearn(int uid) {
+    string output;
 
+    #ifndef __linux__
     int count = 0;
     char** args = NULL;
-    string output;
     const int pagesize = getpagesize();
     const int totalMem = pagesize * sysconf(_SC_PHYS_PAGES);
 
@@ -439,6 +444,7 @@ const char* CORE::processDataToLearn(int uid) {
 
     kvm_close(kd);
     output += "]}";
+    #endif
     return output.c_str();
 }
 

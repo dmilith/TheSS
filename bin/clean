@@ -4,6 +4,10 @@ readonly JOBS="12"
 QMAKE_OPTS=""
 MAKE_OPTS="-j${JOBS} -Q -s"
 
+if [ "$(uname)" = "Linux" ]; then
+    MAKE_OPTS="-j${JOBS} -s"
+fi
+
 if [ "$(uname)" = "Darwin" ]; then
     MAKE_OPTS="-j${JOBS} --silent"
     QMAKE_OPTS="-spec macx-clang"

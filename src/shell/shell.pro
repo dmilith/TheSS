@@ -20,7 +20,10 @@ SOURCES   += \
 
 QMAKE_CXXFLAGS += -w
 LIBS      += -lz
-unix:!mac {
-  LIBS += -lutil -lprocstat
+unix:macx {
+    LIBS -= -lutil -lprocstat
+}
+unix:linux-* {
+    LIBS += -lutil
 }
 TARGET    = ../../bin/svdshell

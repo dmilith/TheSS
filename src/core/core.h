@@ -59,6 +59,17 @@
     #include <sys/ioctl.h>
 #endif
 
+#ifdef __linux__
+    #include <netinet/ip.h>
+    #include <netinet/tcp.h>
+    #include <netinet/udp.h>
+    #include <net/if.h>
+    #include <sys/param.h>
+    #include <sys/fcntl.h>
+    #include <sys/types.h>
+    #define IPPROTO_DIVERT 254
+#endif
+
 #define NS 1000000000
 #define DEFAULT_ALL_ALPHANUMERIC "0123456789.-+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzżźłóćęąń"; // XXX: only Polish characters and ASCII for now.
 #define DEFAULT_SHELL_COMMAND "/Software/Zsh/exports/zsh"
