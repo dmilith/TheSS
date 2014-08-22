@@ -7,7 +7,7 @@
 include(src/Common.pro)
 
 TEMPLATE           = subdirs
-SUBDIRS            = src/cutelogger src/core
+SUBDIRS            = src/cutelogger src/core src/coreginx_helper
 CONFIG += ordered
 
 coreginx_helper.depends = src/cutelogger src/core src/quazip src/hiredis src/yajl src/notifications
