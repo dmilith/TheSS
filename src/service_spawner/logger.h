@@ -5,14 +5,14 @@
  *
  */
 
-#ifndef __LOGGER_H__
-#define __LOGGER_H__
+#ifndef __SVDLOGGER_H__
+#define __SVDLOGGER_H__
 
 #include <QtCore>
-#include "utils.h"
+#include "../core/utils.h"
 
 
-class ConsoleLoggerTimer: QObject {
+class ConsoleLoggerTimer: public QObject {
     Q_OBJECT
 
     private:

@@ -14,7 +14,7 @@
 #include "../globals/globals.h"
 #include "../core/utils.h"
 #include "../notifications/notifications.h"
-#include "../core/logger.h"
+#include "../service_spawner/logger.h"
 #include "../core/utils.h"
 #include "../service_spawner/process.h"
 #include "../service_spawner/service_config.h"

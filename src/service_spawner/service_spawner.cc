@@ -9,8 +9,8 @@
 #include <QtCore>
 
 #include "../globals/globals.h"
+#include "logger.h"
 #include "../notifications/notifications.h"
-#include "../core/logger.h"
 #include "service_config.h"
 #include "service_watcher.h"
 #include "user_watcher.h"
