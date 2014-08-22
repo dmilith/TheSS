@@ -1,28 +1,8 @@
 #!/bin/sh
 
-readonly JOBS="12"
-QMAKE_OPTS=""
-MAKE_OPTS="-j${JOBS} -Q -s"
-
-if [ "$(uname)" = "Linux" ]; then
-    MAKE_OPTS="-j${JOBS} -s"
-fi
-
-if [ "$(uname)" = "Darwin" ]; then
-    MAKE_OPTS="-j${JOBS} --silent"
-    QMAKE_OPTS="-spec macx-clang"
-    for i in Notifications TestSS Panel TheSS WAD CoreginxHelper DeathWatch Shell Dispel; do
-        qmake ${QMAKE_OPTS} ${i}.pro
-        make ${MAKE_OPTS} clean
-    done
-else
-    for i in Notifications TestSS Panel TheSS WAD CoreginxHelper DeathWatch Shell Dispel; do
-        qmake ${QMAKE_OPTS} ${i}.pro
-        make ${MAKE_OPTS} clean
-    done
-fi
-
-rm -fv src/*.a
-rm -fv .*.stash
 find . -name 'Makefile' | xargs rm -f
+rm -fv src/*.a
+rm -fv src/.obj/*
+rm -fv src/.moc/*
+rm -fv .*.stash
 rm -fv bin/svdpanel bin/svdshell bin/svdss bin/test-app bin/svdnotify bin/svddw bin/svddispel bin/svddeployer bin/svdcoreginx_helper
