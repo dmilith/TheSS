@@ -7,7 +7,7 @@
 include(src/Common.pro)
 
 TEMPLATE           = subdirs
-SUBDIRS            = src/notifications
+SUBDIRS            = src/hiredis src/notifications
 CONFIG += ordered
 
-notifications.depends = src/hiredis src/cutelogger src/quazip src/yajl src/irc
+notifications.depends = src/core src/cutelogger src/quazip src/yajl src/hiredis

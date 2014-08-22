@@ -8,14 +8,10 @@ include(../Common.pro)
 
 QT += network
 HEADERS   += \
-            ../core/json_api.h \
             ../service_spawner/cron_entry.h \
-            ../core/utils-core.h \
-            ../core/utils.h \
             ../cutelogger/Logger.h \
             ../cutelogger/ConsoleAppender.h \
             ../cutelogger/FileAppender.h \
-            ../core/logger.h \
             ../service_spawner/service_config.h \
             ../service_spawner/process.h \
             ../notifications/notifications.h \
@@ -25,11 +21,7 @@ HEADERS   += \
             gui.h
 
 SOURCES   += \
-            ../core/json_api.cc \
             ../service_spawner/cron_entry.cc \
-            ../core/utils-core.cc \
-            ../core/utils.cc \
-            ../core/logger.cc \
             ../service_spawner/process.cc \
             ../service_spawner/file_events_manager.cc \
             ../service_spawner/service_config.cc \
@@ -42,9 +34,9 @@ SOURCES   += \
             tail.cc \
             ansi.cc
 
-mac {
-      LIBS      += ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncurses
+unix:mac {
+      LIBS      += ../libcore.a ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncurses
 } else {
-      LIBS      += ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncursesw
+      LIBS      += ../libcore.a ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncursesw
 }
 TARGET    = ../../bin/svdpanel

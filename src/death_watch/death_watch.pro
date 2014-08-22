@@ -6,11 +6,9 @@ include(../Common.pro)
 TEMPLATE = app
 
 SOURCES += death_watch.cc \
-           ../core/utils-core.cc \
            death_watcher.cc
 
-HEADERS += ../core/utils-core.h \
-           death_watch.h
+HEADERS += death_watch.h
 
-LIBS      += ../liblogger.a
+LIBS      += ../libcore.a ../liblogger.a
 TARGET    = ../../bin/svddw

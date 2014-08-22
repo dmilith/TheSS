@@ -8,6 +8,6 @@ include(src/Common.pro)
 
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS = src/cutelogger src/quazip src/hiredis src/yajl src/notifications src/zeromq src/dispel
+SUBDIRS = src/quazip src/yajl src/zeromq src/dispel
 
-src/dispel.depends = src/zeromq src/notifications
+dispel.depends = src/core src/zeromq src/notifications

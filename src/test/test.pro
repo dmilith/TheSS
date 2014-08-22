@@ -13,12 +13,9 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 HEADERS += TestLibrary.h \
-           ../core/json_api.h \
            ../yajl/api/yajl_tree.h \
            ../globals/globals.h \
            ../service_spawner/service_config.h \
-           ../core/utils.h \
-           ../core/utils-core.h \
            ../cutelogger/Logger.h \
            ../cutelogger/ConsoleAppender.h \
            ../cutelogger/FileAppender.h \
@@ -29,10 +26,8 @@ HEADERS += TestLibrary.h \
            ../service_spawner/cron_entry.h \
            ../deployer/webapp_types.h \
            ../service_spawner/cron_entry.h
-SOURCES += ../core/json_api.cc \
+SOURCES += \
            ../service_spawner/service_config.cc \
-           ../core/utils.cc \
-           ../core/utils-core.cc \
            ../service_spawner/process.cc \
            ../service_spawner/service.cc \
            ../death_watch/death_watch.cc \
@@ -41,4 +36,4 @@ SOURCES += ../core/json_api.cc \
            ../deployer/webapp_types.cc \
            TestLibrary.cc
 
-LIBS += -lz ../libhiredis.a ../libyajl.a ../liblogger.a ../libquazip.a
+LIBS += -lz ../liblogger.a ../libcore.a ../libhiredis.a ../libyajl.a ../libquazip.a

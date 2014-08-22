@@ -10,4 +10,4 @@ TEMPLATE           = subdirs
 SUBDIRS            = src/panel
 CONFIG += ordered
 
-panel.depends = src/yajl src/cutelogger src/quazip src/notifications src/service_spawner
+panel.depends = src/core src/yajl src/cutelogger src/quazip src/notifications src/service_spawner

@@ -7,7 +7,7 @@
 include(src/Common.pro)
 
 TEMPLATE           = subdirs
-SUBDIRS            = src/cutelogger src/quazip src/hiredis src/yajl src/service_spawner
+SUBDIRS            = src/cutelogger src/core src/hiredis src/quazip src/yajl
 CONFIG += ordered
 
-service_spawner.depends = src/cutelogger src/quazip src/hiredis src/yajl src/notifications src/death_watch
+service_spawner.depends = src/cutelogger src/core src/hiredis src/quazip src/yajl src/service_spawner

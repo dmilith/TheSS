@@ -10,3 +10,5 @@ include(src/Common.pro)
 TEMPLATE           = subdirs
 SUBDIRS            = src/shell
 CONFIG += ordered
+
+shell.depends = src/core

@@ -9,21 +9,19 @@ include(../Common.pro)
 
 
 HEADERS   += \
-            ../core/core.h \
             ../globals/globals.h \
             shellutils.h
 
 SOURCES   += \
-            ../core/core.cc \
             shellutils.cc \
             shell.cc
 
 QMAKE_CXXFLAGS += -w
-LIBS      += -lz
-unix:macx {
+LIBS      += -lz ../libcore.a
+unix:!mac {
     LIBS -= -lutil -lprocstat
 }
 unix:linux-* {
-    LIBS += -lutil
+    LIBS -= -lprocstat
 }
 TARGET    = ../../bin/svdshell
