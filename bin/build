@@ -39,37 +39,37 @@ build () {
 
         shell|svdshell)
             (qmake ${QMAKE_OPTS} Shell.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1
+            (note "Building Shell" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1
             ;;
 
         panel|svdpanel)
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
+            (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
             ;;
 
         ss|svdss)
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
+            (note "Building Service Spawner" && make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
             ;;
 
         dw|svddw|deathwatcher)
             (qmake ${QMAKE_OPTS} DeathWatch.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built dw\n") || exit 1
+            (note "Building Death Watcher" && make ${MAKE_OPTS_BUILD} && note "Successfully built dw\n") || exit 1
             ;;
 
         tests|test)
             (qmake ${QMAKE_OPTS} TestSS.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built tests\n") || exit 1
+            (note "Building Tests" && make ${MAKE_OPTS_BUILD} && note "Successfully built tests\n") || exit 1
             ;;
 
         deployer|deploy|depl|d)
             (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
+            (note "Building Deployer" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
             ;;
 
         coreginx_helper|cgx|c)
             (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
-            (make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
+            (note "Building Coreginx Helper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
             ;;
 
         *)
@@ -86,22 +86,22 @@ build () {
             (note "Building Dispel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddispel\n") || exit 1
 
             (qmake ${QMAKE_OPTS} DeathWatch.pro) || exit 1
-            (note "Building DeathWatch" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddw\n") || exit 1
+            (note "Building Death Watcher" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddw\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Notifications.pro) || exit 1
             (note "Building Notifications" && make ${MAKE_OPTS_BUILD} && note "Successfully built Notifications\n") || exit 1
 
             (qmake ${QMAKE_OPTS} WAD.pro) || exit 1
-            (note "Building WAD" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
+            (note "Building Deployer" && make ${MAKE_OPTS_BUILD} && note "Successfully built svddeployer\n") || exit 1
 
             (qmake ${QMAKE_OPTS} TheSS.pro) || exit 1
-            (note "Building SS" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
+            (note "Building Service Spawner" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
 
             (qmake ${QMAKE_OPTS} Panel.pro) || exit 1
             (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
 
             (qmake ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
-            (note "Building CoreginxHelper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
+            (note "Building Coreginx Helper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
 
             ;;
     esac
