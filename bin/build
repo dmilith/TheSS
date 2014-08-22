@@ -118,6 +118,6 @@ set_pax_if_grsec () {
 }
 
 build "$1"
-set_pax_if_grsec bin/svdpanel bin/svdshell bin/svdss bin/test-app bin/svdnotify bin/svddw bin/svddispel bin/svddeployer bin/svdcoreginx_helper
+set_pax_if_grsec bin/svdpanel bin/svdshell bin/svdss bin/svdnotify bin/svddw bin/svddispel bin/svddeployer bin/svdcoreginx_helper
 readonly END_TIMER=$(date +%s)
 note "Build completed in $(echo ${END_TIMER} - ${BEGIN_TIMER} | ${BC_BIN}) seconds."
