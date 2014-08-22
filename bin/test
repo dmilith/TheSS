@@ -30,6 +30,6 @@ bin/ignitersinstall && \
 sed_it && \
 bin/build test &&\
 bin/test-app -nocrashhandler && \
-sed_it 1 && \
-rm -rf ${HOME}/SoftwareData/*-TEST
+sed_it 1
+#rm -rf ${HOME}/SoftwareData/*-TEST
 
