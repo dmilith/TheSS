@@ -17,8 +17,8 @@ SOURCES   += \
             shell.cc
 
 QMAKE_CXXFLAGS += -w
-LIBS      += -lz ../libcore.a
-unix:!mac {
+LIBS      += -lz -lutil -lprocstat
+unix:mac {
     LIBS -= -lutil -lprocstat
 }
 unix:linux-* {
