@@ -8,6 +8,5 @@ include(src/Common.pro)
 
 TEMPLATE           = subdirs
 SUBDIRS            = src/core src/death_watch
-CONFIG += ordered
 
-notifications.depends = src/core src/cutelogger
+notifications.depends = src/cutelogger src/core
