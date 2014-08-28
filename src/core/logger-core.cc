@@ -5,7 +5,7 @@
  *
  */
 
-#include "logger.h"
+#include "logger-core.h"
 
 
 void ConsoleLoggerTimer::invokeTrigger() {

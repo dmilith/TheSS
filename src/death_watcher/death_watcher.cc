@@ -6,7 +6,7 @@
  */
 
 
-#include "death_watch.h"
+#include "../core/death_watch.h"
 
 
 int main(int argc, char *argv[]) {
