@@ -9,7 +9,7 @@
 #include <QtCore>
 
 #include "../globals/globals.h"
-#include "logger.h"
+#include "../core/logger-core.h"
 #include "../notifications/notifications.h"
 #include "service_config.h"
 #include "service_watcher.h"

@@ -8,7 +8,7 @@
 
 #include "../globals/globals.h"
 #include "../service_spawner/process.h"
-#include "../death_watch/death_watch.h"
+#include "../core/death_watch.h"
 #include "notifications.h"
 
 

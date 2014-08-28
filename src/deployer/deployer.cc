@@ -7,7 +7,7 @@
 
 
 #include "deploy.h"
-#include "../death_watch/death_watch.h"
+#include "../core/death_watch.h"
 
 
 void deployerSignalHandler(int sigNum) {

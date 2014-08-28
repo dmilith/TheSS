@@ -14,11 +14,11 @@
 #include "../globals/globals.h"
 #include "../core/utils.h"
 #include "../notifications/notifications.h"
-#include "../service_spawner/logger.h"
+#include "../core/logger-core.h"
 #include "../core/utils.h"
 #include "../service_spawner/process.h"
 #include "../service_spawner/service_config.h"
-#include "../death_watch/death_watch.h"
+#include "../core/death_watch.h"
 #include "webapp_types.h"
 
 

@@ -39,7 +39,7 @@
 #include "service_config.h"
 #include "../core/utils.h"
 #include "../notifications/notifications.h"
-#include "../death_watch/death_watch.h"
+#include "../core/death_watch.h"
 
 #include <signal.h>
 #include <QObject>

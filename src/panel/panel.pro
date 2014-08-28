@@ -8,10 +8,6 @@ include(../Common.pro)
 
 QT += network
 HEADERS   += \
-            ../service_spawner/cron_entry.h \
-            ../cutelogger/Logger.h \
-            ../cutelogger/ConsoleAppender.h \
-            ../cutelogger/FileAppender.h \
             ../service_spawner/service_config.h \
             ../service_spawner/process.h \
             ../notifications/notifications.h \
@@ -21,7 +17,6 @@ HEADERS   += \
             gui.h
 
 SOURCES   += \
-            ../service_spawner/cron_entry.cc \
             ../service_spawner/process.cc \
             ../service_spawner/file_events_manager.cc \
             ../service_spawner/service_config.cc \
