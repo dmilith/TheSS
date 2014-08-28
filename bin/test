@@ -42,4 +42,4 @@ set_pax_if_grsec bin/test-app && \
 bin/test-app -nocrashhandler && \
 sed_it 1
 #rm -rf ${HOME}/SoftwareData/*-TEST
-
+bin/clean
