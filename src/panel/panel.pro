@@ -29,9 +29,10 @@ SOURCES   += \
             tail.cc \
             ansi.cc
 
+LIBS += ../libcore.a ../liblogger.a ../libquazip.a ../libyajl.a -lz
 unix:mac {
-      LIBS      += ../libcore.a ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncurses
+      LIBS += -lncurses
 } else {
-      LIBS      += ../libcore.a ../liblogger.a ../libquazip.a ../libyajl.a -lz -lncursesw
+      LIBS += -lncursesw
 }
 TARGET    = ../../bin/svdpanel
