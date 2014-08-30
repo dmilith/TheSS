@@ -33,7 +33,7 @@ for user in *; do
 
         if [ -f "${user_home}/.autostart" ]; then
             note "Autostarting enabled for user: ${user}"
-            ${GREP_BIN} -q "${uid}" ${TTYS} || (${PRINTF_BIN} "\n# user: ${user}($uid):\nttyv${uid} \"${SVD_SHELL} -u${uid} -- ${SVD_PREFIX}svdss\" xterm on secure\n" >> ${TTYS})
+            ${GREP_BIN} -q "${user}(${uid})" ${TTYS} || (${PRINTF_BIN} "\n# user: ${user}($uid):\nttyv${uid} \"${SVD_SHELL} -u${uid} -- ${SVD_PREFIX}svdss\" xterm on secure\n" >> ${TTYS})
             debug "${PRINTF_BIN} \"\n# user: ${user}($uid):\nttyv${uid} \"${SVD_SHELL} -u${uid} -- ${SVD_PREFIX}svdss\" xterm on secure\n\""
         fi
 
