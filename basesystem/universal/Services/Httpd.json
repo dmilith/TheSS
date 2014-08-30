@@ -1,0 +1,32 @@
+{
+    "softwareName": "Httpd",
+    "staticPort": 80,
+    "install": {
+        "commands": "sofin get httpd",
+        "expectOutput": "All done"
+    },
+    "start": {
+        "commands": " \
+echo 'Launching Apache Httpd' >> SERVICE_LOG \
+SERVICE_ROOT/exports/httpd -k start -E SERVICE_LOG && echo 'Apache Httpd started' >> SERVICE_LOG \
+"
+    },
+    "stop": {
+        "commands": " \
+echo 'Stopping Apache Httpd' >> SERVICE_LOG \
+SERVICE_ROOT/exports/httpd -k stop -E SERVICE_LOG && echo 'Apache Httpd started' >> SERVICE_LOG \
+"
+    },
+    "afterStop": {
+        "commands": ""
+    },
+    "configure": {
+        "commands": ""
+    },
+    "validate": {
+        "commands": " \
+SERVICE_ROOT/exports/httpd -t && echo 'Apache Httpd started' >> SERVICE_LOG \
+",
+        "expectOutput": "Syntax OK"
+    }
+}
