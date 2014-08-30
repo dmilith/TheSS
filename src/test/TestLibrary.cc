@@ -668,12 +668,36 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->cronMatch() == true);
     delete cron;
 
+    cron = new SvdCrontab("*/3 * * * * ?! true");
+    QVERIFY(cron->modes.at(0) == PERIODIC);
+    QVERIFY(cron->check(3, 0));
+    QVERIFY(cron->check(6, 0));
+    QVERIFY(cron->check(9, 0));
+    QVERIFY(not cron->check(10, 0));
+    QVERIFY(not cron->check(11, 0));
+    QVERIFY(cron->check(12, 0));
+    QVERIFY(not cron->check(13, 0));
+    QVERIFY(not cron->check(14, 0));
+    QVERIFY(cron->check(15, 0));
+    QVERIFY(cron->check(18, 0));
+    QVERIFY(cron->check(21, 0));
+    QVERIFY(cron->check(24, 0));
+    QVERIFY(cron->check(27, 0));
+    QVERIFY(cron->check(30, 0));
+    QVERIFY(not cron->check(31, 0));
+    QVERIFY(not cron->check(32, 0));
+    QVERIFY(cron->check(33, 0));
+    delete cron;
+
     cron = new SvdCrontab("*/10 10-15 32 * 3,4,5,15?!true");
     QVERIFY(cron->modes.at(0) == PERIODIC);
     QVERIFY(cron->check(10, 0));
+    QVERIFY(cron->check(20, 0));
     QVERIFY(cron->check(40, 0));
     QVERIFY(cron->check(0, 0));
     QVERIFY(not cron->check(11, 0));
+    QVERIFY(not cron->check(35, 0));
+    QVERIFY(not cron->check(23, 0));
 
     QVERIFY(cron->modes.at(1) == RANGE);
     QVERIFY(cron->check(13, 1)); // 13 is in range of 10-15
