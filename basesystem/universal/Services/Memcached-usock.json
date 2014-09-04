@@ -7,8 +7,13 @@
     },
     "start": {
         "commands": "\
-printf 'Launching Memcached\n' >> SERVICE_LOG \
-SERVICE_ROOT/exports/memcached -s SERVICE_PREFIX/service.sock -P SERVICE_PID -d \
+if [ \"$(id -u)\" != \"0\" ]; then \
+    printf \"Launching Memcached on UNIX Socket\n\" >> SERVICE_LOG \
+    SERVICE_ROOT/exports/memcached -s SERVICE_PREFIX/service.sock -P SERVICE_PID -d \
+else \
+    printf \"Memcached can't be run as root!\n\" >> SERVICE_LOG \
+    touch SERVICE_PREFIX/.stop \
+fi \
 "
     }
 }
