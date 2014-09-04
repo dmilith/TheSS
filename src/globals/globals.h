@@ -15,8 +15,8 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.96.3"
-    #define COPYRIGHT "(c) 2o13-2o14 verknowsys.com"
+    #define APP_VERSION "0.96.4"
+    #define COPYRIGHT "(c) 2oo8-2o14 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
     /* default BSD case: */

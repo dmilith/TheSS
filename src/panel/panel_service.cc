@@ -43,6 +43,7 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     this->dir = QDir(basePath);
 
     this->log = new Tail(this, basePath + DEFAULT_SERVICE_LOGS_DIR + config->releaseName(), DEFAULT_SERVICE_LOG_FILE);
+    this->logErr = new Tail(this, basePath + DEFAULT_SERVICE_LOGS_DIR, DEFAULT_SERVICE_OUTPUT_FILE);
     this->conf = new Tail(this, basePath + DEFAULT_SERVICE_CONFS_DIR + config->releaseName(), DEFAULT_SERVICE_CONF_FILE);
     this->env = new Tail(this, basePath + DEFAULT_SERVICE_ENVS_DIR + config->releaseName(), DEFAULT_SERVICE_ENV_FILE);
 

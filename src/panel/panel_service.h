@@ -42,6 +42,7 @@ public:
     QString basePath;
     Panel * panel;
     Tail * log;
+    Tail * logErr;
     Tail * conf;
     Tail * env;
 };

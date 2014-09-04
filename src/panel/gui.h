@@ -31,6 +31,7 @@ public slots:
     void readInput();
     void display();
     void displayLog();
+    void displayLogErr();
     void displayConfig();
     void displayEnv();
     void displaySSLog();

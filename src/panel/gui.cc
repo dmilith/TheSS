@@ -817,9 +817,12 @@ void PanelGui::key(int ch){
             displayEnv();
             break;
 
-        case 'L': /* refresh log window */
-        case 'l':
+        case 'l': /* refresh log window */
             displayLog();
+            break;
+
+        case 'L':
+            displayLogErr();
             break;
 
         case 'N':
@@ -921,6 +924,14 @@ void PanelGui::displayLog(){
     const PanelService * service = servicesList->currentItem();
     if(service != NULL){
         tail = service->log;
+        tailUpdate();
+    }
+}
+
+void PanelGui::displayLogErr() {
+    const PanelService * service = servicesList->currentItem();
+    if(service != NULL){
+        tail = service->logErr;
         tailUpdate();
     }
 }
