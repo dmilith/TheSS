@@ -31,11 +31,16 @@ logging_collector = true \
     },
     "start": {
         "commands": " \
-printf 'Linking configuration file\n' >> SERVICE_LOG \
-ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG \
-printf 'Launching Postgresql\n' >> SERVICE_LOG \
-SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG \
-# ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG \
+if [ \"$(id -u)\" != \"0\" ]; then \
+    printf 'Linking configuration file\n' >> SERVICE_LOG \
+    ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG \
+    printf 'Launching Postgresql\n' >> SERVICE_LOG \
+    SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG \
+    # ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG \
+else \
+    printf \"Postgresql can't be run as root!\n\" >> SERVICE_LOG \
+    touch SERVICE_PREFIX/.stop \
+fi \
 "
     },
     "stop": {
