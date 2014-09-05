@@ -728,6 +728,12 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->cronMatch() == false); /* it must be false when asking for match for month with 32 days */
     delete cron;
 
+    cron = new SvdCrontab("a ?! b ?! c");
+    QVERIFY(cron->commands == "c");
+    QVERIFY(cron->cronDSL == "a");
+    QVERIFY(cron->cronMatch() == false);
+    delete cron;
+
     cron = new SvdCrontab("stefan mariola a b 0/2 * ?!true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->cronDSL == "stefan mariola a b 0/2 *");

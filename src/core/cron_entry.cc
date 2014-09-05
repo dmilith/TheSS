@@ -12,6 +12,9 @@
 
 SvdCrontab::SvdCrontab(const QString& cronEntry) {
     QString entry = cronEntry;
+    if (cronEntry.count(CRON_DELIMITER) > 1) {
+        logError() << "Multiple delimiters (" << CRON_DELIMITER << ") in cron entry:" << cronEntry;
+    }
     auto cmd = cronEntry.split(CRON_DELIMITER);
     auto cronDSL = cmd.first().trimmed();
     auto commands = cmd.last().trimmed();
