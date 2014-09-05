@@ -670,6 +670,17 @@ void TestLibrary::testCrontabEntry() {
     cron = new SvdCrontab("* * * * * ?!");
     QVERIFY(cron->commands == "");
     QVERIFY(cron->cronMatch() == true);
+    QVERIFY(cron->isContinuous());
+    delete cron;
+    cron = new SvdCrontab("*/1 * * * * ?!");
+    QVERIFY(cron->commands == "");
+    QVERIFY(cron->cronMatch() == true);
+    QVERIFY(cron->isContinuous());
+    delete cron;
+    cron = new SvdCrontab("abecadlo/1 * * * * ?!");
+    QVERIFY(cron->commands == "");
+    QVERIFY(cron->cronMatch() == true);
+    QVERIFY(cron->isContinuous());
     delete cron;
 
     cron = new SvdCrontab("*/3 * * * * ?! true");
@@ -732,12 +743,14 @@ void TestLibrary::testCrontabEntry() {
     QVERIFY(cron->commands == "c");
     QVERIFY(cron->cronDSL == "a");
     QVERIFY(cron->cronMatch() == false);
+    QVERIFY(not cron->isContinuous());
     delete cron;
 
     cron = new SvdCrontab("stefan mariola a b 0/2 * ?!true");
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->cronDSL == "stefan mariola a b 0/2 *");
     QVERIFY(cron->cronMatch() == false);
+    QVERIFY(not cron->isContinuous());
     delete cron;
 
     auto waste = "1 2 3 0/2 * ?true";
@@ -745,12 +758,14 @@ void TestLibrary::testCrontabEntry() {
     logWarn() << "COMMDS:" << cron->commands;
     QVERIFY(cron->commands == waste);
     QVERIFY(cron->cronMatch() == false);
+    QVERIFY(not cron->isContinuous());
     delete cron;
 
     waste = "1 2 3 0/2 * ! true";
     cron = new SvdCrontab(waste);
     QVERIFY(cron->commands == waste);
     QVERIFY(cron->cronMatch() == false);
+    QVERIFY(not cron->isContinuous());
     delete cron;
 
     waste = "1 2 3 0/2 * true";

@@ -51,7 +51,7 @@ SvdCrontab::SvdCrontab(const QString& cronEntry) {
 
     this->commands = commands;
     this->cronDSL = cronDSL;
-    if (entry.startsWith("* * * * *") || entry.endsWith("/1 * * * *") || entry.endsWith("*/1 * * * *")) {
+    if (cronDSL.startsWith("* * * * *") || cronDSL.endsWith("/1 * * * *") || cronDSL.endsWith("*/1 * * * *")) {
         logInfo() << "Cron continuous mode enabled.";
         this->continuous = true;
     }
