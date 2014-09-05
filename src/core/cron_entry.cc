@@ -12,11 +12,11 @@
 
 SvdCrontab::SvdCrontab(const QString& cronEntry) {
     QString entry = cronEntry;
-    auto cmd = cronEntry.split("?!");
+    auto cmd = cronEntry.split(CRON_DELIMITER);
     auto cronDSL = cmd.first().trimmed();
     auto commands = cmd.last().trimmed();
     if (cronDSL.isEmpty())
-        cronDSL = "* * * * * ?! " + commands;
+        cronDSL = "* * * * * " + QString(CRON_DELIMITER) + " " + commands;
     auto cronList = cronDSL.split(' ', QString::SkipEmptyParts);
     Q_FOREACH(auto elem, cronList)
         modes << NORMAL; /* normal mode is default for each element by default */
@@ -175,7 +175,7 @@ bool SvdCrontab::cronMatch(const QDateTime& now) {
             /* commands */
             case 5: {
                 if (this->commands.isEmpty())
-                    logError() << "Empty commands given, or cron entry format is invalid. (Might be forgotten \"?!\" at end of cronEntry)";
+                    logError() << "Empty commands given, or cron entry format is invalid. (Might be forgotten \"" << CRON_DELIMITER << "\" at end of cronEntry)";
             } break;
 
             /* something's wrong with entry? */

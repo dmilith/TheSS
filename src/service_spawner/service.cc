@@ -467,7 +467,7 @@ void SvdService::babySitterSlot() {
         }
 
     } else {
-        logTrace() << "alwaysOn option disabled for service:" << name;
+        logDebug() << "alwaysOn option disabled for service:" << name;
     }
 }
 

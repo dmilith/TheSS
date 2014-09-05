@@ -623,6 +623,10 @@ void TestLibrary::testCrontabEntry() {
 
     /* this is empty case, which is an equivalent of giving entry: "* * * * * ?!" */
     auto cron = new SvdCrontab("?! true");
+    QVERIFY(not cron->commands.contains("!"));
+    QVERIFY(not cron->commands.contains("?"));
+    QVERIFY(not cron->commands.contains("?!"));
+
     QVERIFY(cron->commands == "true");
     QVERIFY(cron->modes.at(0) == WILDCARD);
     QVERIFY(cron->cronMatch() == false);

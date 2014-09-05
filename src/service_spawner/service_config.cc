@@ -323,8 +323,8 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     /* load service scheduler data */
     QStringList igniterSchedulers = getArray("schedulers");
     Q_FOREACH(QString scheduler, igniterSchedulers) {
-        QString entry = scheduler.split("!").first();
-        QString commands = scheduler.split("!").last();
+        QString entry = scheduler.split(CRON_DELIMITER).first();
+        QString commands = scheduler.split(CRON_DELIMITER).last();
         schedulers.push_back(
             new SvdScheduler(
                 entry, replaceAllSpecialsIn(commands)

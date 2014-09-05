@@ -15,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.96.4"
+    #define APP_VERSION "0.96.5"
     #define COPYRIGHT "(c) 2oo8-2o14 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
@@ -144,7 +144,8 @@
     #define DEFAULT_SS_PROCESS_DATA_COLLECTION_HOOK_FILE "/.data-collector"
     #define DEFAULT_SS_LOG_FILE "/.thess.log"
     #define CONTROL_PANEL_LOG_FILE "/.thess-panel.log"
-    #define DEFAULT_CRON_ENTRY "0 4 * * * ?!" /* exactly 4am */
+    #define CRON_DELIMITER "?!"
+    #define DEFAULT_CRON_ENTRY "0 4 * * *" /* exactly 4am */
 
     #define DEFAULT_PROCESS_TIMEOUT 30000 // 30s
     #define DEFAULT_INSTALL_TIMEOUT 1800000 // 30m
