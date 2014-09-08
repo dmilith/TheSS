@@ -1,35 +1,38 @@
 {
+    /* defines minimum version of TheSS to use this Defaults */
     "formatVersion": 0.92,
 
+    /* This shell will be used bo spawn user scripts */
     "shell": "/Software/Zsh/exports/zsh",
 
-/* defines name of entry in ~/SoftwareData/ and also an Igniter name */
+    /* defines name of entry in ~/SoftwareData/ and also an Igniter name */
     "name": "No-Name",
 
+    /* defines domains to which application should bind to */
     "domains": [],
 
-/* when set to false, domain won't be resolved for spcified igniter */
+    /* when set to false, domain won't be resolved for spcified igniter */
     "resolveDomain": false,
 
-/* defines pool of ports used by service */
+    /* defines pool of ports used by service. by default only one port is required per service */
     "portsPool": 1,
 
-/* defines disk space check. By default user has to have at least 1 GiB free disk space */
+    /* defines disk space check. check disabled if 0 */
     "minimumRequiredDiskSpace": 0,
 
-/* defines name of software available in Sofin definitions. Default - Builtin is a way of defining igniters for software already installed, or available outside of Sofin */
+    /* defines name of software available in Sofin definitions. Default - Builtin is a way of defining igniters for software already installed, or available outside of Sofin */
     "softwareName": "",
 
-/* defines name of service that's parent to current service (dependency model helper) */
+    /* defines name of service that's parent to current service (dependency model helper) */
     "parentService": "",
 
-/* reqad only access to git repository for web applications */
+    /* read only access to git repository for web applications */
     "repository": "",
 
-/* http url addresses to watch */
+    /* http url addresses to watch */
     "watchHttp": [],
 
-/* by default assign dynamic port for service   */
+    /* by default assign dynamic port for service */
     "staticPort": -1,
 
     /* alwaysOn with true will always invoke babysitter to watch for service pid validity */
@@ -61,15 +64,15 @@
     "configureOrder": 10,
     "startOrder": 10,
 
-/* a list of igniters required to launch this software */
+    /* a list of igniters required to launch this software */
     "dependencies": [],
 
-/* default schedulers format:             */
-/*   "schedulers": [                      */
-/*     "0 0/10 * * * ?! my shell commands",        */
-/*     "2 * 1 * * ?! sometimes this one"           */
-/*     …                                        */
-/*   ],                                         */
+    /* default schedulers format:             */
+    /*   "schedulers": [                      */
+    /*     "0 0/10 * * * ?! my shell commands",        */
+    /*     "2 * 1 * * ?! sometimes this one"           */
+    /*     …                                        */
+    /*   ],                                         */
 
     "schedulers": [],
 
