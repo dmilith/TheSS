@@ -15,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.97.0"
+    #define APP_VERSION "0.97.1"
     #define COPYRIGHT "(c) 2oo8-2o14 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
@@ -35,9 +35,11 @@
     #define NOTIFICATIONS_HISTORY_KEEP_UPTO 100 /* how many files to keep in history */
 
     #ifdef __APPLE__
+        #define DEFAULT_ZPOOL_NAME "Data"
         #define CLOCK_REALTIME REALTIME_CLOCK
         #define DEFAULT_DEATH_WATCHER_PAUSE 500000 /* .5 seconds by default for developer machine */
     #else
+        #define DEFAULT_ZPOOL_NAME "zroot"
         #define DEFAULT_DEATH_WATCHER_PAUSE 2000000 /* 2 seconds by default for production */
     #endif
 

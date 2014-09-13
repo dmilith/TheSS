@@ -99,16 +99,16 @@ void SvdUserWatcher::createZFSdataset(const QString& name, const QString& pathE)
     #if defined(__FreeBSD__) || defined(__APPLE__)
         logInfo() << "Creating ZFS dataset:" << path;
         auto process = new SvdProcess(name, getuid(), false);
-        QString poolName = "zroot"; /* XXX: hardcoded */
+        QString poolName = DEFAULT_ZPOOL_NAME; /* XXX: hardcoded */
+        QString zfsCreateCommand = "zfs create -o casesensitivity=sensitive";
         #ifdef __APPLE__
-            poolName = "Data"; /* XXX: hardcoded */
             QStringList a = path.split("/");
             auto b = a[a.length() - 2] + "/" + a[a.length() - 1]; // XXX XXX XXX
-            logInfo() << "Calling " << "zfs create -o casesensitivity=sensitive -o mountpoint=" + path + " " + poolName + "/" + b;
-            process->spawnProcess("zfs create -o mountpoint=" + path + " " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
+            logDebug() << "Calling " << zfsCreateCommand << " mountpoint=" + path + " " + poolName + "/" + b;
+            process->spawnProcess(zfsCreateCommand + " -o mountpoint=" + path + " " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
         #else
-            logInfo() << "Calling " << "zfs create -o casesensitivity=sensitive -o mountpoint=" + path + " " + poolName + path;
-            process->spawnProcess("zfs create -o mountpoint=" + path + " " + poolName + path, DEFAULT_SHELL_COMMAND);
+            logDebug() << "Calling " << zfsCreateCommand + " " + poolName + path;
+            process->spawnProcess(zfsCreateCommand + " " + poolName + path, DEFAULT_SHELL_COMMAND);
         #endif
         process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         process->deleteLater();
@@ -122,25 +122,25 @@ void SvdUserWatcher::destroyZFSdataset(const QString& name, const QString& pathE
     QString path = pathE;
     path.replace("//", "/"); // XXX XXX
     #if defined(__FreeBSD__) || defined(__APPLE__)
+        QString zfsDestroyCommand = "zfs destroy -f";
         logInfo() << "Destroying ZFS dataset:" << path;
         auto process = new SvdProcess(name, getuid(), false);
-        QString poolName = "zroot"; /* XXX: hardcoded */
+        QString poolName = DEFAULT_ZPOOL_NAME;
         #ifdef __APPLE__
-            poolName = "Data"; /* XXX: hardcoded */
             QStringList a = path.split("/");
             auto b = a[a.length() - 2] + "/" + a[a.length() - 1]; // XXX XXX XXX
-            logInfo() << "Calling " << "zfs destroy -f " + poolName + "/" + b;
-            process->spawnProcess("zfs destroy -f " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
+            logDebug() << "Calling " << zfsDestroyCommand + " " + poolName + "/" + b;
+            process->spawnProcess(zfsDestroyCommand + " " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
         #else
-            logInfo() << "Calling " << "zfs destroy -f " + poolName + path;
-            process->spawnProcess("zfs destroy -f " + poolName + path, DEFAULT_SHELL_COMMAND);
+            logDebug() << "Calling " << zfsDestroyCommand + " " + poolName + path;
+            process->spawnProcess(zfsDestroyCommand + " " + poolName + path, DEFAULT_SHELL_COMMAND);
         #endif
         process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         process->deleteLater();
         while (QDir().exists(path)) {
             logDebug() << "Trying to destroy prefix:" << path;
             removeDir(path, true);
-            sleep(3);
+            sleep(2);
         }
     #else
         logTrace() << "No ZFS available - Supported only on FreeBSD & Darwin hosts.";
