@@ -20,6 +20,11 @@ if [ "$(uname)" != "FreeBSD" ]; then
     exit 1
 fi
 
+if [ "$(id -u)" = "0" ]; then
+    error "This command requires superuser privileges!"
+    exit 1
+fi
+
 if [ -d "/Users/${USER_NAME}" ]; then
     error "User ${USER_NAME} already exists."
     exit 1
