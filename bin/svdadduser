@@ -39,7 +39,7 @@ note "Adding user: ${USER_NAME}"
 pw useradd "${USER_NAME}" -n "${USER_NAME}" -d "/Users/${USER_NAME}" -m -s /Software/Zsh/exports/zsh >/dev/null|| error "Failed to add user!"
 
 note "Allowing snapshot,send,receive to ZFS datasets"
-zfs allow ${USER_NAME} snapshot,send,receive zroot/Users/${USER_NAME}
+zfs allow ${USER_NAME} snapshot,send,receive,create,mount,rollback,diff zroot/Users/${USER_NAME}
 
 mkdir -p "/Users/${USER_NAME}/.ssh"
 
