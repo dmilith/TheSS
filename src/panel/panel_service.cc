@@ -156,5 +156,6 @@ void PanelService::toggleNotifications() {
 }
 
 bool PanelService::remove(){
-    return removeDir(basePath, true);
+    touch(basePath + "/.." + DEFAULT_DESTROY_SERVICE_TRIGGER_PREFIX + name);
+    return true;
 }
