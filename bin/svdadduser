@@ -31,15 +31,15 @@ if [ -d "/Users/${USER_NAME}" ]; then
 fi
 
 note "Creating ZFS datasets"
-zfs create -o casesensitivity=sensitive -o mountpoint=/Users/${USER_NAME} zroot/Users/${USER_NAME}
-zfs create -o casesensitivity=sensitive -o mountpoint=/Users/${USER_NAME}/Igniters zroot/Users/${USER_NAME}/Igniters
-zfs create -o casesensitivity=sensitive -o mountpoint=/Users/${USER_NAME}/SoftwareData zroot/Users/${USER_NAME}/SoftwareData
+zfs create -o casesensitivity=sensitive zroot/Users/${USER_NAME}
+zfs create -o casesensitivity=sensitive zroot/Users/${USER_NAME}/Igniters
+zfs create -o casesensitivity=sensitive zroot/Users/${USER_NAME}/SoftwareData
 
 note "Adding user: ${USER_NAME}"
 pw useradd "${USER_NAME}" -n "${USER_NAME}" -d "/Users/${USER_NAME}" -m -s /Software/Zsh/exports/zsh >/dev/null|| error "Failed to add user!"
 
 note "Allowing snapshot,send,receive to ZFS datasets"
-zfs allow ${USER_NAME} snapshot,send,receive,create,mount,rollback,diff zroot/Users/${USER_NAME}
+zfs allow ${USER_NAME} snapshot,send,receive,create,destroy,mount,rollback,diff zroot/Users/${USER_NAME}
 
 mkdir -p "/Users/${USER_NAME}/.ssh"
 
