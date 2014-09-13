@@ -636,9 +636,7 @@ void SvdService::startSlot(bool withDeps) {
             Q_FOREACH(auto dependency, config->dependencies) {
                 logInfo() << "Installing and configuring dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
-
                 SvdService *depService = new SvdService(dependency);
-                depService->start();
                 depService->installSlot();
                 if (not depConf->serviceConfigured()) {
                     depService->configureSlot();
