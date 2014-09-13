@@ -21,6 +21,7 @@
 
     /* default BSD case: */
     #define DEFAULT_SSL_PORT 443
+    #define DEFAULT_SYSTEM_CONSOLE "/dev/console"
     #define DEFAULT_SSL_CA_CERT "/etc/ssl/cacert.pem"
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
