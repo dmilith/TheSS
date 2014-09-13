@@ -482,68 +482,68 @@ void PanelGui::key(int ch){
             break;
 
         case KEY_F(6): /* rename service */
-            if (servicesList->currentItem() == NULL) {
-                status = "Can't change name of non existing service!";
-            } else {
-                QString name = servicesList->currentItem()->name;
-                QString basePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
-                QString prefixPath = basePath + "/" + name;
-                if (getuid() == 0) {
-                    basePath = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR;
-                    prefixPath = basePath + "/" + name;
-                }
+            // if (servicesList->currentItem() == NULL) {
+            //     status = "Can't change name of non existing service!";
+            // } else {
+            //     QString name = servicesList->currentItem()->name;
+            //     QString basePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
+            //     QString prefixPath = basePath + "/" + name;
+            //     if (getuid() == 0) {
+            //         basePath = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR;
+            //         prefixPath = basePath + "/" + name;
+            //     }
 
-                /* NOTE: stop service (without deps), rename directory, replace old abs paths in service.conf, start again if stopped */
-                QString sname = newEntry("Service name");
+            //     /* NOTE: stop service (without deps), rename directory, replace old abs paths in service.conf, start again if stopped */
+            //     QString sname = newEntry("Service name");
 
-                /* name validations */
-                QString tmd = sname.trimmed();
-                if (tmd == "") {
-                    status = "Provided empty Service name. Aborted.";
-                    break;
-                }
-                QList<QChar> forbiddens;
-                forbiddens << '*' << '/' << '<' << '>' << '{' << '}' << '#' << '@' << '&' << '\\' << '"' << '%' << ';' << ':' << '[' << ']' << ' ';
-                bool successful = true;
-                Q_FOREACH(QChar forbidden, forbiddens)
-                    if (tmd.indexOf(forbidden) != -1) {
-                        status = "Forbidden characters given in Service name. Aborted.";
-                        successful = false;
-                        break;
-                    }
-                QString destPath = basePath + "/" + sname;
+            //     /* name validations */
+            //     QString tmd = sname.trimmed();
+            //     if (tmd == "") {
+            //         status = "Provided empty Service name. Aborted.";
+            //         break;
+            //     }
+            //     QList<QChar> forbiddens;
+            //     forbiddens << '*' << '/' << '<' << '>' << '{' << '}' << '#' << '@' << '&' << '\\' << '"' << '%' << ';' << ':' << '[' << ']' << ' ';
+            //     bool successful = true;
+            //     Q_FOREACH(QChar forbidden, forbiddens)
+            //         if (tmd.indexOf(forbidden) != -1) {
+            //             status = "Forbidden characters given in Service name. Aborted.";
+            //             successful = false;
+            //             break;
+            //         }
+            //     QString destPath = basePath + "/" + sname;
 
-                if (successful) {
-                    bool stpd = false;
-                    auto item = servicesList->currentItem();
-                    if (item->isRunning) {
-                        item->stopWithoutDeps();
-                        stpd = true;
-                    }
+            //     if (successful) {
+            //         bool stpd = false;
+            //         auto item = servicesList->currentItem();
+            //         if (item->isRunning) {
+            //             item->stopWithoutDeps();
+            //             stpd = true;
+            //         }
 
-                    /* replace paths in service.conf */
-                    QString fileName = prefixPath + "/service.conf";
-                    if (QFile::exists(fileName)) {
-                        QString svcConf = readFileContents(fileName);
-                        svcConf.replace(prefixPath, destPath);
-                        writeToFile(fileName, svcConf);
-                    }
+            //         /* replace paths in service.conf */
+            //         QString fileName = prefixPath + "/service.conf";
+            //         if (QFile::exists(fileName)) {
+            //             QString svcConf = readFileContents(fileName);
+            //             svcConf.replace(prefixPath, destPath);
+            //             writeToFile(fileName, svcConf);
+            //         }
 
-                    /* add copy of igniter! */
-                    QString igniterBaseDir = basePath + "/.." + DEFAULT_USER_IGNITERS_DIR;
-                    QString igniter = igniterBaseDir + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
-                    if (QFile::exists(igniter)) {
-                        QFile::copy(igniter, igniterBaseDir + "/" + sname + DEFAULT_SOFTWARE_TEMPLATE_EXT);
-                    }
+            //         /* add copy of igniter! */
+            //         QString igniterBaseDir = basePath + "/.." + DEFAULT_USER_IGNITERS_DIR;
+            //         QString igniter = igniterBaseDir + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+            //         if (QFile::exists(igniter)) {
+            //             QFile::copy(igniter, igniterBaseDir + "/" + sname + DEFAULT_SOFTWARE_TEMPLATE_EXT);
+            //         }
 
-                    copyPath(prefixPath, destPath);
-                    removeDir(prefixPath);
+            //         copyPath(prefixPath, destPath);
+            //         removeDir(prefixPath);
 
-                    if (stpd) { /* if service was stopped, start it again after rename */
-                        touch(destPath + "/.startWithoutDeps");
-                    }
-                }
-            }
+            //         if (stpd) { /* if service was stopped, start it again after rename */
+            //             touch(destPath + "/.startWithoutDeps");
+            //         }
+            //     }
+            // }
             break;
 
 
