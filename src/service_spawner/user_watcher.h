@@ -51,6 +51,8 @@ class SvdUserWatcher: public QObject {
         QList<SvdServiceWatcher *> serviceWatchers;
         QStringList services;
         QStringList webApps;
+        void createZFSdataset(const QString& name, const QString& path);
+        void destroyZFSdataset(const QString& name, const QString& path);
 
     protected:
 
