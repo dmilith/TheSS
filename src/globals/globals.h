@@ -94,6 +94,7 @@
     #define VALIDATE_TRIGGER_FILE "/.validate"
     #define AUTOSTART_TRIGGER_FILE "/.autostart"
     #define NOTIFICATION_TRIGGER_FILE "/.sendNotifications"
+    #define DEFAULT_DESTROY_SERVICE_TRIGGER_PREFIX "/.destroy_"
 
     /* states */
     #define DEFAULT_SERVICE_RUNNING_FILE "/.running"

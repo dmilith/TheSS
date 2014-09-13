@@ -131,15 +131,18 @@ void Panel::shutdown() {
 
 QString Panel::addService(QString name) {
     QString status;
-    QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + name);
-    if (getuid() == 0)
-        dir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name);
+    QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR);
+    QDir destDir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + name);
+    if (getuid() == 0) {
+        dir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR);
+        destDir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name);
+    }
 
-    if(!dir.exists()){ // service isn't already initialized
+    if(!destDir.exists()){ // service isn't already initialized
             auto all = availableServices();
-
             if (all->contains(name)) { /* is available */
-                    QDir().mkpath(dir.absolutePath()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/name */
+                    touch(dir.absolutePath() + "/." + name);
+                    // QDir().mkpath(dir.absolutePath()); /* NOTE: the only thing required is to make directory in ~/SoftwareData/name */
                     status = "Initialized service: " + name;
             } else {
                     status = "Not found service igniter called: " + name;
