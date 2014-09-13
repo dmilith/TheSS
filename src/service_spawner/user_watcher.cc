@@ -132,7 +132,7 @@ void SvdUserWatcher::destroyZFSdataset(const QString& name, const QString& pathE
             logInfo() << "Calling " << "zfs destroy " + poolName + "/" + b;
             process->spawnProcess("zfs destroy " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
         #else
-            logInfo() << "Calling " << "zfs destroy -o mountpoint=" + path + " " + poolName + path;
+            logInfo() << "Calling " << "zfs destroy " + poolName + path;
             process->spawnProcess("zfs destroy " + poolName + path, DEFAULT_SHELL_COMMAND);
         #endif
         process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
@@ -140,7 +140,7 @@ void SvdUserWatcher::destroyZFSdataset(const QString& name, const QString& pathE
         while (QDir().exists(path)) {
             logDebug() << "Trying to destroy prefix:" << path;
             removeDir(path, true);
-            sleep(1);
+            sleep(3);
         }
     #else
         logTrace() << "No ZFS available - Supported only on FreeBSD & Darwin hosts.";
