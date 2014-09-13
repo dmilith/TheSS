@@ -476,15 +476,15 @@ void SvdService::babySitterSlot() {
 void SvdService::installSlot() {
     loadServiceConfig(name);
     logDebug() << "Invoked install slot for service:" << name;
-    getOrCreateDir(config->prefixDir());
-    if (config->webApp)
-        getOrCreateDir(config->prefixDir() + releasePostfix());
 
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE;
     if (config->serviceInstalled()) {
         logInfo() << "No need to install already installed service:" << name;
         return;
     } else {
+        getOrCreateDir(config->prefixDir());
+        if (config->webApp)
+            getOrCreateDir(config->prefixDir() + releasePostfix());
         logDebug() << "Loaded service igniter" << name;
         logTrace() << "Launching commands:" << config->install->commands;
         auto process = new SvdProcess(name);
