@@ -87,6 +87,21 @@ int main(int argc, char *argv[]) {
             fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
         }
         new FileLoggerTimer(fileAppender);
+
+        if (getuid() == 0) {
+            FileAppender *consoleAppender = new FileAppender(QString(DEFAULT_SYSTEM_CONSOLE));
+            Logger::registerAppender(consoleAppender);
+            consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
+            if (trace && debug)
+                consoleAppender->setDetailsLevel(Logger::Trace);
+            else if (debug && !trace)
+                consoleAppender->setDetailsLevel(Logger::Debug);
+            else {
+                consoleAppender->setDetailsLevel(Logger::Info);
+                consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
+            }
+            new FileLoggerTimer(consoleAppender);
+        }
     }
 
     signal(SIGTERM, unixSignalHandler);
