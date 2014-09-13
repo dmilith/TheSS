@@ -6,7 +6,9 @@
  */
 
 #include "user_watcher.h"
+#include "../core/core.h"
 #include "../core/utils.h"
+#include "process.h"
 // #include "webapp_deployer.h"
 
 
@@ -91,6 +93,58 @@ void SvdUserWatcher::init(uid_t uid) {
 //     }
 // }
 
+void SvdUserWatcher::createZFSdataset(const QString& name, const QString& pathE) {
+    QString path = pathE;
+    path.replace("//", "/"); // XXX XXX
+    #if defined(__FreeBSD__) || defined(__APPLE__)
+        logInfo() << "Creating ZFS dataset:" << path;
+        auto process = new SvdProcess(name, getuid(), false);
+        QString poolName = "zroot"; /* XXX: hardcoded */
+        #ifdef __APPLE__
+            poolName = "Data"; /* XXX: hardcoded */
+            QStringList a = path.split("/");
+            auto b = a[a.length() - 2] + "/" + a[a.length() - 1]; // XXX XXX XXX
+            logInfo() << "Calling " << "zfs create -o casesensitivity=sensitive -o mountpoint=" + path + " " + poolName + "/" + b;
+            process->spawnProcess("zfs create -o mountpoint=" + path + " " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
+        #else
+            logInfo() << "Calling " << "zfs create -o casesensitivity=sensitive -o mountpoint=" + path + " " + poolName + path;
+            process->spawnProcess("zfs create -o mountpoint=" + path + " " + poolName + path, DEFAULT_SHELL_COMMAND);
+        #endif
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
+        process->deleteLater();
+    #else
+        logDebug() << "No ZFS inital snapshot - Supported only FreeBSD & Darwin hosts.";
+    #endif
+}
+
+
+void SvdUserWatcher::destroyZFSdataset(const QString& name, const QString& path) {
+    #if defined(__FreeBSD__) || defined(__APPLE__)
+        logInfo() << "Destroying ZFS dataset:" << path;
+        auto process = new SvdProcess(name, getuid(), false);
+        QString poolName = "zroot"; /* XXX: hardcoded */
+        #ifdef __APPLE__
+            poolName = "Data"; /* XXX: hardcoded */
+            QStringList a = path.split("/");
+            auto b = a[a.length() - 2] + "/" + a[a.length() - 1]; // XXX XXX XXX
+            logInfo() << "Calling " << "zfs destroy " + poolName + "/" + b;
+            process->spawnProcess("zfs destroy " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
+        #else
+            logInfo() << "Calling " << "zfs destroy -o mountpoint=" + path + " " + poolName + path;
+            process->spawnProcess("zfs destroy " + poolName + path, DEFAULT_SHELL_COMMAND);
+        #endif
+        process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
+        process->deleteLater();
+        while (QDir().exists(path)) {
+            logDebug() << "Trying to destroy prefix:" << path;
+            removeDir(path, true);
+            sleep(1);
+        }
+    #else
+        logTrace() << "No ZFS available - Supported only on FreeBSD & Darwin hosts.";
+    #endif
+}
+
 
 void SvdUserWatcher::collectServices() {
     collectorMutex.lock();
@@ -99,6 +153,37 @@ void SvdUserWatcher::collectServices() {
     logDebug() << "Previous list of services:" << oldServices;
     services = QDir(softwareDataDir).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
     logDebug() << "Current list of services:" << services;
+
+    /* ZFS datasets support */
+    auto preServices = QDir(softwareDataDir).entryList(QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot, QDir::Name);
+    QRegExp rx("^[A-Z].*");
+    preServices.removeAll(".VolumeIcon.icns");
+    preServices.removeAll(".DS_Store");
+    preServices.removeAll(".Trash");
+
+    /* handle ZFS create */
+    Q_FOREACH(QString name, preServices) {
+        QString aName = name.replace(".", "");
+        if (rx.exactMatch(aName)) {
+            logDebug() << "Exact match:" << aName;
+            createZFSdataset(aName, softwareDataDir + aName);
+            logInfo() << "Found pre service:" << aName << "=>" << softwareDataDir + aName;
+            QFile::remove(softwareDataDir + "." + name);
+        } else
+            logDebug() << "No match:" << aName;
+    }
+
+    /* handle ZFS destroy */
+    Q_FOREACH(QString name, preServices) {
+        QFile::remove(softwareDataDir + name);
+        QRegExp rx("^\\.destroy_[A-Z].*");
+        if (rx.exactMatch(name)) {
+            QString aName = name.replace(".destroy_", "");
+            logWarn() << "Got destroy request on service:" << aName;
+            touch(softwareDataDir + aName + "/" + STOP_TRIGGER_FILE);
+            destroyZFSdataset(aName, softwareDataDir + aName);
+        }
+    }
 
     Q_FOREACH(QString name, services) {
         if (QFile::exists(homeDir + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT)) {
