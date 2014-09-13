@@ -118,7 +118,9 @@ void SvdUserWatcher::createZFSdataset(const QString& name, const QString& pathE)
 }
 
 
-void SvdUserWatcher::destroyZFSdataset(const QString& name, const QString& path) {
+void SvdUserWatcher::destroyZFSdataset(const QString& name, const QString& pathE) {
+    QString path = pathE;
+    path.replace("//", "/"); // XXX XXX
     #if defined(__FreeBSD__) || defined(__APPLE__)
         logInfo() << "Destroying ZFS dataset:" << path;
         auto process = new SvdProcess(name, getuid(), false);
