@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
     if (uid == 0) {
         logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
         setPublicDirPriviledges(getOrCreateDir(DEFAULT_PUBLIC_DIR));
-        SvdService::setupDefaultVPNNetwork();
+        // XXX: temporarely disabled: SvdService::setupDefaultVPNNetwork();
 
         /* Setting up root watchers */
         new SvdUserWatcher();
