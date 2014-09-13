@@ -147,10 +147,10 @@ bool SvdService::checkProcessStatus(pid_t pid) {
             char state;
             #ifdef __FreeBSD__
                 state = kp.ki_stat;
-                logDebug() << "Process internal STATUS:" << state;
+                logDebug() << "Process internal STATUS:" << QString::number(state);
             #elif defined(__APPLE__)
                 state = kp.kp_proc.p_stat;
-                logDebug() << "Process internal STATUS:" << state;
+                logDebug() << "Process internal STATUS:" << QString::number(state);
             #else
                 logDebug() << "Unsupported system found? Skipping";
                 return ok;
@@ -158,23 +158,23 @@ bool SvdService::checkProcessStatus(pid_t pid) {
 
             switch (state) {
                 case SRUN:
-                    logDebug() << "Running state found for process with name:" << name << "and pid:" << pid;
+                    logDebug() << "Running state found for process with name:" << name << "and pid:" << QString::number(pid);
                     break; /* running */
                 case SIDL:
-                    logDebug() << "Sleeping state found for process with name:" << name << "and pid:" << pid;
+                    logDebug() << "Sleeping state found for process with name:" << name << "and pid:" << QString::number(pid);
                     break; /* sleeping */
                 case SSLEEP:
-                    logDebug() << "Disk IO state found for process with name:" << name << "and pid:" << pid;
+                    logDebug() << "Disk IO state found for process with name:" << name << "and pid:" << QString::number(pid);
                     break; /* IO/disk sleep */
                 case SSTOP:
-                    logDebug() << "Stopped state found for process with name:" << name << "and pid:" << pid;
+                    logDebug() << "Stopped state found for process with name:" << name << "and pid:" << QString::number(pid);
                     break; /* traced or stopped (by signal) */
                 case SZOMB:
-                    logError() << "Zombie state found for process with name:" << name << "and pid:" << pid;
+                    logError() << "Zombie state found for process with name:" << name << "and pid:" << QString::number(pid);
                     ok = false;
                     break; /* zombie */
                 default:
-                    logError() << "Ambigous process state for process with name:" << name << "and pid:" << pid;
+                    logError() << "Ambigous process state for process with name:" << name << "and pid:" << QString::number(pid);
                     // TODO: consider setting ok = false here, cause it shouldn't happen
                     break;
             }
@@ -201,23 +201,23 @@ bool SvdService::checkProcessStatus(pid_t pid) {
         logDebug() << "Process internal STATUS:" << state;
         switch (state) {
             case 'R':
-                logDebug() << "Running state found for process with name:" << name << "and pid:" << pid;
+                logDebug() << "Running state found for process with name:" << name << "and pid:" << QString::number(pid);
                 break; /* running */
             case 'S':
-                logDebug() << "Sleeping state found for process with name:" << name << "and pid:" << pid;
+                logDebug() << "Sleeping state found for process with name:" << name << "and pid:" << QString::number(pid);
                 break; /* sleeping */
             case 'D':
-                logDebug() << "Disk IO state found for process with name:" << name << "and pid:" << pid;
+                logDebug() << "Disk IO state found for process with name:" << name << "and pid:" << QString::number(pid);
                 break; /* IO/disk sleep */
             case 'T':
-                logDebug() << "Stopped state found for process with name:" << name << "and pid:" << pid;
+                logDebug() << "Stopped state found for process with name:" << name << "and pid:" << QString::number(pid);
                 break; /* traced or stopped (by signal) */
             case 'Z':
-                logError() << "Zombie state found for process with name:" << name << "and pid:" << pid;
+                logError() << "Zombie state found for process with name:" << name << "and pid:" << QString::number(pid);
                 ok = false;
                 break; /* zombie */
             default:
-                logError() << "Ambigous process state for process with name:" << name << "and pid:" << pid;
+                logError() << "Ambigous process state for process with name:" << name << "and pid:" << QString::number(pid);
                 // TODO: consider setting ok = false here, cause it shouldn't happen
                 break;
         }
