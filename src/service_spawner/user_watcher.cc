@@ -129,11 +129,11 @@ void SvdUserWatcher::destroyZFSdataset(const QString& name, const QString& pathE
             poolName = "Data"; /* XXX: hardcoded */
             QStringList a = path.split("/");
             auto b = a[a.length() - 2] + "/" + a[a.length() - 1]; // XXX XXX XXX
-            logInfo() << "Calling " << "zfs destroy " + poolName + "/" + b;
-            process->spawnProcess("zfs destroy " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
+            logInfo() << "Calling " << "zfs destroy -f " + poolName + "/" + b;
+            process->spawnProcess("zfs destroy -f " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
         #else
-            logInfo() << "Calling " << "zfs destroy " + poolName + path;
-            process->spawnProcess("zfs destroy " + poolName + path, DEFAULT_SHELL_COMMAND);
+            logInfo() << "Calling " << "zfs destroy -f " + poolName + path;
+            process->spawnProcess("zfs destroy -f " + poolName + path, DEFAULT_SHELL_COMMAND);
         #endif
         process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
         process->deleteLater();
