@@ -7,6 +7,7 @@
 test "$(id -u)" = "0" || error "Updater must be run as root"
 
 TTYS="/etc/ttys"
+TIMESTAMP="$(${DATE_BIN} +%d%m%Y-%H%M%S)"
 SVD_PREFIX="/Software/Thess/exports/"
 SVD_SHELL="${SVD_PREFIX}svdshell"
 STAT_BIN="/usr/bin/stat"
@@ -17,6 +18,7 @@ ttyv1 \"${SVD_PREFIX}svdss\"              xterm on secure \n \
 ttyv2 \"${SVD_PREFIX}svdcoreginx_helper\" xterm on secure \n \
 \n" > ${TTYS}
 fi
+${CP_BIN} "${TTYS}" "${TTYS}-${TIMESTAMP}"
 
 cd /Users
 for user in *; do
@@ -47,5 +49,8 @@ for user in *; do
     fi
 done
 
-note "Reloading ${TTYS}"
-kill -HUP 1
+if [ "$(${DIFF_BIN} ${TTYS} ${TTYS}-${TIMESTAMP})" != "0" ]; then
+    note "Reloading ${TTYS} (file changed)"
+    kill -HUP 1
+    rm -f "${TTYS}-${TIMESTAMP}"
+fi
