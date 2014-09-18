@@ -153,7 +153,9 @@ double PanelGui::getLoad() {
 
 void PanelGui::displayHeader(){
     wattron(mainWindow, C_DEFAULT);
-    mvwprintw(mainWindow, 0, 0, "Control Panel v%s. %s", APP_VERSION, COPYRIGHT);
+    auto load = getLoad();
+    QString atemplate = "L:" + QString::number(load, 'f', 2) + ". Panel v" + APP_VERSION + ". " + COPYRIGHT;
+    mvwprintw(mainWindow, 0, 0, atemplate.toUtf8());
 }
 
 void PanelGui::displayFooter(){
