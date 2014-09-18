@@ -11,10 +11,7 @@
 #include "../globals/globals.h"
 #include "../core/utils.h"
 
-#ifdef __linux__
-    #include <unistd.h>
-#endif
-
+#include <unistd.h>
 #include <QProcess>
 
 
