@@ -17,7 +17,7 @@ note "Loaded Sofin environment"
 
 build () {
     QMAKE_OPTS=""
-    MAKE_OPTS_BUILD="-j${JOBS} -Q -s"
+    MAKE_OPTS_BUILD="-j${JOBS} -s"
     case "${SYSTEM_NAME}" in
         Darwin)
             MAKE_OPTS_BUILD="-j${JOBS} --silent"
