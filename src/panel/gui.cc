@@ -144,6 +144,13 @@ int PanelGui::kbhit() {
     return FD_ISSET(STDIN_FILENO, &fds);
 }
 
+double PanelGui::getLoad() {
+    if (getloadavg(load, 3) != -1) /* get load average of system */
+        return load[0];
+    else
+        return 0.0;
+}
+
 void PanelGui::displayHeader(){
     wattron(mainWindow, C_DEFAULT);
     mvwprintw(mainWindow, 0, 0, "Control Panel v%s. %s", APP_VERSION, COPYRIGHT);

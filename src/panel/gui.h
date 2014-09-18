@@ -25,6 +25,8 @@ public:
     bool confirm(QString msg);
     void init();
     QString newEntry(QString defaultEntry);
+    double getLoad();
+
 
 public slots:
     void run();
@@ -72,6 +74,7 @@ private:
     WINDOW * notificationWindow;
     Tail * tail = NULL;
     const PanelService * recentService = NULL;
+    double load[3];
 
     int notificationRows = NOTIFICATIONS_LAST_SHOWN + NOTIFICATIONS_OPTIONS_BAR_HEIGHT;
 };
