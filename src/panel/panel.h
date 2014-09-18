@@ -72,6 +72,9 @@ public:
     void refreshServicesList();
     void setLogLevel(QString level);
     void start();
+    void setGui(PanelGui * gui);
+    PanelGui* getGui();
+    QList<PanelService *> * getServices();
 
 signals:
     void refreshed();
@@ -84,9 +87,8 @@ public slots:
     void shutdown();
     void gracefullyTerminate();
     QString addService(QString name);
-public:
-    void setGui(PanelGui * gui);
 
+private:
     QDir home;
     QString user;
     QDir ignitersDir;
@@ -95,6 +97,7 @@ public:
     PanelGui * gui;
     QStringList available;
     QMutex refreshMutex;
+    double load[3];
 };
 
 

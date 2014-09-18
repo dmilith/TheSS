@@ -34,6 +34,14 @@ void Panel::onDirectoryChanged(QString dir){
     refresh();
 }
 
+PanelGui* Panel::getGui() {
+    return gui;
+}
+
+QList<PanelService *> * Panel::getServices() {
+    return &services;
+}
+
 void Panel::refresh(){
     refreshMutex.lock();
     // logDebug() << "refershing";

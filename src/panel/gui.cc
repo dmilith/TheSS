@@ -37,9 +37,9 @@ void PanelGui::init(){
     wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - notificationRows, mainWindow);
-    servicesList->setItems(&panel->services);
+    servicesList->setItems(panel->getServices());
 
-    if(panel->services.length() == 0){
+    if (panel->getServices()->length() == 0) {
         status = "Hint: Hit F7 to add new Service.";
     }
 }
@@ -306,7 +306,7 @@ void PanelGui::newServiceDialog(){
                 {
                     QString selected = list.currentItem();
                     status = panel->addService(selected);
-                    servicesList->setItems(&panel->services);
+                    servicesList->setItems(panel->getServices());
                     servicesList->setCurrent(selected);
                     ch = 27;
                 }
@@ -848,9 +848,8 @@ void PanelGui::key(int ch){
 }
 
 void PanelGui::display(){
-    // logDebug() << "display";
     tailUpdate();
-    servicesList->setItems(&panel->services);
+    servicesList->setItems(panel->getServices());
     servicesList->display();
     displayHeader();
     displayStatus();
