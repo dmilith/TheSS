@@ -19,7 +19,7 @@ Tail::Tail(PanelService * service, const QString& dirname, const QString& filena
     connect(eventsManager, SIGNAL(directoryChanged(QString)), this, SLOT(onDirectoryChanged(QString)));
     connect(eventsManager, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
-    connect(this, SIGNAL(updated()), service->panel->gui, SLOT(tailUpdate()));
+    connect(this, SIGNAL(updated()), service->panel->getGui(), SLOT(tailUpdate()));
 }
 
 

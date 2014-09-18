@@ -37,9 +37,9 @@ void PanelGui::init(){
     wrefresh(notificationWindow);
 
     servicesList = new ServicesList(rows - notificationRows, mainWindow);
-    servicesList->setItems(&panel->services);
+    servicesList->setItems(panel->getServices());
 
-    if(panel->services.length() == 0){
+    if (panel->getServices()->length() == 0) {
         status = "Hint: Hit F7 to add new Service.";
     }
 }
@@ -144,9 +144,18 @@ int PanelGui::kbhit() {
     return FD_ISSET(STDIN_FILENO, &fds);
 }
 
+double PanelGui::getLoad() {
+    if (getloadavg(load, 3) != -1) /* get load average of system */
+        return load[0];
+    else
+        return 0.0;
+}
+
 void PanelGui::displayHeader(){
     wattron(mainWindow, C_DEFAULT);
-    mvwprintw(mainWindow, 0, 0, "Control Panel v%s. %s", APP_VERSION, COPYRIGHT);
+    auto load = getLoad();
+    QString atemplate = "L:" + QString::number(load, 'f', 2) + ". Panel v" + APP_VERSION + ". " + COPYRIGHT;
+    mvwprintw(mainWindow, 0, 0, atemplate.toUtf8());
 }
 
 void PanelGui::displayFooter(){
@@ -297,7 +306,7 @@ void PanelGui::newServiceDialog(){
                 {
                     QString selected = list.currentItem();
                     status = panel->addService(selected);
-                    servicesList->setItems(&panel->services);
+                    servicesList->setItems(panel->getServices());
                     servicesList->setCurrent(selected);
                     ch = 27;
                 }
@@ -839,9 +848,8 @@ void PanelGui::key(int ch){
 }
 
 void PanelGui::display(){
-    // logDebug() << "display";
     tailUpdate();
-    servicesList->setItems(&panel->services);
+    servicesList->setItems(panel->getServices());
     servicesList->display();
     displayHeader();
     displayStatus();
