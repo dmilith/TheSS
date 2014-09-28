@@ -411,7 +411,7 @@ void SvdService::babySitterSlot() {
                     if (QFile::exists(portFilePath)) {
                         int currentPort = readFileContents(portFilePath).trimmed().toInt();
                         int port = registerFreeUdpPort(currentPort);
-                        logDebug() << "UDP port compare:" << currentPort << "with" << port << "(should be different)";
+                        logDebug() << "UDP port compare:" << currentPort << "with" << port << "for service" << name << "(should be different)";
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
                             QString msg = "Babysitter has found unoccupied dynamic UDP port: " + QString::number(currentPort) + " registered for service: " + name;
