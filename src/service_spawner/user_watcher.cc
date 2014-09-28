@@ -104,7 +104,7 @@ void SvdUserWatcher::createZFSdataset(const QString& name, const QString& pathE)
         #ifdef __APPLE__
             QStringList a = path.split("/");
             auto b = a[a.length() - 2] + "/" + a[a.length() - 1]; // XXX XXX XXX
-            logDebug() << "Calling " << zfsCreateCommand << " mountpoint=" + path + " " + poolName + "/" + b;
+            logDebug() << "Calling " << zfsCreateCommand << " -o mountpoint=" + path + " " + poolName + "/" + b;
             process->spawnProcess(zfsCreateCommand + " -o mountpoint=" + path + " " + poolName + "/" + b, DEFAULT_SHELL_COMMAND);
         #else
             logDebug() << "Calling " << zfsCreateCommand + " " + poolName + path;
