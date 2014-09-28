@@ -284,7 +284,7 @@ class CUTELOGGERSHARED_EXPORT Logger
      * \endcode
      * instead of writing
      * \code
-     * LOG_DEBUG(QString("This is the size %1x%2 of the element %3")
+     * LOG_DEBUG(QString(QLatin1String("This is the size %1x%2 of the element %3"))
      *           .arg(size.x()).arg(size.y()).arg(elementName));
      * \endcode
      *
