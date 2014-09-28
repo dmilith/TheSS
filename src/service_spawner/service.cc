@@ -127,7 +127,7 @@ qint64 SvdService::getUptime() {
 
 
 bool SvdService::checkProcessStatus(pid_t pid) {
-    logDebug() << "Checking status of pid:" << QString::number(pid);
+    logDebug() << "Checking status of service" << name << "with pid:" << QString::number(pid);
     logTrace() << "Performing additional process internal OS status check:";
 
     bool ok = true;
@@ -147,10 +147,10 @@ bool SvdService::checkProcessStatus(pid_t pid) {
             char state;
             #ifdef __FreeBSD__
                 state = kp.ki_stat;
-                logDebug() << "Process internal STATUS:" << QString::number(state);
+                logDebug() << "Process" << name << "internal STATUS:" << QString::number(state);
             #elif defined(__APPLE__)
                 state = kp.kp_proc.p_stat;
-                logDebug() << "Process internal STATUS:" << QString::number(state);
+                logDebug() << "Process" << name << "internal STATUS:" << QString::number(state);
             #else
                 logDebug() << "Unsupported system found? Skipping";
                 return ok;
@@ -319,7 +319,7 @@ void SvdService::babySitterSlot() {
                         return;
                     }
                 } else {
-                    QString msg = "Pid file is damaged or doesn't contains valid pid. File will be removed: " + servicePidFile;
+                    QString msg = "Pid file is damaged or invalid pid for service " + name + ". File will be removed: " + servicePidFile;
                     notificationSend(msg, ERROR);
                     QFile::remove(servicePidFile);
                     emit restartSlot();
@@ -340,7 +340,7 @@ void SvdService::babySitterSlot() {
                     return;
 
                 } else
-                    logDebug() << "Socket exists. Service seems to be just fine.";
+                    logDebug() << "Socket exists. Service" << name << "seems to be just fine.";
             }
 
             /* perform additional port check if watchPort property is set to true */
@@ -365,7 +365,7 @@ void SvdService::babySitterSlot() {
                     if (QFile::exists(portFilePath)) {
                         int currentPort = readFileContents(portFilePath).trimmed().toInt();
                         int port = registerFreeTcpPort(currentPort);
-                        logDebug() << "Port compare:" << currentPort << "with" << port << "(should be different)";
+                        logDebug() << "Port compare:" << currentPort << "with" << port << "for service" << name << "(should be different)";
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
                             // if (config->webApp) {
