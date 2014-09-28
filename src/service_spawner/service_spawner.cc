@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
     }
 
     signal(SIGTERM, unixSignalHandler);
-    signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
+    // signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
     QString pidFile = getHomeDir() + "/." + getenv("USER") + ".pid";
     if (getuid() == 0) {
