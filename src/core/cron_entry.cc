@@ -52,7 +52,7 @@ SvdCrontab::SvdCrontab(const QString& cronEntry) {
     this->commands = commands;
     this->cronDSL = cronDSL;
     if (cronDSL.startsWith("* * * * *") || cronDSL.endsWith("/1 * * * *") || cronDSL.endsWith("*/1 * * * *")) {
-        logInfo() << "Cron continuous mode enabled.";
+        logDebug() << "Cron continuous mode enabled for cron DSL:" << cronDSL << "commands:" << commands;
         this->continuous = true;
     }
 }
