@@ -55,7 +55,6 @@ class SvdServiceConfig : public QObject {
         SvdServiceConfig(const QString& serviceName, bool dryRun = false);
 
         const QString replaceAllSpecialsIn(const QString content);
-        const QString userServiceRoot();
         const QString serviceRoot();
         const QString prefixDir();
         const QString defaultTemplateFile();

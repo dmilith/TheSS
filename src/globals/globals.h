@@ -15,7 +15,7 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.97.2"
+    #define APP_VERSION "0.97.3"
     #define COPYRIGHT "(c) 2oo8-2o14 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
@@ -56,10 +56,6 @@
     #define DEFAULT_APP_PROXY_FILE "/.proxy.conf" /* addition to proxy from app repo */
     #define DEFAULT_PUBLIC_DIR "/Public/"
     #define DEFAULT_HOME_DIR "/Users/"
-    #define DEFAULT_USER_APPS_DIR "/Apps"
-    #define DEFAULT_WEBAPPS_DIR "/WebApps"
-    #define WEB_APP_PID_FILE_POSTFIX "-prev"
-    #define WEB_APP_PID_FILE_POSTFIX_NEXT "-next"
     #define SOFTWARE_DATA_DIR "/SoftwareData/"
     #define SYSTEM_USERS_DIR "/SystemUsers/"
     #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"

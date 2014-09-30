@@ -725,7 +725,7 @@ void installDependencies(QString& serviceName, QString& latestReleaseDir, QStrin
     bool installMissing = false;
     Q_FOREACH(auto deps, conts.split("\n")) {
         deps[0] = deps.at(0).toUpper(); /* capitalize */
-        QString fileBase = QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/";
+        QString fileBase = SOFTWARE_DIR;
         if (not QFile::exists(fileBase + deps + "/" + deps.toLower() + DEFAULT_SERVICE_INSTALLED_EXT)) {
             installMissing = true;
 

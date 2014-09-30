@@ -429,22 +429,9 @@ const QString SvdServiceConfig::serviceRoot() {
 }
 
 
-const QString SvdServiceConfig::userServiceRoot() {
-    return QString(getenv("HOME")) + DEFAULT_USER_APPS_DIR + "/" + softwareName;
-}
-
-
 bool SvdServiceConfig::serviceInstalled() { /* XXX: it's not working properly.. and even can't for now. For services with != name than original software this function is useless.. TBR */
-    bool result = false;
-    if (getuid() == 0) {
-        logTrace() << "Root software check:" << name;
-        result = QFile::exists(serviceRoot() + "/" + softwareName.toLower() + DEFAULT_SERVICE_INSTALLED_EXT);
-    } else {
-        logTrace() << "User software check:" << name;
-        result = QFile::exists(userServiceRoot() + "/" + softwareName.toLower() + DEFAULT_SERVICE_INSTALLED_EXT);
-    }
-    return result;
-
+    logTrace() << "Software check:" << name;
+    return QFile::exists(serviceRoot() + "/" + softwareName.toLower() + DEFAULT_SERVICE_INSTALLED_EXT);
 }
 
 
@@ -516,13 +503,8 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
     } else {
 
         /* Replace SERVICE_ROOT */
-        if (uid != 0) {
-            logTrace() << "Service root for uid:" << uid << "should be located in:" << userServiceRoot();
-            ccont = ccont.replace("SERVICE_ROOT", userServiceRoot());
-        } else {
-            logTrace() << "Service root for uid:" << uid << "should be located in:" << serviceRoot();
-            ccont = ccont.replace("SERVICE_ROOT", serviceRoot());
-        }
+        logTrace() << "Service root for uid:" << uid << "should be located in:" << serviceRoot();
+        ccont = ccont.replace("SERVICE_ROOT", serviceRoot());
 
         /* set service repository */
         if (not repository.isEmpty())
