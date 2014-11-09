@@ -28,7 +28,7 @@ mac {
 
   # production opts:
   CONFIG += link_pkgconfig
-  PKGCONFIG += QtCore
+  PKGCONFIG += Qt5Core
 
   DEFINES += NDEBUG QT_NO_DEBUG
   QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -fPIE -Os -w
