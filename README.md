@@ -10,7 +10,7 @@
 
 ## Dependencies:
 * [Sofin](http://verknowsys.github.io/sofin). (all igniters by default will try to use Sofin to install software)
-* [Qt4 4.8.x](http://qt-project.org/downloads) or [Qt5 5.3.x](http://qt-project.org/downloads) (only QtCore and QtNetwork parts)
+* [Qt5 5.3.x](http://qt-project.org/downloads) (only QtCore, QtNetwork, QtConcurrent and QtWebsockets modules)
 
 ## Features
 * Stateless, event driven, multithreaded and immutable inside (probably except uptime count state).
@@ -373,7 +373,7 @@ RUBY_LOG_FILE               # value of absolute path to log file
 * CuteLogger MT logger implementation by Boris Moiseev (LGPL licensed)
 * Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
 * QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)
-* QT4 4.8.x/5.3.x implementation by Trolltech, Nokia and Microsoft (LGPL licensed)
+* QT 5.3.x implementation by Trolltech and Nokia (LGPL licensed)
 * JAYL 2.0.x JSON Library by Lloyd Hilaiel (BSD-like license)
 * Zeromq4 by iMatix Corporation (LGPL / MPLv2 license)
 * nzmqt - A lightweight C++ Qt binding for 0mq, by Johann Duscher (BSD licensed)
