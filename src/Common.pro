@@ -6,6 +6,7 @@
 
 
 QT -= gui
+QTDIR += /Software/Qtws53 /Software/Qtbase53 /Software/Qt53 /Software/Qt
 CONFIG += console
 CONFIG -= app_bundle
 QMAKE_CXX = ccache clang++
@@ -27,9 +28,6 @@ mac {
 } else {
 
   # production opts:
-  CONFIG += link_pkgconfig
-  PKGCONFIG += Qt5Core
-
   DEFINES += NDEBUG QT_NO_DEBUG
   QMAKE_CFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -fPIE -Os -w
   QMAKE_CXXFLAGS += -fcolor-diagnostics -Wself-assign -fPIC -fPIE -Os -w
