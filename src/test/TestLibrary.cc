@@ -777,12 +777,8 @@ void TestLibrary::testCrontabEntry() {
 
 
 void TestLibrary::testTail() {
-    QString a = tail("/usr/include/string.h", 3);
-    #ifndef __linux__
-        QVERIFY(a.contains("STRING_H"));
-    #else
-        QVERIFY(a.contains("string.h"));
-    #endif
+    QString a = tail("/etc/shells", 10);
+    QVERIFY(a.contains("/bin/bash"));
 }
 
 
