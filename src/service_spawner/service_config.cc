@@ -486,12 +486,12 @@ const QString SvdServiceConfig::defaultTemplateFile() {
 
 
 const QString SvdServiceConfig::rootIgniter() {
-    return QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR) + "/" + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
+    return QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR) + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
 }
 
 
 const QString SvdServiceConfig::userIgniter() {
-    return getenv("HOME") + QString(DEFAULT_USER_IGNITERS_DIR) + "/" + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
+    return getenv("HOME") + QString(DEFAULT_USER_IGNITERS_DIR) + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
 }
 
 
