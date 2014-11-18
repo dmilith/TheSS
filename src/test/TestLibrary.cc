@@ -838,3 +838,22 @@ void TestLibrary::testIgniterInjection() {
     QVERIFY(config->install->commands.contains("kongo bongo"));
     delete config;
 }
+
+
+void TestLibrary::testIgniterShaGen() {
+    auto config = new SvdServiceConfig("Mysql");
+    auto a = config->sha;
+    delete config;
+
+    auto config2 = new SvdServiceConfig("Redis");
+    auto b = config2->sha;
+    delete config2;
+
+    auto config3 = new SvdServiceConfig("Mysql");
+    auto c = config3->sha;
+    delete config3;
+
+    QVERIFY(a != b);
+    QVERIFY(a == c);
+}
+

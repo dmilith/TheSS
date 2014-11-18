@@ -48,6 +48,7 @@ class TestLibrary: public QObject {
             void testUdpPort();
             void testIgniterInjection();
             void testDirRemoval();
+            void testIgniterShaGen();
 
 };
 
