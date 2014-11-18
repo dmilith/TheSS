@@ -627,7 +627,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 Q_FOREACH(QHostAddress value, list) {
                     logTrace() << "Processing an address:" << value.toString();
                     userAddress = value.toString();
-                    if (userAddress == "127.0.0.1") {
+                    if (userAddress == DEFAULT_LOCAL_ADDRESS) {
                         logTrace() << "Ignoring localhost address.";
                     } else if (userAddress.contains(":")) {
                         logTrace() << "Ignoring IPV6 address:" << userAddress << "Doing fallback to local v4 address.";
