@@ -1,9 +1,9 @@
 
 include(../Common.pro)
 
-CONFIG += qtestlib
+CONFIG += testlib
 QT -= gui
-QT += network
+QT += testlib network
 TEMPLATE = app
 TARGET = ../../bin/test-app
 
