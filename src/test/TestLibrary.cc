@@ -461,13 +461,6 @@ void TestLibrary::testSomeRealCraziness() {
 void TestLibrary::testSanityValueCheck() {
     auto *config = new SvdServiceConfig("Redis");
     QVERIFY(config->valid());
-    QVERIFY(config->userServiceRoot().contains(getenv("HOME")));
-    #ifndef __linux__
-        QVERIFY(config->userServiceRoot().contains("Users"));
-    #endif
-    QVERIFY(config->userServiceRoot().contains(QString(DEFAULT_USER_APPS_DIR)));
-    QVERIFY(config->userServiceRoot().contains(config->softwareName));
-
     QVERIFY(config->serviceRoot().contains(QString(SOFTWARE_DIR)));
     QVERIFY(config->serviceRoot().contains(config->softwareName));
 
