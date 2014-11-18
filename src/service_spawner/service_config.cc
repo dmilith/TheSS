@@ -91,7 +91,7 @@ SvdServiceConfig::SvdServiceConfig() { /* Load default values */
     name = "Default"; // must be declared first
     // uid = getuid();
 
-    auto defaults = loadDefaultIgniter();
+    const auto defaults = loadDefaultIgniter();
     if (defaults.isEmpty()) {
         QString msg = "Default igniter must be always valid and not empty. Cannot continue.";
         notification(msg, FATAL);
@@ -202,8 +202,8 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     name = serviceName; // this must be declared first!
     uid = getuid();
 
-    auto defaults = loadDefaultIgniter();
-    auto root = loadIgniter();
+    const auto defaults = loadDefaultIgniter();
+    const auto root = loadIgniter();
     if (root.isEmpty()) {
         logError() << "Empty service config for:" << serviceName;
         auto serviceLoc = getSoftwareDataDir() + "/" + name;
