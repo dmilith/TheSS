@@ -37,3 +37,7 @@ releases/
 .metadata_never_index
 .VolumeIcon.icns
 .Trashes
+.fseventsd
+.TemporaryItems
+bin/test-*
+*.orig
