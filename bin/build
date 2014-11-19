@@ -14,7 +14,7 @@ note "Loaded Sofin environment"
 
 QMAKE_BIN="qmake"
 if [ "${QT}" != "" ]; then
-    QMAKE_BIN="${QT}/exports/qmake"
+    QMAKE_BIN="${QT}/bin/qmake"
 fi
 
 note "Building using QT prefix: ${QT}"
