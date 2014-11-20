@@ -46,6 +46,11 @@ build () {
             (note "Building Shell" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdshell\n") || exit 1
             ;;
 
+        web|webpanel)
+            (${QMAKE_BIN} ${QMAKE_OPTS} WebPanel.pro) || exit 1
+            (note "Building Web Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built webpanel\n") || exit 1
+            ;;
+
         panel|svdpanel)
             (${QMAKE_BIN} ${QMAKE_OPTS} Panel.pro) || exit 1
             (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
