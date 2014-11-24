@@ -123,18 +123,18 @@ int main(int argc, char *argv[]) {
     }
 
     /* mem lock setup */
-    auto startTimer = QDateTime::currentMSecsSinceEpoch() / 5000;
-    auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
-    hash->addData(QString::number(startTimer).toUtf8(), QString::number(startTimer).length());
-    auto shaId = hash->result().toHex();
-    delete hash;
-    const QString key = shaId.right(25) + ":" + QString::number(uid);
-    QSharedMemory memLock(key);
-    if (not memLock.create(1)) {
-        logError() << "Memory locked! You cannot launch more than one process per 5 seconds. (key: " + key + ")";
-        logError() << "Internal cause:" << memLock.errorString();
-        return EXIT_SUCCESS;
-    }
+    // auto startTimer = QDateTime::currentMSecsSinceEpoch() / 5000;
+    // auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
+    // hash->addData(QString::number(startTimer).toUtf8(), QString::number(startTimer).length());
+    // auto shaId = hash->result().toHex();
+    // delete hash;
+    // const QString key = shaId.right(25) + ":" + QString::number(uid);
+    // QSharedMemory memLock(key);
+    // if (not memLock.create(1)) {
+    //     logError() << "Memory locked! You cannot launch more than one process per 5 seconds. (key: " + key + ")";
+    //     logError() << "Internal cause:" << memLock.errorString();
+    //     return EXIT_SUCCESS;
+    // }
 
     #ifdef THESS_TEST_MODE
         logFatal() << "Please rebuild TheSS after tests. Web Panel can't be running in test mode.";
