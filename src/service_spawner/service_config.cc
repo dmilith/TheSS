@@ -673,7 +673,7 @@ QString SvdServiceConfig::loadIgniter() {
     QFile fileRoot(rootIgniter()); /* try loading root igniter as third */
 
     if(!fileUser.open(QIODevice::ReadOnly)) { /* check file access */
-        logError() << "No file: " << userIgniter();
+        logDebug() << "No file: " << userIgniter();
     } else {
         fileUser.close();
         QString buffer = readFileContents(userIgniter()).trimmed().replace("\\\n", "\\n");;
@@ -682,7 +682,7 @@ QString SvdServiceConfig::loadIgniter() {
     fileUser.close();
 
     if(!fileRoot.open(QIODevice::ReadOnly)) {
-        logError() << "No file: " << rootIgniter();
+        logDebug() << "No file: " << rootIgniter();
         fileRoot.close();
         return "";
     }
