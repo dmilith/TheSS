@@ -89,7 +89,12 @@ int main(int argc, char *argv[]) {
         new FileLoggerTimer(fileAppender);
 
         if (getuid() == 0) {
-            FileAppender *consoleAppender = new FileAppender(QString(DEFAULT_SYSTEM_CONSOLE));
+            FileAppender *consoleAppender;
+            #ifdef __FreeBSD__
+                consoleAppender = new FileAppender(QString("/var/log/thess.log"));
+            #else
+                consoleAppender = new FileAppender(QString(DEFAULT_SYSTEM_CONSOLE));
+            #endif
             Logger::registerAppender(consoleAppender);
             consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
             if (trace && debug)
