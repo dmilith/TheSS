@@ -4,6 +4,7 @@
         "commands": "sofin get postgresql92",
         "expectOutput": "All done"
     },
+    "staticPort": 5432,
     "configure": {
         "commands": " \
 test ! -d SERVICE_PREFIX/database/base && SERVICE_ROOT/exports/initdb -D SERVICE_PREFIX/database && rm -f SERVICE_PREFIX/database/pg_hba.conf && rm -f SERVICE_PREFIX/database/postgresql.conf \
