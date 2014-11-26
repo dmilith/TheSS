@@ -59,7 +59,7 @@ void TestLibrary::testParseJSONRedis() {
     auto config = new SvdServiceConfig("Redis"); /* Load app specific values */
     QVERIFY(config->name == QString("Redis"));
     QVERIFY(config->softwareName == QString("Redis"));
-    QVERIFY(config->staticPort == -1);
+    QVERIFY(config->staticPort == 6379);
     QVERIFY(config->uid == getuid());
     QVERIFY(config->schedulers.first()->cronEntry.contains("*"));
 
