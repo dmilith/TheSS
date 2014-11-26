@@ -16,45 +16,45 @@ static struct termios saveTermios;
 static int interactive;
 
 
-string getUserHomeDirAndAskForName(int uid) {
-    stringstream ss;
-    string in = "";
-    cout << endl << "Enter your user name: ";
+// string getUserHomeDirAndAskForName(int uid) {
+//     stringstream ss;
+//     string in = "";
+//     cout << endl << "Enter your user name: ";
 
-    if (!getline(cin, in)) {
-        if (cin.eof()) {
-            cerr << "Terminated on EOF" << endl;
-            exit(EXIT_SUCCESS);
-        } else
-            exit(EXIT_FAILURE);
-    }
+//     if (!getline(cin, in)) {
+//         if (cin.eof()) {
+//             cerr << "Terminated on EOF" << endl;
+//             exit(EXIT_SUCCESS);
+//         } else
+//             exit(EXIT_FAILURE);
+//     }
 
-    // define allowed chars in user folder name entry:
-    const char alphanum[] = DEFAULT_ALL_ALPHANUMERIC;
+//     // define allowed chars in user folder name entry:
+//     const char alphanum[] = DEFAULT_ALL_ALPHANUMERIC;
 
-    if (in.length() == 0) {
-        cerr << "Empty user name given!" << endl;
-        return getUserHomeDirAndAskForName(uid);
-    }
+//     if (in.length() == 0) {
+//         cerr << "Empty user name given!" << endl;
+//         return getUserHomeDirAndAskForName(uid);
+//     }
 
-    for (int i = 0; i < in.length(); i++) {
-        if (strchr(alphanum, in.at(i)) == NULL) {
-            #ifdef DEVEL
-                cout << "Invalid characters given. You may only use these characters: '" << alphanum << "'" << endl;
-            #endif
-            return getUserHomeDirAndAskForName(uid);
-        }
-    }
-    ss << DEFAULT_HOME_DIR << "/" << in;
+//     for (int i = 0; i < in.length(); i++) {
+//         if (strchr(alphanum, in.at(i)) == NULL) {
+//             #ifdef DEVEL
+//                 cout << "Invalid characters given. You may only use these characters: '" << alphanum << "'" << endl;
+//             #endif
+//             return getUserHomeDirAndAskForName(uid);
+//         }
+//     }
+//     ss << DEFAULT_HOME_DIR << in;
 
-    struct stat st;
-    if (stat(ss.str().c_str(), &st) == 0) {
-        cerr << "User with that name already exists!" << endl;
-        return getUserHomeDirAndAskForName(uid);
-    }
+//     struct stat st;
+//     if (stat(ss.str().c_str(), &st) == 0) {
+//         cerr << "User with that name already exists!" << endl;
+//         return getUserHomeDirAndAskForName(uid);
+//     }
 
-    return ss.str();
-}
+//     return ss.str();
+// }
 
 
 void ttySetRaw(void) {
@@ -176,9 +176,9 @@ void execute(char **argv, int uid) {
         if (uid == 0)
             hd << SYSTEM_USERS_DIR;
         else
-            hd << DEFAULT_HOME_DIR << "/" << gatherUserNameFromDirEntry(uid, DEFAULT_HOME_DIR);
+            hd << DEFAULT_HOME_DIR; // << "/" << gatherUserNameFromDirEntry(uid, DEFAULT_HOME_DIR);
 
-        usr << gatherUserNameFromDirEntry(uid, DEFAULT_HOME_DIR);;
+        usr << DEFAULT_USER_NAME; //gatherUserNameFromDirEntry(uid, DEFAULT_HOME_DIR);;
         setenv("HOME", hd.str().c_str(), 1);
         setenv("~", hd.str().c_str(), 1);
         setenv("PWD", hd.str().c_str(), 1);
@@ -305,17 +305,8 @@ int main(int argc, char *argv[]) {
 
     if (uid == 0)
         homeDir = string(SYSTEM_USERS_DIR);
-    else {
-        const char *userName = gatherUserNameFromDirEntry(uid, DEFAULT_HOME_DIR);
-        if (userName != NULL) {
-            stringstream ss;
-            ss << DEFAULT_HOME_DIR << "/" << userName;
-            homeDir = ss.str();
-        } else {
-            /* No home directory, so let's ask a user for name, default domain and so on.. */
-            homeDir = getUserHomeDirAndAskForName(uid);
-        }
-    }
+    else
+        homeDir = string(DEFAULT_HOME_DIR);
 
     if (stat(homeDir.c_str(), &st) == 0) {
         #ifdef DEVEL

@@ -432,16 +432,15 @@ void TestLibrary::testUtils() {
     QString homeDir, softwareDataDir, serviceDataDir, name = "Redis";
 
     if (uid == 0)
-        homeDir = "/SystemUsers/";
+        homeDir = SYSTEM_USERS_DIR;
     else
-        homeDir = getenv("HOME");
+        homeDir = DEFAULT_HOME_DIR;
 
-    softwareDataDir = homeDir + "/SoftwareData";
+    softwareDataDir = homeDir + SOFTWARE_DATA_DIR;
     serviceDataDir = softwareDataDir + "/" + name;
 
     QVERIFY(homeDir == getHomeDir());
-    QVERIFY(softwareDataDir != getSoftwareDataDir(uid));
-    // QVERIFY(serviceDataDir == getServiceDataDir(name));
+    QVERIFY(softwareDataDir == getSoftwareDataDir());
 }
 
 

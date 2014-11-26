@@ -54,21 +54,21 @@ QString tail(const QString& absoluteFileName, int lines, int positionModifier) {
 }
 
 
-QList<int> gatherUserUids() {
-    auto userDirs = QDir(getenv("HOME") + QString("/..")).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
-    QList<int> dirs;
+// QList<int> gatherUserUids() {
+//     auto userDirs = QDir(DEFAULT_HOME_DIR + QString("/..")).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+//     QList<int> dirs;
 
-    /* filter through invalid directories */
-    Q_FOREACH(QString directory, userDirs) {
-        bool ok;
-        int validUserDir = directory.toInt(&ok, 10); /* valid user directory must be number here */
-        if (ok)
-            dirs << validUserDir;
-        else
-            logTrace() << "Filtering out userDir:" << directory;
-    }
-    return dirs;
-}
+//     /* filter through invalid directories */
+//     Q_FOREACH(QString directory, userDirs) {
+//         bool ok;
+//         int validUserDir = directory.toInt(&ok, 10); /* valid user directory must be number here */
+//         if (ok)
+//             dirs << validUserDir;
+//         else
+//             logTrace() << "Filtering out userDir:" << directory;
+//     }
+//     return dirs;
+// }
 
 
 void rotateFile(const QString& fileName) {
@@ -297,17 +297,17 @@ void writeToFile(const QString& fileName, const QString& contents, bool rotateTh
 }
 
 
-const QString getHomeDir(uid_t uid) {
-    if (uid == 0)
+const QString getHomeDir() {
+    if (getuid() == 0)
         return QString(SYSTEM_USERS_DIR);
     else {
-        return QString(getenv("HOME"));
+        return QString(DEFAULT_HOME_DIR);
     }
 }
 
 
-const QString getSoftwareDataDir(uid_t uid) {
-    QString dataDir = getHomeDir(uid) + QString(SOFTWARE_DATA_DIR);
+const QString getSoftwareDataDir() {
+    QString dataDir = getHomeDir() + SOFTWARE_DATA_DIR;
     if (!QFile::exists(dataDir)) {
         logTrace() << "Software data dir:" << dataDir << "doesn't exists. Creating it.";
         QDir().mkpath(dataDir);
@@ -316,23 +316,8 @@ const QString getSoftwareDataDir(uid_t uid) {
 }
 
 
-const QString getServiceDataDir(uid_t uid, const QString& name) {
-    return getSoftwareDataDir(uid) + "/" + name;
-}
-
-
-const QString getHomeDir() {
-    return getHomeDir(getuid());
-}
-
-
-const QString getSoftwareDataDir() {
-    return getSoftwareDataDir(getuid());
-}
-
-
 const QString getServiceDataDir(const QString& name) {
-    return getServiceDataDir(getuid(), name);
+    return getSoftwareDataDir() + "/" + name;
 }
 
 

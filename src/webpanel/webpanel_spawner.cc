@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     QRegExp rxEnableTrace("-t");
     QRegExp rxPrintVersion("-v");
     QRegExp rxInteractive("-i");
-    uint uid = getuid();
+    // uint uid = getuid();
 
     bool debug = false, trace = false, interactive = false;
     for (int i = 1; i < args.size(); ++i) {

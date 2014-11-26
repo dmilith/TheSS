@@ -55,7 +55,7 @@ using namespace std;
     #define DEFAULT_VPN_SPAWN_SHELL "/Software/Zsh/exports/zsh"
 #endif
 
-QList<int> gatherUserUids();
+// QList<int> gatherUserUids();
 
 bool expect(const QString& inputFileContent, const QString& expectedString);
 bool removeDir(const QString& dirName, bool system_method = false);
@@ -81,9 +81,6 @@ const QString toHMS(uint duration);
 const QString getOrCreateDir(const QString& path);
 const QString getHomeDir();
 const QString getSoftwareDataDir();
-const QString getHomeDir(uid_t uid);
-const QString getSoftwareDataDir(uid_t uid);
 const QString getServiceDataDir(const QString& name);
-const QString getServiceDataDir(uid_t uid, const QString& name);
 
 #endif
