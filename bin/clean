@@ -6,3 +6,4 @@ rm -fv src/.obj/*
 rm -fv src/.moc/*
 rm -fv .*.stash
 rm -fv bin/svdpanel bin/svdshell bin/svdss bin/test-app bin/svdnotify bin/svddw bin/svddispel bin/svddeployer bin/svdcoreginx_helper
+rm -frv /User/SoftwareData/*-TEST
