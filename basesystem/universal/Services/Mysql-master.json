@@ -1,6 +1,7 @@
 {
     "softwareName": "Mysql",
     "watchPort": false,
+    "staticPort": 3306,
     "schedulers": [
         "0 9,21 * * * ?! do_mysql_all_dbs_sql_dump"
     ],

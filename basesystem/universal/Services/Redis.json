@@ -1,5 +1,6 @@
 {
     "softwareName": "Redis",
+    "staticPort": 6379,
     "schedulers": [
         "* * 1 * * ?! \
         test -e SERVICE_PREFIX/database/database.rdf && \

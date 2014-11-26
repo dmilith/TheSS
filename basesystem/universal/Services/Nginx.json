@@ -1,5 +1,6 @@
 {
     "softwareName": "Nginx",
+    "staticPort": 80,
     "schedulers": [
         "0 0/1 * * * ?! \
         SERVICE_ROOT/exports/nginx -c SERVICE_CONF -t && \
