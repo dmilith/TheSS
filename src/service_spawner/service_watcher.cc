@@ -110,7 +110,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
 
-    service->start(); /* start thread right after initialization */
+    service->start(); /* start thread */
 
     /* manage service autostart */
     auto config = new SvdServiceConfig(name);
@@ -127,7 +127,7 @@ SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
             QFile::remove(indicator);
         }
         logInfo() << "Found already started service. Resuming background tasks for service:" << name;
-        service->startSlot();
+        emit startService();
     }
 
     delete config;
