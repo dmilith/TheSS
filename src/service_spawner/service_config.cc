@@ -461,7 +461,7 @@ const QString SvdServiceConfig::defaultTemplateFile() {
     /* pick of two possible locations: /SystemUsers/Igniters and ~/Igniters */
 
     /* try user side defaults first */
-    QString userSideDefaultIgniter = QString(getenv("HOME")) + "/Igniters/Default" + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
+    QString userSideDefaultIgniter = QString(DEFAULT_HOME_DIR) + "/Igniters/Default" + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
     if (QFile::exists(userSideDefaultIgniter)) {
         logTrace() << "User side igniter Defaults found, and will be used:" << userSideDefaultIgniter;
         return userSideDefaultIgniter;
@@ -512,7 +512,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* Replace PARENT_SERVICE_PREFIX */
         QString depsFull;
         if (uid != 0)
-            depsFull = getenv("HOME") + QString(SOFTWARE_DATA_DIR) + "/" + parentService; // getOrCreateDir(
+            depsFull = QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + parentService; // getOrCreateDir(
         else
             depsFull = QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + parentService; // getOrCreateDir(
 

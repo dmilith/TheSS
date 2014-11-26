@@ -38,7 +38,7 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     if (getuid() == 0) {
         panelAssert(basePath.startsWith("/SystemUsers/"), "PanelService", "basePath must be located in: '/SystemUsers/'");
     } else {
-        panelAssert(basePath.startsWith(QString(getenv("HOME"))), "PanelService", "basePath must be located in user home directory!");
+        panelAssert(basePath.startsWith(QString(DEFAULT_HOME_DIR)), "PanelService", "basePath must be located in user home directory!");
     }
     this->dir = QDir(basePath);
 

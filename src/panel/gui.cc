@@ -52,7 +52,7 @@ bool NotificationLessThan(const Notification &a, const Notification &b){
 
 void PanelGui::gatherNotifications() {
     int i = 0, x = 0;
-    QString userSoftwarePrefix = QString(getenv("HOME")) + QString(SOFTWARE_DATA_DIR);
+    QString userSoftwarePrefix = QString(DEFAULT_HOME_DIR) + QString(SOFTWARE_DATA_DIR);
     if (getuid() == 0) {
         userSoftwarePrefix = QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR);
     }
@@ -495,7 +495,7 @@ void PanelGui::key(int ch){
                 status = "Can't change name of non existing service!";
             } else {
                 QString name = servicesList->currentItem()->name;
-                QString basePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
+                QString basePath = QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR;
                 QString prefixPath = basePath + "/" + name;
                 if (getuid() == 0) {
                     basePath = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR;
@@ -914,7 +914,7 @@ void PanelGui::displaySSLog(){
         if (getuid() == 0)
             ssLog = new Tail(service, QString(SYSTEM_USERS_DIR), DEFAULT_SS_LOG_FILE);
         else
-            ssLog = new Tail(service, QString(getenv("HOME")), DEFAULT_SS_LOG_FILE);
+            ssLog = new Tail(service, QString(DEFAULT_HOME_DIR), DEFAULT_SS_LOG_FILE);
         tail = ssLog;
         tailUpdate();
     }

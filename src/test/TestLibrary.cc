@@ -468,7 +468,7 @@ void TestLibrary::testSanityValueCheck() {
         QVERIFY(config->prefixDir().contains(QString(SYSTEM_USERS_DIR)));
         QVERIFY(!config->prefixDir().contains(QString::number(config->uid))); // root service prefix dir doens't contains uid in path!
     } else {
-        QVERIFY(config->prefixDir().contains(getenv("HOME")));
+        QVERIFY(config->prefixDir().contains(DEFAULT_HOME_DIR));
     }
     QVERIFY(config->prefixDir().contains(QString(QString(SOFTWARE_DATA_DIR))));
     delete config;

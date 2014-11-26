@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationName("VerKnowSys");
     QCoreApplication::setOrganizationDomain("verknowsys.com");
     QCoreApplication::setApplicationName("ServeD");
-    QString logFile = QString(getenv("HOME")) + CONTROL_PANEL_LOG_FILE;
+    QString logFile = QString(DEFAULT_HOME_DIR) + CONTROL_PANEL_LOG_FILE;
 
     // Logger setup - turn it off
     FileAppender *fileAppender = new FileAppender(logFile);
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 
     // Panel setup
     QString user = getenv("USER");
-    QString home = getenv("HOME");
+    QString home = DEFAULT_HOME_DIR;
     QDir homeDir(home);
     QString ignitersPrefix = "/Igniters/Services";
     QDir ignitersDir(home + ignitersPrefix);

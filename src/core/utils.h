@@ -70,7 +70,7 @@ void writeToFile(const QString& fileName, const QString& contents);
 void writeToFile(const QString& fileName, const QString& contents, bool rotateFile);
 void rotateFile(const QString& fileName);
 void unixSignalHandler(int sigNum);
-QMap<QString, long> getDiskFree(const QString& path = getenv("HOME")); /* in MiB */
+QMap<QString, long> getDiskFree(const QString& path = DEFAULT_HOME_DIR); /* in MiB */
 
 uint registerFreeTcpPort(uint specificPort = 0);
 uint registerFreeUdpPort(uint specificPort = 0);

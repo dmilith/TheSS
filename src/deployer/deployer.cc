@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
         raise(SIGTERM);
     }
 
-    auto diskMap = getDiskFree(getenv("HOME"));
+    auto diskMap = getDiskFree(DEFAULT_HOME_DIR);
     Q_FOREACH(auto map, diskMap.keys()) {
         auto value = diskMap.take(map);
         if (value < MINIMUM_DISK_SPACE_IN_MEGS) {

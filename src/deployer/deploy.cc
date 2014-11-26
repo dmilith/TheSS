@@ -12,7 +12,7 @@
 //
 
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, SvdServiceConfig* svConfig, QString sslPemPath) {
-    QString servicePath = QString(getenv("HOME")) + SOFTWARE_DATA_DIR + serviceName;
+    QString servicePath = QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + serviceName;
     QString sslDir = getOrCreateDir(servicePath + DEFAULT_SERVICE_SSLS_DIR);
     QString appProxyContent = readFileContents(latestReleaseDir + DEFAULT_APP_PROXY_FILE).trimmed();
     if (not QFile::exists(sslDir + domain + ".crt")) {

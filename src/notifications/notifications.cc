@@ -50,7 +50,7 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
     const qint64 now = QDateTime::currentMSecsSinceEpoch();
     QDateTime timeNow = QDateTime::currentDateTime();
 
-    QString notificationRoot = QString(getenv("HOME")) + SOFTWARE_DATA_DIR;
+    QString notificationRoot = QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR;
     if (getuid() == 0) {
         notificationRoot = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR;
     }
