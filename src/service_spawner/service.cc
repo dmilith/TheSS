@@ -1044,7 +1044,9 @@ void SvdService::destroySlot() {
         Q_FOREACH(SvdService *el, dependencyServices) {
             if (el != NULL) {
                 logTrace() << "Deleting dependencyService for service:" << name;
+                el->disconnect();
                 el->exit();
+                el->deleteLater();
             }
         }
     }

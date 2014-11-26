@@ -116,6 +116,7 @@ void SvdUserWatcher::collectServices() {
                         logDebug() << "Comparing:" << serviceWatchers.at(ind)->name() << "and" << name;
                         if (name == serviceWatchers.at(ind)->name()) {
                             logDebug() << "Found old user watcher! Replacing!";
+                            serviceWatchers.at(ind)->disconnect();
                             serviceWatchers.at(ind)->deleteLater();
                             this->serviceWatchers.removeAt(ind);
                         }
