@@ -213,7 +213,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     nodeRoot_ = yajl_tree_parse(root.toUtf8(), errbuf, sizeof(errbuf));
     logTrace() << "INSIGHT of igniter:" << name << "::" << root;
     if (QString(errbuf).length() > 0) {
-        auto source = getHomeDir() + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
+        auto source = getHomeDir() + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
         auto dest = getOrCreateDir(getHomeDir() + DEFAULT_USER_IGNITERS_DIR) + "/../" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT + ".error";
         if (QFile::exists(source)) {
             QFile::rename(source, dest);
@@ -269,7 +269,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         if (portsPool > 1)
             if (QDir().exists(portsDirLocation))
                 for (int indx = 1; indx < portsPool; indx++) {
-                    QString portFilePath = QString(portsDirLocation + QString::number(indx)).trimmed();
+                    QString portFilePath = QString(portsDirLocation + "/" + QString::number(indx)).trimmed();
                     if (not QFile::exists(portsDirLocation + QString::number(indx))) {
                         logTrace() << "Creating port file:" << portsDirLocation + QString::number(indx);
                         uint freePort = registerFreeTcpPort();
@@ -279,7 +279,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
 
     /* then replace main port */
     staticPort = getInteger("staticPort");
-    QString portFilePath = portsDirLocation + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
+    QString portFilePath = portsDirLocation + "/" + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
     if (not dryRun) {
         if (staticPort != -1) { /* defined static port */
             logTrace() << "Set static port:" << staticPort << "for service" << name;
@@ -424,7 +424,7 @@ SvdServiceConfig::~SvdServiceConfig() {
 
 
 const QString SvdServiceConfig::serviceRoot() {
-    return QString(SOFTWARE_DIR) + softwareName; // low prio
+    return QString(SOFTWARE_DIR) + "/" + softwareName; // low prio
 }
 
 
@@ -435,7 +435,7 @@ bool SvdServiceConfig::serviceInstalled() { /* XXX: it's not working properly.. 
 
 
 bool SvdServiceConfig::serviceConfigured() {
-    return QFile::exists(prefixDir() + DEFAULT_SERVICE_CONFS_DIR + releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
+    return QFile::exists(prefixDir() + DEFAULT_SERVICE_CONFS_DIR + "/" + releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
 }
 
 
@@ -445,9 +445,9 @@ const QString SvdServiceConfig::prefixDir() {
         optionalPostFix = DEFAULT_TEST_POSTFIX;
     #endif
     if (uid == 0) {
-        return QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name + optionalPostFix;
+        return QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/" + name + optionalPostFix;
     } else {
-        return QString(getenv("HOME")) + SOFTWARE_DATA_DIR + name + optionalPostFix;
+        return QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + name + optionalPostFix;
     }
 }
 
@@ -480,12 +480,12 @@ const QString SvdServiceConfig::defaultTemplateFile() {
 
 
 const QString SvdServiceConfig::rootIgniter() {
-    return QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR) + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
+    return QString(SYSTEM_USERS_DIR) + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
 }
 
 
 const QString SvdServiceConfig::userIgniter() {
-    return getenv("HOME") + QString(DEFAULT_USER_IGNITERS_DIR) + name + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
+    return QString(DEFAULT_HOME_DIR) + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
 }
 
 
@@ -514,7 +514,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         if (uid != 0)
             depsFull = QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + parentService; // getOrCreateDir(
         else
-            depsFull = QString(SYSTEM_USERS_DIR) + QString(SOFTWARE_DATA_DIR) + "/" + parentService; // getOrCreateDir(
+            depsFull = QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/" + parentService; // getOrCreateDir(
 
         if (parentService.isEmpty()) {
             logTrace() << "No dependencies for:" << name;
@@ -538,10 +538,10 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         ccont = ccont.replace("SERVICE_RELEASE", releaseName());
 
         // todo: add SERVICE_CONFIG,
-        ccont = ccont.replace("SERVICE_CONF", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR + releaseName()) + DEFAULT_SERVICE_CONF_FILE);
-        ccont = ccont.replace("SERVICE_LOG", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR + releaseName()) + DEFAULT_SERVICE_LOG_FILE);
-        ccont = ccont.replace("SERVICE_ENV", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR + releaseName()) + DEFAULT_SERVICE_ENV_FILE);
-        ccont = ccont.replace("SERVICE_PID", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR + releaseName()) + DEFAULT_SERVICE_PID_FILE);
+        ccont = ccont.replace("SERVICE_CONF", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR + "/" + releaseName()) + DEFAULT_SERVICE_CONF_FILE);
+        ccont = ccont.replace("SERVICE_LOG", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR + "/" + releaseName()) + DEFAULT_SERVICE_LOG_FILE);
+        ccont = ccont.replace("SERVICE_ENV", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR + "/" + releaseName()) + DEFAULT_SERVICE_ENV_FILE);
+        ccont = ccont.replace("SERVICE_PID", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR + "/" + releaseName()) + DEFAULT_SERVICE_PID_FILE);
         ccont = ccont.replace("SERVICE_SOCK", prefixDir() + DEFAULT_SERVICE_SOCKET_FILE);
 
         /* Replace SERVICE_DOMAIN */
@@ -550,7 +550,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
 
         /* touch igniter domains */
         Q_FOREACH(auto dom, domains)
-            touch(domainFilePath + dom);
+            touch(domainFilePath + "/" + dom);
 
         /* replace domains - a space separated list - must be replaced before SERVICE_DOMAIN is set (obviously) */
         ccont = ccont.replace("SERVICE_DOMAINS", domains.join(" "));
@@ -559,17 +559,17 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         auto fileDomains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
         if (fileDomains.isEmpty()) {
             userDomains << DEFAULT_SYSTEM_DOMAIN; /* localhost */
-            touch(domainFilePath + userDomains.first());
+            touch(domainFilePath + "/" + userDomains.first());
             ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain */
         } else {
             /* if any domains found, but not prefer localhost if it's already there.. */
             if (fileDomains.length() > 1) { /* more than just default localhost */
                 fileDomains.removeAll(DEFAULT_LOCAL_ADDRESS);
-                QFile::remove(domainFilePath + DEFAULT_SYSTEM_DOMAIN);
+                QFile::remove(domainFilePath + "/" + DEFAULT_SYSTEM_DOMAIN);
             }
             Q_FOREACH(QString domFile, fileDomains) {
                 userDomains << domFile;
-                touch(domainFilePath + domFile);
+                touch(domainFilePath + "/" + domFile);
             }
             ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain elem */
         }

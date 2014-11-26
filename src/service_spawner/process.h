@@ -19,8 +19,7 @@ class SvdProcess: public QProcess {
 
     public:
         SvdProcess(const QString& name);
-        SvdProcess(const QString& name, uid_t uid);
-        SvdProcess(const QString& name, uid_t uid, bool redirectOutput);
+        SvdProcess(const QString& name, bool redirectOutput);
         void spawnProcess(const QString& command, const QString& shell, const QStringList& args = QStringList("-s"));
         QString outputFile;
 
@@ -28,9 +27,8 @@ class SvdProcess: public QProcess {
         void setupChildProcess();
 
     private:
-        uid_t uid;
         bool redirectOutput = true;
-        void init(const QString& name, uid_t uid);
+        void init(const QString& name);
 
 };
 

@@ -20,7 +20,7 @@ SvdPublicWatcher::SvdPublicWatcher() {
     fileEvents->registerFile(DEFAULT_PUBLIC_DIR);
     Q_FOREACH(QString file, fileEntries) {
         logDebug() << "Putting watch on file:" << file;
-        fileEvents->registerFile(QString(DEFAULT_PUBLIC_DIR) + file);
+        fileEvents->registerFile(QString(DEFAULT_PUBLIC_DIR) + "/" + file);
     }
 
     reindexPublicDir();
@@ -33,7 +33,7 @@ SvdPublicWatcher::SvdPublicWatcher() {
 void SvdPublicWatcher::loadExistingDomains() {
     loadExistingMutex.lock();
     Q_FOREACH(QString entry, fileEntries) {
-        domains << readFileContents(QString(DEFAULT_PUBLIC_DIR) + entry).trimmed();
+        domains << readFileContents(QString(DEFAULT_PUBLIC_DIR) + "/" + entry).trimmed();
     }
     logInfo() << "Loaded domains:" << domains;
     loadExistingMutex.unlock();
@@ -97,8 +97,8 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
     }
 
     // logInfo() << "Validating service:" << serviceName << "for user:" << userName;
-    auto root = QString(DEFAULT_HOME_DIR) + userName + SOFTWARE_DATA_DIR;
-    auto serviceBase = root + "/" + serviceName;
+    auto root = QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR;
+    auto serviceBase = root + serviceName;
 
     // /* XXX: it's almost raw service config implementation */
     // auto ignitersDir = QString(DEFAULT_HOME_DIR) + userName + DEFAULT_USER_IGNITERS_DIR;
@@ -129,7 +129,7 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
         logInfo() << "Trying to find existing domain:" << fileContent << "(in:" << file << "), existing domains:" << domains;
         if (domains.contains(fileContent) and not fileEntries.contains(file)) {
             QSet<QString> remFiles;
-            remFiles << QString(DEFAULT_PUBLIC_DIR) + file;
+            remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
             remFiles << serviceBase + DEFAULT_PROXY_FILE;
             logError() << "Entries files contain domain:" << fileContent << "Files:" << remFiles << " will be removed!";
             auto notificationRoot = root + NOTIFICATIONS_DATA_DIR;

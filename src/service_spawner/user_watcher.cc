@@ -32,12 +32,12 @@ SvdUserHookIndicatorFiles::~SvdUserHookIndicatorFiles() {
 }
 
 
-void SvdUserWatcher::init(uid_t uid) {
+void SvdUserWatcher::init() {
     logDebug() << "Starting SvdUserWatcher for user:" << getenv("USER");
 
-    this->uid = uid;
-    this->homeDir = getHomeDir(uid);
-    this->softwareDataDir = getSoftwareDataDir(uid);
+    this->homeDir = getHomeDir();
+    this->softwareDataDir = getSoftwareDataDir();
+    logTrace() << "Homedir" << this->homeDir << ", software data dir:" << this->softwareDataDir;
     // this->dataCollector = new SvdDataCollector();
 
     collectServices();
@@ -97,11 +97,12 @@ void SvdUserWatcher::collectServices() {
     logDebug() << "Looking for services inside" << softwareDataDir;
     QStringList oldServices = services;
     logDebug() << "Previous list of services:" << oldServices;
+    logTrace() << "softwareDataDir:" << softwareDataDir;
     services = QDir(softwareDataDir).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
     logDebug() << "Current list of services:" << services;
 
     Q_FOREACH(QString name, services) {
-        if (QFile::exists(homeDir + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT)) {
+        if (QFile::exists(homeDir + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT)) {
             logDebug() << "Found igniter for service:" << name;
             if (not oldServices.contains(name) and not name.endsWith(DEFAULT_SERVICE_DISABLED_POSTFIX)) {
                 logInfo() << "Initializing watchers for data dir of service:" << name;
@@ -129,18 +130,13 @@ void SvdUserWatcher::collectServices() {
 
 
 SvdUserWatcher::SvdUserWatcher() {
-    init(getuid());
-}
-
-
-SvdUserWatcher::SvdUserWatcher(uid_t uid) {
-    init(uid);
+    init();
 }
 
 
 void SvdUserWatcher::shutdownSlot() {
     QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
-    if (uid == 0) {
+    if (getuid() == 0) {
         lockName = getHomeDir() + "/.root.pid";
 
         /* remove user pid files */

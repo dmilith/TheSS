@@ -8,9 +8,8 @@
 #include "process.h"
 
 
-void SvdProcess::init(const QString& name, uid_t uid) {
-    this->uid = uid;
-    outputFile = getSoftwareDataDir(uid) + "/" + name + DEFAULT_SERVICE_LOGS_DIR + DEFAULT_SERVICE_OUTPUT_FILE;
+void SvdProcess::init(const QString& name) {
+    outputFile = getSoftwareDataDir() + "/" + name + DEFAULT_SERVICE_LOGS_DIR + DEFAULT_SERVICE_OUTPUT_FILE;
     setProcessChannelMode(MergedChannels);
 
     // if (QFile::exists(outputFile)) {
@@ -27,19 +26,14 @@ void SvdProcess::init(const QString& name, uid_t uid) {
 }
 
 
-SvdProcess::SvdProcess(const QString& name, uid_t uid, bool redirectOutput) {
+SvdProcess::SvdProcess(const QString& name, bool redirectOutput) {
     this->redirectOutput = redirectOutput;
-    init(name, uid);
-}
-
-
-SvdProcess::SvdProcess(const QString& name, uid_t uid) {
-    init(name, uid);
+    init(name);
 }
 
 
 SvdProcess::SvdProcess(const QString& name) {
-    init(name, getuid());
+    init(name);
 }
 
 
@@ -52,14 +46,14 @@ void SvdProcess::spawnProcess(const QString& command, const QString& shell, cons
 
 
 void SvdProcess::setupChildProcess() {
-    const QString home = getHomeDir(uid);
-    const QString user = getenv("USER");
+    const QString home = getHomeDir();
+    const QString user = DEFAULT_USER_NAME;
     // logDebug() << "Setup process environment with home:" << home << "and user:" << user;
 
     #ifdef __FreeBSD__
         setgroups(0, 0);
     #endif
-    setuid(uid);
+    setuid(DEFAULT_USER_UID);
     chdir(home.toUtf8());
     setenv("HOME", home.toUtf8(), 1);
     setenv("~", home.toUtf8(), 1);

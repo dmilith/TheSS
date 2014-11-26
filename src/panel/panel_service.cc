@@ -24,9 +24,9 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     name = baseDir.baseName();
 
     /* check if volatile service state is initialized. No rush */
-    while (QDir().exists(getServiceDataDir(name) + DEFAULT_SERVICE_PORTS_DIR) and not QFile::exists(getServiceDataDir(name) + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER)) {
+    while (QDir().exists(getServiceDataDir(name) + DEFAULT_SERVICE_PORTS_DIR) and not QFile::exists(getServiceDataDir(name) + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER)) {
         logTrace() << "Waiting for non-volatile service state of service:" << name;
-        usleep(100);
+        usleep(10000);
     }
 
     auto config = new SvdServiceConfig(name);
@@ -42,10 +42,10 @@ PanelService::PanelService(Panel * panel, QFileInfo baseDir){
     }
     this->dir = QDir(basePath);
 
-    this->log = new Tail(this, basePath + DEFAULT_SERVICE_LOGS_DIR + config->releaseName(), DEFAULT_SERVICE_LOG_FILE);
+    this->log = new Tail(this, basePath + DEFAULT_SERVICE_LOGS_DIR + "/" + config->releaseName(), DEFAULT_SERVICE_LOG_FILE);
     this->logErr = new Tail(this, basePath + DEFAULT_SERVICE_LOGS_DIR, DEFAULT_SERVICE_OUTPUT_FILE);
-    this->conf = new Tail(this, basePath + DEFAULT_SERVICE_CONFS_DIR + config->releaseName(), DEFAULT_SERVICE_CONF_FILE);
-    this->env = new Tail(this, basePath + DEFAULT_SERVICE_ENVS_DIR + config->releaseName(), DEFAULT_SERVICE_ENV_FILE);
+    this->conf = new Tail(this, basePath + DEFAULT_SERVICE_CONFS_DIR + "/" + config->releaseName(), DEFAULT_SERVICE_CONF_FILE);
+    this->env = new Tail(this, basePath + DEFAULT_SERVICE_ENVS_DIR + "/" + config->releaseName(), DEFAULT_SERVICE_ENV_FILE);
 
     config->deleteLater();
     refresh();
@@ -79,11 +79,11 @@ void PanelService::refresh(){
     QString domainsAmount = "(" + QString::number(domains.size()) + ") ";
     if (domains.length() > 1) { /* more than just default localhost */
         domains.removeAll(DEFAULT_LOCAL_ADDRESS);
-        QFile::remove(basePath + DEFAULT_SERVICE_DOMAINS_DIR + DEFAULT_SYSTEM_DOMAIN);
+        QFile::remove(basePath + DEFAULT_SERVICE_DOMAINS_DIR + "/" + DEFAULT_SYSTEM_DOMAIN);
     }
     domain = domainsAmount + domains.first();
 
-    port = readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
+    port = readFileContents(basePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     if (domain.isEmpty()) domain = "-";
     if (port.isEmpty()) port = "-";
 

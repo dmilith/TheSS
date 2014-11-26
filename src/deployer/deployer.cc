@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
         if (getuid() == 0)
             fileAppender = new FileAppender(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_LOG_FILE);
         else
-            fileAppender = new FileAppender(QString(getenv("HOME")) + DEFAULT_SS_LOG_FILE);
+            fileAppender = new FileAppender(QString(DEFAULT_HOME_DIR) + DEFAULT_SS_LOG_FILE);
 
         Logger::registerAppender(fileAppender);
         fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
@@ -223,9 +223,9 @@ int main(int argc, char *argv[]) {
 
     logInfo() << "Deploy successful. Cleaning deploying state.";
     QFile::remove(wadPidFile);
-    removeDir(getServiceDataDir(serviceName) + DEFAULT_RELEASES_DIR + "build-in-progress-" + stage, true);
-    removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + "build-in-progress-" + stage, true);
-    removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + "build-in-progress-" + stage, true);
+    removeDir(getServiceDataDir(serviceName) + DEFAULT_RELEASES_DIR + "/" + "build-in-progress-" + stage, true);
+    removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + "/" + "build-in-progress-" + stage, true);
+    removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + "/" + "build-in-progress-" + stage, true);
 
     if (not QFile::exists(getServiceDataDir(serviceName) + DEFAULT_SERVICE_RUNNING_FILE)) {
         logInfo() << "Launching service:" << serviceName;

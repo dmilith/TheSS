@@ -242,7 +242,7 @@ void SvdService::finishedSlot(QNetworkReply* aReply) { /* network check slot */
 
 const QString SvdService::releasePostfix() {
     loadServiceConfig(name);
-    QString rdir = DEFAULT_RELEASES_DIR + config->releaseName();
+    QString rdir = QString(DEFAULT_RELEASES_DIR) + "/" + config->releaseName();
     return rdir;
 }
 
@@ -258,7 +258,7 @@ void SvdService::babySitterSlot() {
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_DEPLOYING_FILE) or
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) or
         QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE) or
-        not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE)
+        not QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE)
     ) {
         logInfo() << "Skipping babysitter, service:" << name << "is still busy, or not yet configured.";
         return;
@@ -276,7 +276,7 @@ void SvdService::babySitterSlot() {
         return;
     } else
         logDebug() << "Babysitter invoked for:" << name;
-    QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
+    QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
     /* support separated http url check: */
     if (config->watchHttpAddresses.isEmpty()) {
@@ -360,7 +360,7 @@ void SvdService::babySitterSlot() {
 
                 /* check dynamic port for service */
                 } else {
-                    QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR) + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+                    QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR) + "/" + DEFAULT_SERVICE_PORT_NUMBER; /* default port */
 
                     if (QFile::exists(portFilePath)) {
                         int currentPort = readFileContents(portFilePath).trimmed().toInt();
@@ -406,7 +406,7 @@ void SvdService::babySitterSlot() {
 
                 /* check dynamic port for service */
                 } else {
-                    QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR) + QString(DEFAULT_SERVICE_PORT_NUMBER); /* default port */
+                    QString portFilePath = config->prefixDir() + QString(DEFAULT_SERVICE_PORTS_DIR) + "/" + DEFAULT_SERVICE_PORT_NUMBER; /* default port */
 
                     if (QFile::exists(portFilePath)) {
                         int currentPort = readFileContents(portFilePath).trimmed().toInt();
@@ -515,7 +515,7 @@ void SvdService::installSlot() {
 void SvdService::reConfigureSlot(bool withDeps) {
     loadServiceConfig(name);
     notificationSend("Performing reconfiguration and restart of service: " + name);
-    QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE;
+    QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE;
     QFile::remove(configuredIndicator);
     emit configureSlot();
     emit restartSlot(withDeps);
@@ -536,7 +536,7 @@ void SvdService::configureSlot() {
     loadServiceConfig(name);
     logDebug() << "Invoked configure slot for service:" << name;
     QString indicator = config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE;
-    QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE;
+    QString configuredIndicator = config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE;
     if (QFile::exists(indicator)) {
         logInfo() << "No need to configure service" << name << "because it's already configuring.";
         return;
@@ -556,7 +556,7 @@ void SvdService::configureSlot() {
             QString msg = name + " failed in configure hook. exp: '" + config->configure->expectOutput + "'";
             notificationSend(msg, ERROR);
         } else
-            touch(config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
+            touch(config->prefixDir() + DEFAULT_SERVICE_CONFS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_CONFIGURED_FILE);
 
         logTrace() << "After process configure execution:" << name;
         process->deleteLater();
@@ -840,7 +840,7 @@ void SvdService::stopSlot(bool withDeps) {
         process->spawnProcess(config->stop->commands, config->shell); // invoke igniter stop, and then try to look for service.pid in prefix directory:
         process->waitForFinished(DEFAULT_PROCESS_TIMEOUT);
 
-        QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
+        QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
         if (QFile::exists(servicePidFile)) {
             uint pid = readFileContents(servicePidFile).trimmed().toUInt();
             if (pid != 0) {

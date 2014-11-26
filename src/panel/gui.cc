@@ -381,7 +381,7 @@ void PanelGui::removeCurrentService(){
         } else {
             if (confirm(" Are you sure you want to destroy data\n and configuration of service: " + service->name + "?")){
                 if (service->remove()){
-                    QString webAppPublicFile = DEFAULT_PUBLIC_DIR + service->name + "_" + QDir(getHomeDir()).dirName() + ".web-app";
+                    QString webAppPublicFile = QString(DEFAULT_PUBLIC_DIR) + "/" + service->name + "_" + QDir(getHomeDir()).dirName() + ".web-app";
                     QFile::remove(webAppPublicFile);
                     status = "Removed dir: " + service->dir.absolutePath() + " and file: " + webAppPublicFile;
                 } else {
@@ -442,9 +442,9 @@ void PanelGui::key(int ch){
             QString name = servicesList->currentItem()->name;
 
             if (getuid() == 0)
-                system(QString("vim " + QString(SYSTEM_USERS_DIR) + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
+                system(QString("vim " + QString(SYSTEM_USERS_DIR) + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
             else
-                system(QString("vim " + QString(getenv("HOME")) + "/" + DEFAULT_USER_IGNITERS_DIR + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
+                system(QString("vim " + QString(DEFAULT_HOME_DIR) + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT).toUtf8().constData());
 
             initscr();
             status = "I've came back from the underground!";
@@ -459,7 +459,7 @@ void PanelGui::key(int ch){
                 QString domain = newEntry();
                 status = "Changing domain for service: " + name + " to: " + domain;
                 if (not domain.trimmed().isEmpty())
-                    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + domain);
+                    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + "/" + domain);
 
             }
             break;

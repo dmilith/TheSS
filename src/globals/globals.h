@@ -48,21 +48,22 @@
     #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create" /* &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0" */
     #define DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND "ifconfig tap0 destroy"
 
-    #define SOFTWARE_DIR "/Software/"
+    #define SOFTWARE_DIR "/Software"
     #define LOGS_DIR "/Logs"
     #define DEFAULT_PROXY_FILE "/proxy.conf"
     #define DEFAULT_APP_PROXY_FILE "/.proxy.conf" /* addition to proxy from app repo */
-    #define DEFAULT_PUBLIC_DIR "/Public/"
-    #define DEFAULT_HOME_DIR "/Users/"
-    #define SOFTWARE_DATA_DIR "/SoftwareData/"
-    #define SYSTEM_USERS_DIR "/SystemUsers/"
-    #define DEFAULT_GIT_REPOSITORY_DIR "/Repos/"
+    #define DEFAULT_PUBLIC_DIR "/Public"
+    #define DEFAULT_HOME_DIR "/User"
+    #define DEFAULT_USER_NAME "worker"
+    #define SOFTWARE_DATA_DIR "/SoftwareData"
+    #define SYSTEM_USERS_DIR "/SystemUsers"
+    #define DEFAULT_GIT_REPOSITORY_DIR "/Repos"
     #define DEFAULT_SOFTWARE_TEMPLATE_EXT ".json"
     #define DEFAULT_SERVICE_INSTALLED_EXT ".installed"
     #define DEFAULT_SERVICE_DISABLED_POSTFIX ".disabled"
     #define DEFAULT_SOFTWARE_TEMPLATE (SYSTEM_USERS_DIR "Igniters/Default")
     #define DEFAULT_SOFTWARE_TEMPLATES_DIR (SYSTEM_USERS_DIR "Igniters/Services")
-    #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services/"
+    #define DEFAULT_USER_IGNITERS_DIR "/Igniters/Services"
     #define DEFAULT_LOCAL_ADDRESS "127.0.0.1"
     #define DEFAULT_WILDCARD_ADDRESS "0.0.0.0"
     #define DEFAULT_SYSTEM_DOMAIN "localhost"
@@ -105,23 +106,23 @@
 
     #define DEFAULT_SERVICE_CONFIGURED_FILE "/.configured"
     #define DEFAULT_SERVICE_VALIDATION_FAILURE_FILE "/.validationFailure"
-    #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history/"
+    #define NOTIFICATIONS_HISTORY_DATA_DIR "/.notifications-history"
     #ifdef QT_DEBUG
         #define NOTIFICATIONS_CHANNEL_NAME "\%23dev-status"
     #else
         #define NOTIFICATIONS_CHANNEL_NAME "\%23status"
     #endif
 
-    #define DEFAULT_STANDALONE_DIR "/standalone/"
-    #define DEFAULT_RELEASES_DIR "/releases/"
-    #define DEFAULT_SHARED_DIR "/shared/"
-    #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains/"
-    #define DEFAULT_SERVICE_LOGS_DIR "/.logs/"
-    #define DEFAULT_SERVICE_PORTS_DIR "/.ports/"
-    #define DEFAULT_SERVICE_ENVS_DIR "/.envs/"
-    #define DEFAULT_SERVICE_PIDS_DIR "/.pids/"
-    #define DEFAULT_SERVICE_CONFS_DIR "/.confs/"
-    #define DEFAULT_SERVICE_SSLS_DIR "/.ssls/"
+    #define DEFAULT_STANDALONE_DIR "/standalone"
+    #define DEFAULT_RELEASES_DIR "/releases"
+    #define DEFAULT_SHARED_DIR "/shared"
+    #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains"
+    #define DEFAULT_SERVICE_LOGS_DIR "/.logs"
+    #define DEFAULT_SERVICE_PORTS_DIR "/.ports"
+    #define DEFAULT_SERVICE_ENVS_DIR "/.envs"
+    #define DEFAULT_SERVICE_PIDS_DIR "/.pids"
+    #define DEFAULT_SERVICE_CONFS_DIR "/.confs"
+    #define DEFAULT_SERVICE_SSLS_DIR "/.ssls"
 
     #define WEB_APP_PUBLIC_EXT ".web-app"
 
@@ -130,7 +131,7 @@
 
     /* global definitions */
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"
-    #define NOTIFICATIONS_DATA_DIR "/.notifications/"
+    #define NOTIFICATIONS_DATA_DIR "/.notifications"
     #define NOTIFICATION_MANAGER_LOG_FILE "/.notifications-manager.log"
     #define DEFAULT_SERVICE_PORT_NUMBER "0"
     #define DEFAULT_SERVICE_OUTPUT_FILE "/service.error.log"

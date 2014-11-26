@@ -57,7 +57,7 @@ void Panel::refreshServicesList() {
     QList<QFileInfo> list = dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoDot);
 
     Q_FOREACH(auto f, list){
-        if (QFile::exists(home.absolutePath() + DEFAULT_USER_IGNITERS_DIR + f.fileName() + DEFAULT_SOFTWARE_TEMPLATE_EXT)) {
+        if (QFile::exists(home.absolutePath() + DEFAULT_USER_IGNITERS_DIR + "/" + f.fileName() + DEFAULT_SOFTWARE_TEMPLATE_EXT)) {
             bool found = false;
             Q_FOREACH(auto s, services){
                 if(s->baseDir == f){
@@ -139,9 +139,9 @@ void Panel::shutdown() {
 
 QString Panel::addService(QString name) {
     QString status;
-    QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + name);
+    QDir dir(home.absolutePath() + "/" + SOFTWARE_DATA_DIR + "/" + name);
     if (getuid() == 0)
-        dir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + name);
+        dir = QDir(QString(SYSTEM_USERS_DIR) + SOFTWARE_DATA_DIR + "/" + name);
 
     if(!dir.exists()){ // service isn't already initialized
             auto all = availableServices();

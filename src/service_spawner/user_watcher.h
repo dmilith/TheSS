@@ -45,7 +45,6 @@ class SvdUserWatcher: public QObject {
     Q_OBJECT
 
     public:
-        SvdUserWatcher(uid_t uid);
         SvdUserWatcher();
         ~SvdUserWatcher();
         QList<SvdServiceWatcher *> serviceWatchers;
@@ -61,11 +60,10 @@ class SvdUserWatcher: public QObject {
         SvdUserHookIndicatorFiles *indicatorFiles = NULL;
         QString homeDir;
         QString softwareDataDir;
-        uid_t uid;
 
         QMutex collectorMutex;
 
-        void init(uid_t uid);
+        void init();
         void collectServices();
         // void collectWebApplications();
         void checkUserControlTriggers();
