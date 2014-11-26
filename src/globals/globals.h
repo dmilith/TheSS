@@ -133,7 +133,7 @@
     #define NOTIFICATIONS_DATA_DIR "/.notifications/"
     #define NOTIFICATION_MANAGER_LOG_FILE "/.notifications-manager.log"
     #define DEFAULT_SERVICE_PORT_NUMBER "0"
-    #define DEFAULT_SERVICE_OUTPUT_FILE (DEFAULT_SERVICE_LOG_FILE "-stderr.log")
+    #define DEFAULT_SERVICE_OUTPUT_FILE "/service.error.log"
     #define DEFAULT_SS_SHUTDOWN_FILE ".shutdown"
     #define DEFAULT_SS_SHUTDOWN_HOOK_FILE ("/" DEFAULT_SS_SHUTDOWN_FILE)
     #define DEFAULT_SS_GRACEFUL_SHUTDOWN_FILE ".shutdownGracefully"
