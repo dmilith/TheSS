@@ -468,7 +468,7 @@ const QString SvdServiceConfig::defaultTemplateFile() {
 
     } else {
         /* then, try system wide defaults */
-        QString rootSideDefaultIgniter = QString(DEFAULT_SOFTWARE_TEMPLATE) + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
+        QString rootSideDefaultIgniter = QString(DEFAULT_SOFTWARE_TEMPLATE) + DEFAULT_SOFTWARE_TEMPLATE_EXT;
         if (QFile::exists(rootSideDefaultIgniter)) {
             return rootSideDefaultIgniter;
         } else {
