@@ -5,13 +5,10 @@ thess_source_dir="$(pwd)"
 user_id="$(id -u)"
 
 if [ ! -d "$(pwd)/basesystem" ]; then
-    thess_source_dir="$HOME/Apps/Thess"
+    thess_source_dir="/Software/Thess"
     if [ ! -d "${thess_source_dir}/basesystem" ]; then
-        thess_source_dir="/Software/Thess"
-        if [ ! -d "${thess_source_dir}/basesystem" ]; then
-            printf "FATAL: Couldn't find igniters source directory!\n"
-            exit 1
-        fi
+        printf "FATAL: Couldn't find igniters source directory!\n"
+        exit 1
     fi
 fi
 
@@ -41,7 +38,7 @@ if [ "${user_id}" = "0" ]; then
 
 else # install all igniters (except root igniters) to user directory
 
-    export default_igniters_dir="${HOME}/Igniters/Services"
+    export default_igniters_dir="/User/Igniters/Services"
 
     if [ ! -d "${default_igniters_dir}" ]; then
         mkdir -p "${default_igniters_dir}"
