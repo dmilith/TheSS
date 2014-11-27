@@ -325,7 +325,7 @@ const QString getServiceDataDir(const QString& name) {
 uint registerFreeTcpPort(uint specificPort) {
     QTime midnight(0, 0, 0);
     qsrand(midnight.msecsTo(QTime::currentTime())); // accuracy is in ms.. so let's hack it a bit
-    usleep(10000); // this practically means no chance to generate same port when generating multiple ports at once
+    usleep(1000); // this practically means no chance to generate same port when generating multiple ports at once
     uint port = 0, rand = (qrand() % 40000);
     if (specificPort == 0) {
         port = 10000 + rand;
@@ -333,42 +333,16 @@ uint registerFreeTcpPort(uint specificPort) {
         port = specificPort;
 
     logTrace() << "Trying port: " << port << ". Randseed: " << rand;
-    auto inter = new QNetworkInterface();
-    auto list = inter->allAddresses(); /* all addresses on all interfaces */
-    logTrace() << "Addresses amount: " << list.size();
-    for (int j = 0; j < list.size(); j++) {
-        QHostInfo info = QHostInfo::fromName(list.at(j).toString());
-        if (!info.addresses().isEmpty()) {
-            auto address = info.addresses().first();
-            if (not address.toString().contains(":")) { // XXX: HACK - no support for ipv6!
-                logTrace() << "Got address: " << address;
-                auto tcpServer = new QTcpServer();
-                tcpServer->listen(address, port);
-                if (not tcpServer->isListening()) {
-                    logDebug() << "Taken port on address:" << address << ":" << port;
-                    delete tcpServer;
-                    delete inter;
-                    return registerFreeTcpPort(10000 + rand);
-                } else
-                    tcpServer->close();
-                delete tcpServer;
-            }
-        }
-    }
-
-    /* also perform additional check on 0.0.0.0 for services which are listening on multiple interfaces at once */
     auto tcpServer = new QTcpServer();
-    tcpServer->listen(QHostAddress::Any, port);
+    tcpServer->listen(QHostAddress::AnyIPv4, port);
     if (not tcpServer->isListening()) {
-        logDebug() << "Taken port on 0.0.0.0:" << port;
+        logDebug() << "Taken port on TCP:" << port;
         delete tcpServer;
-        delete inter;
         return registerFreeTcpPort(10000 + rand);
     } else
         tcpServer->close();
     delete tcpServer;
 
-    delete inter;
     return port;
 }
 
