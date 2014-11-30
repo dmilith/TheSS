@@ -570,7 +570,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         } else {
             /* if any domains found, but not prefer localhost if it's already there.. */
             if (fileDomains.length() > 1) { /* more than just default localhost */
-                fileDomains.removeAll(DEFAULT_LOCAL_ADDRESS);
+                fileDomains.removeAll(DEFAULT_SYSTEM_DOMAIN);
                 QFile::remove(domainFilePath + "/" + DEFAULT_SYSTEM_DOMAIN);
             }
             Q_FOREACH(QString domFile, fileDomains) {
