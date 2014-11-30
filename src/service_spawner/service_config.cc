@@ -552,8 +552,10 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         Q_FOREACH(auto dom, domains)
             touch(domainFilePath + "/" + dom);
 
-        /* replace domains - a space separated list - must be replaced before SERVICE_DOMAIN is set (obviously) */
-        ccont = ccont.replace("SERVICE_DOMAINS", domains.join(" "));
+        if (domains.length() > 0) {
+            /* add igniter side domains to user domains: */
+            userDomains << domains;
+        }
 
         /* check domain files */
         auto fileDomains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
