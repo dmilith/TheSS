@@ -612,7 +612,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 }
 
             } else { /* don't resolve domain, just take first address available.. */
-                auto list = info.addresses(); /* .. that's not 127.0.0.1 nor IPV6 */
+                auto list = QNetworkInterface::allAddresses(); /* .. that's not 127.0.0.1 nor IPV6 */
                 QString resultAddress = "";
                 Q_FOREACH(QHostAddress value, list) {
                     logTrace() << "Processing an address:" << value.toString();
