@@ -589,7 +589,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             if (resolveDomain) { /* by default domain resolve is done for each domain given by user */
                 Q_FOREACH(auto domdom, userDomains) {
                     info = QHostInfo::fromName(domdom);
-                    if (!info.addresses().isEmpty()) {
+                    if (not info.addresses().isEmpty()) {
                         auto list = info.addresses();
                         QString replaceWith = "";
                         Q_FOREACH(QHostAddress value, list) {
@@ -619,7 +619,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 }
 
             } else { /* don't resolve domain, just take first address available.. */
-                auto list = QNetworkInterface::allAddresses(); /* .. that's not 127.0.0.1 nor IPV6 */
+                auto list = QNetworkInterface::allAddresses();
                 QString resultAddress = "";
                 Q_FOREACH(QHostAddress value, list) {
                     logTrace() << "Processing an address:" << value.toString();
@@ -659,7 +659,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
  */
 QString SvdServiceConfig::loadDefaultIgniter() {
     QFile defaultIgniter(defaultTemplateFile()); /* try loading root igniter as second */
-    if(!defaultIgniter.open(QIODevice::ReadOnly)) { /* check file access */
+    if(not defaultIgniter.open(QIODevice::ReadOnly)) { /* check file access */
         logError() << "NO loadDefaultIgniter: " << defaultTemplateFile();
     } else {
         defaultIgniter.close();
@@ -679,7 +679,7 @@ QString SvdServiceConfig::loadIgniter() {
     QFile fileUser(userIgniter()); /* try loading user igniter as first */
     QFile fileRoot(rootIgniter()); /* try loading root igniter as third */
 
-    if(!fileUser.open(QIODevice::ReadOnly)) { /* check file access */
+    if (not fileUser.open(QIODevice::ReadOnly)) { /* check file access */
         logDebug() << "No file: " << userIgniter();
     } else {
         fileUser.close();
@@ -688,7 +688,7 @@ QString SvdServiceConfig::loadIgniter() {
     }
     fileUser.close();
 
-    if(!fileRoot.open(QIODevice::ReadOnly)) {
+    if (not fileRoot.open(QIODevice::ReadOnly)) {
         logDebug() << "No file: " << rootIgniter();
         fileRoot.close();
         return "";
