@@ -560,9 +560,13 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         /* check domain files */
         auto fileDomains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
         if (fileDomains.isEmpty()) {
-            userDomains << DEFAULT_SYSTEM_DOMAIN; /* localhost */
-            touch(domainFilePath + "/" + userDomains.first());
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain */
+            if (userDomains.isEmpty()) {
+                /* add default localhost domain to user domains: */
+                userDomains << DEFAULT_SYSTEM_DOMAIN; /* localhost */
+                touch(domainFilePath + "/" + userDomains.first());
+            }
+            ccont = ccont.replace("SERVICE_DOMAINS", userDomains.join(" "));
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first - local domain */
         } else {
             /* if any domains found, but not prefer localhost if it's already there.. */
             if (fileDomains.length() > 1) { /* more than just default localhost */
@@ -573,7 +577,8 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 userDomains << domFile;
                 touch(domainFilePath + "/" + domFile);
             }
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first user domain elem */
+            ccont = ccont.replace("SERVICE_DOMAINS", userDomains.join(" "));
+            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with user domains separated with spaces */
         }
 
         /* Replace SERVICE_ADDRESS */
