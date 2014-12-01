@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
     signal(SIGTERM, unixSignalHandler);
     // signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
-    QString pidFile = getHomeDir() + "/." + getenv("USER") + "-webpanel.pid";
+    QString pidFile = getHomeDir() + "/." + DEFAULT_USER_NAME + "-webpanel.pid";
     if (getuid() == 0) {
         pidFile = getHomeDir() + "/.root-webpanel.pid";
     }

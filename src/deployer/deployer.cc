@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     QRegExp rxWebBranch("-b");
 
     /* web app name is simultanously a git repository name: */
-    QString serviceName = "", stage = "staging", branch = "master", domain = QString(getenv("USER")) + ".dev"; // appName.env[USER].dev domain always points to 127.0.0.1, but will be almost valid TLD for services resolving domains.
+    QString serviceName = "", stage = "staging", branch = "master", domain = QString(DEFAULT_USER_NAME) + ".dev"; // appName.env[USER].dev domain always points to 127.0.0.1, but will be almost valid TLD for services resolving domains.
 
     /* gathering errors and warnings */
     QStringList errors, warnings;

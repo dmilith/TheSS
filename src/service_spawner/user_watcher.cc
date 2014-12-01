@@ -33,7 +33,7 @@ SvdUserHookIndicatorFiles::~SvdUserHookIndicatorFiles() {
 
 
 void SvdUserWatcher::init() {
-    logDebug() << "Starting SvdUserWatcher for user:" << getenv("USER");
+    logDebug() << "Starting SvdUserWatcher for user:" << DEFAULT_USER_NAME;
 
     this->homeDir = getHomeDir();
     this->softwareDataDir = getSoftwareDataDir();
@@ -136,7 +136,7 @@ SvdUserWatcher::SvdUserWatcher() {
 
 
 void SvdUserWatcher::shutdownSlot() {
-    QString lockName = getHomeDir() + "/." + getenv("USER") + ".pid";
+    QString lockName = getHomeDir() + "/." + DEFAULT_USER_NAME + ".pid";
     if (getuid() == 0) {
         lockName = getHomeDir() + "/.root.pid";
 
@@ -166,7 +166,7 @@ void SvdUserWatcher::checkUserControlTriggers() {
             QFile::remove(homeDir + "/.root.pid");
             SvdService::shutdownDefaultVPNNetwork();
         } else
-            QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
+            QFile::remove(homeDir + "/." + DEFAULT_USER_NAME + ".pid");
 
         Q_FOREACH(SvdServiceWatcher *svce, serviceWatchers) {
             if (svce)
@@ -184,7 +184,7 @@ void SvdUserWatcher::checkUserControlTriggers() {
             SvdService::shutdownDefaultVPNNetwork();
             QFile::remove(homeDir + "/.root.pid");
         } else
-            QFile::remove(homeDir + "/." + getenv("USER") + ".pid");
+            QFile::remove(homeDir + "/." + DEFAULT_USER_NAME + ".pid");
 
         raise(SIGTERM);
     }

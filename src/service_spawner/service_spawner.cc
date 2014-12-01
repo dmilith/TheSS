@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
     signal(SIGTERM, unixSignalHandler);
     // signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */
 
-    QString pidFile = getHomeDir() + "/." + getenv("USER") + ".pid";
+    QString pidFile = getHomeDir() + "/." + DEFAULT_USER_NAME + ".pid";
     if (getuid() == 0) {
         pidFile = getHomeDir() + "/.root.pid";
     }
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
 
     } else {
         logInfo("Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
-        logDebug() << "Spawning for user:" << getenv("USER");
+        logDebug() << "Spawning for user:" << DEFAULT_USER_NAME;
 
         logDebug() << "Checking user directory priviledges";
         setUserDirPriviledges(getHomeDir());

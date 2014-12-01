@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     fileAppender->setDetailsLevel(Logger::Warning);
 
     // Panel setup
-    QString user = getenv("USER");
+    QString user = DEFAULT_USER_NAME;
     QString home = DEFAULT_HOME_DIR;
     QDir homeDir(home);
     QString ignitersPrefix = "/Igniters/Services";
