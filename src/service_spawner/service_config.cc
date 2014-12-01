@@ -630,7 +630,7 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                         logTrace() << "Ignoring IPV6 address:" << userAddress << "Doing fallback to local v4 address.";
                         resultAddress = DEFAULT_LOCAL_ADDRESS;
                     } else {
-                        logInfo() << "Service:" << name << "bound to address:" << userAddress;
+                        logTrace() << "Service:" << name << "bound to address:" << userAddress;
                         resultAddress = userAddress;
                     }
                 }
