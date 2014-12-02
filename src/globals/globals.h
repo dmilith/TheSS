@@ -15,11 +15,12 @@
     #define logFatal LOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.98.2"
+    #define APP_VERSION "0.98.3"
     #define COPYRIGHT "2oo8-2o14 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
     /* default BSD case: */
+    #define DEFAULT_HTTP_PORT 80
     #define DEFAULT_SSL_PORT 443
     #define DEFAULT_SYSTEM_CONSOLE "/dev/console"
     #define DEFAULT_SSL_CA_CERT "/etc/ssl/cacert.pem"

@@ -15,7 +15,7 @@ QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, Q
     QString servicePath = QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/" + serviceName;
     QString sslDir = getOrCreateDir(servicePath + DEFAULT_SERVICE_SSLS_DIR);
     QString appProxyContent = readFileContents(latestReleaseDir + DEFAULT_APP_PROXY_FILE).trimmed();
-    if (not QFile::exists(sslDir + domain + ".crt")) {
+    if (not QFile::exists(sslDir + "/" + domain + ".crt")) {
         if (not sslPemPath.isEmpty()) { /* ssl pem file given */
             logWarn() << "NYI";
             // use interactive mode or set some file from input
@@ -23,7 +23,7 @@ QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, Q
         } else {
             logInfo() << "Generating self signed SSL certificate for service:" << serviceName;
             SvdProcess *prc = new SvdProcess("an_self_signed_cert_generate", false);
-            prc->spawnProcess("test ! -f " + sslDir + domain + ".crt && echo \"EU\nPoland\nWejherowo\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + domain + ".crt -keyout " + sslDir + domain + ".key", DEFAULT_DEPLOYER_SHELL);
+            prc->spawnProcess("test ! -f " + sslDir + "/" + domain + ".crt && echo \"EU\nPoland\nWejherowo\nVerKnowSys\nverknowsys.com\n*." + domain + "\nadmin@" + domain + "\n\" | openssl req -new -x509 -nodes -out " + sslDir + "/" + domain + ".crt -keyout " + sslDir + "/" + domain + ".key", DEFAULT_DEPLOYER_SHELL);
             prc->waitForFinished(-1);
             prc->deleteLater();
         }
@@ -46,8 +46,8 @@ server { \n\
     listen 443 ssl; \n\
     server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
-    ssl_certificate " + sslDir + domain + ".crt; \n\
-    ssl_certificate_key " + sslDir + domain + ".key; \n\
+    ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location / { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
@@ -85,8 +85,8 @@ server { \n\
     listen 443 ssl; \n\
     server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
-    ssl_certificate " + sslDir + domain + ".crt; \n\
-    ssl_certificate_key " + sslDir + domain + ".key; \n\
+    ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
@@ -136,8 +136,8 @@ server { \n\
     listen 443 ssl; \n\
     server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "/public; \n\
-    ssl_certificate " + sslDir + domain + ".crt; \n\
-    ssl_certificate_key " + sslDir + domain + ".key; \n\
+    ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
@@ -409,8 +409,8 @@ server { \n\
     listen 443 ssl; \n\
     server_name www." + domain + " " + domain + "; \n\
     root " + latestReleaseDir + "; \n\
-    ssl_certificate " + sslDir + domain + ".crt; \n\
-    ssl_certificate_key " + sslDir + domain + ".key; \n\
+    ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
+    ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
         add_header Cache-Control max-age=315360000; \n\
         expires 30d; \n\
@@ -580,8 +580,8 @@ void generateServicePorts(QString servicePath, int amount) {
     QString portFilePath = portsDir + "/" + DEFAULT_SERVICE_PORT_NUMBER; /* default port */
     QTime midnight(0, 0, 0);
     // if (not QFile::exists(portFilePath)) { // TODO: re enable dynamic ports
-        qsrand(midnight.msecsTo(QTime::currentTime()));
-        uint port = registerFreeTcpPort(abs((qrand() + 1024) % 65535));
+        // qsrand(midnight.msecsTo(QTime::currentTime()));
+        uint port = registerFreeTcpPort(DEFAULT_HTTP_PORT); // by default, pick 80 port
         logInfo() << "Generated service port:" << QString::number(port);
         writeToFile(portFilePath, QString::number(port));
     // }
@@ -667,7 +667,7 @@ void prepareSharedSymlinks(QString& serviceName, QString& latestReleaseDir, QStr
 void cloneRepository(QString& serviceName, QString& branch, QString releaseName) {
     QString repositoryRootPath = QString(DEFAULT_HOME_DIR) + DEFAULT_GIT_REPOSITORY_DIR;
     getOrCreateDir(repositoryRootPath);
-    QString sourceRepositoryPath = repositoryRootPath + serviceName + ".git";
+    QString sourceRepositoryPath = repositoryRootPath + "/" + serviceName + ".git";
     if (not QDir().exists(sourceRepositoryPath)) {
         logError() << "No source git repository found:" << sourceRepositoryPath;
         raise(SIGTERM);
