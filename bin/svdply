@@ -109,7 +109,7 @@ if [ "${APP_STAGE}" = "" ]; then
 fi
 
 if [ "${APP_USER}" = "" ]; then
-    export APP_USER="$USER"
+    export APP_USER="worker"
 fi
 
 if [ ! -f "${APP_REPOSITORY}/.git/config" ]; then
