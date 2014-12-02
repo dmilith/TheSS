@@ -582,7 +582,7 @@ void generateServicePorts(QString servicePath, int amount) {
     // if (not QFile::exists(portFilePath)) { // TODO: re enable dynamic ports
         // qsrand(midnight.msecsTo(QTime::currentTime()));
         uint port = registerFreeTcpPort(DEFAULT_HTTP_PORT); // by default, pick 80 port
-        logInfo() << "Generated service port:" << QString::number(port);
+        logInfo() << "Service port set to:" << QString::number(port);
         writeToFile(portFilePath, QString::number(port));
     // }
     for (int i = 2; i < amount + 1; i++) {
@@ -1182,10 +1182,10 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
 
             logDebug() << "Generated Igniter JSON:" << jsonResult;
 
-            QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
-            logInfo() << "Gathering SSL CA certs from:" << cacertLocation << "if necessary.";
-            clne->spawnProcess("cd " + servicePath + " && test ! -f " + DEFAULT_SSL_CA_FILE + " && curl -C - -L -O " + cacertLocation + " >> " + serviceLog, DEFAULT_DEPLOYER_SHELL);
-            clne->waitForFinished(-1);
+            // QString cacertLocation = QString(DEFAULT_CA_CERT_ROOT_SITE) + DEFAULT_SSL_CA_FILE;
+            // logInfo() << "Gathering SSL CA certs from:" << cacertLocation << "if necessary.";
+            // clne->spawnProcess("cd " + servicePath + " && test ! -f " + DEFAULT_SSL_CA_FILE + " && curl -C - -L -O " + cacertLocation + " >> " + serviceLog, DEFAULT_DEPLOYER_SHELL);
+            // clne->waitForFinished(-1);
 
         } break;
 
@@ -1268,7 +1268,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
             /* write to service env file */
             logInfo() << "Building environment for stage:" << stage << "in file:" << envFilePathDest;
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "SSL_CERT_FILE=" + QString(DEFAULT_SSL_CA_FILE) + "\n";
             envEntriesString += "STATIC_ENV=" + stage + "\n";
             envEntriesString += "STATIC_APP_NAME=" + serviceName + "\n";
             envEntriesString += "STATIC_ROOT=" + latestReleaseDir + "\n";
@@ -1280,7 +1280,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         case RubySite: {
             /* write to service env file */
             envEntriesString += "LANG=" + QString(LOCALE) + "\n";
-            envEntriesString += "SSL_CERT_FILE=" + servicePath + DEFAULT_SERVICE_SSLS_DIR + DEFAULT_SSL_CA_FILE + "\n";
+            envEntriesString += "SSL_CERT_FILE=" + QString(DEFAULT_SSL_CA_FILE) + "\n";
             envEntriesString += "RAILS_ENV=" + stage + "\n";
             envEntriesString += "RAKE_ENV=" + stage + "\n";
             envEntriesString += "RUBY_ENV=" + stage + "\n";

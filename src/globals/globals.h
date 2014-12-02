@@ -23,7 +23,6 @@
     #define DEFAULT_HTTP_PORT 80
     #define DEFAULT_SSL_PORT 443
     #define DEFAULT_SYSTEM_CONSOLE "/dev/console"
-    #define DEFAULT_SSL_CA_CERT "/etc/ssl/cacert.pem"
 
     #define DEFAULT_BEHAVIORS_DIR "basesystem/behaviors"
     #define DEFAULT_BEHAVIORS_RAW "/output_raw_processes.raw.input"
@@ -128,7 +127,8 @@
     #define WEB_APP_PUBLIC_EXT ".web-app"
 
     #define DEFAULT_CA_CERT_ROOT_SITE "http://curl.haxx.se/ca"
-    #define DEFAULT_SSL_CA_FILE "/cacert.pem"
+    #define DEFAULT_SSL_CA_FILE "/etc/ssl/cert.pem"
+
 
     /* global definitions */
     #define DATA_COLLECTOR_SOCKET_FILE "/data-collector.sock"
