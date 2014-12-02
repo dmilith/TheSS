@@ -1491,7 +1491,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         logDebug() << "Generated proxy contents:" << contents;
         writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
         logInfo() << "Triggering Coreginx reload for domain:" << domain;
-        writeToFile(QString(DEFAULT_PUBLIC_DIR) + serviceName + "_" + DEFAULT_USER_NAME + "/" + WEB_APP_PUBLIC_EXT, domain);
+        writeToFile(QString(DEFAULT_PUBLIC_DIR) + "/" + serviceName + "_" + DEFAULT_USER_NAME + "/" + WEB_APP_PUBLIC_EXT, domain);
 
     } else {
         logWarn() << "Web-App proxy autogeneration failed. It might be a failure in generated nginx proxy file or user input. Proxy file generation skipped!";
