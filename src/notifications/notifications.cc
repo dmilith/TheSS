@@ -118,11 +118,11 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
 
             QSslSocket socket;
             #ifdef __FreeBSD__
-                if (not QFile::exists(DEFAULT_SSL_CA_CERT)) {
-                    logWarn() << "No default SSL ROOT CA Certificates found in:" << DEFAULT_SSL_CA_CERT;
+                if (not QFile::exists(DEFAULT_SSL_CA_FILE)) {
+                    logWarn() << "No default SSL ROOT CA Certificates found in:" << DEFAULT_SSL_CA_FILE;
                 } else {
-                    QSslSocket::addDefaultCaCertificates(DEFAULT_SSL_CA_CERT);
-                    socket.addCaCertificates(DEFAULT_SSL_CA_CERT);
+                    QSslSocket::addDefaultCaCertificates(DEFAULT_SSL_CA_FILE);
+                    socket.addCaCertificates(DEFAULT_SSL_CA_FILE);
                     logTrace() << "CA certificates:" << socket.caCertificates();
                 }
             #endif
