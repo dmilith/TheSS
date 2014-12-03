@@ -1487,15 +1487,15 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     logInfo() << "Generating http proxy configuration for web-app";
     QString port = readFileContents(servicePath + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed();
     QString contents = nginxEntry(appType, latestReleaseDir, domain, serviceName, stage, port, svConfig);
-    if (validateNginxEntry(servicePath, contents)) {
+    // if (validateNginxEntry(servicePath, contents)) {
         logDebug() << "Generated proxy contents:" << contents;
-        writeToFile(servicePath + DEFAULT_PROXY_FILE, contents);
-        logInfo() << "Triggering Coreginx reload for domain:" << domain;
-        writeToFile(QString(DEFAULT_PUBLIC_DIR) + "/" + serviceName + "_" + DEFAULT_USER_NAME + "/" + WEB_APP_PUBLIC_EXT, domain);
+        writeToFile(QString(DEFAULT_PUBLIC_DIR) + "/" + domain + ".conf", contents);
+        // logInfo() << "Triggering Coreginx reload for domain:" << domain;
+        // writeToFile(QString(DEFAULT_PUBLIC_DIR) + "/" + serviceName + "_" + DEFAULT_USER_NAME + "/" + WEB_APP_PUBLIC_EXT, domain);
 
-    } else {
-        logWarn() << "Web-App proxy autogeneration failed. It might be a failure in generated nginx proxy file or user input. Proxy file generation skipped!";
-    }
+    // } else {
+    //     logWarn() << "Web-App proxy autogeneration failed. It might be a failure in generated nginx proxy file or user input. Proxy file generation skipped!";
+    // }
     /* -- */
 
     if (not QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
