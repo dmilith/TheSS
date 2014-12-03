@@ -28,7 +28,7 @@ SERVICE_ROOT/exports/nginx -c SERVICE_CONF -s stop && echo 'Nginx stopped' >> SE
     "configure": {
         "commands": " \
 printf \" \
-worker_processes 2; \
+worker_processes 4; \
 # pid SERVICE_PID; \
 events { \
     worker_connections 1024; \
@@ -48,14 +48,7 @@ http { \
     gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript; \
     keepalive_timeout 270; \
     error_log SERVICE_LOG; \
-    server { \
-        listen SERVICE_ADDRESS:SERVICE_PORT; \
-        server_name SERVICE_DOMAINS SERVICE_ADDRESS; \
-        location / { \
-            root SERVICE_PREFIX/html; \
-            index index.html index.htm; \
-        } \
-    } \
+    include /Public/*.conf; \
 } \
 \" > SERVICE_CONF \
 "
