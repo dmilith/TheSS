@@ -186,8 +186,11 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     ${GREP_BIN} -q "${APP_DOMAIN}" ${SSH_CONFIG_PATH} || (note "Setting SSH config for host: ${APP_DOMAIN}" && ${PRINTF_BIN} "\nHost ${APP_DOMAIN}\nPort ${DEPLOY_PORT}\n" >> ${SSH_CONFIG_PATH})
 
     note "Pushing current repository to remote: ${DEFAULT_REMOTE}"
+    debug "${GIT_BIN} remote rm ${DEFAULT_REMOTE}"
     ${GIT_BIN} remote rm ${DEFAULT_REMOTE} > /dev/null 2>&1
+    debug "${GIT_BIN} remote add ${DEFAULT_REMOTE} ${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git"
     ${GIT_BIN} remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
+    debug "${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH}"
     ${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy "${mirror}"
 
     trap "warn 'Interrupted deploy!' && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' svddw ~/SoftwareData/${APP_NAME}/.deploying.pid && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' rm -f ~/SoftwareData/${APP_NAME}/.deploying*" SIGINT SIGTERM
