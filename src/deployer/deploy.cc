@@ -34,7 +34,7 @@ QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, Q
 server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "; \n\
+    root " + latestReleaseDir + "; \n\
     location / { \n\
         index index.html index.htm; \n\
         expires 30d; \n\
@@ -45,7 +45,7 @@ server { \n\
 server { \n\
     listen 443 ssl; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "; \n\
+    root " + latestReleaseDir + "; \n\
     ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location / { \n\
@@ -64,7 +64,7 @@ upstream " + serviceName + "-" + stage + " { \n\
 server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "/public; \n\
+    root " + latestReleaseDir + "/public; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
@@ -84,7 +84,7 @@ server { \n\
 server { \n\
     listen 443 ssl; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "/public; \n\
+    root " + latestReleaseDir + "/public; \n\
     ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location / { \n\
@@ -114,7 +114,7 @@ upstream " + serviceName + "-" + stage + " { \n\
 server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "/public; \n\
+    root " + latestReleaseDir + "/public; \n\
     location / { \n\
         proxy_set_header X-Real-IP $remote_addr; \n\
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \n\
@@ -135,7 +135,7 @@ server { \n\
 server { \n\
     listen 443 ssl; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "/public; \n\
+    root " + latestReleaseDir + "/public; \n\
     ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location / { \n\
@@ -382,7 +382,7 @@ upstream " + serviceName + "-" + stage + " { \n\
 server { \n\
     listen 80; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "; \n\
+    root " + latestReleaseDir + "; \n\
     index index.php; \n\
     try_files $uri $uri/ /index.php; \n\
     location ~ .php$ { \n\
@@ -408,7 +408,7 @@ server { \n\
 server { \n\
     listen 443 ssl; \n\
     server_name " + domain + "; \n\
-    root CELL_DIR" + latestReleaseDir + "; \n\
+    root " + latestReleaseDir + "; \n\
     ssl_certificate " + sslDir + "/" + domain + ".crt; \n\
     ssl_certificate_key " + sslDir + "/" + domain + ".key; \n\
     location ~* ^.+.(css|jpg|jpeg|gif|png|js|ico|xml|mp3|eps|cdr|rar|zip|p7|pdf|swf)$ { \n\
