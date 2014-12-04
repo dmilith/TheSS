@@ -579,12 +579,12 @@ void generateServicePorts(QString servicePath, int amount) {
     getOrCreateDir(portsDir);
     QString portFilePath = portsDir + "/" + DEFAULT_SERVICE_PORT_NUMBER; /* default port */
     QTime midnight(0, 0, 0);
-    // if (not QFile::exists(portFilePath)) { // TODO: re enable dynamic ports
-        // qsrand(midnight.msecsTo(QTime::currentTime()));
-        uint port = registerFreeTcpPort(DEFAULT_HTTP_PORT); // by default, pick 80 port
+    if (not QFile::exists(portFilePath)) { // TODO: re enable dynamic ports
+        qsrand(midnight.msecsTo(QTime::currentTime()));
+        uint port = registerFreeTcpPort(abs((qrand() + 1024) % 65535));
         logInfo() << "Service port set to:" << QString::number(port);
         writeToFile(portFilePath, QString::number(port));
-    // }
+    }
     for (int i = 2; i < amount + 1; i++) {
         QString backupPortFilePath = portsDir + "/" + QString::number(i - 1);
         qsrand(midnight.msecsTo(QTime::currentTime()));
