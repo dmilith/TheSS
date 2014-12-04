@@ -157,10 +157,10 @@ for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
 
     if [ "${srv_record}" != "" ]; then
         srv_port="$(${PRINTF_BIN} "${srv_record}\n" | ${AWK_BIN} '{print $3;}')"
-        # note "Gathered port: ${srv_port} from SRV record of domain: ${root_domain_name}"
-        # export DEPLOY_PORT="${srv_port}"
-        # export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
-        # export SCP_OPTIONS="-P ${DEPLOY_PORT}"
+        note "Gathered port: ${srv_port} from SRV record of domain: ${root_domain_name}"
+        export DEPLOY_PORT="${srv_port}"
+        export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
+        export SCP_OPTIONS="-P ${DEPLOY_PORT}"
     fi
 
     conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "uname -a" | ${TAIL_BIN} -n 1 2> /dev/null)
