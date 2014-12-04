@@ -32,7 +32,7 @@
 QString nginxEntry(WebAppTypes type, QString latestReleaseDir, QString domain, QString serviceName, QString stage, QString port, SvdServiceConfig* svConfig, QString sslPemPath = ""); /* empty sslPemPath means, that default self-signed cert will be created for this entry */
 QString getDbName(WebDatastore db);
 QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile);
-bool validateNginxEntry(QString& servicePath, QString contents);
+// bool validateNginxEntry(QString& servicePath, QString contents);
 void generateDatastoreSetup(QList<WebDatastore> dbs, QString serviceName, QString stage, WebAppTypes appType);
 void generateServicePorts(QString servicePath, int amount = 1);
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage);

@@ -594,37 +594,37 @@ void generateServicePorts(QString servicePath, int amount) {
 }
 
 
-bool validateNginxEntry(QString& servicePath, QString contents) {
-    QString prefix = "events { worker_connections 1024; } http { error_log logs/error.log; access_log off; ";
-    QString postfix = " }";
-    QString uuid = QUuid::createUuid().toString();
-    QString uuidFile = servicePath + "/" + uuid;
-    QString tmpDir = getOrCreateDir("/tmp/tmp-" + QString::number(getuid()));
-    QString testFile = tmpDir + DEFAULT_PROXY_FILE + "-" + uuid;
+// bool validateNginxEntry(QString& servicePath, QString contents) {
+//     QString prefix = "events { worker_connections 1024; } http { error_log logs/error.log; access_log off; ";
+//     QString postfix = " }";
+//     QString uuid = QUuid::createUuid().toString();
+//     QString uuidFile = servicePath + "/" + uuid;
+//     QString tmpDir = getOrCreateDir("/tmp/tmp-" + QString::number(getuid()));
+//     QString testFile = tmpDir + DEFAULT_PROXY_FILE + "-" + uuid;
 
-    QString genContents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort() % 65535));
-    genContents = contents.replace("listen 443", "listen " + QString::number(registerFreeTcpPort() % 65535)); /* replace defaul port 80 and 443 with some bogus ports */
-    writeToFile(testFile, prefix + genContents + postfix);
+//     QString genContents = contents.replace("listen 80", "listen " + QString::number(registerFreeTcpPort() % 65535));
+//     genContents = contents.replace("listen 443", "listen " + QString::number(registerFreeTcpPort() % 65535)); /* replace defaul port 80 and 443 with some bogus ports */
+//     writeToFile(testFile, prefix + genContents + postfix);
 
-    logDebug() << "Generated contents will be validated:" << prefix + genContents + postfix;
-    logDebug() << "Validation confirmation UUID:" << uuid << "in file:" << uuidFile;
+//     logDebug() << "Generated contents will be validated:" << prefix + genContents + postfix;
+//     logDebug() << "Validation confirmation UUID:" << uuid << "in file:" << uuidFile;
 
-    getOrCreateDir(tmpDir + "/logs");
-    auto clne = new SvdProcess("nginx_entry_validate", false);
-    clne->spawnProcess("nginx -t -c " + testFile + " -p " + tmpDir + " && touch " + uuidFile, DEFAULT_DEPLOYER_SHELL);
-    clne->waitForFinished(DEFAULT_SERVICE_PAUSE_INTERVAL); /* give it some time */
-    clne->deleteLater();
+//     getOrCreateDir(tmpDir + "/logs");
+//     auto clne = new SvdProcess("nginx_entry_validate", false);
+//     clne->spawnProcess("nginx -t -c " + testFile + " -p " + tmpDir + " && touch " + uuidFile, DEFAULT_DEPLOYER_SHELL);
+//     clne->waitForFinished(DEFAULT_SERVICE_PAUSE_INTERVAL); /* give it some time */
+//     clne->deleteLater();
 
-    if (QFile::exists(uuidFile)) {
-        logInfo() << "Nginx entry validation passed.";
-        logDebug() << "Removing confirmation file:" << uuidFile;
-        QFile::remove(uuidFile);
-        QFile::remove(testFile);
-        return true;
-    }
-    QFile::remove(testFile);
-    return false; /* means failure by definition */
-}
+//     if (QFile::exists(uuidFile)) {
+//         logInfo() << "Nginx entry validation passed.";
+//         logDebug() << "Removing confirmation file:" << uuidFile;
+//         QFile::remove(uuidFile);
+//         QFile::remove(testFile);
+//         return true;
+//     }
+//     QFile::remove(testFile);
+//     return false; /* means failure by definition */
+// }
 
 
 void prepareSharedDirs(QString& latestReleaseDir, QString& servicePath, QString& stage) {
