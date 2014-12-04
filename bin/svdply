@@ -157,10 +157,10 @@ for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
 
     if [ "${srv_record}" != "" ]; then
         srv_port="$(${PRINTF_BIN} "${srv_record}\n" | ${AWK_BIN} '{print $3;}')"
-        note "Gathered port: ${srv_port} from SRV record of domain: ${root_domain_name}"
-        export DEPLOY_PORT="${srv_port}"
-        export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
-        export SCP_OPTIONS="-P ${DEPLOY_PORT}"
+        # note "Gathered port: ${srv_port} from SRV record of domain: ${root_domain_name}"
+        # export DEPLOY_PORT="${srv_port}"
+        # export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
+        # export SCP_OPTIONS="-P ${DEPLOY_PORT}"
     fi
 
     conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "uname -a" | ${TAIL_BIN} -n 1 2> /dev/null)
@@ -193,9 +193,8 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     debug "${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH}"
     ${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy "${mirror}"
 
-    trap "warn 'Interrupted deploy!' && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' svddw ~/SoftwareData/${APP_NAME}/.deploying.pid && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' rm -f ~/SoftwareData/${APP_NAME}/.deploying*" SIGINT SIGTERM
+    trap "warn 'Interrupted deploy!' && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' svddw ~/SoftwareData/${APP_NAME}/.deploying && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' rm -f ~/SoftwareData/${APP_NAME}/.deploying" SIGINT SIGTERM SIGQUIT
     ${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "svddeployer -n ${APP_NAME} -o ${APP_DOMAIN} -s ${APP_STAGE} -b ${APP_BRANCH} ${APP_ADDITIONAL_OPTS}" || error "Deploy failed!"
-
 done
 
 note "Web application should be available at: http://${APP_DOMAIN} and https://${APP_DOMAIN}"
