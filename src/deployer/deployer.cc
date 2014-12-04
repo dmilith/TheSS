@@ -223,6 +223,7 @@ int main(int argc, char *argv[]) {
 
     logInfo() << "Deploy successful. Cleaning deploying state.";
     QFile::remove(wadPidFile);
+    QFile::remove(wadPidFile + ".pid");
     removeDir(getServiceDataDir(serviceName) + DEFAULT_RELEASES_DIR + "/" + "build-in-progress-" + stage, true);
     removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + "/" + "build-in-progress-" + stage, true);
     removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + "/" + "build-in-progress-" + stage, true);
