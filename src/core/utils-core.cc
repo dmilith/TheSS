@@ -41,6 +41,5 @@ void setDefaultEncoding() {
 
 bool isWebApp(const QString& basePath) {
     return
-        QDir().exists(basePath + DEFAULT_SHARED_DIR) and QDir().exists(basePath + DEFAULT_RELEASES_DIR) and
-            (QFile::exists(basePath + DEFAULT_PROXY_FILE) or QFile::exists(basePath + DEFAULT_APP_PROXY_FILE));
+        QDir().exists(basePath + DEFAULT_SHARED_DIR) and QDir().exists(basePath + DEFAULT_RELEASES_DIR);
 }
