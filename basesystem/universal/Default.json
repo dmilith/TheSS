@@ -54,7 +54,7 @@
     "webApp": false,
 
     "standaloneDeps": [
-        "postgresql", "mysql", "mysql51", "mysql-usock", "redis", "redis-usock", "nginx", "passenger", "passenger19", "sphinx", "memcached", "memcached-usock", "elasticsearch", "mongodb"
+        "Postgresql", "Mysql", "Percona-server", "Percona-server55", "Mysql51", "Mysql-usock", "Redis", "Redis-usock", "Nginx", "Passenger", "Sphinx", "Memcached", "Memcached-usock", "Elasticsearch", "Mongodb"
     ],
 
     /* default notification levels: NOTIFY => 0, WARNING => 1, ERROR => 2, FATAL => 3 */
