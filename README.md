@@ -5,7 +5,6 @@
 
 ## Contributors:
 * Michał (tallica) Lipski.
-* Tymon (teamon) Tobolski.
 
 
 ## Dependencies:
