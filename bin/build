@@ -51,11 +51,6 @@ build () {
             (note "Building Web Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built webpanel\n") || exit 1
             ;;
 
-        panel|svdpanel)
-            (${QMAKE_BIN} ${QMAKE_OPTS} Panel.pro) || exit 1
-            (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
-            ;;
-
         ss|svdss)
             (${QMAKE_BIN} ${QMAKE_OPTS} TheSS.pro) || exit 1
             (note "Building Service Spawner" && make ${MAKE_OPTS_BUILD} && note "Successfully built ss\n") || exit 1
@@ -105,9 +100,6 @@ build () {
 
             (${QMAKE_BIN} ${QMAKE_OPTS} TheSS.pro) || exit 1
             (note "Building Service Spawner" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdss\n") || exit 1
-
-            (${QMAKE_BIN} ${QMAKE_OPTS} Panel.pro) || exit 1
-            (note "Building Panel" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdpanel\n") || exit 1
 
             (${QMAKE_BIN} ${QMAKE_OPTS} CoreginxHelper.pro) || exit 1
             (note "Building Coreginx Helper" && make ${MAKE_OPTS_BUILD} && note "Successfully built svdcoreginx_helper\n") || exit 1
