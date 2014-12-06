@@ -130,7 +130,7 @@ void SvdPublicWatcher::validateDomainExistanceFor(QString file) {
         if (domains.contains(fileContent) and not fileEntries.contains(file)) {
             QSet<QString> remFiles;
             remFiles << QString(DEFAULT_PUBLIC_DIR) + "/" + file;
-            remFiles << serviceBase + DEFAULT_PROXY_FILE;
+            // remFiles << serviceBase + DEFAULT_PROXY_FILE;
             logError() << "Entries files contain domain:" << fileContent << "Files:" << remFiles << " will be removed!";
             auto notificationRoot = root + NOTIFICATIONS_DATA_DIR;
             auto hash = new QCryptographicHash(QCryptographicHash::Sha1);
