@@ -1,4 +1,4 @@
-# Web control panel for TheSS - (c) 2o14 verknowsys.com
+# Web control panel for TheSS - (c) 2o15 verknowsys.com
 #
 # author:
 #   Daniel (dmilith) Dettlaff
