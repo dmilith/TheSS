@@ -212,8 +212,8 @@ void TestLibrary::testParseExistingIgniter() {
     char errbuf[1024];
     auto config = new SvdServiceConfig("Redis"); /* Load Redis igniter values */
     QVERIFY(config->standaloneDependencies.size() > 0);
-    QVERIFY(config->standaloneDependencies.contains("redis-usock"));
-    QVERIFY(config->standaloneDependencies.contains("mysql"));
+    QVERIFY(config->standaloneDependencies.contains("Redis-usock"));
+    QVERIFY(config->standaloneDependencies.contains("Mysql"));
     QVERIFY(config->valid());
 
     /* parse arrays test */
