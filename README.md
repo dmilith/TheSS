@@ -258,7 +258,7 @@ svdply myapp.mydomain.com
      \
       \_____________ will:
                      - do ssh connection to $USER@myapp.mydomain.com host
-                     - if "svd" remote in current git repository doesn't
+                     - if "svd" remote in current git repository does not
                        exists, will be created both on local and remote hosts
                      - current branch of git repository (from current
                        directory) will be pushed to "svd" remote
@@ -307,7 +307,7 @@ STATIC_DOMAIN               # value of domain name - what user did specify
 ```
 
 ### For Nodejs web-apps:
-* By default you might want to have `node` entry in your `.dependencies` file.
+* By default you might want to have `Node` entry in your `.dependencies` file.
 * Following shell environment values are passed to web-app:
 
 ```sh
@@ -321,11 +321,11 @@ NODE_DOMAIN                 # value of domain name - what user did specify
 NODE_PID_FILE               # value of absolute path to pid file
 NODE_LOG_FILE               # value of absolute path to log file
 
-# all of these values are accessible through process.env.VALUE_NAME on web-app side
+# all of these values are accessible in environment through `process.env.VAR_NAME`
 ```
 
 ### For Rails web-apps
-* By default you might want to have at least `ruby` and `node` entries in your `.dependencies` file.
+* By default you might want to have at least `Ruby` and `Node` entries in your `.dependencies` file.
 * Following shell environment values are passed to web-app:
 
 ```sh
@@ -343,24 +343,17 @@ RUBY_DOMAIN                 # value of domain name - what user did specify
                             # by doing "svdply domain.name"
 RUBY_PID_FILE               # value of absolute path to pid file
 RUBY_LOG_FILE               # value of absolute path to log file
+
+# all of these values are accessible in environment through `ENV['VAR_NAME']`
 ```
 
 
 ## Conflicts/ Problems/ Known issues:
-* Coreginx helper might invoke Coreginx reload twice, instead of just once for a single web-app deployment. TheSS uses buffered file write, so it can call reload for file touch and further file modification (Qt4 can't deal with that properly).
-* Panel with Qt5 throw assertions (like: (CarbonCore.framework) FSEventStreamFlushSync(): failed assertion '(SInt64)last_id > 0LL')
-* Panel requires quite wide terminal to display it's contents properly. I use size of 238/35 (columns/rows).
 * Deployer part isn't production ready. It works, but it's not stable yet.
 * Dispel part isn't production ready. It doesn't work for now.
-* svdcoreginx_helper sucks, it's written badly and it doesn't reload Coreginx on first svdply deploy.
-* LiveUsers igniter should be more intelligent. It now reloads ttys even if there were no changes in user autostart trigger.
-* Panel is generating high CPU load (which is caused by live monitoring of each service files).
-* Panel becomes unresponsive with extremely high amounts of logs written by service.
-* Igniters file changes must be atomic.
-* On OSX hosts, there's a very low default limit of maximum opened files (256). If user defined more than 10 services with such default, svdpanel may become unstable. It's recommended to increase this value to 2048 by `ulimit -n 2048`.
-* Sofin build mechanism is known to be in conflict with other software managment solutions like: BSD Ports, HomeBrew, MacPorts, Fink. Keep that in mind before reporting problems.
+* Igniters file changes must be atomic. It's caused by direct access to igniter files from svdss. If JSON parser detects syntax error in igniter, it moves broken file from ~/Igniters directory.
+* Sofin build mechanism is known to be in conflict with other software managment solutions like: BSD Ports, HomeBrew, MacPorts, Fink or Nix. Keep that in mind before reporting problems.
 * It's recommended to change shell by doing: `chsh -s /Software/Zsh/exports/zsh` for each user which will use TheSS. TheSS internally uses Shell from that path by default (currently Shell path is hardcoded due to lack of TheSS config in current version)
-* TheSS is using `/etc/ttys` solution for managing user side service spawner contunously. It requires `svdshell` utility (available in this repository) to be installed, and user must be in group 0 (`wheel` on FreeBSD/ OSX).
 
 
 ## FAQ
