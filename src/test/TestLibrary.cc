@@ -291,7 +291,7 @@ void TestLibrary::testParseExistingIgniter() {
 void TestLibrary::testJsonValidityOfIgniters() {
     QStringList igniters;
     if (getuid() == 0) {
-        igniters << "Pptpd" << "Openvpn" << "Ntp" << "LiveUsers" << "Courier" << "Coreginx" << "Bind" << "Bind-WithZone";
+        igniters << "Pptpd" << "Openvpn" << "Ntp" << "Courier" << "Coreginx" << "Bind" << "Bind-WithZone";
     }
     igniters << "Memcached" << "Php" << "Redis" << "Redis-usock" << "Postgresql" << "Passenger" << "Passenger19" << "ProcessDataCollector" << "Mysql" << "Mysql-master" << "Mysql-usock" << "Mysql51" << "Mysql-slave" << "Mosh" << "Mongodb" << "Mongodb-slave" << "Mongodb-master" << "Dropbear" << "Elasticsearch";
     Q_FOREACH(QString igniter, igniters) {
