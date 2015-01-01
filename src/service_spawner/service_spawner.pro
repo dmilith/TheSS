@@ -6,7 +6,7 @@
 
 include(../Common.pro)
 
-QT += network
+QT += network websockets
 HEADERS   += \
              process.h \
              service.h \
@@ -14,13 +14,15 @@ HEADERS   += \
              service_config.h \
              service_watcher.h \
              user_watcher.h \
-             file_events_manager.h
+             file_events_manager.h \
+             api.h
 SOURCES   += \
              process.cc \
              service.cc \
              service_config.cc \
              service_watcher.cc \
              user_watcher.cc \
+             api.cc \
              file_events_manager.cc \
              ../notifications/notifications.cc \
              service_spawner.cc
