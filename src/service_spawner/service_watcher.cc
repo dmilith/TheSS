@@ -71,15 +71,17 @@ QString SvdServiceWatcher::name() {
     return appName;
 }
 
+SvdServiceWatcher::SvdServiceWatcher(const QString& name, SvdAPI* api_) {
+    Q_ASSERT(api_ != nullptr);
+    svdapi = api_;
 
-SvdServiceWatcher::SvdServiceWatcher(const QString& name) {
     logDebug() << "Starting SvdServiceWatcher for service:" << name;
 
     appName = name;
 
     dataDir = getServiceDataDir(name);
 
-    service = new SvdService(name);
+    service = new SvdService(name, svdapi);
 
     fileEvents = new SvdFileEventsManager();
     fileEvents->registerFile(dataDir);

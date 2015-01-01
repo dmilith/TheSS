@@ -76,9 +76,16 @@ void SvdService::notificationSend(const QString& notificationMessage) {
 }
 
 
-SvdService::SvdService(const QString& name) {
-    /* setup service */
+SvdAPI* SvdService::api() {
+    return svdapi;
+}
 
+
+SvdService::SvdService(const QString& name, SvdAPI* api) {
+    Q_ASSERT_X(api != nullptr, name.toUtf8(), "SvdAPI can't be null pointer!");
+
+    /* setup service */
+    this->svdapi = api;
     this->name = name;
     this->hash = createHash(name);
     this->dependencyServices = QList<SvdService*>();
@@ -307,15 +314,17 @@ void SvdService::babySitterSlot() {
                         if (checkProcessStatus(pid)) {
                             logDebug() << "Service:" << name << "seems to be alive and kicking.";
                         } else {
-                            QString msg = "Something is wrong with system status of service: " + name + " It will be restarted";
+                            QString msg = "Something is wrong with system status of service: " + name;
                             notificationSend(msg, ERROR);
                             emit restartSlot();
+                            api()->restartService(name, msg);
                             return;
                         }
                     } else {
                         QString msg = "Service: " + name + " seems to be down. Performing restart.";
                         notificationSend(msg, ERROR);
                         emit restartSlot();
+                        api()->restartService(name, msg);
                         return;
                     }
                 } else {
@@ -323,6 +332,7 @@ void SvdService::babySitterSlot() {
                     notificationSend(msg, ERROR);
                     QFile::remove(servicePidFile);
                     emit restartSlot();
+                    api()->restartService(name, msg);
                     return;
                 }
 
@@ -337,6 +347,7 @@ void SvdService::babySitterSlot() {
                     QString msg = "Socket file not found for service: " + name + ". Restarting service.";
                     notificationSend(msg, ERROR);
                     emit restartSlot();
+                    api()->restartService(name, msg);
                     return;
 
                 } else
@@ -355,6 +366,7 @@ void SvdService::babySitterSlot() {
                         QString msg = "Babysitter has found unoccupied static port: " + QString::number(config->staticPort) + " registered for service " + name;
                         notificationSend(msg, ERROR);
                         emit restartSlot();
+                        api()->restartService(name, msg);
                         return;
                     }
 
@@ -378,6 +390,7 @@ void SvdService::babySitterSlot() {
                                 QString msg = "Babysitter has found unoccupied dynamic port: " + QString::number(currentPort) + " registered for service: " + name;
                                 notificationSend(msg, ERROR);
                                 emit restartSlot();
+                                api()->restartService(name, msg);
                                 return;
                             // }
                         }
@@ -401,6 +414,7 @@ void SvdService::babySitterSlot() {
                         QString msg = "Babysitter has found unoccupied static UDP port: " + QString::number(config->staticPort) + " registered for service " + name;
                         notificationSend(msg, ERROR);
                         emit restartSlot();
+                        api()->restartService(name, msg);
                         return;
                     }
 
@@ -417,6 +431,7 @@ void SvdService::babySitterSlot() {
                             QString msg = "Babysitter has found unoccupied dynamic UDP port: " + QString::number(currentPort) + " registered for service: " + name;
                             notificationSend(msg, ERROR);
                             emit restartSlot();
+                            api()->restartService(name, msg);
                             return;
                         }
                     } else {
@@ -441,6 +456,7 @@ void SvdService::babySitterSlot() {
                 QString msg = name + " failed in babySitter slot: " + config->babySitter->expectOutput;
                 notificationSend(msg, ERROR);
                 emit restartSlot();
+                api()->restartService(name, msg);
                 babySit->deleteLater();
                 return;
             } else {
@@ -460,7 +476,7 @@ void SvdService::babySitterSlot() {
             }
             if (add) {
                 logDebug() << "Orphaned service found:" << dependency;
-                SvdService *svce = new SvdService(dependency);
+                SvdService *svce = new SvdService(dependency, api());
                 dependencyServices << svce;
                 svce->exit();
             }
@@ -637,7 +653,7 @@ void SvdService::startSlot(bool withDeps) {
                 logInfo() << "Installing and configuring dependency:" << dependency;
                 auto depConf = new SvdServiceConfig(dependency);
 
-                SvdService *depService = new SvdService(dependency);
+                SvdService *depService = new SvdService(dependency, api());
                 depService->start();
                 depService->installSlot();
                 if (not depConf->serviceConfigured()) {
@@ -660,7 +676,7 @@ void SvdService::startSlot(bool withDeps) {
 
                 /* if dependency is already running - skip it */
                 if (not QFile::exists(depConf->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE)) {
-                    auto depService = new SvdService(dependency);
+                    auto depService = new SvdService(dependency, api());
                     depService->start();
                     depService->startSlot();
                     dependencyServices << depService;
@@ -677,6 +693,7 @@ void SvdService::startSlot(bool withDeps) {
 
         logInfo() << "Validating service" << name;
         emit validateSlot(); // invoke validation before each startSlot
+        api()->validateService(name);
 
         if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE)) {
             QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
@@ -721,6 +738,7 @@ void SvdService::startSlot(bool withDeps) {
     /* invoke after start slot */
     logTrace() << "After process start execution:" << name;
     emit afterStartSlot();
+    api()->afterStartService(name);
 }
 
 

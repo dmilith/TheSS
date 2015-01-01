@@ -9,6 +9,7 @@
 #define __USER_WATCHER_H__
 
 #include "file_events_manager.h"
+#include "api.h"
 #include "service_config.h"
 #include "service_watcher.h"
 #include "service.h"
@@ -58,6 +59,7 @@ class SvdUserWatcher: public QObject {
         SvdFileEventsManager *fileEvents = NULL;
         SvdUserHookTriggerFiles *triggerFiles = NULL;
         SvdUserHookIndicatorFiles *indicatorFiles = NULL;
+        SvdAPI *apiServer = nullptr;
         QString homeDir;
         QString softwareDataDir;
 

@@ -11,6 +11,7 @@
 #include "file_events_manager.h"
 #include "service_config.h"
 #include "service.h"
+#include "api.h"
 
 #include <QObject>
 #include <QFile>
@@ -61,7 +62,8 @@ class SvdServiceWatcher: public QObject {
 
     public:
         QString name();
-        SvdServiceWatcher(const QString& name);
+        SvdAPI* api();
+        SvdServiceWatcher(const QString& name, SvdAPI* api);
         ~SvdServiceWatcher();
 
     private:
@@ -70,6 +72,7 @@ class SvdServiceWatcher: public QObject {
         SvdHookIndicatorFiles *indicatorFiles;
         QString dataDir, appName;
         SvdService *service;
+        SvdAPI *svdapi = nullptr;
 
         void cleanupTriggerHookFiles();
 

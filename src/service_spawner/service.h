@@ -35,6 +35,7 @@
     #include <sys/fcntl.h>
 #endif
 
+#include "api.h"
 #include "../globals/globals.h"
 #include "service_config.h"
 #include "../core/utils.h"
@@ -54,7 +55,7 @@ class SvdService: public QThread {
     Q_OBJECT
 
     public:
-        SvdService(const QString& name);
+        SvdService(const QString& name, SvdAPI* api);
         const QString createHash(const QString& nme);
         const QString releasePostfix();
         qint64 getUptime();
@@ -63,6 +64,7 @@ class SvdService: public QThread {
         void notificationSend(const QString& notificationMessage, NotificationLevels level);
         void stopSitters();
         void loadServiceConfig(const QString& nme);
+        SvdAPI* api();
 
         static void setupDefaultVPNNetwork();
         static void shutdownDefaultVPNNetwork();
@@ -80,6 +82,7 @@ class SvdService: public QThread {
         QNetworkAccessManager* networkManager = NULL;
         SvdServiceConfig* config = NULL;
         SvdServiceConfig* configCache = NULL;
+        SvdAPI* svdapi = nullptr;
 
     public slots:
         void cronSitterSlot();

@@ -40,8 +40,10 @@ void SvdUserWatcher::init() {
     logTrace() << "Homedir" << this->homeDir << ", software data dir:" << this->softwareDataDir;
     // this->dataCollector = new SvdDataCollector();
 
+    notification("Launching API server");
+    apiServer = new SvdAPI(3000); // XXX
+
     collectServices();
-    // collectWebApplications();
 
     fileEvents = new SvdFileEventsManager();
     fileEvents->registerFile(homeDir);
@@ -110,7 +112,7 @@ void SvdUserWatcher::collectServices() {
                 /* detect user watcher */
                 if (this->serviceWatchers.length() == 0) {
                     logDebug() << "Adding new service watcher:" << name;
-                    this->serviceWatchers << new SvdServiceWatcher(name);
+                    this->serviceWatchers << new SvdServiceWatcher(name, apiServer);
                 } else {
                     for (int ind = 0; ind < this->serviceWatchers.length(); ind++) {
                         logDebug() << "Comparing:" << serviceWatchers.at(ind)->name() << "and" << name;
@@ -121,7 +123,7 @@ void SvdUserWatcher::collectServices() {
                             this->serviceWatchers.removeAt(ind);
                         }
                     }
-                    this->serviceWatchers << new SvdServiceWatcher(name);
+                    this->serviceWatchers << new SvdServiceWatcher(name, apiServer);
                 }
             }
         }
