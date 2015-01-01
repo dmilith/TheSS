@@ -67,11 +67,11 @@ class SvdServiceWatcher: public QObject {
         ~SvdServiceWatcher();
 
     private:
-        SvdFileEventsManager *fileEvents;
-        SvdHookTriggerFiles *triggerFiles;
-        SvdHookIndicatorFiles *indicatorFiles;
+        SvdFileEventsManager *fileEvents = nullptr;
+        SvdHookTriggerFiles *triggerFiles = nullptr;
+        SvdHookIndicatorFiles *indicatorFiles = nullptr;
         QString dataDir, appName;
-        SvdService *service;
+        SvdService *service = nullptr;
         SvdAPI *svdapi = nullptr;
 
         void cleanupTriggerHookFiles();

@@ -79,9 +79,9 @@ class SvdService: public QThread {
         QElapsedTimer uptime;
         QTimer babySitter, cronSitter;
         QList<SvdService*> dependencyServices;
-        QNetworkAccessManager* networkManager = NULL;
-        SvdServiceConfig* config = NULL;
-        SvdServiceConfig* configCache = NULL;
+        QNetworkAccessManager* networkManager = nullptr;
+        SvdServiceConfig* config = nullptr;
+        SvdServiceConfig* configCache = nullptr;
         SvdAPI* svdapi = nullptr;
 
     public slots:

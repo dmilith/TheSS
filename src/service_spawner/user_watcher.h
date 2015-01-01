@@ -55,11 +55,11 @@ class SvdUserWatcher: public QObject {
     protected:
 
     private:
-        SvdDataCollector *dataCollector = NULL;
-        SvdFileEventsManager *fileEvents = NULL;
-        SvdUserHookTriggerFiles *triggerFiles = NULL;
-        SvdUserHookIndicatorFiles *indicatorFiles = NULL;
+        SvdDataCollector *dataCollector = nullptr;
+        SvdFileEventsManager *fileEvents = nullptr;
         SvdAPI *apiServer = nullptr;
+        SvdUserHookTriggerFiles *triggerFiles = nullptr;
+        SvdUserHookIndicatorFiles *indicatorFiles = nullptr;
         QString homeDir;
         QString softwareDataDir;
 
