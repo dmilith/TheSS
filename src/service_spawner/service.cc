@@ -285,17 +285,6 @@ void SvdService::babySitterSlot() {
         logDebug() << "Babysitter invoked for:" << name;
     QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
-    /* generate states from service and send it through API server */
-    api()->sendCustomMessageToAllClients(name, QString("\"method\": \"serviceStates\", \"result\": \
-        {\"installing\": ") + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE) ? "true" : "false") +
-       ", \"afterStopping\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE) ? "true" : "false") +
-       ", \"afterStarting\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE) ? "true" : "false") +
-       ", \"configuring\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) ? "true" : "false") +
-       ", \"deploying\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_DEPLOYING_FILE) ? "true" : "false") +
-       ", \"validating\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) ? "true" : "false") +
-       ", \"running\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE) ? "true" : "false") +
-       ", \"reloading\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE) ? "true" : "false") + "}");
-
     /* support separated http url check: */
     if (config->watchHttpAddresses.isEmpty()) {
         logDebug() << "No urls to watch for service" << name;
@@ -307,7 +296,8 @@ void SvdService::babySitterSlot() {
         }
     }
 
-
+    QString aPid;
+    int port = -1;
     if (config->alwaysOn) {
 
         if (config->babySitter->commands.isEmpty()) {
@@ -317,7 +307,7 @@ void SvdService::babySitterSlot() {
             if (QFile::exists(servicePidFile)) {
                 bool ok;
                 logDebug() << "Babysitter has found service pid for" << name;
-                QString aPid = readFileContents(servicePidFile).trimmed();
+                aPid = readFileContents(servicePidFile).trimmed();
                 pid_t pid = aPid.toInt(&ok, 10);
 
                 if (ok) {
@@ -371,7 +361,7 @@ void SvdService::babySitterSlot() {
 
                 /* check static port if it's defined for service */
                 if (config->staticPort != -1) {
-                    int port = registerFreeTcpPort(config->staticPort);
+                    port = registerFreeTcpPort(config->staticPort);
                     if (port == config->staticPort) {
                         /* if port is equal then it implies that nothing is listening on that port */
                         QString msg = "Babysitter has found unoccupied static port: " + QString::number(config->staticPort) + " registered for service " + name;
@@ -387,7 +377,7 @@ void SvdService::babySitterSlot() {
 
                     if (QFile::exists(portFilePath)) {
                         int currentPort = readFileContents(portFilePath).trimmed().toInt();
-                        int port = registerFreeTcpPort(currentPort);
+                        port = registerFreeTcpPort(currentPort);
                         logDebug() << "Port compare:" << currentPort << "with" << port << "for service" << name << "(should be different)";
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
@@ -419,7 +409,7 @@ void SvdService::babySitterSlot() {
 
                 /* check static port if it's defined for service */
                 if (config->staticPort != -1) {
-                    int port = registerFreeUdpPort(config->staticPort);
+                    port = registerFreeUdpPort(config->staticPort);
                     if (port == config->staticPort) {
                         /* if port is equal then it implies that nothing is listening on that port */
                         QString msg = "Babysitter has found unoccupied static UDP port: " + QString::number(config->staticPort) + " registered for service " + name;
@@ -435,7 +425,7 @@ void SvdService::babySitterSlot() {
 
                     if (QFile::exists(portFilePath)) {
                         int currentPort = readFileContents(portFilePath).trimmed().toInt();
-                        int port = registerFreeUdpPort(currentPort);
+                        port = registerFreeUdpPort(currentPort);
                         logDebug() << "UDP port compare:" << currentPort << "with" << port << "for service" << name << "(should be different)";
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
@@ -451,7 +441,6 @@ void SvdService::babySitterSlot() {
                         return;
                     }
                 }
-
             }
 
         /* case when custom babysitter must be invoked, cause there's f.e. auto managment of pid by service */
@@ -474,8 +463,20 @@ void SvdService::babySitterSlot() {
                 logDebug() << "Babysitter expectations passed for service:" << name;
             }
             babySit->deleteLater();
-
         }
+
+        /* creating json list of dependencies and domains */
+        QStringList collectionOfDeps;
+        Q_FOREACH(auto d, config->dependencies) {
+            collectionOfDeps << "\"" + d + "\"";
+        }
+        QString deps = "[" + collectionOfDeps.join(",") + "]";
+
+        QStringList collectionOfDoms;
+        Q_FOREACH(auto d, config->domains) {
+            collectionOfDoms << "\"" + d + "\"";
+        }
+        QString doms = "[" + collectionOfDoms.join(",") + "]";
 
         /* look for orphaned dependency services */
         Q_FOREACH(auto dependency, config->dependencies) {
@@ -492,6 +493,22 @@ void SvdService::babySitterSlot() {
                 svce->exit();
             }
         }
+
+        /* generate states from service and send it through API server */
+        api()->sendCustomMessageToAllClients(name, QString("\"method\": \"serviceStates\", \"result\": \
+            {\"installing\": ") + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE) ? "true" : "false") +
+           ", \"afterStopping\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE) ? "true" : "false") +
+           ", \"afterStarting\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE) ? "true" : "false") +
+           ", \"configuring\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) ? "true" : "false") +
+           ", \"deploying\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_DEPLOYING_FILE) ? "true" : "false") +
+           ", \"validating\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) ? "true" : "false") +
+           ", \"running\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE) ? "true" : "false") +
+           ", \"reloading\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE) ? "true" : "false") +
+           ", \"port\": " + QString::number(port) +
+           ", \"pid\": " + aPid +
+           ", \"domains\": " + doms +
+           ", \"dependencies\": " + deps +
+           "}");
 
     } else {
         logDebug() << "alwaysOn option disabled for service:" << name;
