@@ -178,15 +178,23 @@ void SvdAPI::sendListServices() {
     QStringList serviceList = QDir(getSoftwareDataDir()).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
     QStringList finalList;
     Q_FOREACH(QString elem, serviceList) {
-        finalList << "{\"name\": \"" + elem + "\", \"cpu\": 10, \"mem\": 2048, \"status\": \"" + getServiceStatus(elem) +
-                     "\"}";
+        finalList << "{\"name\": \"" + elem + "\", \"cpu\": 10, \"mem\": 2048 }";
     }
     services += "[" + finalList.join(",") + "]";
 
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
         client->sendTextMessage("{\"ts\": \"" +
-                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"serviceList\", \"services\": " + services + "}");
+                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"serviceList\", \"result\": " + services + "}");
+    }
+}
+
+
+void SvdAPI::sendCustomMessageToAllClients(QString name, QString content) {
+    logDebug() << "Sending custom message to all clients";
+    Q_FOREACH(auto client, m_clients) {
+        logDebug() << "Connected peer:" << client->peerAddress();
+        client->sendTextMessage("{\"serviceName\": \"" + name + "\", " + content + "}");
     }
 }
 

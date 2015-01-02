@@ -45,6 +45,7 @@ class SvdAPI: public QObject {
         QString getServiceStatus(QString name);
         void executeCommand(QString command);
         void sendListServices();
+        void sendCustomMessageToAllClients(QString name, QString content);
         void sendMessageToAllClients(QString name, QString reason, QString hookName);
 
         void startService(QString name, QString reason = "");
