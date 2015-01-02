@@ -186,7 +186,7 @@ void SvdAPI::sendListServices() {
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
         client->sendTextMessage("{\"ts\": \"" +
-                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"listServices\", \"services\": " + services + "}");
+                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"serviceList\", \"services\": " + services + "}");
     }
 }
 
