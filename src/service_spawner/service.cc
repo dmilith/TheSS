@@ -293,6 +293,7 @@ void SvdService::babySitterSlot() {
        ", \"configuring\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) ? "true" : "false") +
        ", \"deploying\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_DEPLOYING_FILE) ? "true" : "false") +
        ", \"validating\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) ? "true" : "false") +
+       ", \"running\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE) ? "true" : "false") +
        ", \"reloading\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE) ? "true" : "false") + "}");
 
     /* support separated http url check: */
