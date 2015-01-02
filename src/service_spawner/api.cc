@@ -186,7 +186,7 @@ void SvdAPI::sendListServices() {
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
         client->sendTextMessage("{\"ts\": \"" +
-                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"services\": " + services + "}");
+                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"listServices\", \"services\": " + services + "}");
     }
 }
 
@@ -195,7 +195,7 @@ void SvdAPI::sendMessageToAllClients(QString name, QString reason, QString hookN
     logDebug() << "Sending status to all clients from service:" << name;
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"hook\": \"" + hookName + "\", \"reason\": \"" + reason + "\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
+        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"hook\": \"" + hookName + "\", \"reason\": \"" + reason + "\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"hookCallback\"}");
     }
 }
 
