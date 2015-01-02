@@ -42,6 +42,8 @@ class SvdAPI: public QObject {
         void socketDisconnected();
 
     public:
+        void sendMessageToAllClients(QString name, QString reason, QString hookName);
+
         void startService(QString name, QString reason = "");
         void installService(QString name, QString reason = "");
         void configureService(QString name, QString reason = "");

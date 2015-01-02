@@ -167,122 +167,71 @@ void SvdAPI::socketDisconnected() {
 }
 
 
-void SvdAPI::installService(QString name, QString reason) {
-    logWarn() << "installService" << name;
+void SvdAPI::sendMessageToAllClients(QString name, QString reason, QString hookName) {
+    logDebug() << "Sending status to all clients from service:" << name;
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"hook\": \"installService\", \"reason\": \"" + reason + "\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
+        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"hook\": \"" + hookName + "\", \"reason\": \"" + reason + "\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
     }
+}
+
+
+void SvdAPI::installService(QString name, QString reason) {
+    sendMessageToAllClients(name, reason, "installService");
 }
 
 void SvdAPI::configureService(QString name, QString reason) {
-    logWarn() << "configureService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"configureService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "configureService");
 }
 
 void SvdAPI::reConfigureService(QString name, QString reason) {
-    logWarn() << "reConfigureService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"reConfigureService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "reConfigureService");
 }
 
 void SvdAPI::reConfigureWithoutDepsService(QString name, QString reason) {
-    logWarn() << "reConfigureWithoutDepsService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"reConfigureWithoutDepsService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "reConfigureWithoutDepsService");
 }
 
 void SvdAPI::validateService(QString name, QString reason) {
-    logWarn() << "validateService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"validateService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "validateService");
 }
 
 void SvdAPI::startService(QString name, QString reason) {
-    logWarn() << "startService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"startService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "startService");
 }
 
 void SvdAPI::startWithoutDepsService(QString name, QString reason) {
-    logWarn() << "startWithoutDepsService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"startWithoutDepsService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "startWithoutDepsService");
 }
 
 void SvdAPI::afterStartService(QString name, QString reason) {
-    logWarn() << "afterStartService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"afterStartService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "afterStartService");
 }
 
 void SvdAPI::stopService(QString name, QString reason) {
-    logWarn() << "stopService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"stopService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "stopService");
 }
 
 void SvdAPI::stopWithoutDepsService(QString name, QString reason) {
-    logWarn() << "stopWithoutDepsService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"stopWithoutDepsService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "stopWithoutDepsService");
 }
 
 void SvdAPI::afterStopService(QString name, QString reason) {
-    logWarn() << "afterStopService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"afterStopService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "afterStopService");
 }
 
 void SvdAPI::restartService(QString name, QString reason) {
-    logWarn() << "restartService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"restartService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "restartService");
 }
 
 void SvdAPI::restartWithoutDepsService(QString name, QString reason) {
-    logWarn() << "restartWithoutDepsService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"restartWithoutDepsService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "restartWithoutDepsService");
 }
 
 void SvdAPI::reloadService(QString name, QString reason) {
-    logWarn() << "reloadService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"reloadService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "reloadService");
 }
 
 void SvdAPI::destroyService(QString name, QString reason) {
-    logWarn() << "destroyService" << name;
-    Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"reason\": \"" + reason + "\", \"hook\": \"destroyService\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\"}");
-    }
+    sendMessageToAllClients(name, reason, "destroyService");
 }
