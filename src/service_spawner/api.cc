@@ -45,7 +45,7 @@ void SvdAPI::onNewConnection() {
 }
 
 
-void executeCommand(QString command) {
+void SvdAPI::executeCommand(QString command) {
     /*
     format:
         {"cmd": "API command name", "serviceName": "service name"}
@@ -102,7 +102,7 @@ void executeCommand(QString command) {
     switch (comm) {
 
         case serviceList: {
-
+            sendListServices();
         }; break;
 
         case serviceDetail: {
@@ -163,6 +163,30 @@ void SvdAPI::socketDisconnected() {
     if (pClient) {
         m_clients.removeAll(pClient);
         pClient->deleteLater();
+    }
+}
+
+
+QString SvdAPI::getServiceStatus(QString name) {
+    return "a name";
+}
+
+
+void SvdAPI::sendListServices() {
+    logDebug() << "Sending service list";
+    QString services;
+    QStringList serviceList = QDir(getSoftwareDataDir()).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
+    QStringList finalList;
+    Q_FOREACH(QString elem, serviceList) {
+        finalList << "{\"name\": \"" + elem + "\", \"cpu\": 10, \"mem\": 2048, \"status\": \"" + getServiceStatus(elem) +
+                     "\"}";
+    }
+    services += "[" + finalList.join(",") + "]";
+
+    Q_FOREACH(auto client, m_clients) {
+        logDebug() << "Connected peer:" << client->peerAddress();
+        client->sendTextMessage("{\"ts\": \"" +
+                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"services\": " + services + "}");
     }
 }
 

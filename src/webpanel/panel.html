@@ -34,7 +34,8 @@
 
     function onOpen(evt) {
         writeToScreen("CONNECTED");
-        doSend("{\"cmd\": \"serviceDetail\", \"serviceName\": \"Stefan\", \"hooks\": [\"stop\", \"reconfigure\"]}");
+        doSend("{\"cmd\": \"serviceList\"}");
+        // doSend("{\"cmd\": \"serviceDetail\", \"serviceName\": \"Stefan\", \"hooks\": [\"stop\", \"reconfigure\"]}");
     }
 
     function onClose(evt) {
