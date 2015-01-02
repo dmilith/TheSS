@@ -496,7 +496,7 @@ void SvdService::babySitterSlot() {
 
         /* generate states from service and send it through API server */
         api()->sendCustomMessageToAllClients(name, QString("\"method\": \"serviceStates\", \"result\": \
-            {\"installing\": ") + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE) ? "true" : "false") +
+            {\"flags\": {\"installing\": ") + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE) ? "true" : "false") +
            ", \"afterStopping\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE) ? "true" : "false") +
            ", \"afterStarting\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE) ? "true" : "false") +
            ", \"configuring\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) ? "true" : "false") +
@@ -504,7 +504,8 @@ void SvdService::babySitterSlot() {
            ", \"validating\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) ? "true" : "false") +
            ", \"running\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RUNNING_FILE) ? "true" : "false") +
            ", \"reloading\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE) ? "true" : "false") +
-           ", \"port\": " + QString::number(port) +
+           "}, " +
+           "\"port\": " + QString::number(port) +
            ", \"pid\": " + aPid +
            ", \"domains\": " + doms +
            ", \"dependencies\": " + deps +
