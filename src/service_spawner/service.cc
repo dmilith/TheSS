@@ -285,6 +285,16 @@ void SvdService::babySitterSlot() {
         logDebug() << "Babysitter invoked for:" << name;
     QString servicePidFile = config->prefixDir() + DEFAULT_SERVICE_PIDS_DIR + "/" + config->releaseName() + DEFAULT_SERVICE_PID_FILE;
 
+    /* generate states from service and send it through API server */
+    api()->sendCustomMessageToAllClients(name, QString("\"method\": \"serviceStates\", \"result\": \
+        {\"installing\": ") + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE) ? "true" : "false") +
+       ", \"afterStopping\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE) ? "true" : "false") +
+       ", \"afterStarting\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTARTING_FILE) ? "true" : "false") +
+       ", \"configuring\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_CONFIGURING_FILE) ? "true" : "false") +
+       ", \"deploying\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_DEPLOYING_FILE) ? "true" : "false") +
+       ", \"validating\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATING_FILE) ? "true" : "false") +
+       ", \"reloading\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_RELOADING_FILE) ? "true" : "false") + "}");
+
     /* support separated http url check: */
     if (config->watchHttpAddresses.isEmpty()) {
         logDebug() << "No urls to watch for service" << name;
