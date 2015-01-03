@@ -612,32 +612,10 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                     }
                 }
 
-            } else { /* don't resolve domain, just take first address available.. */
-                auto list = QNetworkInterface::allAddresses();
-                QString resultAddress = "";
-                Q_FOREACH(QHostAddress value, list) {
-                    logTrace() << "Processing an address:" << value.toString();
-                    userAddress = value.toString();
-                    if (userAddress == DEFAULT_LOCAL_ADDRESS) {
-                        logTrace() << "Ignoring localhost address.";
-                    } else if (userAddress.contains(":")) {
-                        logTrace() << "Ignoring IPV6 address:" << userAddress << "Doing fallback to local v4 address.";
-                        resultAddress = DEFAULT_LOCAL_ADDRESS;
-                    } else {
-                        logTrace() << "Service:" << name << "bound to address:" << userAddress;
-                        resultAddress = userAddress;
-                    }
-                }
-
-                if (resultAddress.trimmed().isEmpty()) {
-                    logTrace() << "No address. Doing fallback to local host address for improved security.";
-                    ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
-                } else {
-                    ccont = ccont.replace("SERVICE_ADDRESS", resultAddress); /* replace with user address content */
-                }
-
-                // logTrace() << "Set address of domain " << userDomain << " as wildcard address: " << DEFAULT_WILDCARD_ADDRESS;
-                // ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_WILDCARD_ADDRESS); /* replace with user address content */
+            } else { /* don't resolve domain, just bind to local address.. */
+                logTrace() << "Set address to wildcard address: " << DEFAULT_LOCAL_ADDRESS;
+                ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
+                tcpAddress = DEFAULT_LOCAL_ADDRESS;
             }
         } else {
             ccont = ccont.replace("SERVICE_ADDRESS", address);
