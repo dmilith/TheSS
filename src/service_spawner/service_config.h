@@ -61,6 +61,7 @@ class SvdServiceConfig : public QObject {
         const QString rootIgniter();
         const QString userIgniter();
         const QString releaseName();
+        const QString address();
 
         /* internal service config API. Uses shared JSON loader */
         QString getString(const char* element);

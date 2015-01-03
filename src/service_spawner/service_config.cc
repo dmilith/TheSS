@@ -473,6 +473,11 @@ const QString SvdServiceConfig::defaultTemplateFile() {
 }
 
 
+const QString SvdServiceConfig::address() {
+    return tcpAddress;
+}
+
+
 const QString SvdServiceConfig::rootIgniter() {
     return QString(SYSTEM_USERS_DIR) + DEFAULT_USER_IGNITERS_DIR + "/" + name + DEFAULT_SOFTWARE_TEMPLATE_EXT;
 }
@@ -602,12 +607,15 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                         if (replaceWith.isEmpty()) {
                             logTrace() << "Fallback to local address for domain:" << domdom;
                             ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
+                            tcpAddress = DEFAULT_LOCAL_ADDRESS;
                         } else {
                             logTrace() << "Final result of domain resolve is:" << replaceWith;
+                            tcpAddress = replaceWith;
                             ccont = ccont.replace("SERVICE_ADDRESS", replaceWith); /* replace with user address content */
                         }
                     } else {
                         logTrace() << "Empty domain resolve of: " << domdom << "for service:" << name << "Setting local address: " << DEFAULT_LOCAL_ADDRESS;
+                        tcpAddress = DEFAULT_LOCAL_ADDRESS;
                         ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
                     }
                 }
@@ -619,8 +627,8 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             }
         } else {
             ccont = ccont.replace("SERVICE_ADDRESS", address);
+            tcpAddress = address;
         }
-
         return ccont;
     }
 }
