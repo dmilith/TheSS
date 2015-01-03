@@ -60,6 +60,7 @@ void TestLibrary::testParseJSONRedis() {
     QVERIFY(config->name == QString("Redis"));
     QVERIFY(config->softwareName == QString("Redis"));
     QVERIFY(config->staticPort == 6379);
+    QVERIFY(config->address() == DEFAULT_LOCAL_ADDRESS);
     QVERIFY(config->uid == getuid());
     QVERIFY(config->schedulers.first()->cronEntry.contains("*"));
 
@@ -188,7 +189,7 @@ void TestLibrary::testParseDefault() {
 
 
 void TestLibrary::testConfigDryRun() {
-    auto config = new SvdServiceConfig("TestRedis", true); /* dry run */
+    auto config = new SvdServiceConfig("TestRedis");
     QVERIFY(config->install->commands == "sofin get redis");
     QVERIFY(config->softwareName == "Redis");
     QVERIFY(not config->shell.isEmpty());
@@ -349,26 +350,26 @@ void TestLibrary::testFreePortFunctionality() {
     QVERIFY(port != 0);
     logDebug() << "Port:" << port;
 
-    uint port2 = registerFreeTcpPort();
-    uint port3 = registerFreeTcpPort();
-    uint port4 = registerFreeTcpPort();
-    uint port5 = registerFreeTcpPort();
-    uint port6 = registerFreeTcpPort();
-    uint port7 = registerFreeTcpPort();
-    uint port8 = registerFreeTcpPort();
-    uint port9 = registerFreeTcpPort();
-    uint port10 = registerFreeTcpPort();
+    uint port2 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port3 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port4 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port5 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port6 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port7 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port8 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port9 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port10 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
     QVERIFY(port10 != port9 != port8 != port7 != port6 != port5 != port4 != port3 != port2 != port);
     QVERIFY(port2 != 0);
     logDebug() << "Port:" << port2;
 
-    uint takenPort = registerFreeTcpPort(22); // XXX: not yet determined used port.. so using ssh default port
+    uint takenPort = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, 22); // XXX: not yet determined used port.. so using ssh default port
     logDebug() << "Port:" << takenPort;
     QVERIFY(takenPort != 22);
     QVERIFY(takenPort != 0);
 
     if (getuid() > 0) {
-        uint takenPort2 = registerFreeTcpPort(1000); // some port under 1024 (root port)
+        uint takenPort2 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, 1000); // some port under 1024 (root port)
         logDebug() << "Port:" << takenPort2;
         QVERIFY(takenPort2 != 1000);
         QVERIFY(takenPort2 != 0);
@@ -533,10 +534,11 @@ void TestLibrary::testSanityValueCheck() {
 
 
 void TestLibrary::testInstallingWrongRedis() {
+    auto apiServer = new SvdAPI(3001);
     QString name = "TestWrongRedis";
     auto config = new SvdServiceConfig(name);
     QVERIFY(config->valid());
-    auto service = new SvdService(name);
+    auto service = new SvdService(name, apiServer);
     service->start();
     service->installSlot();
     QString outputFile = config->prefixDir() + DEFAULT_SERVICE_OUTPUT_FILE;
@@ -546,9 +548,9 @@ void TestLibrary::testInstallingWrongRedis() {
     // QVERIFY(QFile::exists(outputFile));
     // QVERIFY(QFile::exists(errorsFile));
     // removeDir(config->prefixDir());
-
     delete service;
     delete config;
+    apiServer->deleteLater();
 }
 
 

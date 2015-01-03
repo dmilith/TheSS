@@ -9,6 +9,7 @@ include(../Common.pro)
 TEMPLATE = lib
 CONFIG += qt warn_off staticlib
 QT -= gui
+QT += network
 
 HEADERS   += \
             ../globals/globals.h \

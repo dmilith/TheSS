@@ -361,7 +361,7 @@ void SvdService::babySitterSlot() {
 
                 /* check static port if it's defined for service */
                 if (config->staticPort != -1) {
-                    port = registerFreeTcpPort(config->staticPort);
+                    port = registerFreeTcpPort(config->address(), config->staticPort);
                     if (port == config->staticPort) {
                         /* if port is equal then it implies that nothing is listening on that port */
                         QString msg = "Babysitter has found unoccupied static port: " + QString::number(config->staticPort) + " registered for service " + name;
@@ -377,7 +377,7 @@ void SvdService::babySitterSlot() {
 
                     if (QFile::exists(portFilePath)) {
                         int currentPort = readFileContents(portFilePath).trimmed().toInt();
-                        port = registerFreeTcpPort(currentPort);
+                        port = registerFreeTcpPort(config->address(), currentPort);
                         logDebug() << "Port compare:" << currentPort << "with" << port << "for service" << name << "(should be different)";
                         if (port == currentPort) {
                             /* if port is equal then it implies that nothing is listening on that port */
@@ -507,6 +507,7 @@ void SvdService::babySitterSlot() {
            "}, " +
            "\"port\": " + QString::number(port) +
            ", \"pid\": " + aPid +
+           ", \"address\": " + "\"" + config->address() + "\"" +
            ", \"domains\": " + doms +
            ", \"dependencies\": " + deps +
            "}");

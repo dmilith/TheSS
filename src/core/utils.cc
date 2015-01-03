@@ -322,7 +322,10 @@ const QString getServiceDataDir(const QString& name) {
 
 
 /* author: dmilith */
-uint registerFreeTcpPort(uint specificPort) {
+uint registerFreeTcpPort(const QString& address, uint specificPort) {
+    QString addr = address;
+    if (addr.isEmpty())
+        addr = DEFAULT_LOCAL_ADDRESS;
     QTime midnight(0, 0, 0);
     qsrand(midnight.msecsTo(QTime::currentTime())); // accuracy is in ms.. so let's hack it a bit
     usleep(1000); // this practically means no chance to generate same port when generating multiple ports at once
@@ -332,13 +335,13 @@ uint registerFreeTcpPort(uint specificPort) {
     } else
         port = specificPort;
 
-    logTrace() << "Trying port: " << port << ". Randseed: " << rand;
+    logTrace() << "Trying address:" << addr << "on port:" << port << "Randseed:" << rand;
     auto tcpServer = new QTcpServer();
-    tcpServer->listen(QHostAddress::AnyIPv4, port);
+    tcpServer->listen(QHostAddress(addr), port);
     if (not tcpServer->isListening()) {
         logDebug() << "Taken port on TCP:" << port;
         delete tcpServer;
-        return registerFreeTcpPort(10000 + rand);
+        return registerFreeTcpPort(addr, 10000 + rand);
     } else
         tcpServer->close();
     delete tcpServer;

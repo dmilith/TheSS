@@ -5,6 +5,7 @@
 #include "../service_spawner/service_config.h"
 #include "../core/utils-core.h"
 #include "../core/utils.h"
+#include "../service_spawner/api.h"
 #include "../service_spawner/service.h"
 #include "../service_spawner/process.h"
 #include "../deployer/webapp_types.h"
