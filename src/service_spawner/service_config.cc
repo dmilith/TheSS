@@ -198,7 +198,7 @@ void SvdServiceConfig::prettyPrint() {
 }
 
 
-SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
+SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     name = serviceName; // this must be declared first!
     uid = getuid();
 
@@ -253,46 +253,42 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
     this->sha = hash->result().toHex();
     delete hash;
 
-    if (not dryRun) {
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
-        getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR);
-    }
+    getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
+    getOrCreateDir(prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
+    getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
+    getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
+    getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
+    getOrCreateDir(prefixDir() + DEFAULT_SERVICE_CONFS_DIR);
 
     portsPool = getInteger("portsPool");
     QString portsDirLocation = prefixDir() + DEFAULT_SERVICE_PORTS_DIR;
     logTrace() << "Port pool for service:" << name << "=>" << QString::number(portsPool);
-    if (not dryRun)
-        if (portsPool > 1)
-            if (QDir().exists(portsDirLocation))
-                for (int indx = 1; indx < portsPool; indx++) {
-                    QString portFilePath = QString(portsDirLocation + "/" + QString::number(indx)).trimmed();
-                    if (not QFile::exists(portsDirLocation + QString::number(indx))) {
-                        logTrace() << "Creating port file:" << portsDirLocation + QString::number(indx);
-                        uint freePort = registerFreeTcpPort();
-                        writeToFile(portFilePath, QString::number(freePort));
-                    }
+
+    if (portsPool > 1)
+        if (QDir().exists(portsDirLocation))
+            for (int indx = 1; indx < portsPool; indx++) {
+                QString portFilePath = QString(portsDirLocation + "/" + QString::number(indx)).trimmed();
+                if (not QFile::exists(portsDirLocation + QString::number(indx))) {
+                    logTrace() << "Creating port file:" << portsDirLocation + QString::number(indx);
+                    uint freePort = registerFreeTcpPort(address());
+                    writeToFile(portFilePath, QString::number(freePort));
                 }
+            }
 
     /* then replace main port */
     staticPort = getInteger("staticPort");
     QString portFilePath = portsDirLocation + "/" + DEFAULT_SERVICE_PORT_NUMBER; // getOrCreateDir
-    if (not dryRun) {
-        if (staticPort != -1) { /* defined static port */
-            logTrace() << "Set static port:" << staticPort << "for service" << name;
-            writeToFile(portFilePath, QString::number(staticPort));
-            generatedDefaultPort = staticPort;
-        } else {
-            if (not QFile::exists(portFilePath)) {
-                generatedDefaultPort = registerFreeTcpPort();
-                logTrace() << "Set random free port:" << QString::number(generatedDefaultPort) << "for service" << name;
-                writeToFile(portFilePath, QString::number(generatedDefaultPort));
-            } else
-                generatedDefaultPort = readFileContents(portFilePath).trimmed().toInt();
-        }
+    if (staticPort != -1) { /* defined static port */
+        logTrace() << "Set static port:" << staticPort << "for service" << name;
+        writeToFile(portFilePath, QString::number(staticPort));
+        generatedDefaultPort = staticPort;
+    } else {
+        if (not QFile::exists(portFilePath)) {
+            generatedDefaultPort = registerFreeTcpPort(address());
+            logTrace() << "Set random free port:" << QString::number(generatedDefaultPort) << "for service" << name;
+            writeToFile(portFilePath, QString::number(generatedDefaultPort));
+        } else
+            generatedDefaultPort = readFileContents(portFilePath).trimmed().toInt();
     }
     #ifdef QT_DEBUG
         Q_ASSERT(not QString::number(generatedDefaultPort).isEmpty());
@@ -375,13 +371,11 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName, bool dryRun) {
         getServiceDataDir(name)
     #endif
     );
-    if (not dryRun) {
-        QString autoStFile = serviceDataDir + AUTOSTART_TRIGGER_FILE;
-        if (autoStart and not QFile::exists(autoStFile)) {
-            logInfo() << "Autostart predefined on igniter side (has highest priority): Autostart state set for service:" << name;
-            logTrace() << "Touching:" << autoStFile;
-            touch(autoStFile);
-        }
+    QString autoStFile = serviceDataDir + AUTOSTART_TRIGGER_FILE;
+    if (autoStart and not QFile::exists(autoStFile)) {
+        logInfo() << "Autostart predefined on igniter side (has highest priority): Autostart state set for service:" << name;
+        logTrace() << "Touching:" << autoStFile;
+        touch(autoStFile);
     }
 
     #ifdef QT_DEBUG

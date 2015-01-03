@@ -52,7 +52,7 @@ class SvdServiceConfig : public QObject {
     public:
         SvdServiceConfig(); /* Load default values */
         ~SvdServiceConfig();
-        SvdServiceConfig(const QString& serviceName, bool dryRun = false);
+        SvdServiceConfig(const QString& serviceName);
 
         const QString replaceAllSpecialsIn(const QString content);
         const QString serviceRoot();
@@ -85,7 +85,7 @@ class SvdServiceConfig : public QObject {
         // QString defaultIgniterCache = "";
         // QString userIgniterCache = "";
         uint uid; // user uid who loads igniter config
-        QString name, softwareName, repository, parentService, sha, shell;
+        QString name, softwareName, repository, parentService, sha, shell, tcpAddress = DEFAULT_LOCAL_ADDRESS;
         int generatedDefaultPort = 0;
         double formatVersion = 0.0;
         bool autoStart, watchPort, watchSocket, watchUdpPort, alwaysOn, resolveDomain, webApp;
