@@ -28,3 +28,8 @@ SOURCES   += \
              service_spawner.cc
 LIBS      += ../liblogger.a ../libcore.a ../libyajl.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../bin/svdss
+
+freebsd {
+      LIBS += -lprocstat -lc -lkvm
+}
+
