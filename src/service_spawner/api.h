@@ -15,9 +15,37 @@
 #include <iostream>
 #include <unistd.h>
 
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/user.h>
+#include <sys/socket.h>
+#include <sys/sysctl.h>
+#include <sys/un.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <libgen.h>
+#include <getopt.h>
+#include <termios.h>
+#include <signal.h>
+#include <dirent.h>
+
+#ifdef __FreeBSD__
+    #include <kvm.h>
+    #include <sys/capability.h>
+    #include <libprocstat.h>
+    #include <libutil.h>
+    using namespace std;
+#endif
+
 #include "../globals/globals.h"
 #include "../core/utils-core.h"
 #include "../core/logger-core.h"
+
+
+QString getJSONProcessesList(uint uid);
 
 
 QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
@@ -44,6 +72,7 @@ class SvdAPI: public QObject {
     public:
         QString getServiceStatus(QString name);
         void executeCommand(QString command);
+        void sendUserStatsToAllClients();
         void sendListServices();
         void sendCustomMessageToAllClients(QString name, QString content);
         void sendMessageToAllClients(QString name, QString reason, QString hookName);

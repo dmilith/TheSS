@@ -16,6 +16,100 @@
 QT_USE_NAMESPACE
 
 
+QString escapeJsonString(const std::string& input) {
+    QString ss;
+    for (auto iter = input.begin(); iter != input.end(); iter++) {
+        switch (*iter) {
+            case '\\': ss += "\\\\"; break;
+            case '"': ss += "\\\""; break;
+            // case '/': ss += "\\/"; break;
+            case '\b': ss += "\\b"; break;
+            case '\f': ss += "\\f"; break;
+            case '\n': ss += "\\n"; break;
+            case '\r': ss += "\\r"; break;
+            case '\t': ss += "\\t"; break;
+            default: ss += *iter; break;
+        }
+    }
+    return ss;
+}
+
+
+QString getJSONProcessesList(uint uid) {
+    #ifdef __APPLE__
+        /* NYI */
+        return "[]";
+    #endif
+    #ifdef __FreeBSD__
+        int count = 0;
+        char** args = NULL;
+        QString command, output;
+        int pagesize = getpagesize();
+
+        kvm_t* kd = kvm_open(NULL, NULL, NULL, O_RDONLY, NULL);
+        if (kd == 0) {
+            logError() << "Error initializing kernel descriptor!";
+            return "[]";
+        }
+
+        kinfo_proc* procs = kvm_getprocs(kd, KERN_PROC_UID, uid, &count); // get processes directly from BSD kernel
+        if (count <= 0) {
+            logError() << "No processes for given UID!";
+            return "[]";
+        }
+
+        for (int i = 0; i < count; ++i) {
+            QString out;
+            command = "";
+            args = kvm_getargv(kd, procs, 0);
+            for (int y = 0; (args != 0) && (args[y] != 0); y++)
+                if (y == 0)
+                    command = QString(args[y]);
+                else
+                    command += " " + QString(args[y]);
+
+            unsigned int cnt = 0;
+            struct procstat* procstat = procstat_open_sysctl();
+            struct kinfo_proc *kproc = procstat_getprocs(procstat, KERN_PROC_PID, procs->ki_pid, &cnt);
+            // QString netinfo = "";
+            // if (cnt != 0)
+            //     netinfo = procstat_getfiles(procstat, kproc, 0);
+            procstat_freeprocs(procstat, kproc);
+            procstat_close(procstat);
+            procstat = nullptr;
+            kproc = nullptr;
+
+            if (i == 0) {
+                out += "[";
+            }
+            out += "{\"pid\":" + QString::number(procs->ki_pid) + ","
+                + "\"ppid\":" + QString::number(procs->ki_ppid) + ","
+                + "\"name\":\"" + escapeJsonString(procs->ki_comm) + "\","
+                + "\"cmd\":\"" + escapeJsonString(command.toStdString()) + "\","
+                + "\"rss\":" + QString::number(procs->ki_rssize * pagesize) + ","
+                + "\"mrss\":" + QString::number(procs->ki_rusage.ru_maxrss * pagesize) + ","
+                + "\"runtime\":" + QString::number(procs->ki_runtime / 1000) + ","
+                + "\"blk-in\":" + QString::number(procs->ki_rusage.ru_inblock) + ","
+                + "\"blk-out\":" + QString::number(procs->ki_rusage.ru_oublock) + ","
+                + "\"thr\":" + QString::number(procs->ki_numthreads) + ","
+                + "\"pri-nrml\":" + QString::number(procs->ki_pri.pri_level) + ","
+                + "\"netinfo\":\"" + "" + "\"}"; // escapeJsonString(netinfo)
+
+            if (i == count - 1) {
+                out += "]";
+            } else {
+                out += ",";
+            }
+            args = nullptr;
+            output += out;
+            procs++;
+        }
+        kvm_close(kd);
+        return output;
+    #endif
+}
+
+
 SvdAPI::SvdAPI(quint16 port, QObject *parent) :
     QObject(parent),
     m_pWebSocketServer(new QWebSocketServer(QStringLiteral("API Server"), QWebSocketServer::NonSecureMode, this)),
@@ -35,7 +129,7 @@ SvdAPI::~SvdAPI() {
 
 
 void SvdAPI::onNewConnection() {
-    QWebSocket *pSocket = m_pWebSocketServer->nextPendingConnection();
+    QPointer<QWebSocket> pSocket = m_pWebSocketServer->nextPendingConnection();
 
     connect(pSocket, &QWebSocket::textMessageReceived, this, &SvdAPI::processTextMessage);
     connect(pSocket, &QWebSocket::binaryMessageReceived, this, &SvdAPI::processBinaryMessage);
@@ -55,12 +149,12 @@ void SvdAPI::executeCommand(QString command) {
     auto apiCommands = QStringList();
     apiCommands << "serviceList" << "serviceDetail" << "serviceHooks" <<
                     "serviceCreate" << "serviceDestroy" << "serviceSetAutostart" <<
-                    "serviceEnableNotification" << "serviceEditIgniter";
+                    "serviceEnableNotification" << "serviceEditIgniter" << "processStat";
 
     enum APIMAP {
         serviceList, serviceDetail, serviceHooks,
         serviceCreate, serviceDestroy, serviceSetAutostart,
-        serviceEnableNotification, serviceEditIgniter
+        serviceEnableNotification, serviceEditIgniter, processStat
     };
 
     /* parsing JSON */
@@ -73,11 +167,11 @@ void SvdAPI::executeCommand(QString command) {
 
     /* processing valid api params */
     QString cmd = JSONAPI::getString(node, NULL, "cmd");
-    QString serviceName = JSONAPI::getString(node, NULL, "serviceName");
-    if (cmd.isEmpty()) {
-        logDebug() << "ERR: Empty API command!";
-        return;
-    }
+    // QString serviceName = JSONAPI::getString(node, NULL, "serviceName");
+    // if (cmd.isEmpty()) {
+    //     logDebug() << "ERR: Empty API command!";
+    //     return;
+    // }
     QStringList hooks = JSONAPI::getArray(node, NULL, "hooks");
 
     /* check if API command is on command list */
@@ -87,7 +181,7 @@ void SvdAPI::executeCommand(QString command) {
     }
 
     logDebug() << "cmd" << cmd;
-    logDebug() << "serviceName" << serviceName;
+    // logDebug() << "serviceName" << serviceName;
     logDebug() << "hooks" << hooks;
 
     /* map commands */
@@ -131,6 +225,10 @@ void SvdAPI::executeCommand(QString command) {
 
         case serviceEditIgniter: {
 
+        }; break;
+
+        case processStat: {
+            sendUserStatsToAllClients();
         }; break;
 
         default: break;
@@ -178,7 +276,7 @@ void SvdAPI::sendListServices() {
     QStringList serviceList = QDir(getSoftwareDataDir()).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
     QStringList finalList;
     Q_FOREACH(QString elem, serviceList) {
-        finalList << "{\"name\": \"" + elem + "\", \"cpu\": 10, \"mem\": 2048 }";
+        finalList << "{\"name\": \"" + elem + "\"}";
     }
     services += "[" + finalList.join(",") + "]";
 
@@ -186,6 +284,15 @@ void SvdAPI::sendListServices() {
         logDebug() << "Connected peer:" << client->peerAddress();
         client->sendTextMessage("{\"ts\": \"" +
                                 QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"serviceList\", \"result\": " + services + "}");
+    }
+}
+
+
+void SvdAPI::sendUserStatsToAllClients() {
+    logDebug() << "Sending process stats to all clients";
+    Q_FOREACH(auto client, m_clients) {
+        logDebug() << "Connected peer:" << client->peerAddress();
+        client->sendTextMessage(getJSONProcessesList(getuid())); /* NOTE: takes only processes of current UID */
     }
 }
 
