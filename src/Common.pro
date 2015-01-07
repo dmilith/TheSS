@@ -39,6 +39,7 @@ freebsd {
     QMAKE_CFLAGS += -Os -w
     QMAKE_CXXFLAGS += -Os -w
     DEFINES += NDEBUG QT_NO_DEBUG
+    LIBS += -lprocstat -lc -lkvm
 }
 
 
