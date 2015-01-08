@@ -1,6 +1,6 @@
 {
     /* defines minimum version of TheSS to use this Defaults */
-    "formatVersion": 0.92,
+    "formatVersion": 0.98,
 
     /* This shell will be used bo spawn user scripts */
     "shell": "/Software/Zsh/exports/zsh",
@@ -9,10 +9,10 @@
     "name": "No-Name",
 
     /* defines domains to which application should bind to */
-    "domains": [],
+    "domains": ["localhost"],
 
     /* when set to false, domain won't be resolved for spcified igniter */
-    "resolveDomain": false,
+    "resolveDomain": true,
 
     /* defines pool of ports used by service. by default only one port is required per service */
     "portsPool": 1,
