@@ -69,11 +69,34 @@ QString getJSONProcessesList(uint uid) {
                     command += " " + QString(args[y]);
 
             unsigned int cnt = 0;
+            int error;
+            char errbuf[_POSIX2_LINE_MAX];
+            struct vnstat vn;
             struct procstat* procstat = procstat_open_sysctl();
             struct kinfo_proc *kproc = procstat_getprocs(procstat, KERN_PROC_PID, procs->ki_pid, &cnt);
-            // QString netinfo = "";
-            // if (cnt != 0)
-            //     netinfo = procstat_getfiles(procstat, kproc, 0);
+
+            QString fileStat = "[";
+            if (cnt != 0) {
+                struct filestat_list *filesInfo = nullptr;
+                struct filestat *fst;
+
+                filesInfo = procstat_getfiles(procstat, kproc, 0);
+                if (filesInfo != nullptr) {
+                    STAILQ_FOREACH(fst, filesInfo, next) {
+                        fileStat += "{";
+                        error = procstat_get_vnode_info(procstat, fst, &vn, errbuf);
+                        if (error != 0) {
+                            fileStat += "}";
+                            continue;
+                        }
+                        fileStat += QString("vn_size:") += QString::number(vn.vn_size) += QString(",vn_mntdir:\"") += QString(vn.vn_mntdir) += QString("\",fileid:") += QString::number(vn.vn_fileid) += QString(", vn_dev:\"") += QString::number(vn.vn_dev) += QString("\",vn_fsid:") += QString::number(vn.vn_fsid) += QString(",vn_type:") += QString::number(vn.vn_type) += QString(",vn_mode:") += QString::number(vn.vn_mode) += QString(",vn_devname:\"") += QString(vn.vn_devname) += QString("\"");
+                        fileStat += "}";
+                    }
+                }
+            }
+            fileStat += "]";
+            fileStat = fileStat.replace("}{","},{");
+
             procstat_freeprocs(procstat, kproc);
             procstat_close(procstat);
             procstat = nullptr;
@@ -92,8 +115,8 @@ QString getJSONProcessesList(uint uid) {
                 + "\"blk-in\":" + QString::number(procs->ki_rusage.ru_inblock) + ","
                 + "\"blk-out\":" + QString::number(procs->ki_rusage.ru_oublock) + ","
                 + "\"thr\":" + QString::number(procs->ki_numthreads) + ","
-                + "\"pri-nrml\":" + QString::number(procs->ki_pri.pri_level) + ","
-                + "\"netinfo\":\"" + "" + "\"}"; // escapeJsonString(netinfo)
+                + "\"priority\":" + QString::number(procs->ki_pri.pri_level) + ","
+                + "\"files-stat\":" + fileStat + "}";
 
             if (i == count - 1) {
                 out += "]";
