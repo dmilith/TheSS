@@ -81,7 +81,7 @@ void TestLibrary::testParseJSONRedis() {
     QVERIFY(!config->configure->commands.contains("SERVICE_ADDRESS"));
     QVERIFY(!config->afterStart->commands.contains("SERVICE_ADDRESS"));
 
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -103,7 +103,7 @@ void TestLibrary::testLoadingDefault() {
     QVERIFY(not config->getBoolean("stefan"));
     QVERIFY(not config->shell.isEmpty());
     QVERIFY(config->valid());
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -184,7 +184,7 @@ void TestLibrary::testParseDefault() {
     }
     yajl_tree_free(node);
 
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -200,9 +200,10 @@ void TestLibrary::testConfigDryRun() {
     QVERIFY(config->domains.contains("rabe"));
     QVERIFY(config->afterStart->expectOutput == config->afterStart->commands);
     QVERIFY(config->afterStart->commands.contains("ene due rabe"));
+    QVERIFY(config->afterStop->expectOutput == "rabe"); /* last domain is domain used by default */
     QVERIFY(not QDir().exists(getServiceDataDir(config->name)));
     QVERIFY(config->valid());
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -285,7 +286,7 @@ void TestLibrary::testParseExistingIgniter() {
     }
     yajl_tree_free(node);
 
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -299,7 +300,7 @@ void TestLibrary::testJsonValidityOfIgniters() {
         auto config = new SvdServiceConfig(igniter);
         QVERIFY(not config->softwareName.isEmpty());
         QVERIFY(config->valid());
-        delete config;
+        config->deleteLater();
     }
 }
 
@@ -312,7 +313,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     // QVERIFY(config->watchPort == true);
     // QVERIFY(config->alwaysOn == true);
     // QVERIFY(config->resolveDomain == false);
-    // delete config;
+    // config->deleteLater();
 
     auto config = new SvdServiceConfig("Redis");
     QCOMPARE(config->name, QString("Redis"));
@@ -323,7 +324,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(config->watchPort);
     QVERIFY(config->alwaysOn);
     QVERIFY(config->resolveDomain);
-    delete config;
+    config->deleteLater();
 
     config = new SvdServiceConfig("Mosh");
     QVERIFY(config->name == "Mosh");
@@ -333,7 +334,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(not config->watchPort);
     QVERIFY(not config->alwaysOn);
     QVERIFY(config->resolveDomain);
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -341,7 +342,7 @@ void TestLibrary::testNonExistantConfigLoading() {
     auto *config = new SvdServiceConfig("PlewisŚmiewis");
     QVERIFY(config->errors().contains("premature EOF"));
     QVERIFY(config->name == "PlewisŚmiewis");
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -423,7 +424,7 @@ void TestLibrary::testMemoryAllocations() {
         SvdServiceConfig *config = new SvdServiceConfig("Redis"); /* Load app specific values */
         QVERIFY(config->valid());
         usleep(10000); // 1000000 - 1s
-        delete config;
+        config->deleteLater();
     }
 }
 
@@ -454,7 +455,7 @@ void TestLibrary::testSomeRealCraziness() {
     config->name = "";
     config->loadIgniter();
     QVERIFY(config->name == "");
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -471,7 +472,7 @@ void TestLibrary::testSanityValueCheck() {
         QVERIFY(config->prefixDir().contains(DEFAULT_HOME_DIR));
     }
     QVERIFY(config->prefixDir().contains(QString(QString(SOFTWARE_DATA_DIR))));
-    delete config;
+    config->deleteLater();
 }
 
 
@@ -529,7 +530,7 @@ void TestLibrary::testSanityValueCheck() {
 //     // removeDir(config->prefixDir());
 
 //     delete service;
-//     delete config;
+//     config->deleteLater();
 // }
 
 
@@ -549,7 +550,7 @@ void TestLibrary::testInstallingWrongRedis() {
     // QVERIFY(QFile::exists(errorsFile));
     // removeDir(config->prefixDir());
     delete service;
-    delete config;
+    config->deleteLater();
     apiServer->deleteLater();
 }
 
@@ -808,7 +809,7 @@ void TestLibrary::testIgniterInjection() {
     SERVICE_VALIDATE_HOOK
     */
     // auto config2 = new SvdServiceConfig();
-    // delete config2;
+    // config->deleteLater()2;
     QString name = "TestRedisInjected";
     auto config = new SvdServiceConfig(name);
     QVERIFY(not config->configure->commands.contains("SERVICE_START_HOOK"));
@@ -830,22 +831,22 @@ void TestLibrary::testIgniterInjection() {
     QVERIFY(config->configureOrder == config->startOrder);
     QVERIFY(config->afterStop->commands.contains("kongo bongo"));
     QVERIFY(config->install->commands.contains("kongo bongo"));
-    delete config;
+    config->deleteLater();
 }
 
 
 void TestLibrary::testIgniterShaGen() {
     auto config = new SvdServiceConfig("Mysql");
     auto a = config->sha;
-    delete config;
+    config->deleteLater();
 
     auto config2 = new SvdServiceConfig("Redis");
     auto b = config2->sha;
-    delete config2;
+    config->deleteLater();
 
     auto config3 = new SvdServiceConfig("Mysql");
     auto c = config3->sha;
-    delete config3;
+    config->deleteLater();
 
     QVERIFY(a != b);
     QVERIFY(a == c);
