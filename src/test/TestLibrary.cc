@@ -194,7 +194,7 @@ void TestLibrary::testConfigDryRun() {
     QVERIFY(config->softwareName == "Redis");
     QVERIFY(not config->shell.isEmpty());
     QVERIFY(config->shell == "/bin/bash");
-    QVERIFY(not config->domains.contains("localhost"));
+    QVERIFY(config->domains.contains("localhost"));
     QVERIFY(config->domains.contains("ene"));
     QVERIFY(config->domains.contains("due"));
     QVERIFY(config->domains.contains("rabe"));
