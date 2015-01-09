@@ -133,12 +133,12 @@ QString getJSONProcessesList(uint uid) {
 }
 
 
-SvdAPI::SvdAPI(quint16 port, QObject *parent) :
+SvdAPI::SvdAPI(const QString& host, quint16 port, QObject *parent) :
     QObject(parent),
     m_pWebSocketServer(new QWebSocketServer(QStringLiteral("API Server"), QWebSocketServer::NonSecureMode, this)),
     m_clients() {
 
-        if (m_pWebSocketServer->listen(QHostAddress::Any, port)) {
+        if (m_pWebSocketServer->listen(QHostAddress(host), port)) {
             logDebug() << "API server listening on port" << port;
             connect(m_pWebSocketServer, &QWebSocketServer::newConnection, this, &SvdAPI::onNewConnection);
             connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &SvdAPI::closed);

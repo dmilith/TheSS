@@ -57,7 +57,7 @@ class SvdAPI: public QObject {
     Q_OBJECT
 
     public:
-        explicit SvdAPI(quint16 port, QObject *parent = Q_NULLPTR);
+        explicit SvdAPI(const QString& host, quint16 port, QObject *parent = Q_NULLPTR);
         ~SvdAPI();
 
     Q_SIGNALS:
