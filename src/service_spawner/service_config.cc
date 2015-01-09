@@ -254,7 +254,6 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
     delete hash;
 
     getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PORTS_DIR);
-    getOrCreateDir(prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR);
     getOrCreateDir(prefixDir() + DEFAULT_SERVICE_ENVS_DIR);
     getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR);
     getOrCreateDir(prefixDir() + DEFAULT_SERVICE_LOGS_DIR);
@@ -543,42 +542,14 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
         ccont = ccont.replace("SERVICE_PID", getOrCreateDir(prefixDir() + DEFAULT_SERVICE_PIDS_DIR + "/" + releaseName()) + DEFAULT_SERVICE_PID_FILE);
         ccont = ccont.replace("SERVICE_SOCK", prefixDir() + DEFAULT_SERVICE_SOCKET_FILE);
 
-        /* Replace SERVICE_DOMAIN */
-        QStringList userDomains; // QHostInfo::localHostName();
-        QString domainFilePath = prefixDir() + DEFAULT_SERVICE_DOMAINS_DIR;
-
-        /* touch igniter domains */
-        Q_FOREACH(auto dom, domains)
-            touch(domainFilePath + "/" + dom);
-
+        /* Replace SERVICE_DOMAINS and SERVICE_DOMAIN */
+        QStringList userDomains;
         if (domains.length() > 0) {
             /* add igniter side domains to user domains: */
             userDomains << domains;
         }
-
-        /* check domain files */
-        auto fileDomains = QDir(domainFilePath).entryList(QDir::Files | QDir::NoDotAndDotDot);
-        if (fileDomains.isEmpty()) {
-            if (userDomains.isEmpty()) {
-                /* add default localhost domain to user domains: */
-                userDomains << DEFAULT_SYSTEM_DOMAIN; /* localhost */
-                touch(domainFilePath + "/" + userDomains.first());
-            }
-            ccont = ccont.replace("SERVICE_DOMAINS", userDomains.join(" "));
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with first - local domain */
-        } else {
-            /* if any domains found, but not prefer localhost if it's already there.. */
-            if (fileDomains.length() > 1) { /* more than just default localhost */
-                fileDomains.removeAll(DEFAULT_SYSTEM_DOMAIN);
-                QFile::remove(domainFilePath + "/" + DEFAULT_SYSTEM_DOMAIN);
-            }
-            Q_FOREACH(QString domFile, fileDomains) {
-                userDomains << domFile;
-                touch(domainFilePath + "/" + domFile);
-            }
-            ccont = ccont.replace("SERVICE_DOMAINS", userDomains.join(" "));
-            ccont = ccont.replace("SERVICE_DOMAIN", userDomains.first()); /* replace with user domains separated with spaces */
-        }
+        ccont = ccont.replace("SERVICE_DOMAINS", userDomains.join(" "));
+        ccont = ccont.replace("SERVICE_DOMAIN", userDomains.last()); /* replace with last domain on list */
 
         /* Replace SERVICE_ADDRESS */
         QString address = QString(DEFAULT_LOCAL_ADDRESS);

@@ -118,7 +118,6 @@
     #define DEFAULT_STANDALONE_DIR "/standalone"
     #define DEFAULT_RELEASES_DIR "/releases"
     #define DEFAULT_SHARED_DIR "/shared"
-    #define DEFAULT_SERVICE_DOMAINS_DIR "/.domains"
     #define DEFAULT_SERVICE_LOGS_DIR "/.logs"
     #define DEFAULT_SERVICE_PORTS_DIR "/.ports"
     #define DEFAULT_SERVICE_ENVS_DIR "/.envs"
