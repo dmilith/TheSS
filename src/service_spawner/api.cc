@@ -46,7 +46,7 @@ QString getJSONProcessesList(uint uid) {
         QString command, output;
         int pagesize = getpagesize();
 
-        kvm_t* kd = kvm_open(NULL, NULL, NULL, O_RDONLY, NULL);
+        kvm_t* kd = kvm_open(getbootfile(), NULL_FILE, NULL, O_RDONLY, NULL);
         if (kd == 0) {
             logError() << "Error initializing kernel descriptor!";
             return "[]";

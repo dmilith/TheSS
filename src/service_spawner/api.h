@@ -37,6 +37,7 @@
     #include <sys/capability.h>
     #include <libprocstat.h>
     #include <libutil.h>
+    #include <paths.h>
     using namespace std;
 #endif
 
