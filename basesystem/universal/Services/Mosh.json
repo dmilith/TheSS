@@ -3,7 +3,7 @@
     "watchPort": false,
     "alwaysOn": false,
     "install": {
-        "commands": "sofin get mosh",
+        "commands": "sofin get Mosh",
         "expectOutput": "All done"
     },
     "start": {

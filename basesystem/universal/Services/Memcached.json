@@ -2,7 +2,7 @@
     "softwareName": "Memcached",
     "staticPort": 11211,
     "install": {
-        "commands": "sofin get memcached",
+        "commands": "sofin get Memcached",
         "expectOutput": "All done"
     },
     "start": {

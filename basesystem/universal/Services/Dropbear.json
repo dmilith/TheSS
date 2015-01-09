@@ -1,7 +1,7 @@
 {
     "softwareName": "Dropbear",
     "install": {
-        "commands": "sofin get dropbear",
+        "commands": "sofin get Dropbear",
         "expectOutput": "All done"
     },
     "start": {

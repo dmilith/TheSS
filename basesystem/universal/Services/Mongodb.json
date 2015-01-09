@@ -1,7 +1,7 @@
 {
     "softwareName": "Mongodb",
     "install": {
-        "commands": "sofin get mongodb",
+        "commands": "sofin get Mongodb",
         "expectOutput": "All done"
     },
     "schedulers": [

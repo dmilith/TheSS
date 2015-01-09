@@ -1,7 +1,7 @@
 {
     "softwareName": "Php",
     "install": {
-        "commands": "sofin get php",
+        "commands": "sofin get Php",
         "expectOutput": "All done"
     },
     "start": {

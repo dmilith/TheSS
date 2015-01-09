@@ -1,7 +1,7 @@
 {
     "softwareName": "Elasticsearch",
     "install": {
-        "commands": "sofin get elasticsearch",
+        "commands": "sofin get Elasticsearch",
         "expectOutput": "All done"
     },
     "start": {

@@ -2,7 +2,7 @@
     "softwareName": "Mysql",
     "watchPort": false,
     "install": {
-        "commands": "sofin get mysql",
+        "commands": "sofin get Mysql",
         "expectOutput": "All done"
     },
     "start": {

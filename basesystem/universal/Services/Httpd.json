@@ -2,7 +2,7 @@
     "softwareName": "Httpd",
     "staticPort": 80,
     "install": {
-        "commands": "sofin get httpd",
+        "commands": "sofin get Httpd",
         "expectOutput": "All done"
     },
     "start": {

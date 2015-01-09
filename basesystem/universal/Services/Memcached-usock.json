@@ -2,7 +2,7 @@
     "softwareName": "Memcached",
     "watchPort": false,
     "install": {
-        "commands": "sofin get memcached",
+        "commands": "sofin get Memcached",
         "expectOutput": "All done"
     },
     "start": {
