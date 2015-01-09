@@ -592,11 +592,12 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
                 }
 
             } else { /* don't resolve domain, just bind to local address.. */
-                logTrace() << "Set address to wildcard address: " << DEFAULT_LOCAL_ADDRESS;
+                logTrace() << "Set address to local address: " << DEFAULT_LOCAL_ADDRESS;
                 ccont = ccont.replace("SERVICE_ADDRESS", DEFAULT_LOCAL_ADDRESS);
                 tcpAddress = DEFAULT_LOCAL_ADDRESS;
             }
         } else {
+            logTrace() << "Set address to local address: " << DEFAULT_LOCAL_ADDRESS;
             ccont = ccont.replace("SERVICE_ADDRESS", address);
             tcpAddress = address;
         }
