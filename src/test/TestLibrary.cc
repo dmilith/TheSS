@@ -534,7 +534,7 @@ void TestLibrary::testSanityValueCheck() {
 
 
 void TestLibrary::testInstallingWrongRedis() {
-    auto apiServer = new SvdAPI(3001);
+    auto apiServer = new SvdAPI(DEFAULT_WILDCARD_ADDRESS, 3001);
     QString name = "TestWrongRedis";
     auto config = new SvdServiceConfig(name);
     QVERIFY(config->valid());
