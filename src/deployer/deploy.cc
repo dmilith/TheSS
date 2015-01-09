@@ -981,9 +981,9 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     QString servicePath = getServiceDataDir(serviceName);
 
     logDebug() << "Creating web-app environment";
-    QString domainFilePath = getOrCreateDir(servicePath + DEFAULT_SERVICE_DOMAINS_DIR) + "/" + domain;
-    logInfo() << "Writing domain:" << domainFilePath;
-    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + "/" + domain);
+    // QString domainFilePath = getOrCreateDir(servicePath + DEFAULT_SERVICE_DOMAINS_DIR) + "/" + domain;
+    // logInfo() << "Writing domain:" << domainFilePath;
+    // touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + "/" + domain);
 
     /* remove autostart state to prevent premature launch */
     if (QFile::exists(servicePath + AUTOSTART_TRIGGER_FILE))
@@ -996,8 +996,8 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
     auto latestRelease = "build-in-progress-" + stage;
     auto latestReleaseDir = servicePath + DEFAULT_RELEASES_DIR + "/" + latestRelease;
     cloneRepository(serviceName, branch, latestRelease);
-    logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
-    touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + "/" + domain); // XXX
+    // logDebug() << "Writing domain file:" << domain << " of service with path:" << servicePath;
+    // touch(servicePath + DEFAULT_SERVICE_DOMAINS_DIR + "/" + domain); // XXX
     installDependencies(serviceName, latestReleaseDir, latestRelease);
     logDebug() << "Release build in progress files:\n" << QDir(latestReleaseDir).entryList();
     logDebug() << "Release path:" << latestReleaseDir;
