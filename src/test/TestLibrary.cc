@@ -190,7 +190,7 @@ void TestLibrary::testParseDefault() {
 
 void TestLibrary::testConfigDryRun() {
     auto config = new SvdServiceConfig("TestRedis");
-    QVERIFY(config->install->commands == "sofin get redis");
+    QVERIFY(config->install->commands == "sofin get Redis");
     QVERIFY(config->softwareName == "Redis");
     QVERIFY(not config->shell.isEmpty());
     QVERIFY(config->shell == "/bin/bash");
@@ -319,7 +319,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(config->valid());
     // QVERIFY(config->afterStop->commands.contains(".running"));
     // QVERIFY(config->afterStop->commands.contains("service.pid"));
-    QVERIFY(config->install->commands == "sofin get redis");
+    QVERIFY(config->install->commands == "sofin get Redis");
     QVERIFY(config->watchPort == true);
     QVERIFY(config->alwaysOn == true);
     QVERIFY(config->resolveDomain == false);
@@ -329,7 +329,7 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(config->name == "Mosh");
     QVERIFY(config->valid());
     QVERIFY(config->softwareName == "Mosh");
-    QVERIFY(config->install->commands == "sofin get mosh");
+    QVERIFY(config->install->commands == "sofin get Mosh");
     QVERIFY(config->watchPort == false);
     QVERIFY(config->alwaysOn == false);
     QVERIFY(config->resolveDomain == false);
