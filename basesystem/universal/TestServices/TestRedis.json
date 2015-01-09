@@ -24,7 +24,8 @@
         "commands": "test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database ; SERVICE_ROOT/exports/redis-server SERVICE_CONF"
     },
     "afterStop": {
-        "commands": "kongo bongo"
+        "commands": "kongo bongo",
+        "expectOutput": "SERVICE_DOMAIN"
     },
     "validate": {
         "commands": "test ! -f SERVICE_CONF && printf \"\n# Default Redis service configuration\n# bind SERVICE_DOMAIN\nbind SERVICE_ADDRESS\nport SERVICE_PORT\npidfile SERVICE_PID\ndir SERVICE_PREFIX/database\ndbfilename database.rdf\ndaemonize yes\nrdbcompression yes\nsave 900 1\nsave 300 10\nsave 60 10000\nappendonly no\nappendfsync everysec\nactiverehashing yes\nloglevel notice\nlogfile SERVICE_LOG\" > SERVICE_CONF"
