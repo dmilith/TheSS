@@ -99,8 +99,8 @@ void TestLibrary::testLoadingDefault() {
     path[i] = DEFAULT_ZERO_CHAR;
     QVERIFY(config->getDouble("formatVersion") != 0);
     QVERIFY(config->getDouble("formatVersion") > 0.88);
-    QVERIFY(config->getBoolean("alwaysOn") == true);
-    QVERIFY(config->getBoolean("stefan") == false);
+    QVERIFY(config->getBoolean("alwaysOn"));
+    QVERIFY(not config->getBoolean("stefan"));
     QVERIFY(not config->shell.isEmpty());
     QVERIFY(config->valid());
     delete config;
@@ -320,9 +320,9 @@ void TestLibrary::testMultipleConfigsLoading() {
     // QVERIFY(config->afterStop->commands.contains(".running"));
     // QVERIFY(config->afterStop->commands.contains("service.pid"));
     QVERIFY(config->install->commands == "sofin get Redis");
-    QVERIFY(config->watchPort == true);
-    QVERIFY(config->alwaysOn == true);
-    QVERIFY(config->resolveDomain == false);
+    QVERIFY(config->watchPort);
+    QVERIFY(config->alwaysOn);
+    QVERIFY(config->resolveDomain);
     delete config;
 
     config = new SvdServiceConfig("Mosh");
@@ -330,9 +330,9 @@ void TestLibrary::testMultipleConfigsLoading() {
     QVERIFY(config->valid());
     QVERIFY(config->softwareName == "Mosh");
     QVERIFY(config->install->commands == "sofin get Mosh");
-    QVERIFY(config->watchPort == false);
-    QVERIFY(config->alwaysOn == false);
-    QVERIFY(config->resolveDomain == false);
+    QVERIFY(not config->watchPort);
+    QVERIFY(not config->alwaysOn);
+    QVERIFY(config->resolveDomain);
     delete config;
 }
 
