@@ -43,11 +43,14 @@
     #endif
 
     #define DEFAULT_USER_UID 501
+    #define DEFAULT_ROOT_API_PORT 10
+    #define DEFAULT_USER_API_PORT 12
     #define AMOUNT_OF_LOG_FILES_TO_KEEP 125
 
     #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create" /* &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0" */
     #define DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND "ifconfig tap0 destroy"
 
+    #define NULL_FILE "/dev/null"
     #define SOFTWARE_DIR "/Software"
     #define LOGS_DIR "/Logs"
     #define DEFAULT_APP_PROXY_FILE "/.proxy.conf" /* addition to proxy from app repo */
