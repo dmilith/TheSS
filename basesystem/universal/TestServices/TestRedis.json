@@ -14,7 +14,7 @@
         "0 0/10 * * * ?! test -e SERVICE_PREFIX/database/database.rdf && cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
     ],
     "install": {
-        "commands": "sofin get redis",
+        "commands": "sofin get Redis",
         "expectOutput": "All done"
     },
     "configure": {

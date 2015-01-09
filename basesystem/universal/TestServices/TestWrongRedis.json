@@ -2,7 +2,7 @@
     "softwareName": "NonExistantThing",
     "alwaysOn": false,
     "install": {
-        "commands": "sofin get redis",
+        "commands": "sofin get Redis",
         "expectOutput": "SOMETHING ISN'T RIGHT HERE"
     }
 }

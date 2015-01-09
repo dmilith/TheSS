@@ -3,7 +3,7 @@
     "watchPort": false,
 
     "install": {
-        "commands": "sofin get bind",
+        "commands": "sofin get Bind",
         "expectOutput": "All done"
     },
     "start": {

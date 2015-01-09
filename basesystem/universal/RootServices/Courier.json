@@ -3,7 +3,7 @@
     "staticPort": 25,
 
     "install": {
-        "commands": "sofin get courier",
+        "commands": "sofin get Courier",
         "expectOutput": "All done"
     },
     "start": {

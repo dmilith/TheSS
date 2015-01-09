@@ -3,7 +3,7 @@
     "autoStart": true,
     "staticPort": 80,
     "install": {
-        "commands": "sofin get nginx",
+        "commands": "sofin get Nginx",
         "expectOutput": "All done"
     },
     "start": {
