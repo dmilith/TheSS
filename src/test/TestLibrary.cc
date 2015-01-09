@@ -772,7 +772,7 @@ void TestLibrary::testCrontabEntry() {
 
 void TestLibrary::testTail() {
     QString a = tail("/etc/shells", 10);
-    QVERIFY(a.contains("/bin/bash"));
+    QVERIFY(a.contains("/bin/sh"));
 }
 
 
@@ -818,7 +818,7 @@ void TestLibrary::testIgniterInjection() {
     QVERIFY(config->softwareName == "Redis");
     QVERIFY(config->portsPool == 11);
     QVERIFY(not config->alwaysOn);
-    QVERIFY(not config->resolveDomain);
+    QVERIFY(config->resolveDomain);
     QVERIFY(config->watchPort);
     QVERIFY(not config->watchUdpPort);
     QVERIFY(not config->watchSocket);
