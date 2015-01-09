@@ -40,8 +40,13 @@ void SvdUserWatcher::init() {
     logTrace() << "Homedir" << this->homeDir << ", software data dir:" << this->softwareDataDir;
     // this->dataCollector = new SvdDataCollector();
 
-    notification("Launching API server");
-    apiServer = new SvdAPI(3000); // XXX
+    if (getuid() == 0) {
+        notification(QString("Launching API server on: ") + DEFAULT_WILDCARD_ADDRESS + ":" + QString::number(DEFAULT_ROOT_API_PORT));
+        apiServer = new SvdAPI(DEFAULT_WILDCARD_ADDRESS, DEFAULT_ROOT_API_PORT);
+    } else {
+        notification(QString("Launching API server for worker on: ") + DEFAULT_WILDCARD_ADDRESS + ":" + QString::number(DEFAULT_USER_API_PORT));
+        apiServer = new SvdAPI(DEFAULT_WILDCARD_ADDRESS, DEFAULT_USER_API_PORT);
+    }
 
     collectServices();
 
