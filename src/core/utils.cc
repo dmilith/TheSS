@@ -336,8 +336,14 @@ uint registerFreeTcpPort(const QString& address, uint specificPort) {
         port = specificPort;
 
     if (not QNetworkInterface::allAddresses().contains(QHostAddress(addr))) {
-        logError() << "Requested binding to unbound address:" << addr << "Doing fallback to wildcard address";
-        addr = DEFAULT_WILDCARD_ADDRESS;
+        if (addr != QString(DEFAULT_LOCAL_ADDRESS)) {
+            logError() << "Requested binding to unbound address:" << addr << "Doing fallback to wildcard address";
+            addr = DEFAULT_WILDCARD_ADDRESS;
+        } else {
+            logDebug() << "Requested binding local:" << addr;
+            addr = DEFAULT_LOCAL_ADDRESS;
+        }
+
     }
     logTrace() << "Trying address:" << addr << "on port:" << port << "Randseed:" << rand;
     auto tcpServer = new QTcpServer();
