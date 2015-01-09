@@ -86,13 +86,18 @@ QString getJSONProcessesList(uint uid) {
                         fileStat += "{";
                         error = procstat_get_vnode_info(procstat, fst, &vn, errbuf);
                         if (error != 0) {
+                            logError() << "Error in procstat_get_vnode_info";
                             fileStat += "}";
                             continue;
                         }
                         fileStat += QString("\"vn_size\":") += QString::number(vn.vn_size) += QString(",\"vn_mntdir\":\"") += QString(vn.vn_mntdir) += QString("\",\"fileid\":") += QString::number(vn.vn_fileid) += QString(", \"vn_dev\":\"") += QString::number(vn.vn_dev) += QString("\",\"vn_fsid\":") += QString::number(vn.vn_fsid) += QString(",\"vn_type\":") += QString::number(vn.vn_type) += QString(",\"vn_mode\":") += QString::number(vn.vn_mode) += QString(",\"vn_devname\":\"") += QString(vn.vn_devname) += QString("\"");
                         fileStat += "}";
                     }
+                } else {
+                    logError() << "Error initializing filesInfo";
                 }
+            } else {
+                logError() << "Error initializing kproc";
             }
             fileStat += "]";
             fileStat = fileStat.replace("}{","},{");
