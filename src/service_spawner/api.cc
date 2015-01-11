@@ -119,9 +119,9 @@ QString getJSONProcessesList(uint uid) {
                 + "\"runtime\":" + QString::number(procs->ki_runtime / 1000) + ","
                 + "\"blk-in\":" + QString::number(procs->ki_rusage.ru_inblock) + ","
                 + "\"blk-out\":" + QString::number(procs->ki_rusage.ru_oublock) + ","
-                + "\"thr\":" + QString::number(procs->ki_numthreads) + ","
-                + "\"priority\":" + QString::number(procs->ki_pri.pri_level) + ","
-                + "\"files-stat\":" + fileStat + "}";
+                + "\"threads\":" + QString::number(procs->ki_numthreads) + ","
+                + "\"priority\":" + QString::number(procs->ki_pri.pri_level)
+                + (getuid() == 0 ? (",\"fs-open\":" + fileStat + "}") : "}");
 
             if (i == count - 1) {
                 out += "]";
