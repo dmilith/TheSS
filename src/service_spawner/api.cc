@@ -75,8 +75,9 @@ QString getJSONProcessesList(uint uid) {
             struct procstat* procstat = procstat_open_sysctl();
             struct kinfo_proc *kproc = procstat_getprocs(procstat, KERN_PROC_PID, procs->ki_pid, &cnt);
 
+            uint effectiveUid = getuid();
             QString fileStat = "[";
-            if (cnt != 0) {
+            if ((cnt != 0) and (effectiveUid == 0) {
                 struct filestat_list *filesInfo = nullptr;
                 struct filestat *fst;
 
@@ -121,7 +122,7 @@ QString getJSONProcessesList(uint uid) {
                 + "\"blk-out\":" + QString::number(procs->ki_rusage.ru_oublock) + ","
                 + "\"threads\":" + QString::number(procs->ki_numthreads) + ","
                 + "\"priority\":" + QString::number(procs->ki_pri.pri_level)
-                + (getuid() == 0 ? (",\"fs-open\":" + fileStat + "}") : "}");
+                + (effectiveUid == 0 ? (",\"fs-open\":" + fileStat + "}") : "}");
 
             if (i == count - 1) {
                 out += "]";
