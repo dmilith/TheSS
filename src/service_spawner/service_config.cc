@@ -551,6 +551,12 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             /* add igniter side domains to user domains: */
             userDomains << domains;
         }
+        if (userDomains.isEmpty()) {
+            logWarn() << "Detected no domains in base igniter. You might want to update your Default.json (bin/ignitersinstall). Falling back to default: localhost";
+            userDomains << DEFAULT_SYSTEM_DOMAIN;
+        }
+
+        logTrace() << "User domains:" << userDomains.join(" ");
         ccont = ccont.replace("SERVICE_DOMAINS", userDomains.join(" "));
         ccont = ccont.replace("SERVICE_DOMAIN", userDomains.last()); /* replace with last domain on list */
 
