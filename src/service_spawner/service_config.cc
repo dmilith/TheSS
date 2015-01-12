@@ -453,13 +453,7 @@ const QString SvdServiceConfig::releaseName() {
 const QString SvdServiceConfig::defaultTemplateFile() {
     /* pick of two possible locations: /SystemUsers/Igniters and ~/Igniters */
 
-    /* try user side defaults first */
-    QString userSideDefaultIgniter = QString(DEFAULT_HOME_DIR) + "/Igniters/Default" + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
-    if (QFile::exists(userSideDefaultIgniter)) {
-        logTrace() << "User side igniter Defaults found, and will be used:" << userSideDefaultIgniter;
-        return userSideDefaultIgniter;
-
-    } else {
+    if (getuid() == 0) {
         /* then, try system wide defaults */
         QString rootSideDefaultIgniter = QString(DEFAULT_SOFTWARE_TEMPLATE) + DEFAULT_SOFTWARE_TEMPLATE_EXT;
         if (QFile::exists(rootSideDefaultIgniter)) {
@@ -469,6 +463,15 @@ const QString SvdServiceConfig::defaultTemplateFile() {
             return "";
         }
     }
+
+    /* try user side defaults first */
+    QString userSideDefaultIgniter = QString(DEFAULT_HOME_DIR) + "/Igniters/Default" + QString(DEFAULT_SOFTWARE_TEMPLATE_EXT);
+    if (QFile::exists(userSideDefaultIgniter)) {
+        logTrace() << "User side igniter Defaults found, and will be used:" << userSideDefaultIgniter;
+        return userSideDefaultIgniter;
+    }
+    logFatal() << "Default root igniter wasn't found. TheSS cannot continue.";
+    return "";
 }
 
 
