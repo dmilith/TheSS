@@ -1,7 +1,7 @@
 { 
     "softwareName": "Postgresql",
     "install": {
-        "commands": "sofin get postgresql",
+        "commands": "sofin get Postgresql",
         "expectOutput": "All done"
     },
     "staticPort": 5432,

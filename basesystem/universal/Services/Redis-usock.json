@@ -8,7 +8,7 @@
         cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
     ],
     "install": {
-        "commands": "sofin get redis",
+        "commands": "sofin get Redis",
         "expectOutput": "All done"
     },
     "start": {

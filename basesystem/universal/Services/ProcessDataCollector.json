@@ -2,7 +2,7 @@
     "softwareName": "Redis",
     "watchPort": false,
     "install": {
-        "commands": "sofin get redis",
+        "commands": "sofin get Redis",
         "expectOutput": "All done"
     },
     "configure": {

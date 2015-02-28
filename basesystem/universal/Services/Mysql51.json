@@ -6,7 +6,7 @@
         "0 9,21 * * * ?! do_mysql_all_dbs_sql_dump"
     ],
     "install": {
-        "commands": "sofin get mysql51",
+        "commands": "sofin get Mysql51",
         "expectOutput": "All done"
     },
     "start": {
