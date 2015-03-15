@@ -38,19 +38,24 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    using namespace QsLogging;
+    Logger& logger = Logger::instance();
+    const QString sLogPath(DEFAULT_SS_LOG_FILE);
+    Level logLevel = InfoLevel;
+    if (debug)
+        logLevel = DebugLevel;
+    if (trace)
+        logLevel = TraceLevel;
+    logger.setLoggingLevel(logLevel);
+
     /* Logger setup */
-    ConsoleAppender *consoleAppender = new ConsoleAppender();
-    assert(consoleAppender);
-    Logger::registerAppender(consoleAppender);
-    consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
-    if (trace && debug)
-        consoleAppender->setDetailsLevel(Logger::Trace);
-    else if (debug && !trace)
-        consoleAppender->setDetailsLevel(Logger::Debug);
-    else {
-        consoleAppender->setDetailsLevel(Logger::Debug); // INFO!
-        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-    }
+    DestinationPtr consoleDestination(DestinationFactory::MakeDebugOutputDestination());
+    logger.addDestination(consoleDestination);
+    // } else {
+    //     DestinationPtr fileDestination(
+    //         DestinationFactory::MakeFileDestination(sLogPath, DisableLogRotation, MaxSizeBytes(512), MaxOldLogCount(0)));
+    //     logger.addDestination(fileDestination);
+    // }
 
     /* setting up file permissions */
     auto idFile = (getHomeDir() + DISPEL_NODE_IDENTIFICATION_FILE).toUtf8();
@@ -69,8 +74,8 @@ int main(int argc, char *argv[]) {
     //         // logFatal()
     // }
 
-    logInfo("The ServeD Dispel v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
-    logInfo("Using Zeromq v" + zmqVersion());
+    logInfo() << "The ServeD Dispel v" << QString(APP_VERSION) << ". " << QString(COPYRIGHT);
+    logInfo() << "Using Zeromq v" << zmqVersion();
 
     /* will create context with polling enabled by default */
     QScopedPointer<ZMQContext> context(createDefaultContext());

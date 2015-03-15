@@ -73,6 +73,7 @@ int main(int argc, char *argv[]) {
             DestinationFactory::MakeFileDestination(sLogPath, DisableLogRotation, MaxSizeBytes(512), MaxOldLogCount(0)));
         logger.addDestination(fileDestination);
     }
+    new LoggerTimer(&logger);
 
     signal(SIGTERM, unixSignalHandler);
     // signal(SIGPIPE, SIG_IGN); /* ignore broken pipe signal */

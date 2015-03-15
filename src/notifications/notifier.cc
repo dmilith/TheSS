@@ -18,12 +18,9 @@ int main(int argc, char *argv[]) {
     QStringList args = app.arguments();
     QRegExp rxEnableDebug("-d");
     QRegExp rxLevel("-l");
-    NotificationLevels logLevel = NOTIFY;
+    // NotificationLevels logLevel = NOTIFY;
 
     /* Logger setup */
-    ConsoleAppender *consoleAppender = new ConsoleAppender();
-    Logger::registerAppender(consoleAppender);
-    consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
     bool debug = false, trace = false;
     int pos = 0; /* position of argument */
     for (int i = 1; i < args.size(); ++i) {
@@ -32,18 +29,24 @@ int main(int argc, char *argv[]) {
             pos++;
         }
         if (rxLevel.indexIn(args.at(i)) != -1 ) {
-            logLevel = (NotificationLevels)args.at(i + 1).toInt();
+            // logLevel = (NotificationLevels)args.at(i + 1).toInt();
             pos += 2;
         }
     }
-    if (trace && debug)
-        consoleAppender->setDetailsLevel(Logger::Trace);
-    else if (debug && !trace)
-        consoleAppender->setDetailsLevel(Logger::Debug);
-    else {
-        consoleAppender->setDetailsLevel(Logger::Info);
-        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-    }
+
+    /* Logger setup */
+    using namespace QsLogging;
+    Logger& logger = Logger::instance();
+    const QString sLogPath(DEFAULT_SS_LOG_FILE);
+    Level logLevel = InfoLevel;
+    if (debug)
+        logLevel = DebugLevel;
+    if (trace)
+        logLevel = TraceLevel;
+    logger.setLoggingLevel(logLevel);
+
+    DestinationPtr consoleDestination(DestinationFactory::MakeDebugOutputDestination());
+    logger.addDestination(consoleDestination);
 
     /* check args */
     if (args.size() == 1) {
@@ -56,7 +59,8 @@ int main(int argc, char *argv[]) {
     for (int i = 1 + pos; i < args.size(); ++i) {
         displayArgs << args.at(i);
     }
-    notification(displayArgs.join(" "), logLevel);
+
+    notification(displayArgs.join(" "), NotificationLevels::NOTIFY); // XXX
 
     return 0;
 }

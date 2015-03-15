@@ -16,18 +16,23 @@ void writeSampleOf(const char* sample, const char* file) {
 
 
 TestLibrary::~TestLibrary() {
-    delete consoleAppender;
+    // delete consoleAppender;
 }
 
 
 TestLibrary::TestLibrary() {
 
     /* Logger setup */
-    consoleAppender = new ConsoleAppender();
-    consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c> %m\n");
-    consoleAppender->setDetailsLevel(Logger::Info); /* we don't need logger in test suite by default */
-    Logger::registerAppender(consoleAppender);
     setDefaultEncoding();
+    using namespace QsLogging;
+    Logger& logger = Logger::instance();
+    const QString sLogPath(DEFAULT_SS_LOG_FILE);
+    Level logLevel = InfoLevel;
+    logger.setLoggingLevel(logLevel);
+
+    /* Logger setup */
+    DestinationPtr consoleDestination(DestinationFactory::MakeDebugOutputDestination());
+    logger.addDestination(consoleDestination);
 
     // if (not QDir().exists(DEFAULT_SOFTWARE_TEMPLATES_DIR)) {
     //     cout << "Install igniters first before launching test!" << endl;

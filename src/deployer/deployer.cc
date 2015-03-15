@@ -111,38 +111,24 @@ int main(int argc, char *argv[]) {
     }
 
     /* Logger setup */
+    using namespace QsLogging;
+    Logger& logger = Logger::instance();
+    const QString sLogPath(DEFAULT_SS_LOG_FILE);
+    Level logLevel = InfoLevel;
+    if (debug)
+        logLevel = DebugLevel;
+    if (trace)
+        logLevel = TraceLevel;
+    logger.setLoggingLevel(logLevel);
+
+    /* Logger setup */
     if (not background) {
-        ConsoleAppender *consoleAppender = new ConsoleAppender();
-        Logger::registerAppender(consoleAppender);
-        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
-        if (trace && debug)
-            consoleAppender->setDetailsLevel(Logger::Trace);
-        else if (debug && !trace)
-            consoleAppender->setDetailsLevel(Logger::Debug);
-        else {
-            consoleAppender->setDetailsLevel(Logger::Info);
-            consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-        }
-        // new ConsoleLoggerTimer(consoleAppender);
-
+        DestinationPtr consoleDestination(DestinationFactory::MakeDebugOutputDestination());
+        logger.addDestination(consoleDestination);
     } else {
-        FileAppender *fileAppender;
-        if (getuid() == 0)
-            fileAppender = new FileAppender(QString(DEFAULT_SS_LOG_FILE));
-        else
-            fileAppender = new FileAppender(QString(DEFAULT_HOME_DIR) + DEFAULT_SS_LOG_FILE);
-
-        Logger::registerAppender(fileAppender);
-        fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
-        if (trace && debug)
-            fileAppender->setDetailsLevel(Logger::Trace);
-        else if (debug && !trace)
-            fileAppender->setDetailsLevel(Logger::Debug);
-        else {
-            fileAppender->setDetailsLevel(Logger::Info);
-            fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-        }
-        // new FileLoggerTimer(fileAppender);
+        DestinationPtr fileDestination(
+            DestinationFactory::MakeFileDestination(sLogPath, DisableLogRotation, MaxSizeBytes(512), MaxOldLogCount(0)));
+        logger.addDestination(fileDestination);
     }
 
     /* handle some POSIX signals */

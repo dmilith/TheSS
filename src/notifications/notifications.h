@@ -19,6 +19,7 @@
 #include "../globals/globals.h"
 #include "../notifications/notifications.h"
 #include "../core/utils.h"
+#include "../qslog/QsLog.h"
 #include <sys/ioctl.h>
 
 

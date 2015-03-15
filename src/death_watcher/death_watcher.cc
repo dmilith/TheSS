@@ -16,23 +16,26 @@ int main(int argc, char *argv[]) {
     QRegExp rxEnableDebug("-d");
 
     /* Logger setup */
-    ConsoleAppender *consoleAppender = new ConsoleAppender();
-    Logger::registerAppender(consoleAppender);
-    consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
     bool debug = false, trace = false;
     for (int i = 1; i < args.size(); ++i) {
         if (rxEnableDebug.indexIn(args.at(i)) != -1 ) {
             debug = true;
         }
     }
-    if (trace && debug)
-        consoleAppender->setDetailsLevel(Logger::Trace);
-    else if (debug && !trace)
-        consoleAppender->setDetailsLevel(Logger::Debug);
-    else {
-        consoleAppender->setDetailsLevel(Logger::Info);
-        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-    }
+
+    using namespace QsLogging;
+    Logger& logger = Logger::instance();
+    const QString sLogPath(DEFAULT_SS_LOG_FILE);
+    Level logLevel = InfoLevel;
+    if (debug)
+        logLevel = DebugLevel;
+    if (trace)
+        logLevel = TraceLevel;
+    logger.setLoggingLevel(logLevel);
+
+    /* Logger setup */
+    DestinationPtr consoleDestination(DestinationFactory::MakeDebugOutputDestination());
+    logger.addDestination(consoleDestination);
 
     /* check args */
     if (args.size() == 1) {

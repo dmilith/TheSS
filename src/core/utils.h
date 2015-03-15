@@ -9,10 +9,6 @@
 #define __UTILS_H__
 
 #include "../globals/globals.h"
-// #include "../yajl/yajl.h"
-#include "../cutelogger/Logger.h"
-#include "../cutelogger/ConsoleAppender.h"
-#include "../cutelogger/FileAppender.h"
 #include "../service_spawner/process.h"
 #include "../quazip/quazip.h"
 #include "../quazip/quazipfile.h"
