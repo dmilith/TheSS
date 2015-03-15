@@ -323,9 +323,11 @@ const QString getServiceDataDir(const QString& name) {
 
 /* author: dmilith */
 uint registerFreeTcpPort(const QString& address, uint specificPort) {
-    QString addr = address;
+    /* 2015-03-15 18:12:08 - dmilith - lookup local hostname and append home domain for it to get main address */
+    QHostInfo info = QHostInfo();
+    QString addr = info.fromName(info.localHostName() + DEFAULT_HOME_DOMAIN).addresses().first().toString();
     if (addr.isEmpty())
-        addr = DEFAULT_LOCAL_ADDRESS;
+        addr = address;
     QTime midnight(0, 0, 0);
     qsrand(midnight.msecsTo(QTime::currentTime())); // accuracy is in ms.. so let's hack it a bit
     usleep(1000); // this practically means no chance to generate same port when generating multiple ports at once
@@ -336,15 +338,17 @@ uint registerFreeTcpPort(const QString& address, uint specificPort) {
         port = specificPort;
 
     if (not QNetworkInterface::allAddresses().contains(QHostAddress(addr))) {
-        if (addr != QString(DEFAULT_LOCAL_ADDRESS)) {
-            logError() << "Requested binding to unbound address:" << addr << "Doing fallback to wildcard address";
-            addr = DEFAULT_WILDCARD_ADDRESS;
-        } else {
-            logDebug() << "Requested binding local:" << addr;
-            addr = DEFAULT_LOCAL_ADDRESS;
-        }
-
+        logError() << "Empty address?";
+        return -1;
+    //     if (addr != QString(DEFAULT_LOCAL_ADDRESS)) {
+    //         logError() << "Requested binding to unbound address:" << addr << "Doing fallback to wildcard address";
+    //         addr = DEFAULT_WILDCARD_ADDRESS;
+    //     } else {
+    //         logDebug() << "Requested binding home domain:" << addr;
+    //         addr = QHostInfo::localHostName() + DEFAULT_HOME_DOMAIN;
+    //     }
     }
+
     logTrace() << "Trying address:" << addr << "on port:" << port << "Randseed:" << rand;
     auto tcpServer = new QTcpServer();
     tcpServer->listen(QHostAddress(addr), port);

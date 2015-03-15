@@ -552,8 +552,12 @@ const QString SvdServiceConfig::replaceAllSpecialsIn(const QString content) {
             userDomains << domains;
         }
         if (userDomains.isEmpty()) {
-            logWarn() << "Detected no domains in base igniter. You might want to update your Default.json (bin/ignitersinstall). Falling back to default: localhost";
-            userDomains << DEFAULT_SYSTEM_DOMAIN;
+            QHostInfo info = QHostInfo();
+            if (info.localHostName().isEmpty()) {
+                logWarn() << "Detected no domains in local DNS nand base igniter. You might want to update your Default.json (bin/ignitersinstall). Falling back to default:" << DEFAULT_SYSTEM_DOMAIN;
+                userDomains << DEFAULT_SYSTEM_DOMAIN;
+            } else
+                userDomains << info.localHostName() + DEFAULT_HOME_DOMAIN;
         }
 
         logTrace() << "User domains:" << userDomains.join(" ");

@@ -14,7 +14,7 @@
     #define logFatal QLOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.100.2"
+    #define APP_VERSION "0.100.3"
     #define COPYRIGHT "2oo8-2o15 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
@@ -49,6 +49,7 @@
     #define DEFAULT_VPN_INTERFACE_SETUP_COMMAND "kldunload if_tap ; kldload if_tap && ifconfig tap0 create" /* &&  ifconfig tap1 create && ifconfig tap0 10.10.0.1 netmask 255.255.0.0" */
     #define DEFAULT_VPN_INTERFACE_SHUTDOWN_COMMAND "ifconfig tap0 destroy"
 
+    #define DEFAULT_HOME_DOMAIN ".home"
     #define NULL_FILE "/dev/null"
     #define SOFTWARE_DIR "/Software"
     #define LOGS_DIR "/Logs"
