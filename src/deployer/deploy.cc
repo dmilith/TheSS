@@ -581,14 +581,14 @@ void generateServicePorts(QString servicePath, int amount) {
     QTime midnight(0, 0, 0);
     if (not QFile::exists(portFilePath)) { // TODO: re enable dynamic ports
         qsrand(midnight.msecsTo(QTime::currentTime()));
-        uint port = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, abs((qrand() + 1024) % 65535));
+        uint port = registerFreeTcpPort(abs((qrand() + 1024) % 65535));
         logInfo() << "Service port set to:" << QString::number(port);
         writeToFile(portFilePath, QString::number(port));
     }
     for (int i = 2; i < amount + 1; i++) {
         QString backupPortFilePath = portsDir + "/" + QString::number(i - 1);
         qsrand(midnight.msecsTo(QTime::currentTime()));
-        int port = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, abs((qrand() + 1024) % 65535));
+        int port = registerFreeTcpPort(abs((qrand() + 1024) % 65535));
         writeToFile(backupPortFilePath, QString::number(port));
     }
 }
@@ -787,7 +787,7 @@ void requestDependenciesRunningOf(const QString& serviceName, const QStringList 
             uint dependencyPort = readFileContents(location + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER).trimmed().toUInt();
             logDebug() << "Checking depdendency port:" << dependencyPort << "from file:" << location + DEFAULT_SERVICE_PORTS_DIR + "/" + DEFAULT_SERVICE_PORT_NUMBER;
             if ((dependencyPort != 0) and
-                ((registerFreeTcpPort(DEFAULT_WILDCARD_ADDRESS, dependencyPort) != dependencyPort) or
+                ((registerFreeTcpPort(dependencyPort) != dependencyPort) or
                  (registerFreeUdpPort(dependencyPort) != dependencyPort))
                 ) {
                     logInfo() << "Dependency:" << val << "seems to be running, TCP/UDP port taken:" << QString::number(dependencyPort);
@@ -1472,7 +1472,7 @@ void createEnvironmentFiles(QString& serviceName, QString& domain, QString& stag
         auto orderedPort = servPorts.at(0).toUInt();
         logInfo() << "Waiting for port:" << QString::number(orderedPort) << "to be taken by web-app";
         auto timeout = 30;
-        while (orderedPort == registerFreeTcpPort(DEFAULT_WILDCARD_ADDRESS, orderedPort)) { /* first tcp port should be taken */
+        while (orderedPort == registerFreeTcpPort(orderedPort)) { /* first tcp port should be taken */
             logDebug() << "Waiting for port of service:" << serviceName << "timeout:" << QString::number(timeout);
             timeout--;
             if (timeout <= 0)
