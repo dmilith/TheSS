@@ -325,9 +325,13 @@ const QString getServiceDataDir(const QString& name) {
 uint registerFreeTcpPort(uint specificPort) {
     /* 2015-03-15 18:12:08 - dmilith - lookup local hostname and append home domain for it to get main address */
     QHostInfo info = QHostInfo();
-    QString addr = info.fromName(info.localHostName() + DEFAULT_HOME_DOMAIN).addresses().first().toString();
-    if (addr.isEmpty())
-        addr = address;
+    QString defaultDomain = info.localHostName() + DEFAULT_HOME_DOMAIN;
+    auto addresses = info.fromName(defaultDomain).addresses();
+    if (addresses.empty()) {
+        logDebug() << "No host address available.";
+        return -1;
+    }
+    QString addr = addresses.first().toString();
     QTime midnight(0, 0, 0);
     qsrand(midnight.msecsTo(QTime::currentTime())); // accuracy is in ms.. so let's hack it a bit
     usleep(1000); // this practically means no chance to generate same port when generating multiple ports at once

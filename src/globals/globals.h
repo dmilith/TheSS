@@ -14,7 +14,7 @@
     #define logFatal QLOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.100.3"
+    #define APP_VERSION "0.100.4"
     #define COPYRIGHT "2oo8-2o15 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
