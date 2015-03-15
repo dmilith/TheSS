@@ -1,7 +1,8 @@
 {
     "softwareName": "Percona-server55",
-    "watchPort": false,
+    "watchPort": true,
     "staticPort": 3306,
+    "watchSocket": "/tmp/mysql.sock",
     // "schedulers": [
     //     "0 9,21 * * * ?! do_mysql_all_dbs_sql_dump"
     // ],
