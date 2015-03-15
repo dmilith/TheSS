@@ -535,9 +535,9 @@ QMap<QString, long> getDiskFree(const QString& path) {
         }
     #endif
 
-    qDebug() << "FREE disk map: ";
-    Q_FOREACH(QString key, results.keys()) {
-        qDebug() << key << " -> " << results[key];
-    }
+    // qDebug() << "FREE disk map: ";
+    // Q_FOREACH(QString key, results.keys()) {
+    //     qDebug() << key << " -> " << results[key];
+    // }
     return results;
 }
