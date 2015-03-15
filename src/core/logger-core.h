@@ -10,16 +10,20 @@
 
 #include <QtCore>
 #include "../core/utils.h"
+#include "../qslog/QsLog.h"
+#include "../qslog/QsLogDest.h"
+
+using namespace QsLogging;
 
 
-class ConsoleLoggerTimer: public QObject {
+class LoggerTimer: public QObject {
     Q_OBJECT
 
     private:
-        ConsoleAppender *logger;
+        Logger* logger;
 
     public:
-        ConsoleLoggerTimer(ConsoleAppender *appender);
+        LoggerTimer(Logger* appender);
 
     public slots:
         void invokeTrigger();
@@ -27,19 +31,19 @@ class ConsoleLoggerTimer: public QObject {
 };
 
 
-class FileLoggerTimer: QObject {
-    Q_OBJECT
+// class FileLoggerTimer: QObject {
+//     Q_OBJECT
 
-    private:
-        FileAppender *logger;
+//     private:
+//         void *logger;
 
-    public:
-        FileLoggerTimer(FileAppender *appender);
+//     public:
+//         FileLoggerTimer(void *appender);
 
-    public slots:
-        void invokeTrigger();
+//     public slots:
+//         void invokeTrigger();
 
-};
+// };
 
 
 #endif
