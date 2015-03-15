@@ -59,8 +59,21 @@ int main(int argc, char *argv[]) {
     for (int i = 1 + pos; i < args.size(); ++i) {
         displayArgs << args.at(i);
     }
-
-    notification(displayArgs.join(" "), NotificationLevels::NOTIFY); // XXX
+    auto notificationLevel = NotificationLevels::NOTIFY;
+    switch (logLevel) {
+        case WarnLevel:
+            notificationLevel = NotificationLevels::WARNING;
+            break;
+        case ErrorLevel:
+            notificationLevel = NotificationLevels::ERROR;
+            break;
+        case FatalLevel:
+            notificationLevel = NotificationLevels::FATAL;
+            break;
+        default:
+            break;
+    }
+    notification(displayArgs.join(" "), notificationLevel);
 
     return 0;
 }
