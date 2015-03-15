@@ -165,7 +165,11 @@ for mirror in $(${DIG_BIN} +short ${APP_DOMAIN} A); do
 
     conn_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "uname -a" | ${TAIL_BIN} -n 1 2> /dev/null)
     test "$?" = "0" || error "Connection attempt failed: ssh://${APP_USER}@${mirror}"
-    note "Deploying to machine: ${conn_check}"
+
+    served_check=$(${SSH_BIN} ${SSH_OPTIONS} "${APP_USER}@${mirror}" "cat /VERSION" 2> /dev/null)
+    test "$?" = "0" || error "Destination host must be a ServeD node."
+
+    note "Deploying to machine: ${served_check}"
 
     (test -f "${APP_SSL_CERT}" && note "APP_SSL_CERT file: ${APP_SSL_CERT}" \
 test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "Default self-signed SSL will be created for domain: ${APP_DOMAIN}"
