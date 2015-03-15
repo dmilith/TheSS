@@ -1,5 +1,5 @@
 {
-    "softwareName": "Redis",
+    "softwareName": "Redis28",
     "watchPort": false,
     "watchSocket": true,
     "schedulers": [
@@ -8,12 +8,12 @@
         cp SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup"
     ],
     "install": {
-        "commands": "sofin get Redis",
+        "commands": "sofin get Redis28",
         "expectOutput": "All done"
     },
     "start": {
         "commands": " \
-printf 'Launching Redis\n' >> SERVICE_LOG \
+printf 'Launching Redis28\n' >> SERVICE_LOG \
 test ! -d SERVICE_PREFIX/database && mkdir -p SERVICE_PREFIX/database \
 SERVICE_ROOT/exports/redis-server SERVICE_CONF \
 "
@@ -21,10 +21,10 @@ SERVICE_ROOT/exports/redis-server SERVICE_CONF \
     "validate": {
         "commands": " \
 test ! -f SERVICE_CONF && printf \" \
-# Default Redis service configuration for UNIX sockets \
+# Default Redis28 service configuration for UNIX sockets \
 port 0 \
 bind 127.0.0.1 \
-unixsocket SERVICE_PREFIX/service.sock \
+unixsocket /tmp/redis.sock \
 unixsocketperm 700 \
 pidfile SERVICE_PID \
 dir SERVICE_PREFIX/database \
