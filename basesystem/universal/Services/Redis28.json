@@ -1,18 +1,18 @@
 {
-    "softwareName": "Redis",
+    "softwareName": "Redis28",
     "staticPort": 6379,
     "schedulers": [
-        "* * 1 * * ?! \
+        "* * * 1 * ?! \
         test -e SERVICE_PREFIX/database/database.rdf && \
         cp -v SERVICE_PREFIX/database/database.rdf SERVICE_PREFIX/database/database.rdf-$(date +'%Y-%m-%d--%H%M').backup && \
-        printf \"Done copy of datastore Redis\n\" >> SERVICE_LOG"
+        printf \"Done copy of datastore Redis28\n\" >> SERVICE_LOG"
     ],
     "install": {
-        "commands": "sofin get Redis",
+        "commands": "sofin get Redis28",
         "expectOutput": "All done"
     },
     "start": {
-        "commands": "printf \"Launching Redis\" >> SERVICE_LOG \
+        "commands": "printf \"Launching Redis28\" >> SERVICE_LOG \
         test ! -d SERVICE_PREFIX/database && \
         mkdir -p SERVICE_PREFIX/database \
         SERVICE_ROOT/exports/redis-server SERVICE_CONF"
