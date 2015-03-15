@@ -6,7 +6,7 @@ readonly BEGIN_TIMER=$(date +%s)
 
 # defaults:
 export DEPLOY_PORT="22"
-export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -p ${DEPLOY_PORT}"
+export SSH_OPTIONS="-o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p ${DEPLOY_PORT}"
 export SCP_OPTIONS="-P ${DEPLOY_PORT}"
 export SSH_CONFIG_PATH="${HOME}/.ssh/config"
 
@@ -60,7 +60,7 @@ show_usage () {
     note "  $(${BASENAME_BIN} $0) your-app.your-domain.com [OPTION=VALUE OPTION2=VALUE2]"
     note
     note "Available options:"
-    note "  APP_USER          # user name on remote host (default: your-user-name)"
+    note "  APP_USER          # user name on remote host (default: worker)"
     note "  APP_DEBUG         # set to any value to enable deployer debug log"
     note "  APP_STAGE         # stage of web-app to deploy (default: staging)"
     note "  APP_BRANCH        # git branch name to deploy (default: master)"
@@ -195,6 +195,7 @@ test -f "${APP_SSL_KEY}" && note "APP_SSL_KEY file: ${APP_SSL_KEY}") || note "De
     debug "${GIT_BIN} remote add ${DEFAULT_REMOTE} ${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git"
     ${GIT_BIN} remote add ${DEFAULT_REMOTE} "${APP_USER}@${APP_DOMAIN}:Repos/${APP_NAME}.git" > /dev/null 2>&1
     debug "${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH}"
+    # TODO: supported by git 2.3.x only: GIT_SSH_COMMAND="ssh ${SSH_OPTIONS}"
     ${GIT_BIN} push ${DEFAULT_REMOTE} ${APP_BRANCH} > /dev/null 2>&1 && note "Remote repository updated" || first_deploy "${mirror}"
 
     trap "warn 'Interrupted deploy!' && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' svddw ~/SoftwareData/${APP_NAME}/.deploying && ${SSH_BIN} ${SSH_OPTIONS} '${APP_USER}@${mirror}' rm -f ~/SoftwareData/${APP_NAME}/.deploying" SIGINT SIGTERM SIGQUIT

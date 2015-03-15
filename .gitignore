@@ -41,3 +41,6 @@ releases/
 .TemporaryItems
 bin/test-*
 *.orig
+*.stash
+*.apdisk
+OLD*
