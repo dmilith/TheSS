@@ -77,7 +77,7 @@ QString getJSONProcessesList(uint uid) {
 
             uint effectiveUid = getuid();
             QString fileStat = "[";
-            if ((cnt != 0) and (effectiveUid == 0) {
+            if ((cnt != 0) and (effectiveUid == 0)) {
                 struct filestat_list *filesInfo = nullptr;
                 struct filestat *fst;
 
