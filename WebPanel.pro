@@ -10,4 +10,4 @@ TEMPLATE           = subdirs
 SUBDIRS            = src/webpanel
 CONFIG += ordered
 
-panel.depends = src/yajl src/cutelogger
+panel.depends = src/yajl src/qslog

@@ -16,9 +16,9 @@ HEADERS += TestLibrary.h \
            ../yajl/api/yajl_tree.h \
            ../globals/globals.h \
            ../service_spawner/service_config.h \
-           ../cutelogger/Logger.h \
-           ../cutelogger/ConsoleAppender.h \
-           ../cutelogger/FileAppender.h \
+#           ../cutelogger/Logger.h \
+#           ../cutelogger/ConsoleAppender.h \
+#           ../cutelogger/FileAppender.h \
            ../service_spawner/service.h \
            ../service_spawner/process.h \
            ../service_spawner/api.h \
@@ -33,4 +33,4 @@ SOURCES += \
            ../deployer/webapp_types.cc \
            TestLibrary.cc
 
-LIBS += -lz ../liblogger.a ../libcore.a ../libhiredis.a ../libyajl.a ../libquazip.a
+LIBS += -lz ../libqslog.a ../libcore.a ../libhiredis.a ../libyajl.a ../libquazip.a

@@ -29,7 +29,7 @@ SOURCES   += \
             tail.cc \
             ansi.cc
 
-LIBS += ../libcore.a ../liblogger.a ../libquazip.a ../libyajl.a -lz
+LIBS += ../libcore.a ../libqslog.a ../libquazip.a ../libyajl.a -lz
 unix:mac {
       LIBS += -lncurses
 } else {

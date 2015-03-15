@@ -16,7 +16,7 @@ HEADERS += \
         nzmqt/*.hpp \
         ../notifications/notifications.h \
         ../quazip/quazip.h \
-        ../cutelogger/AbstractAppender.h \
+#        ../qslog/AbstractAppender.h \
         *.h
 
 SOURCES += \
@@ -32,7 +32,7 @@ QMAKE_CXXFLAGS += -w
 LIBS += \
         ../libcore.a \
         ../libzeromq.a \
-        ../liblogger.a \
+        ../libqslog.a \
         ../libquazip.a \
         ../libyajl.a \
         -lz

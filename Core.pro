@@ -7,6 +7,6 @@
 include(src/Common.pro)
 
 TEMPLATE = subdirs
-SUBDIRS = src/cutelogger src/core
+SUBDIRS = src/qslog src/core
 
-core.depends = src/cutelogger
+core.depends = src/qslog

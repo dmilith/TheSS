@@ -31,5 +31,5 @@ SOURCES   += \
             core.cc
 
 QMAKE_CXXFLAGS += -w
-LIBS      += -lz ../liblogger.a
+LIBS      += -lz ../libqslog.a
 TARGET    = ../core

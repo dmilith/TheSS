@@ -10,4 +10,4 @@ TEMPLATE           = subdirs
 SUBDIRS            = src/hiredis src/notifications
 CONFIG += ordered
 
-notifications.depends = src/core src/cutelogger src/quazip src/yajl src/hiredis
+notifications.depends = src/core src/qslog src/quazip src/yajl src/hiredis

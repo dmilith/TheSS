@@ -7,7 +7,7 @@
 include(src/Common.pro)
 
 TEMPLATE           = subdirs
-SUBDIRS            = src/cutelogger src/core src/hiredis src/deployer
+SUBDIRS            = src/qslog src/core src/hiredis src/deployer
 # CONFIG += ordered
 
-deployer.depends = src/cutelogger src/core src/hiredis src/service_spawner
+deployer.depends = src/qslog src/core src/hiredis src/service_spawner

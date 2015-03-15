@@ -24,5 +24,5 @@ SOURCES   += ../service_spawner/process.cc \
              deploy.cc \
              deployer.cc
 
-LIBS      += -lz ../libcore.a ../liblogger.a ../libyajl.a ../libquazip.a
+LIBS      += -lz ../libcore.a ../libqslog.a ../libyajl.a ../libquazip.a
 TARGET    = ../../bin/svddeployer

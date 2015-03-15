@@ -7,5 +7,5 @@ TEMPLATE = app
 
 SOURCES += death_watcher.cc
 
-LIBS      += ../libcore.a ../liblogger.a
+LIBS      += ../libcore.a ../libqslog.a
 TARGET    = ../../bin/svddw
