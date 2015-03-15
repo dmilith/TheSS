@@ -9,7 +9,7 @@
     "name": "No-Name",
 
     /* defines domains to which application should bind to */
-    "domains": ["localhost"],
+    "domains": [],
 
     /* when set to false, domain won't be resolved for spcified igniter */
     "resolveDomain": true,
