@@ -38,10 +38,12 @@ SvdProcess::SvdProcess(const QString& name) {
 
 
 void SvdProcess::spawnProcess(const QString& command, const QString& shell, const QStringList& args) {
-    start(shell, args);
-    logTrace() << "Spawning command:" << QString(command);
-    write(command.toUtf8());
-    write("\nexit\n");
+    if (not command.trimmed().isEmpty()) {
+        start(shell, args);
+        logTrace() << "Spawning command:" << QString(command);
+        write(command.toUtf8());
+        write("\nexit\n");
+    }
 }
 
 
