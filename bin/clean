@@ -1,6 +1,7 @@
 #!/bin/sh
 
 find . -name 'Makefile' | xargs rm -f
+find . -name '*.o' | xargs rm -f
 rm -fv src/*.a
 rm -fv src/.obj/*
 rm -fv src/.moc/*
