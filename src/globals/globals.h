@@ -1,6 +1,5 @@
 
 /* include tokens definitions */
-#include "../qslog/QsLog.h"
 #include "tokens.h"
 
 #ifndef __GLOBALS__
@@ -15,7 +14,7 @@
     #define logFatal QLOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.100.1"
+    #define APP_VERSION "0.100.2"
     #define COPYRIGHT "2oo8-2o15 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 

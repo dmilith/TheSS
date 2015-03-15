@@ -8,6 +8,7 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+#include "../qslog/QsLog.h"
 #include "../globals/globals.h"
 #include "../service_spawner/process.h"
 #include "../quazip/quazip.h"
