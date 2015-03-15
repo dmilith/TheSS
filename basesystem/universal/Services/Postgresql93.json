@@ -1,7 +1,7 @@
 { 
-    "softwareName": "Postgresql",
+    "softwareName": "Postgresql93",
     "install": {
-        "commands": "sofin get Postgresql",
+        "commands": "sofin get Postgresql93",
         "expectOutput": "All done"
     },
     "staticPort": 5432,
@@ -18,10 +18,10 @@ host all all 0.0.0.0/0 password \
  \
 printf \" \
 port = SERVICE_PORT \
-max_connections = 100 \
-checkpoint_segments = 24 \
+max_connections = 20 \
+checkpoint_segments = 12 \
 password_encryption = on \
-shared_buffers = 64MB \
+shared_buffers = 16MB \
 temp_buffers = 32MB \
 work_mem = 16MB \
 max_stack_depth = 7MB \
@@ -40,7 +40,7 @@ if [ \"$(id -u)\" != \"0\" ]; then \
     printf 'Linking configuration file\n' >> SERVICE_LOG \
     ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG \
     printf 'Launching Postgresql\n' >> SERVICE_LOG \
-    SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k SERVICE_PREFIX\" start >> SERVICE_LOG \
+    SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k /tmp\" start >> SERVICE_LOG \
     # ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG \
 else \
     printf \"Postgresql can't be run as root!\n\" >> SERVICE_LOG \
