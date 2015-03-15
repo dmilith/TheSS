@@ -59,16 +59,16 @@ int main(int argc, char *argv[]) {
     for (int i = 1 + pos; i < args.size(); ++i) {
         displayArgs << args.at(i);
     }
-    auto notificationLevel = NotificationLevels::NOTIFY;
+    NotificationLevels notificationLevel = NOTIFY;
     switch (logLevel) {
         case WarnLevel:
-            notificationLevel = NotificationLevels::WARNING;
+            notificationLevel = WARNING;
             break;
         case ErrorLevel:
-            notificationLevel = NotificationLevels::ERROR;
+            notificationLevel = ERROR;
             break;
         case FatalLevel:
-            notificationLevel = NotificationLevels::FATAL;
+            notificationLevel = FATAL;
             break;
         default:
             break;
