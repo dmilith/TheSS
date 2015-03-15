@@ -581,14 +581,14 @@ void generateServicePorts(QString servicePath, int amount) {
     QTime midnight(0, 0, 0);
     if (not QFile::exists(portFilePath)) { // TODO: re enable dynamic ports
         qsrand(midnight.msecsTo(QTime::currentTime()));
-        uint port = registerFreeTcpPort(DEFAULT_WILDCARD_ADDRESS, abs((qrand() + 1024) % 65535));
+        uint port = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, abs((qrand() + 1024) % 65535));
         logInfo() << "Service port set to:" << QString::number(port);
         writeToFile(portFilePath, QString::number(port));
     }
     for (int i = 2; i < amount + 1; i++) {
         QString backupPortFilePath = portsDir + "/" + QString::number(i - 1);
         qsrand(midnight.msecsTo(QTime::currentTime()));
-        int port = registerFreeTcpPort(DEFAULT_WILDCARD_ADDRESS, abs((qrand() + 1024) % 65535));
+        int port = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, abs((qrand() + 1024) % 65535));
         writeToFile(backupPortFilePath, QString::number(port));
     }
 }
@@ -900,19 +900,23 @@ QList<WebDatastore> detectDatastores(QString& deps, QString& depsFile) {
     QList<WebDatastore> out;
     QFileInfo bname(depsFile);
 
-    if (deps.trimmed().toLower().contains("postgres")) { /* postgresql specific configuration */
+    if (deps.trimmed().toLower().contains("Postgres")) { /* postgresql specific configuration */
         logInfo() << "Detected Postgresql dependency";
         out << Postgresql;
     }
-    if (deps.trimmed().toLower().contains("mysql")) {
+    if (deps.trimmed().toLower().contains("Mysql")) {
         logInfo() << "Detected Mysql dependency";
         out << Mysql;
     }
-    if (deps.trimmed().toLower().contains("mongo")) {
+    if (deps.trimmed().toLower().contains("Percona")) {
+        logInfo() << "Detected Percona Mysql dependency";
+        out << Mysql;
+    }
+    if (deps.trimmed().toLower().contains("Mongo")) {
         logInfo() << "Detected Mongodb dependency";
         out << Mongo;
     }
-    if (deps.trimmed().toLower().contains("sphinx")) {
+    if (deps.trimmed().toLower().contains("Sphinx")) {
         logInfo() << "Detected Sphinx dependency";
         out << Sphinx;
     }

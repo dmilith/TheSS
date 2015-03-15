@@ -72,9 +72,9 @@ int main(int argc, char *argv[]) {
     } else {
         FileAppender *fileAppender;
         if (getuid() == 0)
-            fileAppender = new FileAppender(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_LOG_FILE);
+            fileAppender = new FileAppender(QString(DEFAULT_SS_LOG_FILE));
         else
-            fileAppender = new FileAppender(QString(DEFAULT_HOME_DIR) + DEFAULT_SS_LOG_FILE);
+            fileAppender = new FileAppender(QString(DEFAULT_SS_LOG_FILE));
 
         Logger::registerAppender(fileAppender);
         fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");

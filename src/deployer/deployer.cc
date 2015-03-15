@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
     } else {
         FileAppender *fileAppender;
         if (getuid() == 0)
-            fileAppender = new FileAppender(QString(SYSTEM_USERS_DIR) + DEFAULT_SS_LOG_FILE);
+            fileAppender = new FileAppender(QString(DEFAULT_SS_LOG_FILE));
         else
             fileAppender = new FileAppender(QString(DEFAULT_HOME_DIR) + DEFAULT_SS_LOG_FILE);
 
@@ -230,6 +230,8 @@ int main(int argc, char *argv[]) {
     removeDir(getServiceDataDir(serviceName) + DEFAULT_RELEASES_DIR + "/" + "build-in-progress-" + stage, true);
     removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_LOGS_DIR + "/" + "build-in-progress-" + stage, true);
     removeDir(getServiceDataDir(serviceName) + DEFAULT_SERVICE_ENVS_DIR + "/" + "build-in-progress-" + stage, true);
+    logInfo() << "Reloading Nginx";
+    touch("/User/SoftwareData/Nginx/.reload");
 
     if (not QFile::exists(getServiceDataDir(serviceName) + DEFAULT_SERVICE_RUNNING_FILE)) {
         logInfo() << "Launching service:" << serviceName;
