@@ -23,12 +23,12 @@ TestLibrary::~TestLibrary() {
 TestLibrary::TestLibrary() {
 
     /* Logger setup */
-    setDefaultEncoding();
     using namespace QsLogging;
     Logger& logger = Logger::instance();
-    const QString sLogPath(DEFAULT_SS_LOG_FILE);
-    Level logLevel = InfoLevel;
+    const QString sLogPath("/tmp/svd-test-library.logtmp");
+    Level logLevel = DebugLevel;
     logger.setLoggingLevel(logLevel);
+    setDefaultEncoding();
 
     /* Logger setup */
     DestinationPtr consoleDestination(DestinationFactory::MakeDebugOutputDestination());
@@ -199,7 +199,6 @@ void TestLibrary::testConfigDryRun() {
     QVERIFY(config->softwareName == "Redis");
     QVERIFY(not config->shell.isEmpty());
     QVERIFY(config->shell == "/bin/bash");
-    QVERIFY(config->domains.contains("localhost"));
     QVERIFY(config->domains.contains("ene"));
     QVERIFY(config->domains.contains("due"));
     QVERIFY(config->domains.contains("rabe"));
@@ -356,26 +355,26 @@ void TestLibrary::testFreePortFunctionality() {
     QVERIFY(port != 0);
     logDebug() << "Port:" << port;
 
-    uint port2 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port3 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port4 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port5 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port6 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port7 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port8 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port9 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
-    uint port10 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS);
+    uint port2 = registerFreeTcpPort();
+    uint port3 = registerFreeTcpPort();
+    uint port4 = registerFreeTcpPort();
+    uint port5 = registerFreeTcpPort();
+    uint port6 = registerFreeTcpPort();
+    uint port7 = registerFreeTcpPort();
+    uint port8 = registerFreeTcpPort();
+    uint port9 = registerFreeTcpPort();
+    uint port10 = registerFreeTcpPort();
     QVERIFY(port10 != port9 != port8 != port7 != port6 != port5 != port4 != port3 != port2 != port);
     QVERIFY(port2 != 0);
     logDebug() << "Port:" << port2;
 
-    uint takenPort = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, 22); // XXX: not yet determined used port.. so using ssh default port
+    uint takenPort = registerFreeTcpPort(22); // XXX: not yet determined used port.. so using ssh default port
     logDebug() << "Port:" << takenPort;
     QVERIFY(takenPort != 22);
     QVERIFY(takenPort != 0);
 
     if (getuid() > 0) {
-        uint takenPort2 = registerFreeTcpPort(DEFAULT_LOCAL_ADDRESS, 1000); // some port under 1024 (root port)
+        uint takenPort2 = registerFreeTcpPort(1000); // some port under 1024 (root port)
         logDebug() << "Port:" << takenPort2;
         QVERIFY(takenPort2 != 1000);
         QVERIFY(takenPort2 != 0);

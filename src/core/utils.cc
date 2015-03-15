@@ -322,7 +322,7 @@ const QString getServiceDataDir(const QString& name) {
 
 
 /* author: dmilith */
-uint registerFreeTcpPort(const QString& address, uint specificPort) {
+uint registerFreeTcpPort(uint specificPort) {
     /* 2015-03-15 18:12:08 - dmilith - lookup local hostname and append home domain for it to get main address */
     QHostInfo info = QHostInfo();
     QString addr = info.fromName(info.localHostName() + DEFAULT_HOME_DOMAIN).addresses().first().toString();
@@ -338,7 +338,7 @@ uint registerFreeTcpPort(const QString& address, uint specificPort) {
         port = specificPort;
 
     if (not QNetworkInterface::allAddresses().contains(QHostAddress(addr))) {
-        logError() << "Empty address?";
+        logDebug() << "Empty host address?";
         return -1;
     //     if (addr != QString(DEFAULT_LOCAL_ADDRESS)) {
     //         logError() << "Requested binding to unbound address:" << addr << "Doing fallback to wildcard address";
@@ -355,7 +355,7 @@ uint registerFreeTcpPort(const QString& address, uint specificPort) {
     if (not tcpServer->isListening()) {
         logDebug() << "Taken port on TCP:" << port;
         delete tcpServer;
-        return registerFreeTcpPort(addr, 10000 + rand);
+        return registerFreeTcpPort(10000 + rand);
     } else
         tcpServer->close();
     delete tcpServer;

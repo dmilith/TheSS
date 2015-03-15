@@ -269,7 +269,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
                 QString portFilePath = QString(portsDirLocation + "/" + QString::number(indx)).trimmed();
                 if (not QFile::exists(portsDirLocation + QString::number(indx))) {
                     logTrace() << "Creating port file:" << portsDirLocation + QString::number(indx);
-                    uint freePort = registerFreeTcpPort(address());
+                    uint freePort = registerFreeTcpPort();
                     writeToFile(portFilePath, QString::number(freePort));
                 }
             }
@@ -283,7 +283,7 @@ SvdServiceConfig::SvdServiceConfig(const QString& serviceName) {
         generatedDefaultPort = staticPort;
     } else {
         if (not QFile::exists(portFilePath)) {
-            generatedDefaultPort = registerFreeTcpPort(address());
+            generatedDefaultPort = registerFreeTcpPort();
             logTrace() << "Set random free port:" << QString::number(generatedDefaultPort) << "for service" << name;
             writeToFile(portFilePath, QString::number(generatedDefaultPort));
         } else

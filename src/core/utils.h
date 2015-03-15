@@ -69,7 +69,7 @@ void rotateFile(const QString& fileName);
 void unixSignalHandler(int sigNum);
 QMap<QString, long> getDiskFree(const QString& path = DEFAULT_HOME_DIR); /* in MiB */
 
-uint registerFreeTcpPort(const QString& address, uint specificPort = 0);
+uint registerFreeTcpPort(uint specificPort = 0);
 uint registerFreeUdpPort(uint specificPort = 0);
 // Json::Value* parseJSON(const QString& filename);
 
