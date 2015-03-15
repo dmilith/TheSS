@@ -13,6 +13,7 @@
     },
     "start": {
         "commands": "printf \"Launching Redis28\" >> SERVICE_LOG \
+        test -L SERVICE_SOCK || ln -s /tmp/redis.sock SERVICE_SOCK \
         test ! -d SERVICE_PREFIX/database && \
         mkdir -p SERVICE_PREFIX/database \
         SERVICE_ROOT/exports/redis-server SERVICE_CONF"

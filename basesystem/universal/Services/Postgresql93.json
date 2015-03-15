@@ -38,8 +38,9 @@ syslog_facility = LOCAL7 \
         "commands": " \
 if [ \"$(id -u)\" != \"0\" ]; then \
     printf 'Linking configuration file\n' >> SERVICE_LOG \
-    ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG \
-    printf 'Launching Postgresql\n' >> SERVICE_LOG \
+    test -L SERVICE_CONF || ln -sv SERVICE_PREFIX/database/postgresql.conf SERVICE_CONF >> SERVICE_LOG \
+    test -L SERVICE_SOCK || ln -s /tmp/.s.PGSQL.SERVICE_PORT SERVICE_SOCK >> SERVICE_LOG \
+    printf 'Launching Postgresql93\n' >> SERVICE_LOG \
     SERVICE_ROOT/exports/pg_ctl -D SERVICE_PREFIX/database -l SERVICE_LOG -o \"-k /tmp\" start >> SERVICE_LOG \
     # ln -sv SERVICE_PREFIX/database/postmaster.pid SERVICE_PID >> SERVICE_LOG \
 else \

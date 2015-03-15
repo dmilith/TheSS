@@ -12,6 +12,7 @@
     "start": {
         "commands": " \
 printf 'Launching Percona-server55\n' >> SERVICE_LOG \
+test -L SERVICE_SOCK || ln -s /tmp/mysql.sock SERVICE_SOCK \
 SERVICE_ROOT/exports/mysqld --defaults-file=SERVICE_CONF --skip-grant-tables -C utf8 > SERVICE_LOG 2>&1 & \
 "
     },
