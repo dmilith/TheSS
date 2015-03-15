@@ -1,21 +1,21 @@
 
 /* include tokens definitions */
+#include "../qslog/QsLog.h"
 #include "tokens.h"
-
 
 #ifndef __GLOBALS__
 #define __GLOBALS__
 
     /* global logger definitions */
-    #define logTrace LOG_TRACE
-    #define logDebug LOG_DEBUG
-    #define logInfo  LOG_INFO
-    #define logWarn  LOG_WARNING
-    #define logError LOG_ERROR
-    #define logFatal LOG_FATAL
+    #define logTrace QLOG_TRACE
+    #define logDebug QLOG_DEBUG
+    #define logInfo  QLOG_INFO
+    #define logWarn  QLOG_WARN
+    #define logError QLOG_ERROR
+    #define logFatal QLOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.98.6.1"
+    #define APP_VERSION "0.100.0"
     #define COPYRIGHT "2oo8-2o15 verknowsys.com"
     #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 

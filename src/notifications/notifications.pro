@@ -11,6 +11,6 @@ QT += network
 HEADERS   += notifications.h ../service_spawner/process.h
 SOURCES   += notifier.cc notifications.cc ../service_spawner/process.cc
 
-LIBS += -lz ../libcore.a ../liblogger.a ../libquazip.a
+LIBS += -lz ../libcore.a ../libqslog.a ../libquazip.a
 
 TARGET = ../../bin/svdnotify

@@ -26,6 +26,6 @@ SOURCES   += \
              file_events_manager.cc \
              ../notifications/notifications.cc \
              service_spawner.cc
-LIBS      += ../liblogger.a ../libcore.a ../libyajl.a ../libhiredis.a ../libquazip.a -lz
+LIBS      += ../libqslog.a ../libcore.a ../libyajl.a ../libhiredis.a ../libquazip.a -lz
 TARGET    = ../../bin/svdss
 

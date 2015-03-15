@@ -54,57 +54,24 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    using namespace QsLogging;
+    Logger& logger = Logger::instance();
+    const QString sLogPath(DEFAULT_SS_LOG_FILE);
+    Level logLevel = InfoLevel;
+    if (debug)
+        logLevel = DebugLevel;
+    if (trace)
+        logLevel = TraceLevel;
+    logger.setLoggingLevel(logLevel);
+
     /* Logger setup */
     if (not background) {
-        ConsoleAppender *consoleAppender = new ConsoleAppender();
-        Logger::registerAppender(consoleAppender);
-        consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
-        if (trace && debug)
-            consoleAppender->setDetailsLevel(Logger::Trace);
-        else if (debug && !trace)
-            consoleAppender->setDetailsLevel(Logger::Debug);
-        else {
-            consoleAppender->setDetailsLevel(Logger::Info);
-            consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-        }
-        new ConsoleLoggerTimer(consoleAppender);
-
+        DestinationPtr consoleDestination(DestinationFactory::MakeDebugOutputDestination());
+        logger.addDestination(consoleDestination);
     } else {
-        FileAppender *fileAppender;
-        if (getuid() == 0)
-            fileAppender = new FileAppender(QString(DEFAULT_SS_LOG_FILE));
-        else
-            fileAppender = new FileAppender(QString(DEFAULT_SS_LOG_FILE));
-
-        Logger::registerAppender(fileAppender);
-        fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
-        if (trace && debug)
-            fileAppender->setDetailsLevel(Logger::Trace);
-        else if (debug && !trace)
-            fileAppender->setDetailsLevel(Logger::Debug);
-        else {
-            fileAppender->setDetailsLevel(Logger::Info);
-            fileAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-        }
-        new FileLoggerTimer(fileAppender);
-
-        if (getuid() == 0) {
-            #ifndef __FreeBSD__
-                FileAppender *consoleAppender;
-                consoleAppender = new FileAppender(QString(DEFAULT_SYSTEM_CONSOLE));
-                Logger::registerAppender(consoleAppender);
-                consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] <%c:(%F:%i)> %m\n");
-                if (trace && debug)
-                    consoleAppender->setDetailsLevel(Logger::Trace);
-                else if (debug && !trace)
-                    consoleAppender->setDetailsLevel(Logger::Debug);
-                else {
-                    consoleAppender->setDetailsLevel(Logger::Info);
-                    consoleAppender->setFormat("%t{dd-HH:mm:ss} [%-7l] %m\n");
-                }
-                new FileLoggerTimer(consoleAppender);
-            #endif
-        }
+        DestinationPtr fileDestination(
+            DestinationFactory::MakeFileDestination(sLogPath, DisableLogRotation, MaxSizeBytes(512), MaxOldLogCount(0)));
+        logger.addDestination(fileDestination);
     }
 
     signal(SIGTERM, unixSignalHandler);
@@ -150,8 +117,9 @@ int main(int argc, char *argv[]) {
     auto userEntries = QDir(getHomeDir() + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
     auto rootEntries = QDir(QString(SYSTEM_USERS_DIR) + QString(DEFAULT_USER_IGNITERS_DIR)).entryList(QDir::Files);
     logDebug() << "Validating igniters existance.\nUser entries:" << userEntries << "\nRoot entries:" << rootEntries;
-    if (((getuid() == 0) and rootEntries.isEmpty()) or userEntries.isEmpty())
+    if (((getuid() == 0) and rootEntries.isEmpty()) or userEntries.isEmpty()) {
         logFatal() << "Please install igniters for TheSS to work with first.";
+    }
 
     #ifdef THESS_TEST_MODE
         logFatal() << "Please rebuild TheSS after tests. Service Spawner can't be running in test mode.";
@@ -177,7 +145,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (uid == 0) {
-        logInfo("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
+        logInfo() << ("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
         setPublicDirPriviledges(getOrCreateDir(DEFAULT_PUBLIC_DIR));
         SvdService::setupDefaultVPNNetwork();
 
@@ -185,7 +153,7 @@ int main(int argc, char *argv[]) {
         new SvdUserWatcher();
 
     } else {
-        logInfo("Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
+        logInfo() << "Service Spawner v" << QString(APP_VERSION) << ". " << QString(COPYRIGHT);
         logDebug() << "Spawning for user:" << DEFAULT_USER_NAME;
 
         logDebug() << "Checking user directory priviledges";
