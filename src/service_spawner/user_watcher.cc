@@ -40,12 +40,26 @@ void SvdUserWatcher::init() {
     logTrace() << "Homedir" << this->homeDir << ", software data dir:" << this->softwareDataDir;
     // this->dataCollector = new SvdDataCollector();
 
+    /* fetch address of current ServeD node */
+    QHostInfo info = QHostInfo();
+    QString defaultDomain = info.localHostName();
+    #ifndef __APPLE__
+        /* 2015-03-16 18:14:10 - dmilith: NOTE: for non development hosts use domain.home
+            as default host from we should take address from */
+        defaultDomain += DEFAULT_HOME_DOMAIN;
+    #endif
+    auto addresses = info.fromName(defaultDomain).addresses();
+    if (addresses.empty()) {
+        logError() << "No host address available. SvdUserWatcher requires a set host name to work properly.";
+        return;
+    }
+    QString addr = addresses.first().toString();
     if (getuid() == 0) {
-        notification(QString("Launching API server on: ") + DEFAULT_WILDCARD_ADDRESS + ":" + QString::number(DEFAULT_ROOT_API_PORT));
-        apiServer = new SvdAPI(DEFAULT_WILDCARD_ADDRESS, DEFAULT_ROOT_API_PORT);
+        notification(QString("Launching API server on: ") + addr + ":" + QString::number(DEFAULT_ROOT_API_PORT));
+        apiServer = new SvdAPI(addr, DEFAULT_ROOT_API_PORT);
     } else {
-        notification(QString("Launching API server for worker on: ") + DEFAULT_WILDCARD_ADDRESS + ":" + QString::number(DEFAULT_USER_API_PORT));
-        apiServer = new SvdAPI(DEFAULT_WILDCARD_ADDRESS, DEFAULT_USER_API_PORT);
+        notification(QString("Launching API server for worker on: ") + addr + ":" + QString::number(DEFAULT_USER_API_PORT));
+        apiServer = new SvdAPI(addr, DEFAULT_USER_API_PORT);
     }
 
     collectServices();
