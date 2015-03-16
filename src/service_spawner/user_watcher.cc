@@ -55,10 +55,10 @@ void SvdUserWatcher::init() {
     }
     QString addr = addresses.first().toString();
     if (getuid() == 0) {
-        notification(QString("Launching API server on: ") + addr + ":" + QString::number(DEFAULT_ROOT_API_PORT));
+        notification(QString("Launching API server on: ") + defaultDomain + ":" + QString::number(DEFAULT_ROOT_API_PORT));
         apiServer = new SvdAPI(addr, DEFAULT_ROOT_API_PORT);
     } else {
-        notification(QString("Launching API server for worker on: ") + addr + ":" + QString::number(DEFAULT_USER_API_PORT));
+        notification(QString("Launching API server for worker on: ") + defaultDomain + ":" + QString::number(DEFAULT_USER_API_PORT));
         apiServer = new SvdAPI(addr, DEFAULT_USER_API_PORT);
     }
 

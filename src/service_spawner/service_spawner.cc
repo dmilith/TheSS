@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
             interactive = true;
         }
         if (rxPrintVersion.indexIn(args.at(i)) != -1) {
-            cout << "ServeD Service Spawner v" << APP_VERSION << ". " << COPYRIGHT << endl;
+            cout << "ServeD Service Spawner v" << APP_VERSION  ". " << COPYRIGHT << endl;
             return EXIT_SUCCESS;
         }
     }
@@ -146,23 +146,16 @@ int main(int argc, char *argv[]) {
     }
 
     if (uid == 0) {
-        logInfo() << ("Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT));
+        logInfo() << "Root Mode Service Spawner v" + QString(APP_VERSION) + ". " + QString(COPYRIGHT);
         setPublicDirPriviledges(getOrCreateDir(DEFAULT_PUBLIC_DIR));
         SvdService::setupDefaultVPNNetwork();
-
-        /* Setting up root watchers */
-        new SvdUserWatcher();
-
     } else {
-        logInfo() << "Service Spawner v" << QString(APP_VERSION) << ". " << QString(COPYRIGHT);
-        logDebug() << "Spawning for user:" << DEFAULT_USER_NAME;
-
-        logDebug() << "Checking user directory priviledges";
+        logInfo() << "Service Spawner v" + QString(APP_VERSION) + ". " + COPYRIGHT;
         setUserDirPriviledges(getHomeDir());
-
-        /* Setting up user watchers */
-        new SvdUserWatcher();
     }
+
+    /* Launching watchers */
+    new SvdUserWatcher();
 
     return app.exec();
 }
