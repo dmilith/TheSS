@@ -14,9 +14,8 @@
     #define logFatal QLOG_FATAL
 
     /* global constants */
-    #define APP_VERSION "0.100.4"
+    #define APP_VERSION "0.100.5"
     #define COPYRIGHT "2oo8-2o15 verknowsys.com"
-    #define DEFAULT_LOCK_KEY "ServeD-TheSS-Lock:"
 
     /* default BSD case: */
     #define DEFAULT_HTTP_PORT 80

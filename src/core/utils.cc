@@ -8,6 +8,7 @@
 
 #include "utils.h"
 
+using namespace QsLogging;
 
 void copyPath(QString src, QString dst) {
     QDir dir(src);
@@ -176,6 +177,7 @@ void unixSignalHandler(int sigNum) {
     if (sigNum == SIGTERM) {
         logWarn() << "Caught SIGTERM signal. Quitting application, leaving services intact.";
         logInfo() << "Forced shutdown";
+        Logger::destroyInstance();
         exit(EXIT_SUCCESS);
     }
 }

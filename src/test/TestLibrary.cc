@@ -3,6 +3,7 @@
 
 #define TEST_LAG 10
 
+using namespace QsLogging;
 
 /* test utilities */
 
@@ -16,14 +17,13 @@ void writeSampleOf(const char* sample, const char* file) {
 
 
 TestLibrary::~TestLibrary() {
-    // delete consoleAppender;
+    Logger::destroyInstance();
 }
 
 
 TestLibrary::TestLibrary() {
 
     /* Logger setup */
-    using namespace QsLogging;
     Logger& logger = Logger::instance();
     const QString sLogPath("/tmp/svd-test-library.logtmp");
     Level logLevel = DebugLevel;

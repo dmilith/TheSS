@@ -204,6 +204,7 @@ void SvdUserWatcher::shutdownSlot() {
     QFile::remove(getHomeDir() + DEFAULT_SS_SHUTDOWN_HOOK_FILE);
     QFile::remove(getHomeDir() + DEFAULT_SS_GRACEFUL_SHUTDOWN_HOOK_FILE);
     logInfo() << "Shutdown completed.";
+    Logger::destroyInstance();
 }
 
 
