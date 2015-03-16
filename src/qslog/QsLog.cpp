@@ -227,11 +227,11 @@ void Logger::Helper::writeToLog()
             break;
     }
 
-    const QString completeMessage(QString("%1%2 %3%4")
+    const QString completeMessage(QString("%1%2%3%4")
                                   .arg(ansi)
-    #ifndef __APPLE__
+    #ifdef __APPLE__
                                   /*  2015-03-16 20:21:24 - dmilith - NOTE: on ServeD systems, timestamp is already there */
-                                  .arg(QDateTime::currentDateTime().toString(fmtDateTime))
+                                  .arg(QDateTime::currentDateTime().toString(fmtDateTime) + " ")
     #else
                                   .arg("")
     #endif

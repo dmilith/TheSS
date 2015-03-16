@@ -129,16 +129,16 @@ void notification(const QString& notificationMessage, NotificationLevels level) 
             QString apiHost = settings.value(NOTIFICATIONS_API_HOST).toString();
             QString apiToken = settings.value(NOTIFICATIONS_API_TOKEN).toString();
             socket.connectToHostEncrypted(apiHost, DEFAULT_SSL_PORT);
-            if (socket.waitForEncrypted())
+            if (socket.waitForEncrypted()) {
                 logDebug() << "Connected to SSL host:" << apiHost;
-
-            logDebug() << "SSL Socket state:" << socket.state();
+                logDebug() << "SSL Socket state:" << socket.state();
+            }
 
             QByteArray encodedMessage = message.toUtf8();
             encodedMessage = encodedMessage.toPercentEncoding();
 
             QString get = QString("GET") + " /api/chat.postMessage?token=" + apiToken + "&channel=" + NOTIFICATIONS_CHANNEL_NAME + "&text=" + encodedMessage + "&username=" + levelStr + "&icon_emoji=" + icon + "&parse=full" + " HTTP/1.1\r\n";
-            logDebug() << "SSL request:" << get;
+            logTrace() << "SSL request:" << get;
             socket.write(get.toUtf8().data());
             get = QString("Host: " + QString(apiHost) + "\r\n");
             socket.write(get.toUtf8().data());
