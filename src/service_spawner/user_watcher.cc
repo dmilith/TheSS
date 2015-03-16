@@ -91,6 +91,36 @@ void SvdUserWatcher::init() {
 
     //     delete config;
     // }
+    //
+
+    /* seek trigger files created when svdss wasn't operational, and retrigger them */
+    Q_FOREACH(QString name, services) {
+        logDebug() << "Retriggering any unhandled trigger files for services:" << services;
+        QStringList triggers;
+        QString serviceDir = getServiceDataDir(name);
+        triggers << serviceDir + INSTALL_TRIGGER_FILE <<
+                    serviceDir + CONFIGURE_TRIGGER_FILE <<
+                    serviceDir + RECONFIGURE_TRIGGER_FILE <<
+                    serviceDir + RECONFIGURE_WITHOUT_DEPS_TRIGGER_FILE <<
+                    serviceDir + START_TRIGGER_FILE <<
+                    serviceDir + START_WITHOUT_DEPS_TRIGGER_FILE <<
+                    serviceDir + STOP_TRIGGER_FILE <<
+                    serviceDir + STOP_WITHOUT_DEPS_TRIGGER_FILE <<
+                    serviceDir + AFTERSTART_TRIGGER_FILE <<
+                    serviceDir + AFTERSTOP_TRIGGER_FILE <<
+                    serviceDir + RESTART_TRIGGER_FILE <<
+                    serviceDir + RESTART_WITHOUT_DEPS_TRIGGER_FILE <<
+                    serviceDir + RELOAD_TRIGGER_FILE <<
+                    serviceDir + VALIDATE_TRIGGER_FILE;
+
+        Q_FOREACH(QString trigger, triggers) {
+            if (QFile::exists(trigger)) {
+                logDebug() << "Retriggering:" << trigger;
+                QFile::remove(trigger);
+                touch(trigger);
+            }
+        }
+    }
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutdownSlot()));
 }
