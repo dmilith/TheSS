@@ -246,10 +246,10 @@ writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + "/" + svConfig->releaseName() +
     cgi.force_redirect = On \n\
     date.timezone = \"CET\" \n\
 [mysql] \n\
-    mysql.default_socket=\"" + QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
+    mysql.default_socket=\"/tmp/mysql.sock\" \n\
 [Pdo_mysql] \n\
     pdo_mysql.cache_size = 2000 \n\
-    pdo_mysql.default_socket= \"" + QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
+    pdo_mysql.default_socket= \"/tmp/mysql.sock\" \n\
 [Syslog] \n\
     define_syslog_variables  = Off \n\
 [mail function] \n\
@@ -276,7 +276,7 @@ writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + "/" + svConfig->releaseName() +
     mysql.max_persistent = -1 \n\
     mysql.max_links = -1 \n\
     mysql.default_port = \n\
-    mysql.default_socket = \"" + QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
+    mysql.default_socket = \"/tmp/mysql.sock\" \n\
     mysql.default_host = \n\
     mysql.default_user = \n\
     mysql.default_password = \n\
@@ -288,7 +288,7 @@ writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + "/" + svConfig->releaseName() +
     mysqli.max_links = -1 \n\
     mysqli.cache_size = 2000 \n\
     mysqli.default_port = 3306 \n\
-    mysqli.default_socket = \"" + QString(DEFAULT_HOME_DIR) + SOFTWARE_DATA_DIR + "/Mysql/" + DEFAULT_SERVICE_SOCKET_FILE + "\" \n\
+    mysqli.default_socket = \"/tmp/mysql.sock\" \n\
     mysqli.default_host = \n\
     mysqli.default_user = \n\
     mysqli.default_pw = \n\
@@ -485,7 +485,7 @@ stage + ": \n\
   encoding: utf8 \n\
   database: " + databaseName + " \n\
   username: " + databaseName + " \n\
-  socket: <%= File.read(ENV['HOME'] + \"" + SOFTWARE_DATA_DIR + "/" + getDbName(db) + DEFAULT_SERVICE_SOCKET_FILE + "\") %> \n\
+  socket: /tmp/mysql.sock \n\
   host: " + DEFAULT_LOCAL_ADDRESS + " \n");
                 } break;
                 default: break;
