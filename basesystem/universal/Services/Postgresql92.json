@@ -31,6 +31,8 @@ log_min_error_statement = WARNING \
 log_directory = 'SERVICE_PREFIX/.logs' \
 log_filename = 'service-%%Y-%%m-%%d_%%H%%M%%S.log' \
 syslog_facility = LOCAL7 \
+# performance hog under FreeBSD: \
+update_process_title = off \
 \" > SERVICE_PREFIX/database/postgresql.conf && echo listen_addresses=\\'SERVICE_ADDRESS\\' >> SERVICE_PREFIX/database/postgresql.conf \
 "
     },
