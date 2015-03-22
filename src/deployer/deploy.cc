@@ -173,7 +173,7 @@ writeToFile(prefix + DEFAULT_SERVICE_CONFS_DIR + "/" + svConfig->releaseName() +
     events.mechanism = kqueue \n\
     ;security.limit_extensions = .php .html .htm .less .js .coffee \n\
 [www] \n\
-    listen = " + DEFAULT_LOCAL_ADDRESS + ":" + port + " \n\
+    listen = " + domain + ":" + port + " \n\
     pm = dynamic \n\
     pm.max_children = 8 \n\
     pm.start_servers = 1 \n\
