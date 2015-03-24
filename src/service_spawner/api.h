@@ -71,29 +71,29 @@ class SvdAPI: public QObject {
         void socketDisconnected();
 
     public:
-        QString getServiceStatus(QString name);
-        QString packJsonRpcResponse(QString input);
+        QString getServiceStatus(QString id, QString name);
+        QString packJsonRpcResponse(QString id, QString input);
         void executeCommand(QString command);
-        void sendUserStatsToAllClients();
-        void sendListServices();
-        void sendCustomMessageToAllClients(QString name, QString content);
-        void sendMessageToAllClients(QString name, QString reason, QString hookName);
+        void sendUserStatsToAllClients(QString id);
+        void sendListServices(QString id);
+        void sendCustomMessageToAllClients(QString id, QString name, QString content);
+        void sendMessageToAllClients(QString id, QString name, QString reason, QString hookName);
 
-        void startService(QString name, QString reason = "");
-        void installService(QString name, QString reason = "");
-        void configureService(QString name, QString reason = "");
-        void reConfigureService(QString name, QString reason = "");
-        void reConfigureWithoutDepsService(QString name, QString reason = "");
-        void validateService(QString name, QString reason = "");
-        void startWithoutDepsService(QString name, QString reason = "");
-        void afterStartService(QString name, QString reason = "");
-        void stopService(QString name, QString reason = "");
-        void stopWithoutDepsService(QString name, QString reason = "");
-        void afterStopService(QString name, QString reason = "");
-        void restartService(QString name, QString reason = "");
-        void restartWithoutDepsService(QString name, QString reason = "");
-        void reloadService(QString name, QString reason = "");
-        void destroyService(QString name, QString reason = "");
+        void startService(QString id, QString name, QString reason = "");
+        void installService(QString id, QString name, QString reason = "");
+        void configureService(QString id, QString name, QString reason = "");
+        void reConfigureService(QString id, QString name, QString reason = "");
+        void reConfigureWithoutDepsService(QString id, QString name, QString reason = "");
+        void validateService(QString id, QString name, QString reason = "");
+        void startWithoutDepsService(QString id, QString name, QString reason = "");
+        void afterStartService(QString id, QString name, QString reason = "");
+        void stopService(QString id, QString name, QString reason = "");
+        void stopWithoutDepsService(QString id, QString name, QString reason = "");
+        void afterStopService(QString id, QString name, QString reason = "");
+        void restartService(QString id, QString name, QString reason = "");
+        void restartWithoutDepsService(QString id, QString name, QString reason = "");
+        void reloadService(QString id, QString name, QString reason = "");
+        void destroyService(QString id, QString name, QString reason = "");
 
 
     private:

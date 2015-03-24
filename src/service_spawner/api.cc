@@ -98,7 +98,11 @@ QString getJSONProcessesList(uint uid) {
                     logError() << "Error initializing filesInfo";
                 }
             } else {
-                logError() << "Error initializing kproc";
+                if (getuid() == 0) {
+                    logError() << "Error initializing kproc.";
+                } else {
+                    logDebug() << "Requested kproc data that are available only from Root API";
+                }
             }
             fileStat += "]";
             fileStat = fileStat.replace("}{","},{");
@@ -157,7 +161,7 @@ SvdAPI::~SvdAPI() {
 }
 
 
-QString SvdAPI::packJsonRpcResponse(QString input) {
+QString SvdAPI::packJsonRpcResponse(QString input, QString id) {
     /*
     {
         "jsonrpc": "2.0",
@@ -170,7 +174,7 @@ QString SvdAPI::packJsonRpcResponse(QString input) {
         }
     }
      */
-    auto uniqueId = QUuid::createUuid().toString();
+    auto uniqueId = id; //QUuid::createUuid().toString();
     return QString("{\"jsonrpc\":\"2.0\",\"id\":\"") + uniqueId + "\",\"result\":{\"data\":" + input + "},\"errors\":{\"code\":0,\"message\":\"\",\"data\":{}}}";
 }
 
@@ -222,13 +226,14 @@ void SvdAPI::executeCommand(QString command) {
     }
 
     /* processing valid api params */
+    QString id = JSONAPI::getString(node, NULL, "id");
     QString cmd = JSONAPI::getString(node, NULL, "method");
+    QStringList hooks = JSONAPI::getArray(node, NULL, "params/hooks");
     // QString serviceName = JSONAPI::getString(node, NULL, "serviceName");
     // if (cmd.isEmpty()) {
     //     logDebug() << "ERR: Empty API command!";
     //     return;
     // }
-    QStringList hooks = JSONAPI::getArray(node, NULL, "params/hooks");
 
     /* check if API command is on command list */
     if (not apiCommands.contains(cmd)) {
@@ -252,7 +257,7 @@ void SvdAPI::executeCommand(QString command) {
     switch (comm) {
 
         case serviceList: {
-            sendListServices();
+            sendListServices(id);
         }; break;
 
         case serviceDetail: {
@@ -284,7 +289,7 @@ void SvdAPI::executeCommand(QString command) {
         }; break;
 
         case processStat: {
-            sendUserStatsToAllClients();
+            sendUserStatsToAllClients(id);
         }; break;
 
         default: break;
@@ -321,12 +326,12 @@ void SvdAPI::socketDisconnected() {
 }
 
 
-QString SvdAPI::getServiceStatus(QString name) {
-    return "a name";
+QString SvdAPI::getServiceStatus(QString id, QString name) {
+    return "a name:" + name + " with id:" + id;
 }
 
 
-void SvdAPI::sendListServices() {
+void SvdAPI::sendListServices(QString id) {
     logDebug() << "Sending service list";
     QString services;
     QStringList serviceList = QDir(getSoftwareDataDir()).entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
@@ -341,103 +346,103 @@ void SvdAPI::sendListServices() {
         client->sendTextMessage(
             packJsonRpcResponse("{\"ts\": \"" + QString::number(
                 QDateTime::currentMSecsSinceEpoch()
-            ) + "\", \"method\": \"serviceList\", \"result\": " + services + "}"));
+            ) + "\", \"method\": \"serviceList\", \"result\": " + services + "}", id));
     }
 }
 
 
-void SvdAPI::sendUserStatsToAllClients() {
+void SvdAPI::sendUserStatsToAllClients(QString id) {
     logDebug() << "Sending process stats to all clients";
     Q_FOREACH(auto client, m_clients) {
-        logDebug() << "Connected peer:" << client->peerAddress();
+        logDebug() << "Connected peer:" << client->peerAddress() << "Request id:" << id;
         client->sendTextMessage(
             packJsonRpcResponse(
                 getJSONProcessesList(getuid())
-            )
+            , id)
         ); /* NOTE: takes only processes of current UID */
     }
 }
 
 
-void SvdAPI::sendCustomMessageToAllClients(QString name, QString content) {
+void SvdAPI::sendCustomMessageToAllClients(QString id, QString name, QString content) {
     logDebug() << "Sending custom message to all clients";
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
         client->sendTextMessage(
-            packJsonRpcResponse("{\"serviceName\": \"" + name + "\", " + content + "}")
+            packJsonRpcResponse("{\"serviceName\": \"" + name + "\", " + content + "}", id)
         );
     }
 }
 
 
-void SvdAPI::sendMessageToAllClients(QString name, QString reason, QString hookName) {
+void SvdAPI::sendMessageToAllClients(QString id, QString name, QString reason, QString hookName) {
     logDebug() << "Sending status to all clients from service:" << name;
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
         client->sendTextMessage(
             packJsonRpcResponse("{\"serviceName\": \"" + name + "\", \"hook\": \"" + hookName + "\", \"reason\": \"" + reason + "\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"hookCallback\"}"
-            )
+            , id)
         );
     }
 }
 
 
-void SvdAPI::installService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "installService");
+void SvdAPI::installService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "installService");
 }
 
-void SvdAPI::configureService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "configureService");
+void SvdAPI::configureService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "configureService");
 }
 
-void SvdAPI::reConfigureService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "reConfigureService");
+void SvdAPI::reConfigureService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "reConfigureService");
 }
 
-void SvdAPI::reConfigureWithoutDepsService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "reConfigureWithoutDepsService");
+void SvdAPI::reConfigureWithoutDepsService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "reConfigureWithoutDepsService");
 }
 
-void SvdAPI::validateService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "validateService");
+void SvdAPI::validateService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "validateService");
 }
 
-void SvdAPI::startService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "startService");
+void SvdAPI::startService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "startService");
 }
 
-void SvdAPI::startWithoutDepsService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "startWithoutDepsService");
+void SvdAPI::startWithoutDepsService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "startWithoutDepsService");
 }
 
-void SvdAPI::afterStartService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "afterStartService");
+void SvdAPI::afterStartService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "afterStartService");
 }
 
-void SvdAPI::stopService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "stopService");
+void SvdAPI::stopService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "stopService");
 }
 
-void SvdAPI::stopWithoutDepsService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "stopWithoutDepsService");
+void SvdAPI::stopWithoutDepsService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "stopWithoutDepsService");
 }
 
-void SvdAPI::afterStopService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "afterStopService");
+void SvdAPI::afterStopService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "afterStopService");
 }
 
-void SvdAPI::restartService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "restartService");
+void SvdAPI::restartService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "restartService");
 }
 
-void SvdAPI::restartWithoutDepsService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "restartWithoutDepsService");
+void SvdAPI::restartWithoutDepsService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "restartWithoutDepsService");
 }
 
-void SvdAPI::reloadService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "reloadService");
+void SvdAPI::reloadService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "reloadService");
 }
 
-void SvdAPI::destroyService(QString name, QString reason) {
-    sendMessageToAllClients(name, reason, "destroyService");
+void SvdAPI::destroyService(QString id, QString name, QString reason) {
+    sendMessageToAllClients(id, name, reason, "destroyService");
 }

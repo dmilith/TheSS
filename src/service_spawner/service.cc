@@ -495,6 +495,9 @@ void SvdService::babySitterSlot() {
         }
 
         /* generate states from service and send it through API server */
+        QString id = QUuid::createUuid().toString();
+
+        // XXX: FIXME: this shouldn't be "customMessage" but jsonrpc format method. Extract new function from this code:
         api()->sendCustomMessageToAllClients(name, QString("\"method\": \"serviceStates\", \"result\": \
             {\"flags\": {\"installing\": ") + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_INSTALLING_FILE) ? "true" : "false") +
            ", \"afterStopping\": " + (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_AFTERSTOPPING_FILE) ? "true" : "false") +
@@ -510,7 +513,7 @@ void SvdService::babySitterSlot() {
            ", \"address\": " + "\"" + config->address() + "\"" +
            ", \"domains\": " + doms +
            ", \"dependencies\": " + deps +
-           "}");
+           "}", id);
 
     } else {
         logDebug() << "alwaysOn option disabled for service:" << name;
@@ -723,7 +726,8 @@ void SvdService::startSlot(bool withDeps) {
 
         logInfo() << "Validating service" << name;
         emit validateSlot(); // invoke validation before each startSlot
-        api()->validateService(name);
+        QString id = QUuid::createUuid().toString(); // XXX: FIXME:
+        api()->validateService(name, id);
 
         if (QFile::exists(config->prefixDir() + DEFAULT_SERVICE_VALIDATION_FAILURE_FILE)) {
             QString msg = "Validation failure in service: " + name + ". Won't start this service. Fix failure and try again.";
@@ -768,7 +772,8 @@ void SvdService::startSlot(bool withDeps) {
     /* invoke after start slot */
     logTrace() << "After process start execution:" << name;
     emit afterStartSlot();
-    api()->afterStartService(name);
+    QString id = QUuid::createUuid().toString(); // XXX: FIXME:
+    api()->afterStartService(name, id);
 }
 
 
