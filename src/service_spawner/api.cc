@@ -98,7 +98,7 @@ QString getJSONProcessesList(uint uid) {
                     logError() << "Error initializing filesInfo";
                 }
             } else {
-                if (getuid() == 0) {
+                if (effectiveUid == 0) {
                     logError() << "Error initializing kproc.";
                 } else {
                     logDebug() << "Requested kproc data that is available only from Root API";
