@@ -157,6 +157,24 @@ SvdAPI::~SvdAPI() {
 }
 
 
+QString SvdAPI::packJsonRpcResponse(QString input) {
+    /*
+    {
+        "jsonrpc": "2.0",
+        "id": UNIQUE_ID,
+        "result": {},
+        "errors": {
+            "code": 0,
+            "message": "",
+            "data": {}
+        }
+    }
+     */
+    auto uniqueId = QUuid::createUuid().toString();
+    return QString("{\"jsonrpc\":\"2.0\",\"id\":\"") + uniqueId + "\",\"result\":{\"data\":" + input + "},\"errors\":{\"code\":0,\"message\":\"\",\"data\":{}}}";
+}
+
+
 void SvdAPI::onNewConnection() {
     QPointer<QWebSocket> pSocket = m_pWebSocketServer->nextPendingConnection();
 
@@ -171,6 +189,15 @@ void SvdAPI::onNewConnection() {
 void SvdAPI::executeCommand(QString command) {
     /*
     format:
+    {
+        "jsonrpc": "2.0",
+        "method": "API_METHOD_NAME",
+        "id": UNIQUE_ID,
+        "params": {
+            "METHOD_PARAM1": "MP1VAL,
+            ...
+        }
+    }
         {"cmd": "API command name", "serviceName": "service name"}
         {"cmd": "API command name", "serviceName": "service name", "hooks": ["stop", "reconfigure"]}
      */
@@ -195,13 +222,13 @@ void SvdAPI::executeCommand(QString command) {
     }
 
     /* processing valid api params */
-    QString cmd = JSONAPI::getString(node, NULL, "cmd");
+    QString cmd = JSONAPI::getString(node, NULL, "method");
     // QString serviceName = JSONAPI::getString(node, NULL, "serviceName");
     // if (cmd.isEmpty()) {
     //     logDebug() << "ERR: Empty API command!";
     //     return;
     // }
-    QStringList hooks = JSONAPI::getArray(node, NULL, "hooks");
+    QStringList hooks = JSONAPI::getArray(node, NULL, "params/hooks");
 
     /* check if API command is on command list */
     if (not apiCommands.contains(cmd)) {
@@ -311,8 +338,10 @@ void SvdAPI::sendListServices() {
 
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"ts\": \"" +
-                                QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"serviceList\", \"result\": " + services + "}");
+        client->sendTextMessage(
+            packJsonRpcResponse("{\"ts\": \"" + QString::number(
+                QDateTime::currentMSecsSinceEpoch()
+            ) + "\", \"method\": \"serviceList\", \"result\": " + services + "}"));
     }
 }
 
@@ -321,7 +350,11 @@ void SvdAPI::sendUserStatsToAllClients() {
     logDebug() << "Sending process stats to all clients";
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage(getJSONProcessesList(getuid())); /* NOTE: takes only processes of current UID */
+        client->sendTextMessage(
+            packJsonRpcResponse(
+                getJSONProcessesList(getuid())
+            )
+        ); /* NOTE: takes only processes of current UID */
     }
 }
 
@@ -330,7 +363,9 @@ void SvdAPI::sendCustomMessageToAllClients(QString name, QString content) {
     logDebug() << "Sending custom message to all clients";
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", " + content + "}");
+        client->sendTextMessage(
+            packJsonRpcResponse("{\"serviceName\": \"" + name + "\", " + content + "}")
+        );
     }
 }
 
@@ -339,7 +374,10 @@ void SvdAPI::sendMessageToAllClients(QString name, QString reason, QString hookN
     logDebug() << "Sending status to all clients from service:" << name;
     Q_FOREACH(auto client, m_clients) {
         logDebug() << "Connected peer:" << client->peerAddress();
-        client->sendTextMessage("{\"serviceName\": \"" + name + "\", \"hook\": \"" + hookName + "\", \"reason\": \"" + reason + "\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"hookCallback\"}");
+        client->sendTextMessage(
+            packJsonRpcResponse("{\"serviceName\": \"" + name + "\", \"hook\": \"" + hookName + "\", \"reason\": \"" + reason + "\", \"ts\": \"" + QString::number(QDateTime::currentMSecsSinceEpoch()) + "\", \"method\": \"hookCallback\"}"
+            )
+        );
     }
 }
 

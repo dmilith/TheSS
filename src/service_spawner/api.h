@@ -72,6 +72,7 @@ class SvdAPI: public QObject {
 
     public:
         QString getServiceStatus(QString name);
+        QString packJsonRpcResponse(QString input);
         void executeCommand(QString command);
         void sendUserStatsToAllClients();
         void sendListServices();

@@ -4,7 +4,7 @@
 <title>SvdWebSockets</title>
 
 <script language="javascript" type="text/javascript">
-    var wsUri = "ws://localhost:3000/";
+    var wsUri = "ws://192.168.1.28:12/";
     var output;
 
     function init() {
@@ -34,8 +34,8 @@
 
     function onOpen(evt) {
         writeToScreen("CONNECTED");
-        doSend("{\"cmd\": \"serviceList\"}");
-        // doSend("{\"cmd\": \"serviceDetail\", \"serviceName\": \"Stefan\", \"hooks\": [\"stop\", \"reconfigure\"]}");
+        doSend("{\"jsonrpc\": \"2.0\", \"method\": \"serviceList\", \"id\": \"12345\", \"params\": {\"hooks\": [\"stop\", \"reconfigure\"]}}");
+        doSend("{\"jsonrpc\": \"2.0\", \"method\": \"processStat\", \"id\": \"12345\", \"params\": {\"hooks\": [\"stop\", \"reconfigure\"]}}");
     }
 
     function onClose(evt) {
