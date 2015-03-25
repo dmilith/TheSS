@@ -246,35 +246,35 @@ QString getJSONProcessesList(uint uid) {
                         QString vntype;
                         switch (vn.vn_type) {
                             case PS_FST_VTYPE_VREG:
-                                vntype = "vreg";
+                                vntype = "VREG";
                                 break;
 
                             case PS_FST_VTYPE_VDIR:
-                                vntype = "vdir";
+                                vntype = "VDIR";
                                 break;
 
                             case PS_FST_VTYPE_VBLK:
-                                vntype = "vblk";
+                                vntype = "VBLK";
                                 break;
 
                             case PS_FST_VTYPE_VCHR:
-                                vntype = "vchr";
+                                vntype = "VCHR";
                                 break;
 
                             case PS_FST_VTYPE_VLNK:
-                                vntype = "vlnk";
+                                vntype = "VLNK";
                                 break;
 
                             case PS_FST_VTYPE_VSOCK:
-                                vntype = "vsock";
+                                vntype = "VSOCK";
                                 break;
 
                             case PS_FST_VTYPE_VFIFO:
-                                vntype = "vfifo";
+                                vntype = "VFIFO";
                                 break;
 
                             case PS_FST_VTYPE_VBAD:
-                                vntype = "vbad";
+                                vntype = "VBAD";
                                 break;
 
                             case PS_FST_VTYPE_VNON:
@@ -282,11 +282,40 @@ QString getJSONProcessesList(uint uid) {
                             default:
                                 vntype = "?";
                                 break;
-                            }
+                        }
+
+                        QString fsuflags;
+                        if (fst->fs_uflags & PS_FST_UFLAG_CTTY)
+                            fsuflags = "CTTY";
+                        else if (fst->fs_uflags & PS_FST_UFLAG_CDIR)
+                            fsuflags = "CWD";
+                        else if (fst->fs_uflags & PS_FST_UFLAG_JAIL)
+                            fsuflags = "JAIL";
+                        else if (fst->fs_uflags & PS_FST_UFLAG_RDIR)
+                            fsuflags = "ROOT";
+                        else if (fst->fs_uflags & PS_FST_UFLAG_TEXT)
+                            fsuflags = "TEXT";
+                        else if (fst->fs_uflags & PS_FST_UFLAG_TRACE)
+                            fsuflags = "TRACE";
+                        else
+                            fsuflags = QString::number(fst->fs_fd);
+
+                        QString fflags;
+                        fst->fs_fflags & PS_FST_FFLAG_READ ? fflags += "READ " : "";
+                        fst->fs_fflags & PS_FST_FFLAG_WRITE ? fflags += "WRITE " : "";
+                        fst->fs_fflags & PS_FST_FFLAG_APPEND ? fflags += "APPEND " : "";
+                        fst->fs_fflags & PS_FST_FFLAG_ASYNC ? fflags += "ASYNC " : "";
+                        fst->fs_fflags & PS_FST_FFLAG_SYNC ? fflags += "SYNC " : "";
+                        fst->fs_fflags & PS_FST_FFLAG_NONBLOCK ? fflags += "NONBLOCK " : "";
+                        fst->fs_fflags & PS_FST_FFLAG_DIRECT ? fflags += "DIRECT " : "";
+                        fst->fs_fflags & PS_FST_FFLAG_HASLOCK ? fflags += "HASLOCK " : "";
+                        fflags = fflags.trimmed();
 
                         fileStat += QString("") +
                             "\"fs_path\":\"" + fspath + "\"," +
                             "\"fs_type\":\"" + fstype + "\"," +
+                            "\"fs_fflags\":\"" + fflags + "\"," +
+                            "\"fs_uflags\":\"" + fsuflags + "\"," +
                             "\"vn_mntdir\":\"" + QString(vn.vn_mntdir) + "\"," +
                             "\"fileid\":\"" + QString::number(vn.vn_fileid) + "\"," +
                             "\"vn_dev\":\"" + QString::number(vn.vn_dev) + "\"," +
