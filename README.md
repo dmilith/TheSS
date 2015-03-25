@@ -363,6 +363,7 @@ RUBY_LOG_FILE               # value of absolute path to log file
 
 
 ## Used 3rd party software and licenses info:
+* FreeBSD 10.1 codebase parts were used (BSD licensed)
 * QsLog MT logger implementation by razvanpetru (MIT licensed)
 * Hiredis client library by Salvatore Sanfilippo and Pieter Noordhuis (BSD licensed)
 * QuaZIP by Sergey A. Tachenov and contributors (LGPL licensed)
