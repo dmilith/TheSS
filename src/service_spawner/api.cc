@@ -320,13 +320,12 @@ QString getJSONProcessesList(uint uid) {
                         fflags = fflags.trimmed();
 
                         fileStat += QString("") +
+                            "\"fileid\":\"" + QString::number(vn.vn_fileid) + "\"," +
                             "\"fs_path\":\"" + fspath + "\"," +
                             "\"fs_type\":\"" + fstype + "\"," +
                             "\"fs_fflags\":\"" + fflags + "\"," +
                             "\"fs_uflags\":\"" + fsuflags + "\"," +
                             "\"vn_mntdir\":\"" + QString(vn.vn_mntdir) + "\"," +
-                            "\"fileid\":\"" + QString::number(vn.vn_fileid) + "\"," +
-                            "\"vn_dev\":\"" + QString::number(vn.vn_dev) + "\"," +
                             "\"vn_type\":\"" + vntype + "\"," +
                             "\"vn_devname\":\"" + QString(vn.vn_devname) + "\"";
                         fileStat += "}";
