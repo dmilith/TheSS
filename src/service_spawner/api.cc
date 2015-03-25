@@ -179,6 +179,7 @@ QString getJSONProcessesList(uint uid) {
                         /* read human readable values */
                         QString fstype;
                         QString fspath;
+
                         switch (fst->fs_type) {
                             case PS_FST_TYPE_SOCKET:
                                 error = procstat_get_socket_info(procstat, fst, &sock, NULL);
@@ -195,7 +196,46 @@ QString getJSONProcessesList(uint uid) {
                                 } else {
                                     fspath = print_address(&sock.sa_local) + " " + print_address(&sock.sa_peer);
                                 }
-                                break;
+                            break;
+
+                        case PS_FST_TYPE_VNODE:
+                            fstype = "VNODE";
+                            break;
+
+                        case PS_FST_TYPE_PIPE:
+                            fstype = "PIPE";
+                            break;
+
+                        case PS_FST_TYPE_FIFO:
+                            fstype = "FIFO";
+                            break;
+
+                        case PS_FST_TYPE_KQUEUE:
+                            fstype = "KQUEUE";
+                            break;
+
+                        case PS_FST_TYPE_CRYPTO:
+                            fstype = "CRYPTO";
+                            break;
+
+                        case PS_FST_TYPE_MQUEUE:
+                            fstype = "MQUEUE";
+                            break;
+
+                        case PS_FST_TYPE_SHM:
+                            fstype = "SHM";
+                            break;
+
+                        case PS_FST_TYPE_PTS:
+                            fstype = "PTS";
+                            break;
+
+                        case PS_FST_TYPE_SEM:
+                            fstype = "SEM";
+                            break;
+
+                        case PS_FST_TYPE_NONE:
+                        case PS_FST_TYPE_UNKNOWN:
                         default:
                             if (fst->fs_path != NULL)
                                 fspath = fst->fs_path;
