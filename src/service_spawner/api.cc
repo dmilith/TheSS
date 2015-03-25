@@ -135,7 +135,16 @@ QString getJSONProcessesList(uint uid) {
             return "[]";
         }
 
-        kinfo_proc* procs = kvm_getprocs(kd, KERN_PROC_UID, uid, &count); // get processes directly from BSD kernel
+        auto kernMode = KERN_PROC_UID;
+        auto efUid = uid;
+        if (uid == 0) {
+            /* Trick required to list all processes from uid DEFAULT_USER_UID and 0 when asking as root
+                and to be able to display basic info about processes when asking as regular user */
+            kernMode = KERN_PROC_ALL;
+            efUid = DEFAULT_USER_UID;
+        }
+
+        kinfo_proc* procs = kvm_getprocs(kd, kernMode, efUid, &count); // get processes directly from BSD kernel
         if (count <= 0) {
             logError() << "No processes for given UID!";
             return "[]";
@@ -158,9 +167,8 @@ QString getJSONProcessesList(uint uid) {
             struct procstat* procstat = procstat_open_sysctl();
             struct kinfo_proc *kproc = procstat_getprocs(procstat, KERN_PROC_PID, procs->ki_pid, &cnt);
 
-            uint effectiveUid = getuid();
             QString fileStat = "[";
-            if ((cnt != 0) and (effectiveUid == 0)) {
+            if ((cnt != 0) and (uid == 0)) {
                 struct filestat_list *filesInfo = nullptr;
                 struct filestat *fst;
                 struct sockstat sock;
@@ -328,7 +336,7 @@ QString getJSONProcessesList(uint uid) {
                 }
                 procstat_freefiles(procstat, filesInfo);
             } else {
-                if (effectiveUid == 0) {
+                if (uid == 0) {
                     logError() << "Error initializing kproc.";
                 } else {
                     logDebug() << "Requested kproc data that is available only from Root API";
@@ -356,7 +364,7 @@ QString getJSONProcessesList(uint uid) {
                 + "\"blk-out\":" + QString::number(procs->ki_rusage.ru_oublock) + ","
                 + "\"threads\":" + QString::number(procs->ki_numthreads) + ","
                 + "\"priority\":" + QString::number(procs->ki_pri.pri_level)
-                + (effectiveUid == 0 ? (",\"fs-open\":" + fileStat + "}") : "}");
+                + (uid == 0 ? (",\"fs-open\":" + fileStat + "}") : "}");
 
             if (i == count - 1) {
                 out += "]";
