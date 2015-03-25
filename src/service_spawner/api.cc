@@ -257,6 +257,7 @@ QString getJSONProcessesList(uint uid) {
                 } else {
                     logError() << "Error initializing filesInfo";
                 }
+                procstat_freefiles(procstat, filesInfo);
             } else {
                 if (effectiveUid == 0) {
                     logError() << "Error initializing kproc.";
