@@ -35,6 +35,89 @@ QString escapeJsonString(const std::string& input) {
 }
 
 
+#ifdef __FreeBSD__
+static void addr_to_string(struct sockaddr_storage *ss, char *buffer, int buflen) {
+        char buffer2[INET6_ADDRSTRLEN];
+        struct sockaddr_in6 *sin6;
+        struct sockaddr_in *sin;
+        struct sockaddr_un *sun;
+
+        switch (ss->ss_family) {
+        case AF_LOCAL:
+                sun = (struct sockaddr_un *)ss;
+                if (strlen(sun->sun_path) == 0)
+                        strlcpy(buffer, "-", buflen);
+                else
+                        strlcpy(buffer, sun->sun_path, buflen);
+                break;
+
+        case AF_INET:
+                sin = (struct sockaddr_in *)ss;
+                snprintf(buffer, buflen, "%s:%d", inet_ntoa(sin->sin_addr),
+                    ntohs(sin->sin_port));
+                break;
+
+        case AF_INET6:
+                sin6 = (struct sockaddr_in6 *)ss;
+                if (inet_ntop(AF_INET6, &sin6->sin6_addr, buffer2,
+                    sizeof(buffer2)) != NULL)
+                        snprintf(buffer, buflen, "%s.%d", buffer2,
+                            ntohs(sin6->sin6_port));
+                else
+                        strlcpy(buffer, "-", buflen);
+                break;
+
+        default:
+                strlcpy(buffer, "", buflen);
+                break;
+        }
+}
+
+
+QString print_address(struct sockaddr_storage *ss) {
+        char addr[PATH_MAX];
+        addr_to_string(ss, addr, sizeof(addr));
+        return addr;
+}
+
+
+static const char * protocol_to_string(int domain, int type, int protocol) {
+        switch (domain) {
+        case AF_INET:
+        case AF_INET6:
+                switch (protocol) {
+                case IPPROTO_TCP:
+                        return ("TCP");
+                case IPPROTO_UDP:
+                        return ("UDP");
+                case IPPROTO_ICMP:
+                        return ("ICM");
+                case IPPROTO_RAW:
+                        return ("RAW");
+                case IPPROTO_SCTP:
+                        return ("SCT");
+                case IPPROTO_DIVERT:
+                        return ("IPD");
+                default:
+                        return ("IP?");
+                }
+
+        case AF_LOCAL:
+                switch (type) {
+                case SOCK_STREAM:
+                        return ("UDS");
+                case SOCK_DGRAM:
+                        return ("UDD");
+                default:
+                        return ("UD?");
+                }
+        default:
+                return ("?");
+        }
+}
+#endif
+
+
 QString getJSONProcessesList(uint uid) {
     #ifdef __APPLE__
         /* NYI */
@@ -80,6 +163,7 @@ QString getJSONProcessesList(uint uid) {
             if ((cnt != 0) and (effectiveUid == 0)) {
                 struct filestat_list *filesInfo = nullptr;
                 struct filestat *fst;
+                struct sockstat sock;
 
                 filesInfo = procstat_getfiles(procstat, kproc, 0);
                 if (filesInfo != nullptr) {
@@ -91,7 +175,83 @@ QString getJSONProcessesList(uint uid) {
                             fileStat += "}";
                             continue;
                         }
-                        fileStat += QString("\"vn_size\":") += QString::number(vn.vn_size) += QString(",\"vn_mntdir\":\"") += QString(vn.vn_mntdir) += QString("\",\"fileid\":") += QString::number(vn.vn_fileid) += QString(", \"vn_dev\":\"") += QString::number(vn.vn_dev) += QString("\",\"vn_fsid\":") += QString::number(vn.vn_fsid) += QString(",\"vn_type\":") += QString::number(vn.vn_type) += QString(",\"vn_mode\":") += QString::number(vn.vn_mode) += QString(",\"vn_devname\":\"") += QString(vn.vn_devname) += QString("\"");
+
+                        /* read human readable values */
+                        QString fstype;
+                        QString fspath;
+                        switch (fst->fs_type) {
+                            case PS_FST_TYPE_SOCKET:
+                                error = procstat_get_socket_info(procstat, fst, &sock, NULL);
+                                if (error != 0)
+                                    break;
+
+                                fstype = protocol_to_string(sock.dom_family, sock.type, sock.proto);
+                                if (sock.dom_family == AF_LOCAL) {
+                                    struct sockaddr_un *sun = (struct sockaddr_un *)&sock.sa_local;
+                                    if (sun->sun_path[0] != 0)
+                                        fspath = print_address(&sock.sa_local);
+                                    else
+                                        fspath = print_address(&sock.sa_peer);
+                                } else {
+                                    fspath = print_address(&sock.sa_local) + " " + print_address(&sock.sa_peer);
+                                }
+                                break;
+                        default:
+                            if (fst->fs_path != NULL)
+                                fspath = fst->fs_path;
+                            else
+                                fspath = "-";
+                        }
+
+                        QString vntype;
+                        switch (vn.vn_type) {
+                            case PS_FST_VTYPE_VREG:
+                                vntype = "vreg";
+                                break;
+
+                            case PS_FST_VTYPE_VDIR:
+                                vntype = "vdir";
+                                break;
+
+                            case PS_FST_VTYPE_VBLK:
+                                vntype = "vblk";
+                                break;
+
+                            case PS_FST_VTYPE_VCHR:
+                                vntype = "vchr";
+                                break;
+
+                            case PS_FST_VTYPE_VLNK:
+                                vntype = "vlnk";
+                                break;
+
+                            case PS_FST_VTYPE_VSOCK:
+                                vntype = "vsock";
+                                break;
+
+                            case PS_FST_VTYPE_VFIFO:
+                                vntype = "vfifo";
+                                break;
+
+                            case PS_FST_VTYPE_VBAD:
+                                vntype = "vbad";
+                                break;
+
+                            case PS_FST_VTYPE_VNON:
+                            case PS_FST_VTYPE_UNKNOWN:
+                            default:
+                                vntype = "?";
+                                break;
+                            }
+
+                        fileStat += QString("") +
+                            "\"fs_path\":\"" + fspath + "\"," +
+                            "\"fs_type\":\"" + fstype + "\"," +
+                            "\"vn_mntdir\":\"" + QString(vn.vn_mntdir) + "\"," +
+                            "\"fileid\":\"" + QString::number(vn.vn_fileid) + "\"," +
+                            "\"vn_dev\":\"" + QString::number(vn.vn_dev) + "\"," +
+                            "\"vn_type\":\"" + vntype + "\"," +
+                            "\"vn_devname\":\"" + QString(vn.vn_devname) + "\"";
                         fileStat += "}";
                     }
                 } else {
